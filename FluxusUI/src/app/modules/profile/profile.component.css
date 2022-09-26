@@ -10,17 +10,17 @@
 *{
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing: None;
     font-family: 'Josefin Sans', sans-serif;;
 }
 
 body{
-    background: lightblue;
+    background: rgb(232, 211, 204);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 10px;
+    margin: px;
 }
 /* universal attribute ends */
 
@@ -114,7 +114,7 @@ body{
     display: inline-block;
     width: 30px;
     font-size: 20px;
-    color: #e0d285
+    color: #b0b0b0
 }
 
 .contactInfo ul li .text{
