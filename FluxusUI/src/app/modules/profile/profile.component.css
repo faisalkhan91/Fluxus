@@ -350,7 +350,7 @@ a.profile_nav
 
 .brown
 {
-    background: #f3ddd1;
+    background-image: linear-gradient(90deg, #8FFEE8FF 0%, #71C4FFFF 100%);
 }
 
 /* Highlight text out  */
