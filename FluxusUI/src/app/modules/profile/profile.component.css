@@ -5,6 +5,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Ubuntu&display=swap');
 /* for josefin sans font   */
 
+@import 'https://fonts.googleapis.com/css?family=Raleway';
 
 /* universal attribute */
 *{
@@ -329,3 +330,51 @@ p{
     }
 }
 /* responsive design attributes ends*/
+
+div.profile
+{
+    text-align: center;
+    padding: 10px 10px;
+}
+a.profile_nav
+{
+    color: #FFF;
+    text-decoration: none;
+    font: 20px Raleway;
+    margin: 0px 10px;
+    padding: 10px 10px;
+    position: relative;
+    z-index: 0;
+    cursor: pointer;
+}
+
+.brown
+{
+    background-image: linear-gradient(90deg, #8FFEE8FF 0%, #71C4FFFF 100%);
+}
+
+/* Highlight text out  */
+div.highlightTextOut .profile_nav
+{
+    color: rgba(0, 0, 0, 0.3); 
+}
+
+div.highlightTextOut .profile_nav:before, div.highlightTextIn .profile_nav:before
+{
+    position: absolute;
+    color: rgb(41, 39, 39);
+    top: 0px;
+    left: 0px;
+    padding: 10px;
+    overflow: hidden;
+    content: attr(alt);
+    transition: all 0.3s;
+    transform: scale(0.8);
+    opacity: 0;
+} 
+
+div.highlightTextOut .profile_nav:hover:before, div.highlightTextIn .profile_nav:hover:before
+{
+    transform: scale(1);
+    opacity: 1;
+}
