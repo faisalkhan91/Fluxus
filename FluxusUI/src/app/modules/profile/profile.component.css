@@ -59,7 +59,7 @@ body{
 /* left side section attributes  */
 .container .left{
     position: relative;
-    background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%),radial-gradient(113% 91% at 17% -2%, rgb(182, 88, 201) 1%, #FF000000 99%),radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%),radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%),radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
+    background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%),radial-gradient(113% 91% at 17% -2%, rgba(199, 60, 227, 0.888) 1%, #FF000000 99%),radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%),radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%),radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
     padding: 40px;
 }
 
@@ -356,7 +356,7 @@ a.profile_nav
 /* Highlight text out  */
 div.highlightTextOut .profile_nav
 {
-    color: rgba(0, 0, 0, 0.3); 
+    color: rgba(0, 0, 0, 0.518); 
 }
 
 div.highlightTextOut .profile_nav:before, div.highlightTextIn .profile_nav:before
