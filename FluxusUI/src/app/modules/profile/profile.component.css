@@ -362,7 +362,7 @@ div.highlightTextOut .profile_nav
 div.highlightTextOut .profile_nav:before, div.highlightTextIn .profile_nav:before
 {
     position: absolute;
-    color: rgb(41, 39, 39);
+    color: rgb(43, 40, 40);
     top: 0px;
     left: 0px;
     padding: 10px;
