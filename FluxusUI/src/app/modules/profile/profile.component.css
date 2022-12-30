@@ -356,11 +356,7 @@ a.profile_nav
 /* Highlight text out  */
 div.highlightTextOut .profile_nav
 {
-<<<<<<< HEAD
-    color: rgba(0, 0, 0, 0.445); 
-=======
-    color: rgba(0, 0, 0, 0.451); 
->>>>>>> 9cc232908a73074dc1a2517befc076129f0cc5b5
+    color: rgba(0, 0, 0, 0.489); 
 }
 
 div.highlightTextOut .profile_nav:before, div.highlightTextIn .profile_nav:before
