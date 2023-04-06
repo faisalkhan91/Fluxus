@@ -1,8 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\FluxusUI"
+    "\\FluxusUI",
+    "\\FluxusUI\\src",
+    "\\FluxusUI\\src\\app",
+    "\\FluxusUI\\src\\app\\core"
   ],
-  "SelectedNode": "\\FluxusUI\\tsconfig.json",
   "PreviewInSolutionExplorer": false
 }
