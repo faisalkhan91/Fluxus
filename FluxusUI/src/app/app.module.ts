@@ -8,6 +8,7 @@ import { FooterComponent } from './core/footer/footer.component';
 import { ProfileComponent } from './modules/profile/profile.component';
 import { HomeComponent } from './modules/home/home.component';
 import { OverviewComponent } from './modules/profile/overview/overview.component';
+import { ExperienceComponent } from './modules/profile/experience/experience.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { OverviewComponent } from './modules/profile/overview/overview.component
     FooterComponent,
     ProfileComponent,
     HomeComponent,
-    OverviewComponent
+    OverviewComponent,
+    ExperienceComponent
   ],
   imports: [
     BrowserModule,
