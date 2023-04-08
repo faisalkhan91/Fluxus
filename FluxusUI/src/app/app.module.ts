@@ -9,6 +9,7 @@ import { ProfileComponent } from './modules/profile/profile.component';
 import { HomeComponent } from './modules/home/home.component';
 import { OverviewComponent } from './modules/profile/overview/overview.component';
 import { ExperienceComponent } from './modules/profile/experience/experience.component';
+import { SkillsComponent } from './modules/profile/skills/skills.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ExperienceComponent } from './modules/profile/experience/experience.com
     ProfileComponent,
     HomeComponent,
     OverviewComponent,
-    ExperienceComponent
+    ExperienceComponent,
+    SkillsComponent
   ],
   imports: [
     BrowserModule,
