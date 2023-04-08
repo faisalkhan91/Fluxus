@@ -10,6 +10,7 @@ import { HomeComponent } from './modules/home/home.component';
 import { OverviewComponent } from './modules/profile/overview/overview.component';
 import { ExperienceComponent } from './modules/profile/experience/experience.component';
 import { SkillsComponent } from './modules/profile/skills/skills.component';
+import { PortfolioComponent } from './modules/profile/portfolio/portfolio.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { SkillsComponent } from './modules/profile/skills/skills.component';
     HomeComponent,
     OverviewComponent,
     ExperienceComponent,
-    SkillsComponent
+    SkillsComponent,
+    PortfolioComponent
   ],
   imports: [
     BrowserModule,
