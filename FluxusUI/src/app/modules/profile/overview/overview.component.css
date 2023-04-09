@@ -295,7 +295,7 @@ p{
 @media(max-width: 1000px){
     .container{
         margin: 10px;
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(1,1fr);
     }
     .hobbies ul{
         grid-template-columns: repeat(2, 1fr);
@@ -320,7 +320,7 @@ p{
         grid-template-columns: repeat(1, 1fr);
     }
     .skills .box{
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(1,1fr);
     }
     .title2{
         text-align: center;
@@ -335,7 +335,6 @@ div.profile
 {
     text-align: center;
     padding: 10px 10px;
-    border-radius: 10px;
 }
 a.profile_nav
 {

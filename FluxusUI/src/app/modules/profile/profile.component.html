@@ -102,137 +102,27 @@
         <!--Right side code starts-->
         <div class="right">
             <div class="profile brown highlightTextOut">
-                <a class="profile_nav" alt="Overview">Overview</a>
-                <a class="profile_nav" alt="Experience">Experience</a>
-                <a class="profile_nav" alt="Skills">Skills</a>
-                <a class="profile_nav" alt="Projects">Projects</a>
+                <a class="profile_nav" alt="Overview" (click)="profileToggleFunction('overview')">Overview</a>
+                <a class="profile_nav" alt="Experience" (click)="profileToggleFunction('experience')">Experience</a>
+                <a class="profile_nav" alt="Skills" (click)="profileToggleFunction('skills')">Skills</a>
+                <a class="profile_nav" alt="Portfolio" (click)="profileToggleFunction('portfolio')">Portfolio</a>
                 <a class="profile_nav" alt="Achievements">Achievements</a>
                 <a class="profile_nav" alt="Interests">Interests</a>                
-              </div>
-            <!--Brief introduction part starts-->
-            <div class="about">
-                <h3 class="title2">Profile</h3>
-                <p>I am a software engineer and an avid techie.</p>
             </div>
-            <!--Brief introduction part ends-->
 
-            <!--work experiance part starts-->
-            <div class="about">
-                <h3 class="title2">Experience</h3>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>Oct 2019 - Present</h5>
-                        <h5><strong>Cigna</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>Software Engineer</h4>
-                        <p>
-                            •	Built Python and PowerShell scripts to automate standard operating procedures to eliminate repetitive tasks.
-                            •	Perform feasibility analysis on automation requirements to determine the best approach to automate steps.
-                            •	Develop Synthetics that automate application checks using either Python, Selenium, JSON, Groovy, SolarWinds Dynatrace.
-                            •	Maintain Git Repositories on GitLab server and complete push and merge requests.
-                            •	Create ServiceNow REST APIs using python to automate updating and closing of tasks as well as event management.
-                            •	Create and maintain learnings in Confluence and as well as track team progress with Kanban board.
-                            •	Use agile methodologies and practices in build and deploy process.
-                            •	Perform sanity, security and smoke testing on script deployments.
-                            •	Created logging, monitoring, and alerting into all builds and deployments.
-                            •	Created a custom framework template for checking mainframe systems using Python code and WC3270 Emulator.
-                            •	Automated web application unit tests by using Katalon to create selenium and python scripts.
-                            •	Used Selenium, Java, and Cucumber to demonstrate desktop application automation.
-                            </p>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>Sep 2018 - Nov 2019</h5>
-                        <h5><strong>DCI Resources, LLC</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>DevOps Engineer</h4>
-                        <p>
-                            •	Used Git workflows for version control (Source Code Management)
-                            •	Developed and maintain automated CI/CD pipelines for code deployment using Jenkins and GitLab.
-                            •	Demonstrated provisioning of servers and deployment of features with Puppet and Ansible.
-                            •	Built and deployed Docker containers for implementing Microservice Architecture from Monolithic Architecture.
-                            </p>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>Jan 2017 - May 2018</h5>
-                        <h5><strong>University of New Haven</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>Senior System Administrator</h4>
-                        <p>
-                            •	Worked on software development requests from the product backlog using Django web server and Python.
-                            •	Maintained the Linux infrastructure hosting the software platform.
-                            •	Used agile methodology for feature development with sprints set every two months.
-                            •	Edited the HTML and CSS templates used in outreach and notification mails sent to the students and faculty, respectively.
-                            •	Maintained PostgreSQL database instance to store data and added models in Django that relate to tables in the database.  
-                            •	Communicated with the product owner with regards to implementation of new features.
-                            </p>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>May 2017 - Jul 2017</h5>
-                        <h5><strong>University of New Haven</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>Research Assistant</h4>
-                        <p>
-                            •	Executed shell scripts to batch process the data using Mapper and Reducer in Hadoop.
-                            •	Created a Python Machine Learning model using Linear regression to set a trend line for each processed data.
-                            •	Plotted charts for the occurrence of each type of storm in R Studio and Spyder using R and Python.
-                            </p>
-                    </div>
-                </div>
+            <div *ngIf="currentToggle == 'overview'">
+                <app-overview></app-overview>
             </div>
-            <!--work experiance part ends-->
-
-            <!--Technical skills part starts-->
-            <div class="about skills">
-                <h3 class="title2">Professional Skills</h3>
-                <div class="box">
-                    <h4>HTML</h4>
-                    <div class="percent">
-                        <div style="width: 100%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>CSS</h4>
-                    <div class="percent">
-                        <div style="width: 95%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>JavaScript</h4>
-                    <div class="percent">
-                        <div style="width: 90%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>Java</h4>
-                    <div class="percent">
-                        <div style="width: 80%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>C</h4>
-                    <div class="percent">
-                        <div style="width: 60%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>Python</h4>
-                    <div class="percent">
-                        <div style="width: 78%;"></div>
-                    </div>
-                </div>
+            <div *ngIf="currentToggle == 'experience'">
+                <app-experience></app-experience>
             </div>
-            <!--Technical skills part ends-->
-
+            <div *ngIf="currentToggle == 'skills'">
+                <app-skills></app-skills>
+            </div>
+            <div *ngIf="currentToggle == 'portfolio'">
+                <app-portfolio></app-portfolio>
+            </div>
+                
             <!--hobbies part starts-->
             <div class="about hobbies">
                 <h3 class="title2">Hobbies</h3>
