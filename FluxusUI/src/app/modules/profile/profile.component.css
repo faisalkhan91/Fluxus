@@ -335,6 +335,7 @@ div.profile
 {
     text-align: center;
     padding: 10px 10px;
+    border-radius: 10px; 
 }
 a.profile_nav
 {
