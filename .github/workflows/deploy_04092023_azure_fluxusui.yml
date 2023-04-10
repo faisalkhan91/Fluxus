@@ -53,4 +53,4 @@ jobs:
           app-name: 'FluxusUI'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D3C322FCE30C4EE68EBD8A69927F61E4 }}
-          package: ./dist/fluxusUI
+          package: ./FluxusUI/dist/fluxus-ui
