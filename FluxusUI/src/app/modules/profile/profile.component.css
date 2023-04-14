@@ -309,7 +309,7 @@ p{
 }
 
 @media(max-width: 600px){
-    .about .box{
+    .about .box{ 
         flex-direction: column;
     }
     .about .box .year_company{
