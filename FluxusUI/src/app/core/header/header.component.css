@@ -58,30 +58,6 @@ html, body {
 	cursor: default;
 	user-select: none;
 }
-.page-indicator {
-	position: relative;
-	text-align: center;
-	font-family: "Quicksand", sans-serif;
-	color: #fff;
-	cursor: default;
-	padding: 12.5px 30px;
-	border: 0;
-	border-radius: 100px;
-	background-color: #2ba8fb;
-	font-weight: Bold;
-	transition: all 0.5s;
-	-webkit-transition: all 0.5s;
-}
-.page-indicator:hover {
-	background-color: #6fc5ff;
-	box-shadow: 0 0 20px #6fc5ff50;
-  }
-.page-indicator:active {
-	background-color: #3d94cf;
-	transition: all 0.25s;
-	-webkit-transition: all 0.25s;
-	box-shadow: none;
-  }
 .slider-menu {
 	position: absolute;
 	top: 0;
