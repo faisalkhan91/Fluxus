@@ -1,0 +1,383 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300&display=swap'); 
+/* for monserrat font */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Ubuntu&display=swap');
+/* for josefin sans font   */
+
+@import 'https://fonts.googleapis.com/css?family=Raleway';
+
+/* universal attribute */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: None;
+    font-family: 'Josefin Sans', sans-serif;;
+}
+
+body{
+    background-image: linear-gradient(
+		to top right,
+		rgb(235, 76, 171),
+		rgb(227, 77, 171),
+		rgb(218, 78, 170),
+		rgb(210, 80, 170),
+		rgb(202, 81, 170),
+		rgb(193, 82, 170),
+		rgb(185, 83, 169),
+		rgb(176, 84, 169),
+		rgb(168, 85, 169),
+		rgb(160, 87, 169),
+		rgb(151, 88, 168),
+		rgb(143, 89, 168)
+	);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* min-height: 100vh; */
+    margin:  px;
+}
+/* universal attribute ends */
+
+
+/* container div attributes */
+.container{
+    position: relative;
+    background: #fff;
+    width: 100%;
+    max-height: 1000px;
+    min-height: 1000px;
+    box-shadow: 0 35px 35px rgba(0, 0, 0, 0.2);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    /* margin-top: 40px;
+    margin-bottom: 40px; */
+}
+/* container div attribute ends   */
+
+
+/* left side section attributes  */
+.container .left{
+    position: relative;
+    background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%),radial-gradient(113% 91% at 17% -2%, rgba(199, 60, 227, 0.888) 1%, #FF000000 99%),radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%),radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%),radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
+    padding: 40px;
+}
+
+.profileTxt{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profileTxt .Imgbox{
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profileTxt .Imgbox img{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    object-fit: cover;
+}
+
+.profileTxt h3{
+    color: #fff;
+    font-size: 1.5em;
+    margin-top: 20px;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.4em;
+}
+
+.profileTxt span{
+    font-size: 0.8em;
+    font-weight: 300;
+}
+
+.contactInfo{
+    padding-top: 40px;
+}
+
+.title{
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.contactInfo ul{
+    position: relative;
+}
+
+.contactInfo ul li{
+    position: relative;
+    list-style: none;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.contactInfo ul li .icon{
+    display: inline-block;
+    width: 30px;
+    font-size: 20px;
+    color: #b0b0b0
+}
+
+.contactInfo ul li .text{
+    color: #fff;
+    font-weight: 300;
+    margin-top: 10px;
+}
+
+.contactInfo.education{
+    margin-bottom: 15px;
+}
+
+.contactInfo.education h6{
+    color: #cdc084;
+    font-weight: 500;
+}
+
+.contactInfo.education h5:nth-child(2){
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
+.contactInfo.education h5{
+    color: #fff;
+    font-weight: 300;
+}
+
+.contactInfo.language .percent{
+    position: relative;
+    width: 100%;
+    height:4px;
+    background: #beeaff;
+    display: block;
+    margin-top: 5px;
+}
+
+.contactInfo.language .percent div{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #29bbff;
+}
+/* left side section attributes ends */
+
+
+/* right side section attributes */
+.container .right{
+    position: relative;
+    background-color: #fff;
+    padding: 50px;
+}
+
+.about:last-child{
+    margin-bottom: 0;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.title2{
+    color: #003147;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 50px;
+}
+
+p{
+    color: #333;
+}
+
+.about .box{
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0;
+}
+
+.about .box .year_company{
+    min-width: 150px;
+}
+
+.about .box .year_company h5{
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #858c90;
+}
+
+.about .box .text h4{
+    text-transform: uppercase;
+    color: #13688f;
+    font-size: 15px;
+}
+
+.skills .box{
+    width: 100%;
+    display: grid;
+    position: relative;
+    grid-template-columns: 150px 1fr;
+    justify-content: center;
+}
+
+.skills .box h4{
+    text-transform: uppercase;
+    color: #8a8a8a;
+    font-weight: 600;
+}
+
+.skills .box .percent{
+    margin-top: 5px;
+    background: #c4c6ca;
+    width: 100%;
+    height: 10px;
+    position: relative;
+}
+
+.skills .box .percent div{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #2a7da2;
+}
+
+.hobbies ul{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.hobbies ul li{
+    list-style: none;
+    color: #333;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.hobbies ul li .fa{
+    color: #2a7da2;
+    font-size: 20px;
+    margin-right: 6px;
+}
+
+.social ul{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.social ul li{
+    list-style: none;
+    color: #333;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.social ul li .fa{
+    color: #2a7da2;
+    font-size: 20px;
+    margin-right: 6px;
+}
+/* right side section attributes ends*/
+
+/* responsive design attributes */
+@media(max-width: 1000px){
+    .container{
+        margin: 10px;
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .hobbies ul{
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .social ul{
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .title2{
+        text-align: center;
+    }
+}
+
+@media(max-width: 600px){
+    .about .box{ 
+        flex-direction: column;
+    }
+    .about .box .year_company{
+        min-width: 150px;
+        margin-bottom: 5px;
+    }
+    .hobbies ul{
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .skills .box{
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .title2{
+        text-align: center;
+    }
+    .social ul{
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+/* responsive design attributes ends*/
+
+div.profile
+{
+    text-align: center;
+    padding: 10px 10px;
+    border-radius: 10px;
+}
+a.profile_nav
+{
+    color: #FFF;
+    text-decoration: none;
+    font: 20px Raleway;
+    margin: 0px 10px;
+    padding: 10px 10px;
+    position: relative;
+    z-index: 0;
+    cursor: pointer;
+}
+
+.brown
+{
+    background-image: linear-gradient(90deg, #8FFEE8FF 0%, #71C4FFFF 100%);
+    background-color: rgba(255,255,255,0.2);
+    background-blend-mode: lighten;
+}
+
+/* Highlight text out  */
+div.highlightTextOut .profile_nav
+{
+    color: rgba(0, 0, 0, 0.477); 
+}
+
+div.highlightTextOut .profile_nav:before, div.highlightTextIn .profile_nav:before
+{
+    position: absolute;
+    color: rgb(43, 40, 40);
+    top: 0px;
+    left: 0px;
+    padding: 10px;
+    overflow: hidden;
+    content: attr(alt);
+    transition: all 0.3s;
+    transform: scale(0.8);
+    opacity: 0;
+} 
+
+div.highlightTextOut .profile_nav:hover:before, div.highlightTextIn .profile_nav:hover:before
+{
+    transform: scale(1);
+    opacity: 1;
+}

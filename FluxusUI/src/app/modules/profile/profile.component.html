@@ -119,7 +119,7 @@
                 <a class="profile_nav" alt="Skills" (click)="profileToggleFunction('skills')">Skills</a>
                 <a class="profile_nav" alt="Portfolio" (click)="profileToggleFunction('portfolio')">Portfolio</a>
                 <a class="profile_nav" alt="Achievements">Achievements</a>
-                <a class="profile_nav" alt="Interests">Interests</a>                
+                <a class="profile_nav" alt="Interests" (click)="profileToggleFunction('interests')">Interests</a>                
             </div>
 
             <div *ngIf="currentToggle == 'overview'">
@@ -134,18 +134,9 @@
             <div *ngIf="currentToggle == 'portfolio'">
                 <app-portfolio></app-portfolio>
             </div>
-                
-            <!--hobbies part starts-->
-            <div class="about hobbies">
-                <h3 class="title2">Hobbies</h3>
-                <ul>
-                    <li><i class="fa fa-pencil-square" aria-hidden="true"></i><strong>Drawing</strong></li>
-                    <li><i class="fa fa-cutlery" aria-hidden="true"></i><strong>Cooking</strong></li>
-                    <li><i class="fa fa-music" aria-hidden="true"></i><strong>Singing</strong></li>
-                    <li><i class="fa fa-book" aria-hidden="true"></i><strong>Reading</strong></li>
-                </ul>
+            <div *ngIf="currentToggle == 'interests'">
+                <app-interests></app-interests>
             </div>
-            <!--hobbies part ends-->
 
         </div>
         <!--right side code ends-->
