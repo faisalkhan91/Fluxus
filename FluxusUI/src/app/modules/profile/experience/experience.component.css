@@ -1,24 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
-*,
-html,
-body {
-    padding: 0px;
-    margin: 0px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: None;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
     perspective: 800px;
 }
 
-body {
-    background-color: #227093;
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
+/* ********** This is common in profile component css *********** */
 .title2 {
     color: #003147;
     text-transform: uppercase;
@@ -51,6 +42,7 @@ p {
     color: #13688f;
     font-size: 15px;
 }
+/* ********** This is common in profile component css *********** */
 
 /* Timeline design code */
 .timeline {
@@ -114,6 +106,7 @@ p {
     background-color: rgb(233, 135, 38);
     box-shadow: 0px 0px 10px 2px rgb(255, 200, 0);
 }
+
 /* Timeline design code */
 
 /* Responsive code for timeline design */
@@ -128,4 +121,5 @@ p {
         font-size: 15px;
     }
 }
+
 /* Responsive code for timeline design */
