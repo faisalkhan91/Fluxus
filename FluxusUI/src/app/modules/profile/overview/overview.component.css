@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300&display=swap');
+/* for monserrat font */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Ubuntu&display=swap');
+/* for josefin sans font   */
+
+@import 'https://fonts.googleapis.com/css?family=Raleway';
+
+/* universal attribute */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: None;
+    font-family: 'Josefin Sans', sans-serif;
+}
+/* universal attribute ends */
+
+.about:last-child {
+    margin-bottom: 0;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.title2 {
+    color: #003147;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 50px;
+}
+
+p {
+    color: #333;
+}
+
+.social ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.social ul li {
+    list-style: none;
+    color: #333;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.social ul li .fa {
+    color: #2a7da2;
+    font-size: 20px;
+    margin-right: 6px;
+}

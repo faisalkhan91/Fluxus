@@ -1,0 +1,39 @@
+/* universal attribute */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: None;
+    font-family: 'Josefin Sans', sans-serif;
+}
+/* universal attribute ends */
+
+.about:last-child {
+    margin-bottom: 0;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.title2 {
+    color: #003147;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 50px;
+}
+
+.hobbies ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.hobbies ul li {
+    list-style: none;
+    color: #333;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.hobbies ul li .fa {
+    color: #2a7da2;
+    font-size: 20px;
+    margin-right: 6px;
+}
