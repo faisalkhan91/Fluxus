@@ -4,6 +4,6 @@
 
 Description:
 
-This is a blogging and vlogging site idea on multiple topics that flow with each other.
+This is a personal website with a blog and a store.
 
 The UI framework is being worked on.
