@@ -295,7 +295,7 @@ p{
 @media(max-width: 1000px){
     .container{
         margin: 10px;
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(1,1fr);
     }
     .hobbies ul{
         grid-template-columns: repeat(2, 1fr);
@@ -309,7 +309,7 @@ p{
 }
 
 @media(max-width: 600px){
-    .about .box{ 
+    .about .box{
         flex-direction: column;
     }
     .about .box .year_company{
@@ -320,7 +320,7 @@ p{
         grid-template-columns: repeat(1, 1fr);
     }
     .skills .box{
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(1,1fr);
     }
     .title2{
         text-align: center;
@@ -335,7 +335,6 @@ div.profile
 {
     text-align: center;
     padding: 10px 10px;
-    border-radius: 10px;
 }
 a.profile_nav
 {
@@ -352,8 +351,6 @@ a.profile_nav
 .brown
 {
     background-image: linear-gradient(90deg, #8FFEE8FF 0%, #71C4FFFF 100%);
-    background-color: rgba(255,255,255,0.2);
-    background-blend-mode: lighten;
 }
 
 /* Highlight text out  */
