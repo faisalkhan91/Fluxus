@@ -25,7 +25,7 @@ body {
 .header-bar {
 	position: relative;
 	height: 50px;
-    min-width: 300px;
+	min-width: 300px;
 	border: 10px solid transparent;
 	border-top: 10px solid #fffa;
 	border-left: 10px solid #fffa;
@@ -82,4 +82,5 @@ body {
 	color: #faa;
 	box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
 }
+
 /* This is the global style used in home and header component. */
