@@ -389,3 +389,9 @@ div.highlightTextIn .profile_nav:hover:before {
     transform: scale(1);
     opacity: 1;
 }
+
+@media(max-width: 480px) {
+    .profile .profile_nav {
+        display: grid;
+    }
+}
