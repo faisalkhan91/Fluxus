@@ -379,4 +379,8 @@ div.highlightTextIn .profile_nav:hover:before {
     .profile .profile_nav {
         display: grid;
     }
+
+    .container .right {
+        padding: 40px;
+    }
 }
