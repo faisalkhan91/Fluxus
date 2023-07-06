@@ -89,7 +89,7 @@ body {
     display: block;
     height: 15px;
     position: absolute;
-    top: 4px;
+    top: 2px;
     left: 0;
     width: 15px;
     transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
@@ -100,9 +100,9 @@ body {
     background: #ccd5db;
     display: block;
     position: absolute;
-    top: 24px;
+    top: 25px;
     bottom: 0;
-    left: 6px;
+    left: 8.5px;
   }
   .timeline-item:last-child .timeline-marker:after {
     content: none;
@@ -138,6 +138,7 @@ body {
     top: 0;
     bottom: 30px;
     position: absolute;
+    left: 2.5px;
     /* border-top: 3px solid #ccd5db; */
     border-bottom: 3px solid #ccd5db;
   }

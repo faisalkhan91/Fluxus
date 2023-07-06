@@ -377,7 +377,7 @@ div.highlightTextIn .profile_nav:hover:before {
 
 @media(max-width: 480px) {
     .profile .profile_nav {
-        display: grid;
+        display: inline-block;
     }
 
     .container .right {
