@@ -378,8 +378,4 @@ div.highlightTextIn .profile_nav:hover:before {
     .profile .profile_nav {
         display: inline-block;
     }
-
-    .container .right {
-        padding: 40px;
-    }
 }
