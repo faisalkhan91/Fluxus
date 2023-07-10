@@ -27,6 +27,11 @@ a:hover {
   text-decoration: none;
 }
 
+ul {
+  padding-top: 18px;
+  padding-left: 40px;
+}
+
 .container-fluid .row {
   padding: 0 0 4em 0;
 }
