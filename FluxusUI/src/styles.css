@@ -319,7 +319,7 @@ p {
 
 .skills .box .percent {
     margin-top: 5px;
-    background: #c4c6ca;
+    background: #dcdfe3;
     width: 100%;
     height: 10px;
     position: relative;
@@ -330,7 +330,7 @@ p {
     top: 0;
     left: 0;
     height: 100%;
-    background: #2a7da2;
+    background: radial-gradient(circle, rgba(238,174,209,1) 0%, rgba(148,183,233,1) 100%);
 }
 
 .hobbies ul {
