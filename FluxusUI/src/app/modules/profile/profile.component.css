@@ -1,1 +1,55 @@
-@import url("src/assets/profile_migration.css");
+/* Profile navbar attributes */
+div.profile {
+    text-align: center;
+    padding: 10px 10px;
+    border-radius: 10px;
+}
+
+a.profile_nav {
+    color: #FFF;
+    text-decoration: none;
+    font: 20px Raleway;
+    margin: 0px 10px;
+    padding: 10px 10px;
+    position: relative;
+    z-index: 0;
+    cursor: pointer;
+}
+
+.brown {
+    background-image: linear-gradient(90deg, #8FFEE8FF 0%, #71C4FFFF 100%);
+    background-color: rgba(255, 255, 255, 0.2);
+    background-blend-mode: lighten;
+}
+
+/* Highlight text out  */
+div.highlightTextOut .profile_nav {
+    color: rgba(0, 0, 0, 0.477);
+}
+
+div.highlightTextOut .profile_nav:before,
+div.highlightTextIn .profile_nav:before {
+    position: absolute;
+    color: rgb(43, 40, 40);
+    top: 0px;
+    left: 0px;
+    padding: 10px;
+    overflow: hidden;
+    content: attr(alt);
+    transition: all 0.3s;
+    transform: scale(0.8);
+    opacity: 0;
+}
+
+div.highlightTextOut .profile_nav:hover:before,
+div.highlightTextIn .profile_nav:hover:before {
+    transform: scale(1);
+    opacity: 1;
+}
+
+@media(max-width: 480px) {
+    .profile .profile_nav {
+        display: inline-block;
+    }
+}
+/* Profile navbar attributes ends */
