@@ -1,7 +1,9 @@
 <app-header></app-header>
 
 <div class="profile_body">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous"/>  <!--importing the cdnjs link for font awesome icons-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+        crossorigin="anonymous" /> <!--importing the cdnjs link for font awesome icons-->
     <div class="container">
         <!--left side code starts-->
         <div class="left">
@@ -32,7 +34,8 @@
                     </li>
                     <li>
                         <span class="icon"><i class="fa fa-linkedin" aria-hidden="true"></i></span>
-                        <span class="text" style="text-decoration: none !important;"><a style="color: #fff;" href="https://www.linkedin.com/in/faisalkhan91/">LinkedIn/me</a></span>
+                        <span class="text" style="text-decoration: none !important;"><a style="color: #fff;"
+                                href="https://www.linkedin.com/in/faisalkhan91/">LinkedIn/me</a></span>
                     </li>
                     <li>
                         <span class="icon"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
@@ -75,7 +78,7 @@
                 <a class="profile_nav" alt="Skills" (click)="profileToggleFunction('skills')">Skills</a>
                 <a class="profile_nav" alt="Portfolio" (click)="profileToggleFunction('portfolio')">Portfolio</a>
                 <a class="profile_nav" alt="Achievements">Achievements</a>
-                <a class="profile_nav" alt="Interests" (click)="profileToggleFunction('interests')">Interests</a>                
+                <a class="profile_nav" alt="Interests" (click)="profileToggleFunction('interests')">Interests</a>
             </div>
 
             <div *ngIf="currentToggle == 'overview'">

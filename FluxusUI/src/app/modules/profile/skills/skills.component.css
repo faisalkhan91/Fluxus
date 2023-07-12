@@ -22,7 +22,7 @@ h5:before {
     width: 100%;
     content: '';
     border-top: 1px solid gray;
-  }
+}
 
 @media(max-width: 480px) {
     h4 {
