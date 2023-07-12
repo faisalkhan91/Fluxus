@@ -1,10 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 
-
 @import url("https://fonts.googleapis.com/css?family=Parisienne|Quicksand&display=swap");
-
-
-
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300&display=swap');
 /* for monserrat font */
@@ -22,101 +18,99 @@
     font-family: 'Josefin Sans', sans-serif;
 }
 
+/* universal attribute ends */
+
+html,
+body {
+    margin: 0;
+    background-image: linear-gradient(to bottom right,
+            rgb(235, 76, 171),
+            rgb(227, 77, 171),
+            rgb(218, 78, 170),
+            rgb(210, 80, 170),
+            rgb(202, 81, 170),
+            rgb(193, 82, 170),
+            rgb(185, 83, 169),
+            rgb(176, 84, 169),
+            rgb(168, 85, 169),
+            rgb(160, 87, 169),
+            rgb(151, 88, 168),
+            rgb(143, 89, 168));
+}
+
+/* This is the global style used in home and header component. */
+.header-bar {
+    position: relative;
+    height: 50px;
+    min-width: 300px;
+    border: 10px solid transparent;
+    border-top: 10px solid #fffa;
+    border-left: 10px solid #fffa;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.header-bar::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 30%;
+    height: 49px;
+    border: 10px solid transparent;
+    border-bottom: 10px solid #fffa;
+    border-right: 10px solid #fffa;
+    transition: 0.3s linear all;
+}
+
+.header-bar>.logo {
+    position: absolute;
+    top: calc(50% + 1.5px);
+    left: 10px;
+    transform: translateY(-50%);
+    color: #fffc;
+    font-family: "Parisienne", cursive;
+    cursor: default;
+    user-select: none;
+}
+
+.slider-menu {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+}
+
+.slider-menu>li {
+    display: inline-flex;
+    padding: 14px;
+    margin-left: 2px;
+    font-family: "Quicksand", sans-serif;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s linear all;
+    user-select: none;
+}
+
+.slider-menu>li:hover {
+    color: #faa;
+    box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
+}
+
+/* This is the global style used in home and header component. */
+
+/** This is the global style used in profile and sub components. **/
+
+/* Profile attributes */
 .profile_body {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* universal attribute ends */
-
-
-
-html,
-body {
-	margin: 0;
-	background-image: linear-gradient(to bottom right,
-			rgb(235, 76, 171),
-			rgb(227, 77, 171),
-			rgb(218, 78, 170),
-			rgb(210, 80, 170),
-			rgb(202, 81, 170),
-			rgb(193, 82, 170),
-			rgb(185, 83, 169),
-			rgb(176, 84, 169),
-			rgb(168, 85, 169),
-			rgb(160, 87, 169),
-			rgb(151, 88, 168),
-			rgb(143, 89, 168));
-}
-
-/* This is the global style used in home and header component. */
-.header-bar {
-	position: relative;
-	height: 50px;
-	min-width: 300px;
-	border: 10px solid transparent;
-	border-top: 10px solid #fffa;
-	border-left: 10px solid #fffa;
-	box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25) inset;
-}
-
-.header-bar::after {
-	content: "";
-	position: absolute;
-	top: -10px;
-	right: -10px;
-	width: 30%;
-	height: 49px;
-	border: 10px solid transparent;
-	border-bottom: 10px solid #fffa;
-	border-right: 10px solid #fffa;
-	transition: 0.3s linear all;
-}
-
-.header-bar>.logo {
-	position: absolute;
-	top: calc(50% + 1.5px);
-	left: 10px;
-	transform: translateY(-50%);
-	color: #fffc;
-	font-family: "Parisienne", cursive;
-	cursor: default;
-	user-select: none;
-}
-
-.slider-menu {
-	position: absolute;
-	top: 0;
-	right: 0;
-	display: flex;
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	z-index: 1;
-}
-
-.slider-menu>li {
-	display: inline-flex;
-	padding: 14px;
-	margin-left: 2px;
-	font-family: "Quicksand", sans-serif;
-	color: #fff;
-	cursor: pointer;
-	transition: 0.3s linear all;
-	user-select: none;
-}
-
-.slider-menu>li:hover {
-	color: #faa;
-	box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
-}
-
-/* This is the global style used in home and header component. */
-
-
-
-/*****************************************************************/
 /* container div attributes */
 .container {
     position: relative;
@@ -132,7 +126,6 @@ body {
 }
 
 /* container div attribute ends   */
-
 
 /* left side section attributes  */
 .container .left {
@@ -256,7 +249,6 @@ body {
 
 /* left side section attributes ends */
 
-
 /* right side section attributes */
 .container .right {
     position: relative;
@@ -330,7 +322,7 @@ p {
     top: 0;
     left: 0;
     height: 100%;
-    background: radial-gradient(circle, rgba(238,174,209,1) 0%, rgba(148,183,233,1) 100%);
+    background: radial-gradient(circle, rgba(238, 174, 209, 1) 0%, rgba(148, 183, 233, 1) 100%);
 }
 
 .hobbies ul {
@@ -419,3 +411,5 @@ p {
 }
 
 /* responsive design attributes ends*/
+
+/** This is the global style used in profile and sub components. **/
