@@ -1,0 +1,31 @@
+/* https://www.makeuseof.com/css-progress-bar-examples/ */
+
+h3 {
+    display: flex;
+    justify-content: center;
+}
+
+h4 {
+    padding-left: 40px;
+}
+
+h5 {
+    position: relative;
+    line-height: 1.2em;
+}
+
+h5:before {
+    position: absolute;
+    left: 0;
+    top: 1.2em;
+    height: 0;
+    width: 100%;
+    content: '';
+    border-top: 1px solid gray;
+}
+
+@media(max-width: 480px) {
+    h4 {
+        padding-left: 0px;
+    }
+}
