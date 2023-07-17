@@ -5,6 +5,10 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
+                sh 'cd /home/faisal/Fluxus/FluxusUI'
+                sh 'git checkout deploy_07162023_local'
+                sh 'git pull'
+                sh 'ng build --configuration production'
             }
         }
         stage('Test') {
