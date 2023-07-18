@@ -2,6 +2,7 @@
 FROM node:16-alpine as build
 
 WORKDIR /home/faisal/Fluxus/FluxusUI
+RUN pwd
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
