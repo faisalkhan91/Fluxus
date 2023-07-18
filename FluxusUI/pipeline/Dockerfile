@@ -1,7 +1,7 @@
 # Stage 1: Build the Angular application
 FROM node:16-alpine as build
 
-WORKDIR /app
+WORKDIR /home/faisal/Fluxus/FluxusUI
 
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
