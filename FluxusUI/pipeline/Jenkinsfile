@@ -5,8 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'npm install'
-                sh 'ng build --configuration production '
+                sh 'git pull'
+                sh 'docker build -f /home/faisal/Fluxus/FluxusUI/pipeline/Dockerfile -t fluxus-ui .'
             }
         }
         stage('Test') {
@@ -17,6 +17,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+                sh 'sudo docker run -d --rm -p 80:80 fluxus-ui'
             }
         }
     }
