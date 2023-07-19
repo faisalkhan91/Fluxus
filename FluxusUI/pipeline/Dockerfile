@@ -19,13 +19,13 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the build output from Stage 1
-COPY --from=build /app/dist/ /usr/share/nginx/html
+COPY --from=build /app/dist/fluxus-ui/ /usr/share/nginx/html
 
 # Copy custom nginx configuration (if needed)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose the default port for serving the application
-EXPOSE 81
+EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
