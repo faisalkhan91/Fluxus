@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
+  currentToggle: string = 'overview';
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  profileToggleFunction(toggleVal: string) {
+    this.currentToggle = toggleVal;
+    }
 }
