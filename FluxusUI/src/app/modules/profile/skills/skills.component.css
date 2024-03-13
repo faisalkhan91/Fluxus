@@ -30,33 +30,32 @@ h5:before {
     }
 }
 
-
-
-skills {
-    max-width: 68.75rem;
-    margin: auto;
-    text-align: center;
-    margin-top: 2.5rem;
-  }
-  
-  .skill-header {
+.skill-header {
     margin-bottom: 1rem;
-  }
-  
-  .skills-wrapper img {
+}
+
+.skills-wrapper img {
     padding: 0.75rem;
-  }
-  
-  .icon {
+}
+
+.icon {
     width: 3.875rem;
-    height: 3.25rem;
-  }
-  
-  .icon-card {
+}
+
+.icon-card {
     background-color: #fff;
     border-radius: 11px;
     box-shadow: 0 0 2px;
     padding: 5px;
     margin: 0.93em;
-  }
-  
+}
+
+@media(max-width: 480px) {
+    .icon {
+        width: 3.875rem;
+    }
+
+    .icon-card {
+        margin: 3.5%;
+    }
+}
