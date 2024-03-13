@@ -29,3 +29,33 @@ h5:before {
         padding-left: 0px;
     }
 }
+
+.skill-header {
+    margin-bottom: 1rem;
+}
+
+.skills-wrapper img {
+    padding: 0.75rem;
+}
+
+.icon {
+    width: 3.875rem;
+}
+
+.icon-card {
+    background-color: #fff;
+    border-radius: 11px;
+    box-shadow: 0 0 2px;
+    padding: 5px;
+    margin: 0.93em;
+}
+
+@media(max-width: 480px) {
+    .icon {
+        width: 3.875rem;
+    }
+
+    .icon-card {
+        margin: 3.5%;
+    }
+}
