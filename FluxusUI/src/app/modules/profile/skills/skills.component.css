@@ -55,8 +55,8 @@ skills {
   .icon-card {
     background-color: #fff;
     border-radius: 11px;
-    box-shadow: 0 1px 5px;
+    box-shadow: 0 0 2px;
     padding: 5px;
-    margin: 5px;
+    margin: 0.93em;
   }
   
