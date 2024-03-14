@@ -30,7 +30,17 @@
 .project-card {
   background-color: #fff;
   border-radius: 11px;
-  box-shadow: 0 3px 10px;
+  box-shadow: 0 0 1px 0;
   padding: 20px;
   margin: 10px;
+}
+
+@media(max-width: 480px) {
+  .projects-container {
+    display: grid;
+  }
+
+  .project-card {
+      margin: 3.5%;
+  }
 }
