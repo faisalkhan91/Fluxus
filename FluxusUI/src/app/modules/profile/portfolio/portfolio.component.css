@@ -5,8 +5,8 @@
 }
 
 .project-pic {
-  width: 15.5rem;
-  height: 9rem;
+  width: 12.5rem;
+  height: 8rem;
 }
 
 .projects-container {
@@ -17,14 +17,13 @@
 
 .project-container p {
   padding: 0.4rem;
-}
-
-.project-title {
-  margin-bottom: var(--bottom-margin);
+  width: 12rem;
+  height: 11rem;
 }
 
 .project-details {
-  margin-bottom: var(--bottom-margin);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 
 .project-card {
@@ -41,6 +40,6 @@
   }
 
   .project-card {
-      margin: 3.5%;
+    margin: 3.5%;
   }
 }
