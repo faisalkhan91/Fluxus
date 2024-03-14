@@ -1,0 +1,45 @@
+.projects {
+  background-color: transparent;
+  padding: 32px 0;
+  margin-top: 2rem;
+}
+
+.project-pic {
+  width: 12.5rem;
+  height: 8rem;
+}
+
+.projects-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-container p {
+  padding: 0.4rem;
+  width: 12rem;
+  height: 11rem;
+}
+
+.project-details {
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.project-card {
+  background-color: #fff;
+  border-radius: 11px;
+  box-shadow: 0 0 1px 0;
+  padding: 20px;
+  margin: 10px;
+}
+
+@media(max-width: 480px) {
+  .projects-container {
+    display: grid;
+  }
+
+  .project-card {
+    margin: 3.5%;
+  }
+}
