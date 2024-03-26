@@ -1,0 +1,70 @@
+/* https://www.makeuseof.com/css-progress-bar-examples/ */
+
+h3 {
+    display: flex;
+    justify-content: center;
+}
+
+h4 {
+    padding-left: 40px;
+}
+
+h5 {
+    position: relative;
+    line-height: 1.2em;
+}
+
+h5:before {
+    position: absolute;
+    left: 0;
+    top: 1.2em;
+    height: 0;
+    width: 100%;
+    content: '';
+    border-top: 1px solid gray;
+}
+
+@media(max-width: 480px) {
+    h4 {
+        padding-left: 0px;
+    }
+}
+
+.skills-wrapper {
+    padding: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    place-items: center;
+
+}
+
+img {
+    padding: 0.75rem;
+}
+
+.icon {
+    width: 3.875rem;
+}
+
+.icon-card {
+    background-color: #fff;
+    border-radius: 11px;
+    box-shadow: 0 0 2px;
+    padding: 5px;
+    margin: 0.93em;
+}
+
+@media(max-width: 480px) {
+
+    .skills-wrapper {
+        grid-template-columns: repeat(2, 1fr);    
+    }
+
+    .icon {
+        width: 2.875rem;
+    }
+
+    .icon-card {
+        margin: 7%;
+    }
+}

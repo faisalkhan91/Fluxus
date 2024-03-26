@@ -1,22 +1,16 @@
 <app-header></app-header>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume</title>
-    <link rel="stylesheet" href="profile.component.css">  <!--importing the stylessheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous"/>  <!--importing the cdnjs link for font awesome icons-->
-</head>
-<body>
+
+<div class="profile_body">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+        crossorigin="anonymous" /> <!--importing the cdnjs link for font awesome icons-->
     <div class="container">
         <!--left side code starts-->
         <div class="left">
             <!--profile text and image code starts-->
             <div class="profileTxt">
                 <div class="Imgbox">
-                    <img src="Images and Icons/SSSSSSSS222.jpg">
+                    <img src="./assets/images/profile/profile_picture.jpg" alt="LOGO" />
                 </div>
                 <h3>Faisal Khan<br><span>Software Engineer</span></h3>
             </div>
@@ -24,11 +18,11 @@
 
             <!--contact info section code starts-->
             <div class="contactInfo">
-                <h4 class="title">Contact Info.</h4>
+                <h4 class="title">Contact</h4>
                 <ul>
                     <li>
                         <span class="icon"><i class="fa fa-envelope-o" aria-hidden="true"></i></span>
-                        <span class="text">faisalkhan91@gmail.com</span>
+                        <span class="text">faisalkhan91&#64;gmail.com</span>
                     </li>
                     <li>
                         <span class="icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
@@ -36,11 +30,12 @@
                     </li>
                     <li>
                         <span class="icon"><i class="fa fa-globe" aria-hidden="true"></i></span>
-                        <span class="text">www.mywebsite.com</span>
+                        <span class="text">http://faisalkhan.serveblog.net/home/</span>
                     </li>
                     <li>
                         <span class="icon"><i class="fa fa-linkedin" aria-hidden="true"></i></span>
-                        <span class="text" style="text-decoration: none !important;"><a style="color: #fff;" href="https://www.linkedin.com/in/smrita-ghosh-67b4591b5/">LinkedIn/me</a></span>
+                        <span class="text" style="text-decoration: none !important;"><a style="color: #fff;"
+                                href="https://www.linkedin.com/in/faisalkhan91/">LinkedIn/me</a></span>
                     </li>
                     <li>
                         <span class="icon"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
@@ -55,211 +50,58 @@
                 <h4 class="title">Education</h4>
                 <ul>
                     <li>
-                        <h6>Year of Passing- 2009</h6>
-                        <h5>High School</h5>
-                        <h5>The Indian School, Isa Town, Bahrain</h5>
+                        <h6>Year of Passing- 2019</h6>
+                        <h5>Master of Science, Computer Science</h5>
+                        <h5>Univerity of New Haven, New Haven, CT, USA</h5>
                     </li>
                     <li>
                         <h6>Year of Passing- 2013</h6>
                         <h5>Bachelor of Science, Electrical Engineering</h5>
-                        <h5>VIT, Maharashtra, India</h5>
+                        <h5>VIT, Pune, Maharashtra, India</h5>
                     </li>
                     <li>
-                        <h6>Year of Passing- 2019</h6>
-                        <h5>Master of Science, Computer Science</h5>
-                        <h5>Univerity of New Haven, CT, USA</h5>
+                        <h6>Year of Passing- 2009</h6>
+                        <h5>High School</h5>
+                        <h5>The Indian School, Isa Town, Bahrain</h5>
                     </li>
                 </ul>
             </div>
             <!--Education details part starts-->
-
-            <!--Communication language part starts-->
-            <div class="contactInfo language">
-                <h4 class="title">Languages</h4>
-                <ul>
-                    <li><span class="text">English</span>
-                    <span class="percent">
-                        <div style="width: 90%;"></div>
-                    </span></li>
-                    <li>
-                        <span class="text">Bengali</span>
-                    <span class="percent">
-                        <div style="width: 100%;"></div>
-                    </span>
-                    </li>
-                    <li>
-                        <span class="text">Hindi</span>
-                    <span class="percent">
-                        <div style="width: 80%;"></div>
-                    </span>
-                    </li>
-                </ul>
-            </div>
-            <!--Communication language part ends-->
         </div>
         <!--left side code ends-->
 
         <!--Right side code starts-->
         <div class="right">
             <div class="profile brown highlightTextOut">
-                <a class="profile_nav" alt="Overview">Overview</a>
-                <a class="profile_nav" alt="Experience">Experience</a>
-                <a class="profile_nav" alt="Skills">Skills</a>
-                <a class="profile_nav" alt="Projects">Projects</a>
-                <a class="profile_nav" alt="Achievements">Achievements</a>
-                <a class="profile_nav" alt="Interests">Interests</a>                
-              </div>
-            <!--Brief introduction part starts-->
-            <div class="about">
-                <h3 class="title2">Profile</h3>
-                <p>I am a software engineer and an avid techie.</p>
+                <a class="profile_nav" alt="Overview" (click)="profileToggleFunction('overview')">Overview</a>
+                <a class="profile_nav" alt="Experience" (click)="profileToggleFunction('experience')">Experience</a>
+                <a class="profile_nav" alt="Skills" (click)="profileToggleFunction('skills')">Skills</a>
+                <a class="profile_nav" alt="Portfolio" (click)="profileToggleFunction('portfolio')">Portfolio</a>
+                <a class="profile_nav" alt="Achievements" (click)="profileToggleFunction('achievements')">Achievements</a>
+                <a class="profile_nav" alt="Interests" (click)="profileToggleFunction('interests')">Interests</a>
             </div>
-            <!--Brief introduction part ends-->
 
-            <!--work experiance part starts-->
-            <div class="about">
-                <h3 class="title2">Experience</h3>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>Oct 2019 - Present</h5>
-                        <h5><strong>Cigna</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>Software Engineer</h4>
-                        <p>
-                            •	Built Python and PowerShell scripts to automate standard operating procedures to eliminate repetitive tasks.
-                            •	Perform feasibility analysis on automation requirements to determine the best approach to automate steps.
-                            •	Develop Synthetics that automate application checks using either Python, Selenium, JSON, Groovy, SolarWinds Dynatrace.
-                            •	Maintain Git Repositories on GitLab server and complete push and merge requests.
-                            •	Create ServiceNow REST APIs using python to automate updating and closing of tasks as well as event management.
-                            •	Create and maintain learnings in Confluence and as well as track team progress with Kanban board.
-                            •	Use agile methodologies and practices in build and deploy process.
-                            •	Perform sanity, security and smoke testing on script deployments.
-                            •	Created logging, monitoring, and alerting into all builds and deployments.
-                            •	Created a custom framework template for checking mainframe systems using Python code and WC3270 Emulator.
-                            •	Automated web application unit tests by using Katalon to create selenium and python scripts.
-                            •	Used Selenium, Java, and Cucumber to demonstrate desktop application automation.
-                            </p>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>Sep 2018 - Nov 2019</h5>
-                        <h5><strong>DCI Resources, LLC</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>DevOps Engineer</h4>
-                        <p>
-                            •	Used Git workflows for version control (Source Code Management)
-                            •	Developed and maintain automated CI/CD pipelines for code deployment using Jenkins and GitLab.
-                            •	Demonstrated provisioning of servers and deployment of features with Puppet and Ansible.
-                            •	Built and deployed Docker containers for implementing Microservice Architecture from Monolithic Architecture.
-                            </p>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>Jan 2017 - May 2018</h5>
-                        <h5><strong>University of New Haven</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>Senior System Administrator</h4>
-                        <p>
-                            •	Worked on software development requests from the product backlog using Django web server and Python.
-                            •	Maintained the Linux infrastructure hosting the software platform.
-                            •	Used agile methodology for feature development with sprints set every two months.
-                            •	Edited the HTML and CSS templates used in outreach and notification mails sent to the students and faculty, respectively.
-                            •	Maintained PostgreSQL database instance to store data and added models in Django that relate to tables in the database.  
-                            •	Communicated with the product owner with regards to implementation of new features.
-                            </p>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="year_company">
-                        <h5>May 2017 - Jul 2017</h5>
-                        <h5><strong>University of New Haven</strong></h5>
-                    </div>
-                    <div class="text">
-                        <h4>Research Assistant</h4>
-                        <p>
-                            •	Executed shell scripts to batch process the data using Mapper and Reducer in Hadoop.
-                            •	Created a Python Machine Learning model using Linear regression to set a trend line for each processed data.
-                            •	Plotted charts for the occurrence of each type of storm in R Studio and Spyder using R and Python.
-                            </p>
-                    </div>
-                </div>
+            <div *ngIf="currentToggle == 'overview'">
+                <app-overview></app-overview>
             </div>
-            <!--work experiance part ends-->
+            <div *ngIf="currentToggle == 'experience'">
+                <app-experience></app-experience>
+            </div>
+            <div *ngIf="currentToggle == 'skills'">
+                <app-skills></app-skills>
+            </div>
+            <div *ngIf="currentToggle == 'portfolio'">
+                <app-portfolio></app-portfolio>
+            </div>
+            <div *ngIf="currentToggle == 'achievements'">
+                <app-achievements></app-achievements>
+            </div>
+            <div *ngIf="currentToggle == 'interests'">
+                <app-interests></app-interests>
+            </div>
 
-            <!--Technical skills part starts-->
-            <div class="about skills">
-                <h3 class="title2">Professional Skills</h3>
-                <div class="box">
-                    <h4>HTML</h4>
-                    <div class="percent">
-                        <div style="width: 100%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>CSS</h4>
-                    <div class="percent">
-                        <div style="width: 95%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>JavaScript</h4>
-                    <div class="percent">
-                        <div style="width: 90%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>Java</h4>
-                    <div class="percent">
-                        <div style="width: 80%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>C</h4>
-                    <div class="percent">
-                        <div style="width: 60%;"></div>
-                    </div>
-                </div>
-                <div class="box">
-                    <h4>Python</h4>
-                    <div class="percent">
-                        <div style="width: 78%;"></div>
-                    </div>
-                </div>
-            </div>
-            <!--Technical skills part ends-->
-
-            <!--hobbies part starts-->
-            <div class="about hobbies">
-                <h3 class="title2">Hobbies</h3>
-                <ul>
-                    <li><i class="fa fa-pencil-square" aria-hidden="true"></i><strong>Drawing</strong></li>
-                    <li><i class="fa fa-cutlery" aria-hidden="true"></i><strong>Cooking</strong></li>
-                    <li><i class="fa fa-music" aria-hidden="true"></i><strong>Singing</strong></li>
-                    <li><i class="fa fa-book" aria-hidden="true"></i><strong>Reading</strong></li>
-                </ul>
-            </div>
-            <!--hobbies part ends-->
-
-            <!--social media id part starts-->
-            <div class="social">
-                <h3 class="title2">
-                    Social Media
-                </h3>
-                <ul>
-                    <li><i class="fa fa-facebook-official" aria-hidden="true"></i><strong>Facebook</strong><br><p>www.facebook.com/me</p></li>
-                    <li><i class="fa fa-instagram" aria-hidden="true"></i><strong>Instagram</strong><p>www.instagram.com/me</p></li>
-                    <li><i class="fa fa-twitter" aria-hidden="true"></i><strong>Twitter</strong><p>www.twitter.com/me</p></li>
-                </ul>
-            </div>
-            <!--social media id part ends-->
         </div>
         <!--right side code ends-->
     </div>
     <!--container code ends-->
-</body>
-</html>
+</div>
