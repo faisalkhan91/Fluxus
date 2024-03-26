@@ -3,7 +3,6 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     place-items: center;
-
 }
 
 img {
@@ -29,7 +28,7 @@ img {
     }
 
     .badge {
-        width: 2.875rem;
+        width: 5rem;
     }
 
     .badge-card {
