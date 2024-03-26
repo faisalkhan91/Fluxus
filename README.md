@@ -5,5 +5,5 @@
 Description:
 
 This is a personal website with a blog and a store.
-
-The UI framework is being worked on, a minimal viable product will be released once the website is complete.
+[FluxusOverview.webm](https://github.com/faisalkhan91/Fluxus/assets/25315418/5159cb92-7bc3-46c5-8504-242df1dc1e07)
+The first version of the website is now available.
