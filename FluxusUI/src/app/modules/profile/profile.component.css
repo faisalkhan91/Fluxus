@@ -49,7 +49,7 @@ div.highlightTextIn .profile_nav:hover:before {
 
 @media(max-width: 480px) {
     .profile .profile_nav {
-        display: inline-block;
+        display: grid;
     }
 }
 
