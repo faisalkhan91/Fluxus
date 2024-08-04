@@ -1,4 +1,4 @@
-⁸# Fluxus
+# Fluxus
 
 ![FluxusOverview](https://github.com/faisalkhan91/Fluxus/assets/25315418/ea068c29-3c10-4cdc-873e-ec6224bb7478)
 
