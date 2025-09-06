@@ -2,37 +2,47 @@
 
 ![FluxusOverview](https://github.com/faisalkhan91/Fluxus/assets/25315418/ea068c29-3c10-4cdc-873e-ec6224bb7478)
 
-A modern, responsive personal portfolio website built with Angular 16, showcasing professional skills, experience, and achievements.
+A modern personal portfolio website built with Angular 18, designed to showcase professional skills, experience, and achievements in a clean, responsive interface.
 
-## 🚀 Features
+## Features
 
-- **Professional Portfolio** - Showcase your work, skills, and achievements
+- **Professional Portfolio** - Clean presentation of work, skills, and achievements
 - **Responsive Design** - Optimized for all devices and screen sizes
-- **Modern UI/UX** - Clean, professional interface with smooth animations
+- **Modern UI/UX** - Professional interface with smooth animations
 - **Skills Showcase** - Interactive display of technical and soft skills
 - **Experience Timeline** - Professional experience and career highlights
 - **Achievements Gallery** - Certifications and accomplishments
 - **Portfolio Projects** - Featured work and project showcases
 - **Contact Information** - Easy ways to get in touch
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Frontend Framework**: Angular 16
-- **Language**: TypeScript
+- **Frontend Framework**: Angular 18.2.13
+- **Language**: TypeScript 5.4.5
 - **Styling**: CSS3 with modern features
 - **Testing**: Jasmine & Karma
-- **Build Tool**: Angular CLI
+- **Build Tool**: Angular CLI 18.2.20
+- **Package Manager**: npm
 - **Version Control**: Git
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running this project, make sure you have the following installed:
 
-- Node.js (version 16 or higher)
+- Node.js (version 18 or higher)
 - npm (Node Package Manager)
-- Angular CLI
+- Angular CLI (version 18 or higher)
 
-## 🚀 Getting Started
+### Quick Setup
+```bash
+# Install Angular CLI globally
+npm install -g @angular/cli@latest
+
+# Verify installation
+ng version
+```
+
+## Getting Started
 
 ### Installation
 
@@ -54,7 +64,7 @@ ng serve
 
 4. Open your browser and navigate to `http://localhost:4200/`
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 src/
@@ -74,7 +84,7 @@ src/
 └── environments/           # Environment configurations
 ```
 
-## 🎨 Customization
+## Customization
 
 ### Adding Your Information
 
@@ -90,7 +100,7 @@ src/
 - **Experience**: Update the experience component with your work history
 - **Projects**: Add your portfolio projects in the portfolio component
 
-## 🧪 Testing
+## Testing
 
 Run unit tests:
 ```bash
@@ -102,12 +112,12 @@ Run tests with coverage:
 ng test --code-coverage
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Build for Production
 
 ```bash
-ng build --prod
+ng build --configuration production
 ```
 
 The build artifacts will be stored in the `dist/fluxus/` directory.
@@ -121,18 +131,28 @@ npm install -g angular-cli-ghpages
 
 2. Build and deploy:
 ```bash
-ng build --prod --base-href "https://faisalkhan91.github.io/Fluxus/"
+ng build --configuration production --base-href "https://faisalkhan91.github.io/Fluxus/"
 npx angular-cli-ghpages --dir=dist/fluxus
 ```
 
-## 📱 Browser Support
+## Browser Support
 
 - Chrome (latest)
 - Firefox (latest)
 - Safari (latest)
 - Edge (latest)
 
-## 🤝 Contributing
+## Recent Updates
+
+### Angular 18 Upgrade
+- Upgraded from Angular 16 to Angular 18.2.13
+- Updated Angular CLI to 18.2.20
+- Updated TypeScript to 5.4.5
+- Enhanced build performance with ES2022 modules
+- Improved development experience with latest CLI features
+- Updated all dependencies to latest compatible versions
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
@@ -140,17 +160,21 @@ npx angular-cli-ghpages --dir=dist/fluxus
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes and updates.
+
+## Author
 
 **Faisal Khan**
 - GitHub: [@faisalkhan91](https://github.com/faisalkhan91)
 - LinkedIn: [Faisal Khan](https://linkedin.com/in/faisalkhan91)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Icons provided by [Icons8](https://icons8.com)
 - Angular team for the amazing framework
@@ -158,4 +182,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-*This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.3.*
+*This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.20.*
