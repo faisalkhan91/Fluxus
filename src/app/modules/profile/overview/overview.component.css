@@ -29,9 +29,7 @@
     margin-right: 6px;
 }
 
-p {
-    color: #333;
-}
+ 
 
 @media(max-width: 1000px) {
     .social ul {
