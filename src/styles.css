@@ -102,37 +102,152 @@ body {
 
 /* This is the global style used in home and header component. */
 
- 
- 
+.container {
+    position: relative;
+    background: #fff;
+    width: 100%;
+    max-height: 1000px;
+    min-height: 1000px;
+    box-shadow: 0 35px 35px rgba(0, 0, 0, 0.2);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    /* margin-top: 40px;
+    margin-bottom: 40px; */
+}
 
- 
+.container .left {
+    position: relative;
+    background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%), radial-gradient(113% 91% at 17% -2%, rgba(199, 60, 227, 0.888) 1%, #FF000000 99%), radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%), radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%), radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
+    padding: 40px;
+}
 
- 
+.profileTxt {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
 
- 
+.profileTxt .Imgbox {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px solid white;
+    overflow: hidden;
+}
 
- 
+.profileTxt .Imgbox img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    object-fit: cover;
+}
 
-/* left side section attributes ends */
+.profileTxt h3 {
+    color: #fff;
+    font-size: 1.5em;
+    margin-top: 20px;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.4em;
+}
 
- 
+.profileTxt span {
+    font-size: 0.8em;
+    font-weight: 300;
+}
 
- 
+.contactInfo {
+    padding-top: 40px;
+}
 
- 
+.title {
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
 
- 
+.contactInfo ul {
+    position: relative;
+}
 
- 
+.contactInfo ul li {
+    position: relative;
+    list-style: none;
+    margin: 10px 0;
+    cursor: pointer;
+}
 
- 
+.contactInfo ul li .icon {
+    display: inline-block;
+    width: 30px;
+    font-size: 20px;
+    color: #b0b0b0
+}
 
- 
+.contactInfo ul li .text {
+    color: #fff;
+    font-weight: 300;
+    margin-top: 10px;
+}
 
- 
+.contactInfo.education {
+    margin-bottom: 15px;
+}
 
-/* right side section attributes ends*/
+.contactInfo.education h6 {
+    color: #cdc084;
+    font-weight: 500;
+}
 
- 
+.contactInfo.education h5:nth-child(2) {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
 
-/** This is the global style used in profile and sub components. **/
+.contactInfo.education h5 {
+    color: #fff;
+    font-weight: 300;
+}
+
+.contactInfo.language .percent {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background: #beeaff;
+    display: block;
+    margin-top: 5px;
+}
+
+.contactInfo.language .percent div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #29bbff;
+}
+
+.container .right {
+    position: relative;
+    background-color: #fff;
+    padding: 50px;
+}
+
+p {
+    color: #333;
+}
+
+@media(max-width: 1000px) {
+    .container {
+        margin: 10px;
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
