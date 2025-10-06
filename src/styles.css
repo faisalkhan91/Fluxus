@@ -1,28 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import url("https://fonts.googleapis.com/css?family=Parisienne|Quicksand&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans&family=Montserrat:wght@300&family=Parisienne&family=Quicksand&family=Raleway&family=Ubuntu&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300&display=swap');
-/* for monserrat font */
-
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Ubuntu&display=swap');
-/* for josefin sans font   */
-
-@import 'https://fonts.googleapis.com/css?family=Raleway';
-
-/* universal attribute */
 * {
     margin: 0;
     padding: 0;
-    box-sizing: None;
+    box-sizing: border-box;
     font-family: 'Josefin Sans', sans-serif;
 }
 
-/* universal attribute ends */
-
 html,
 body {
-    margin: 0;
     background-image: linear-gradient(to bottom right,
             rgb(235, 76, 171),
             rgb(227, 77, 171),
@@ -100,34 +88,24 @@ body {
     box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
 }
 
-/* This is the global style used in home and header component. */
-
 /** This is the global style used in profile and sub components. **/
 
-/* Profile attributes */
 .profile_body {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* container div attributes */
 .container {
     position: relative;
     background: #fff;
     width: 100%;
-    max-height: 1000px;
-    min-height: 1000px;
+    height: 1000px;
     box-shadow: 0 35px 35px rgba(0, 0, 0, 0.2);
     display: grid;
     grid-template-columns: 1fr 2fr;
-    /* margin-top: 40px;
-    margin-bottom: 40px; */
 }
 
-/* container div attribute ends   */
-
-/* left side section attributes  */
 .container .left {
     position: relative;
     background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%), radial-gradient(113% 91% at 17% -2%, rgba(199, 60, 227, 0.888) 1%, #FF000000 99%), radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%), radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%), radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
@@ -248,9 +226,6 @@ body {
     background: #29bbff;
 }
 
-/* left side section attributes ends */
-
-/* right side section attributes */
 .container .right {
     position: relative;
     background-color: #fff;
@@ -258,7 +233,6 @@ body {
 }
 
 .about:last-child {
-    margin-bottom: 0;
     letter-spacing: 2px;
     margin-bottom: 10px;
 }
@@ -326,55 +300,43 @@ p {
     background: radial-gradient(circle, rgba(238, 174, 209, 1) 0%, rgba(148, 183, 233, 1) 100%);
 }
 
-.hobbies ul {
+.hobbies ul,
+.social ul {
     display: grid;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hobbies ul {
     grid-template-columns: repeat(4, 1fr);
 }
 
-.hobbies ul li {
-    list-style: none;
-    color: #333;
-    font-weight: 500;
-    margin: 10px 0;
-}
-
-.hobbies ul li .fa {
-    color: #2a7da2;
-    font-size: 20px;
-    margin-right: 6px;
-}
-
 .social ul {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
 
+.hobbies ul li,
 .social ul li {
-    list-style: none;
     color: #333;
     font-weight: 500;
     margin: 10px 0;
 }
 
+.hobbies ul li .fa,
 .social ul li .fa {
     color: #2a7da2;
     font-size: 20px;
     margin-right: 6px;
 }
 
-/* right side section attributes ends*/
-
-/* responsive design attributes */
 @media(max-width: 1000px) {
     .container {
         margin: 10px;
         grid-template-columns: repeat(1, 1fr);
     }
 
-    .hobbies ul {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
+    .hobbies ul,
     .social ul {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -394,10 +356,8 @@ p {
         margin-bottom: 5px;
     }
 
-    .hobbies ul {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
+    .hobbies ul,
+    .social ul,
     .skills .box {
         grid-template-columns: repeat(1, 1fr);
     }
@@ -405,12 +365,6 @@ p {
     .title2 {
         text-align: center;
     }
-
-    .social ul {
-        grid-template-columns: repeat(1, 1fr);
-    }
 }
-
-/* responsive design attributes ends*/
 
 /** This is the global style used in profile and sub components. **/
