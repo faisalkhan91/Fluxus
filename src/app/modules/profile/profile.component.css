@@ -54,3 +54,11 @@ div.highlightTextIn .profile_nav:hover:before {
 }
 
 /* Profile navbar attributes ends */
+
+.profile_body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ 
