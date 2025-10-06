@@ -2,6 +2,15 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans&family=Montserrat:wght@300&family=Parisienne&family=Quicksand&family=Raleway&family=Ubuntu&display=swap');
 
+:root {
+    --primary-color: #003147;
+    --secondary-color: #2a7da2;
+    --text-color: #333;
+    --background-color: #fff;
+    --gradient-start: rgb(235, 76, 171);
+    --gradient-end: rgb(143, 89, 168);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,21 +18,8 @@
     font-family: 'Josefin Sans', sans-serif;
 }
 
-html,
 body {
-    background-image: linear-gradient(to bottom right,
-            rgb(235, 76, 171),
-            rgb(227, 77, 171),
-            rgb(218, 78, 170),
-            rgb(210, 80, 170),
-            rgb(202, 81, 170),
-            rgb(193, 82, 170),
-            rgb(185, 83, 169),
-            rgb(176, 84, 169),
-            rgb(168, 85, 169),
-            rgb(160, 87, 169),
-            rgb(151, 88, 168),
-            rgb(143, 89, 168));
+    background-image: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
 }
 
 /* This is the global style used in home and header component. */
@@ -77,7 +73,7 @@ body {
     padding: 14px;
     margin-left: 2px;
     font-family: "Quicksand", sans-serif;
-    color: #fff;
+    color: var(--background-color);
     cursor: pointer;
     transition: 0.3s linear all;
     user-select: none;
@@ -88,7 +84,6 @@ body {
     box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
 }
 
-/** This is the global style used in profile and sub components. **/
 
 .profile_body {
     display: flex;
@@ -98,7 +93,7 @@ body {
 
 .container {
     position: relative;
-    background: #fff;
+    background: var(--background-color);
     width: 100%;
     height: 1000px;
     box-shadow: 0 35px 35px rgba(0, 0, 0, 0.2);
@@ -139,7 +134,7 @@ body {
 }
 
 .profileTxt h3 {
-    color: #fff;
+    color: var(--background-color);
     font-size: 1.5em;
     margin-top: 20px;
     text-transform: uppercase;
@@ -158,7 +153,7 @@ body {
 }
 
 .title {
-    color: #fff;
+    color: var(--background-color);
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 1px;
@@ -183,7 +178,7 @@ body {
 }
 
 .contactInfo ul li .text {
-    color: #fff;
+    color: var(--background-color);
     font-weight: 300;
     margin-top: 10px;
 }
@@ -198,14 +193,14 @@ body {
 }
 
 .contactInfo.education h5:nth-child(2) {
-    color: #fff;
+    color: var(--background-color);
     font-weight: 600;
     margin-bottom: 3px;
     margin-top: 3px;
 }
 
 .contactInfo.education h5 {
-    color: #fff;
+    color: var(--background-color);
     font-weight: 300;
 }
 
@@ -228,7 +223,7 @@ body {
 
 .container .right {
     position: relative;
-    background-color: #fff;
+    background-color: var(--background-color);
     padding: 50px;
 }
 
@@ -238,14 +233,14 @@ body {
 }
 
 .title2 {
-    color: #003147;
+    color: var(--primary-color);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: 50px;
 }
 
 p {
-    color: #333;
+    color: var(--text-color);
 }
 
 .about .box {
@@ -318,14 +313,14 @@ p {
 
 .hobbies ul li,
 .social ul li {
-    color: #333;
+    color: var(--text-color);
     font-weight: 500;
     margin: 10px 0;
 }
 
 .hobbies ul li .fa,
 .social ul li .fa {
-    color: #2a7da2;
+    color: var(--secondary-color);
     font-size: 20px;
     margin-right: 6px;
 }
