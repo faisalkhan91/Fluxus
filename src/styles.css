@@ -84,12 +84,7 @@ body {
     box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
 }
 
-
-.profile_body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+/* This is the global style used in home and header component. */
 
 .container {
     position: relative;
@@ -227,102 +222,8 @@ body {
     padding: 50px;
 }
 
-.about:last-child {
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-}
-
-.title2 {
-    color: var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 50px;
-}
-
 p {
     color: var(--text-color);
-}
-
-.about .box {
-    display: flex;
-    flex-direction: row;
-    margin: 20px 0;
-}
-
-.about .box .year_company {
-    min-width: 150px;
-}
-
-.about .box .year_company h5 {
-    text-transform: uppercase;
-    font-weight: 600;
-    color: #858c90;
-}
-
-.about .box .text h4 {
-    text-transform: uppercase;
-    color: #13688f;
-    font-size: 15px;
-}
-
-.skills .box {
-    width: 100%;
-    display: grid;
-    position: relative;
-    grid-template-columns: 150px 1fr;
-    justify-content: center;
-}
-
-.skills .box h4 {
-    text-transform: uppercase;
-    color: #8a8a8a;
-    font-weight: 600;
-}
-
-.skills .box .percent {
-    margin-top: 5px;
-    background: #dcdfe3;
-    width: 100%;
-    height: 10px;
-    position: relative;
-}
-
-.skills .box .percent div {
-    position: relative;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: radial-gradient(circle, rgba(238, 174, 209, 1) 0%, rgba(148, 183, 233, 1) 100%);
-}
-
-.hobbies ul,
-.social ul {
-    display: grid;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.hobbies ul {
-    grid-template-columns: repeat(4, 1fr);
-}
-
-.social ul {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-.hobbies ul li,
-.social ul li {
-    color: var(--text-color);
-    font-weight: 500;
-    margin: 10px 0;
-}
-
-.hobbies ul li .fa,
-.social ul li .fa {
-    color: var(--secondary-color);
-    font-size: 20px;
-    margin-right: 6px;
 }
 
 @media(max-width: 1000px) {
@@ -330,36 +231,4 @@ p {
         margin: 10px;
         grid-template-columns: repeat(1, 1fr);
     }
-
-    .hobbies ul,
-    .social ul {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .title2 {
-        text-align: center;
-    }
 }
-
-@media(max-width: 600px) {
-    .about .box {
-        flex-direction: column;
-    }
-
-    .about .box .year_company {
-        min-width: 150px;
-        margin-bottom: 5px;
-    }
-
-    .hobbies ul,
-    .social ul,
-    .skills .box {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    .title2 {
-        text-align: center;
-    }
-}
-
-/** This is the global style used in profile and sub components. **/
