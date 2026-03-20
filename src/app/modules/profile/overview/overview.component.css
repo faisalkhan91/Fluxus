@@ -1,0 +1,79 @@
+.about:last-child {
+    margin-bottom: 0;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.title2 {
+    color: #003147;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 50px;
+}
+
+.social ul {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.social ul li {
+    list-style: none;
+    color: #333;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.social ul li .fa {
+    color: #2a7da2;
+    font-size: 20px;
+    margin-right: 6px;
+}
+
+ 
+
+@media(max-width: 1000px) {
+    .social ul {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .title2 {
+        text-align: center;
+    }
+}
+
+@media(max-width: 600px) {
+    .title2 {
+        text-align: center;
+    }
+
+    .about .box {
+        flex-direction: column;
+    }
+
+    .about .box .year_company {
+        min-width: 150px;
+        margin-bottom: 5px;
+    }
+}
+
+.about .box {
+    display: flex;
+    flex-direction: row;
+    margin: 20px 0;
+}
+
+.about .box .year_company {
+    min-width: 150px;
+}
+
+.about .box .year_company h5 {
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #858c90;
+}
+
+.about .box .text h4 {
+    text-transform: uppercase;
+    color: #13688f;
+    font-size: 15px;
+}
