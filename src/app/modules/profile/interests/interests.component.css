@@ -1,0 +1,17 @@
+.about.hobbies ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.about.hobbies ul li {
+    list-style: none;
+    color: #333;
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.about.hobbies ul li .fa {
+    color: #2a7da2;
+    font-size: 20px;
+    margin-right: 6px;
+}
