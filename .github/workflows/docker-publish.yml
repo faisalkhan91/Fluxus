@@ -46,3 +46,25 @@ jobs:
           push: true
           # Tags the image with the branch name (e.g., latest or the branch name)
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:latest
+      
+      - name: Checkout Homelab Monorepo
+        uses: actions/checkout@v4
+        with:
+          repository: faisalkhan91/Homelab
+          token: ${{ secrets.MONOREPO_PAT }}
+          path: Homelab
+
+      - name: Update Kubernetes Manifest in Monorepo
+        run: |
+          cd Homelab/kubernetes/apps/fluxus/base
+          
+          # Replace the old image tag with the new Git commit hash in fluxus.yaml
+          sed -i "s|image: ghcr.io/faisalkhan91/fluxus:.*|image: ghcr.io/faisalkhan91/fluxus:${{ github.sha }}|g" fluxus.yaml
+          
+          # Configure Git as a bot
+          git config --global user.name "GitOps Bot"
+          git config --global user.email "actions@github.com"
+          
+          git add fluxus.yaml
+          git commit -m "chore(fluxus): update image tag to ${{ github.sha }} [skip ci]"
+          git push origin main
