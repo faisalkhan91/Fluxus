@@ -61,7 +61,7 @@ jobs:
           cd Homelab/kubernetes/apps/fluxus/base
           
           # Replace the old image tag with the new Git commit hash in fluxus.yaml
-          sed -i "s|image: ghcr.io/faisalkhan91/fluxus:.*|image: ghcr.io/faisalkhan91/fluxus:${{ github.sha }}|g" fluxus.yaml
+          sed -i "s|image: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ github.sha }}|g" fluxus.yaml
           
           # Configure Git as a bot
           git config --global user.name "GitOps Bot"
