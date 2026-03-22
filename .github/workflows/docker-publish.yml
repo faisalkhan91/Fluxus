@@ -45,14 +45,15 @@ jobs:
           platforms: linux/arm64
           push: true
           # Tags the image with the branch name (e.g., latest or the branch name)
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ github.sha }}
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:latest
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:latest
       
       - name: Checkout Homelab Monorepo
         uses: actions/checkout@v4
         with:
           repository: faisalkhan91/Homelab
-          token: ${{ secrets.MONOREPO_PAT }}
+          token: ${{ secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
           path: Homelab
 
       - name: Update Kubernetes Manifest in Monorepo
