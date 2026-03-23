@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZoneChangeDetection } from '@angular/core';
 
 import { InterestsComponent } from './interests.component';
 
@@ -8,7 +9,10 @@ describe('InterestsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InterestsComponent ]
+      providers: [
+        provideZoneChangeDetection({ eventCoalescing: true })
+      ],
+      imports: [InterestsComponent]
     })
     .compileComponents();
 
