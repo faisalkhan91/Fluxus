@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZoneChangeDetection } from '@angular/core';
 
 import { ExperienceComponent } from './experience.component';
 
@@ -8,7 +9,10 @@ describe('ExperienceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ExperienceComponent ]
+      providers: [
+        provideZoneChangeDetection({ eventCoalescing: true })
+      ],
+      imports: [ExperienceComponent]
     })
     .compileComponents();
 

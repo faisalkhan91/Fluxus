@@ -1,15 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-interests',
   templateUrl: './interests.component.html',
-  styleUrls: ['./interests.component.css']
+  styleUrls: ['./interests.component.css'],
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InterestsComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
+export class InterestsComponent {
 
 }
