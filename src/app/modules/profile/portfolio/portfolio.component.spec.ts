@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZoneChangeDetection } from '@angular/core';
 
 import { PortfolioComponent } from './portfolio.component';
 
@@ -8,7 +9,10 @@ describe('PortfolioComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PortfolioComponent ]
+      providers: [
+        provideZoneChangeDetection({ eventCoalescing: true })
+      ],
+      imports: [PortfolioComponent]
     })
     .compileComponents();
 
