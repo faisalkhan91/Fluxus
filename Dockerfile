@@ -1,5 +1,5 @@
 # Stage 1: Build the Angular application
-FROM node:18-alpine AS build
+FROM node:24-alpine AS build
 WORKDIR /app
 
 # Copy dependency manifests and install
@@ -17,11 +17,9 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy your compiled Angular app from Stage 1 into Nginx
-# NOTE: Angular usually outputs to dist/<project-name>. 
-# If your app outputs to 'dist/fluxus/browser' or just 'dist', update the path below accordingly.
-COPY --from=build /app/dist/fluxus /usr/share/nginx/html
+# NOTE: Angular 18+ application builder outputs to dist/<project-name>/browser
+COPY --from=build /app/dist/fluxus/browser /usr/share/nginx/html
 
-# ---> ADD THIS LINE <---
 # Overwrite the default Nginx config with our custom SPA routing config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
