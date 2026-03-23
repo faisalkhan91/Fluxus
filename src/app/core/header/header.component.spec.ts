@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideZoneChangeDetection } from '@angular/core';
 
 import { HeaderComponent } from './header.component';
 
@@ -8,7 +10,11 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HeaderComponent ]
+      providers: [
+        provideZoneChangeDetection({ eventCoalescing: true }),
+        provideRouter([])
+      ],
+      imports: [HeaderComponent]
     })
     .compileComponents();
 
