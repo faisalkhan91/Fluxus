@@ -1,234 +1,44 @@
-/* You can add global styles to this file, and also import other style files */
-
+/* Global variables and base styles */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans&family=Montserrat:wght@300&family=Parisienne&family=Quicksand&family=Raleway&family=Ubuntu&display=swap');
 
 :root {
-    --primary-color: #003147;
-    --secondary-color: #2a7da2;
-    --text-color: #333;
-    --background-color: #fff;
-    --gradient-start: rgb(235, 76, 171);
-    --gradient-end: rgb(143, 89, 168);
+    /* Design Tokens - Colors */
+    --color-primary: #003147;
+    --color-secondary: #2a7da2;
+    --color-text: #333;
+    --color-bg: #fff;
+    --color-gradient-start: rgb(235, 76, 171);
+    --color-gradient-end: rgb(143, 89, 168);
+    --color-white: #ffffff;
+    --color-white-alpha-low: rgba(255, 255, 255, 0.2);
+    --color-header-border: rgba(255, 255, 255, 0.667); /* Original #fffa */
+    --color-logo: rgba(255, 255, 255, 0.8); /* Original #fffc */
+    --color-hover: #ffaaaa;
+    
+    /* Design Tokens - Typography */
+    --font-main: 'Josefin Sans', sans-serif;
+    --font-logo: 'Parisienne', cursive;
+    --font-menu: 'Quicksand', sans-serif;
+    
+    /* Design Tokens - Spacing */
+    --spacing-sm: 10px;
+    --spacing-md: 20px;
+    --spacing-lg: 40px;
+    --spacing-xl: 50px;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Josefin Sans', sans-serif;
+    font-family: var(--font-main);
 }
 
 body {
-    background-image: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
-}
-
-/* This is the global style used in home and header component. */
-.header-bar {
-    position: relative;
-    height: 50px;
-    min-width: 300px;
-    border: 10px solid transparent;
-    border-top: 10px solid #fffa;
-    border-left: 10px solid #fffa;
-    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25) inset;
-}
-
-.header-bar::after {
-    content: "";
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 30%;
-    height: 49px;
-    border: 10px solid transparent;
-    border-bottom: 10px solid #fffa;
-    border-right: 10px solid #fffa;
-    transition: 0.3s linear all;
-}
-
-.header-bar>.logo {
-    position: absolute;
-    top: calc(50% + 1.5px);
-    left: 10px;
-    transform: translateY(-50%);
-    color: #fffc;
-    font-family: "Parisienne", cursive;
-    cursor: default;
-    user-select: none;
-}
-
-.slider-menu {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    z-index: 1;
-}
-
-.slider-menu>li {
-    display: inline-flex;
-    padding: 14px;
-    margin-left: 2px;
-    font-family: "Quicksand", sans-serif;
-    color: var(--background-color);
-    cursor: pointer;
-    transition: 0.3s linear all;
-    user-select: none;
-}
-
-.slider-menu>li:hover {
-    color: #faa;
-    box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
-}
-
-/* This is the global style used in home and header component. */
-
-.container {
-    position: relative;
-    background: var(--background-color);
-    width: 100%;
-    height: 1000px;
-    box-shadow: 0 35px 35px rgba(0, 0, 0, 0.2);
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-}
-
-.container .left {
-    position: relative;
-    background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%), radial-gradient(113% 91% at 17% -2%, rgba(199, 60, 227, 0.888) 1%, #FF000000 99%), radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%), radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%), radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
-    padding: 40px;
-}
-
-.profileTxt {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.profileTxt .Imgbox {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    border: 1px solid white;
-    overflow: hidden;
-}
-
-.profileTxt .Imgbox img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    object-fit: cover;
-}
-
-.profileTxt h3 {
-    color: var(--background-color);
-    font-size: 1.5em;
-    margin-top: 20px;
-    text-transform: uppercase;
-    text-align: center;
-    font-weight: 600;
-    line-height: 1.4em;
-}
-
-.profileTxt span {
-    font-size: 0.8em;
-    font-weight: 300;
-}
-
-.contactInfo {
-    padding-top: 40px;
-}
-
-.title {
-    color: var(--background-color);
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.contactInfo ul {
-    position: relative;
-}
-
-.contactInfo ul li {
-    position: relative;
-    list-style: none;
-    margin: 10px 0;
-    cursor: pointer;
-}
-
-.contactInfo ul li .icon {
-    display: inline-block;
-    width: 30px;
-    font-size: 20px;
-    color: #b0b0b0
-}
-
-.contactInfo ul li .text {
-    color: var(--background-color);
-    font-weight: 300;
-    margin-top: 10px;
-}
-
-.contactInfo.education {
-    margin-bottom: 15px;
-}
-
-.contactInfo.education h6 {
-    color: #cdc084;
-    font-weight: 500;
-}
-
-.contactInfo.education h5:nth-child(2) {
-    color: var(--background-color);
-    font-weight: 600;
-    margin-bottom: 3px;
-    margin-top: 3px;
-}
-
-.contactInfo.education h5 {
-    color: var(--background-color);
-    font-weight: 300;
-}
-
-.contactInfo.language .percent {
-    position: relative;
-    width: 100%;
-    height: 4px;
-    background: #beeaff;
-    display: block;
-    margin-top: 5px;
-}
-
-.contactInfo.language .percent div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: #29bbff;
-}
-
-.container .right {
-    position: relative;
-    background-color: var(--background-color);
-    padding: 50px;
+    background-image: linear-gradient(to bottom right, var(--color-gradient-start), var(--color-gradient-end));
+    min-height: 100vh;
 }
 
 p {
-    color: var(--text-color);
-}
-
-@media(max-width: 1000px) {
-    .container {
-        margin: 10px;
-        grid-template-columns: repeat(1, 1fr);
-    }
+    color: var(--color-text);
 }
