@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './modules/home/home.component';
-import { ProfileComponent } from './modules/profile/profile.component';
 
 export const routes: Routes = [
   {
@@ -8,6 +6,12 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
-  { path: 'home', component: HomeComponent },
-  { path: 'profile', component: ProfileComponent },
+  {
+    path: 'home',
+    loadComponent: () => import('./modules/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./modules/profile/profile.component').then(m => m.ProfileComponent)
+  },
 ];

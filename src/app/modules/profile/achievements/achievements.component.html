@@ -1,57 +1,41 @@
-<h3 class="title2">Certifications</h3><br>
-<div class="achievements-wrapper">
-        <img ngSrc="assets/images/achievements/certifications/aws-certified-cloud-practitioner.png" alt="" width="112" height="112" class="badge badge-card" />
-        <img ngSrc="assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png" alt="" width="112" height="112" class="badge badge-card" />
-        <img ngSrc="assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png" alt="" width="112" height="112" class="badge badge-card" />
-        <img ngSrc="assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png" alt="" width="112" height="112" class="badge badge-card" />
-        <img ngSrc="assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png" alt="" width="112" height="112" class="badge badge-card" />
-</div>
+<section class="achievements" aria-labelledby="certs-title">
+    <h3 id="certs-title" class="title2">Certifications</h3>
+    <div class="achievements-wrapper">
+        @for (cert of certifications(); track cert.name) {
+            <img [ngSrc]="cert.src" [alt]="cert.name" width="112" height="112" class="badge badge-card" />
+        }
+    </div>
+</section>
 
-<h3 class="title2">Other Certifications</h3><br>
-<div class="other-achievements-wrapper">
-        <img ngSrc="assets/images/achievements/certifications/CRLACertifiedL1.png" alt="" width="112" height="112" class="badge badge-card" />
-        <p>CRLA Level I, II and III</p>
-</div>
+<section class="achievements" aria-labelledby="other-certs-title">
+    <h3 id="other-certs-title" class="title2">Other Certifications</h3>
+    <div class="other-achievements-wrapper">
+        @for (cert of otherCerts(); track cert.name) {
+            <img [ngSrc]="cert.src" [alt]="cert.name" width="112" height="112" class="badge badge-card" />
+            <p>{{ cert.name }}</p>
+        }
+    </div>
+</section>
 
-<h3 class="title2">Courses</h3>
-<h4 class="title2">Udemy</h4><br>
-<div>
-        <ul>
-        <li>Master the Coding Interview: Data Structures + Algorithms Master</li>
-        <li>Machine Learning A-Z™: Hands-On Python & R In Data Science</li>
-        <li>Jenkins, From Zero To Hero: Become a DevOps Jenkins Master</li>
-        <li>Master the Coding Interview: Data Structures + Algorithms</li>
-        <li>CS101 Learn to Code with Python</li>
-        <li>HTML 5: Learn HTML 5</li>
-</ul>
-</div>
-<h4 class="title2">Coursera</h4><br>
-<div>
-        <ul>
-        <li>Google Cloud Platform Fundamentals: Core Infrastructure</li>
-        <li>AWS Cloud Practitioner Essentials</li>
-</ul>
-</div>
-<h4 class="title2">Pluralsight</h4><br>
-<div>
-        <ul>
-        <li>Microsoft Azure Security and Privacy Concepts</li>
-        <li>Microsoft Azure Cloud Concepts</li>
-        <li>Microsoft Azure Pricing and Support Options</li>
-        <li>Microsoft Azure Services and Concepts</li>
-</ul>
-</div>
-<h4 class="title2">Skillsoft</h4><br>
-<ul>
-        <li>Azure Data Fundamentals: Data Workloads</li>
-</ul>
+<section class="courses" aria-labelledby="courses-title">
+    <h3 id="courses-title" class="title2">Courses</h3>
+    @for (provider of courseProviders(); track provider.name) {
+        <div class="provider-block">
+            <h4 class="title2">{{ provider.name }}</h4>
+            <ul class="course-list">
+                @for (course of provider.courses; track course) {
+                    <li>{{ course }}</li>
+                }
+            </ul>
+        </div>
+    }
+</section>
 
-<h3 class="title2">Awards and Honors</h3><br>
-<div>
-        <ul>
-        <li>Member of Zeta Chapter of Upsilon Pi Epsilon International Honor Society for the Computing and Information Disciplines.</li>
-<li>Received outstanding CLR (Center for Learning Resources) Administrative Staff Award.</li>
-<li>Received Vodafone Emerging Star award.</li>
-        </ul>
-
-</div>
+<section class="awards" aria-labelledby="awards-title">
+    <h3 id="awards-title" class="title2">Awards and Honors</h3>
+    <ul class="award-list">
+        @for (award of awards(); track award) {
+            <li>{{ award }}</li>
+        }
+    </ul>
+</section>

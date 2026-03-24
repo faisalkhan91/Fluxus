@@ -1,28 +1,19 @@
-/* https://www.makeuseof.com/css-progress-bar-examples/ */
-
-h3 {
+h3.title2 {
     display: flex;
     justify-content: center;
     color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
 }
 
-h4 {
+h4.title2 {
     padding-left: var(--spacing-lg);
-}
-
-h5 {
-    position: relative;
-    line-height: 1.2em;
-}
-
-h5:before {
-    position: absolute;
-    left: 0;
-    top: 1.2em;
-    height: 0;
-    width: 100%;
-    content: '';
-    border-top: 1px solid gray;
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    font-size: 1.1em;
+    margin-bottom: var(--spacing-md);
 }
 
 .skills-wrapper {
@@ -32,30 +23,38 @@ h5:before {
     place-items: center;
 }
 
-.icon {
-    width: 3.875rem;
-}
-
 .icon-card {
     background-color: var(--color-bg);
     border-radius: 11px;
-    box-shadow: 0 0 2px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
     padding: 5px;
-    margin: 0.93em;
+    margin: 0.5em;
+    transition: transform 0.3s ease;
+}
+
+.icon-card:hover {
+    transform: scale(1.1);
+}
+
+.skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: 0 var(--spacing-lg);
 }
 
 .skills .box {
     width: 100%;
     display: grid;
-    position: relative;
     grid-template-columns: 150px 1fr;
-    justify-content: center;
+    align-items: center;
 }
 
 .skills .box h4 {
     text-transform: uppercase;
     color: #8a8a8a;
     font-weight: 600;
+    margin: 0;
 }
 
 .skills .box .percent {
@@ -64,7 +63,6 @@ h5:before {
     height: 4px;
     background: #beeaff;
     display: block;
-    margin-top: 5px;
 }
 
 .skills .box .percent div {
@@ -75,16 +73,28 @@ h5:before {
     background: #29bbff;
 }
 
+@media (max-width: 768px) {
+    .skills-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 @media (max-width: 480px) {
-    h4 {
-        padding-left: 0px;
+    h4.title2 {
+        padding-left: 0;
+        text-align: center;
     }
 
     .skills-wrapper {
         grid-template-columns: repeat(3, 1fr);    
     }
 
-    .icon-card {
-        margin: 7%;
+    .skills .box {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .skills-grid {
+        padding: 0 var(--spacing-sm);
     }
 }
