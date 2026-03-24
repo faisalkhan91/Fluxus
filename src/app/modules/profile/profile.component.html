@@ -1,119 +1,86 @@
-<app-header></app-header>
+<app-header />
 
-<div class="profile_body">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
-        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
-        crossorigin="anonymous" /> <!--importing the cdnjs link for font awesome icons-->
+<main class="profile_body" role="main">
     <div class="container">
-      <!--left side code starts-->
-      <div class="left">
-        <!--profile text and image code starts-->
-        <div class="profileTxt">
-          <div class="Imgbox">
-            <img ngSrc="assets/images/profile/profile_picture.jpg" width="200" height="200" alt="LOGO" priority />
-          </div>
-          <h3>Faisal Khan<br><span>Software Engineer</span></h3>
-        </div>
-        <!--profile text and image code ends-->
+        <!-- Sidebar -->
+        <aside class="left" role="complementary">
+            <header class="profileTxt">
+                <div class="Imgbox">
+                    <img ngSrc="assets/images/profile/profile_picture.jpg" width="200" height="200" alt="Faisal Khan" priority />
+                </div>
+                <h3>Faisal Khan<br><span>Software Engineer</span></h3>
+            </header>
 
-        <!--contact info section code starts-->
-        <div class="contactInfo">
-          <h4 class="title">Contact</h4>
-          <ul>
-            <li>
-              <span class="icon"><i class="fa fa-envelope-o" aria-hidden="true"></i></span>
-              <span class="text">faisalkhan91&#64;gmail.com</span>
-            </li>
-            <li>
-              <span class="icon"><i class="fa fa-phone" aria-hidden="true"></i></span>
-              <span class="text">+1 (475)-355-7575</span>
-            </li>
-            <li>
-              <span class="icon"><i class="fa fa-globe" aria-hidden="true"></i></span>
-              <span class="text">http://faisalkhan.serveblog.net/home/</span>
-            </li>
-            <li>
-              <span class="icon"><i class="fa fa-linkedin" aria-hidden="true"></i></span>
-              <span class="text" style="text-decoration: none !important;"><a style="color: #fff;"
-              href="https://www.linkedin.com/in/faisalkhan91/">LinkedIn/me</a></span>
-            </li>
-            <li>
-              <span class="icon"><i class="fa fa-map-marker" aria-hidden="true"></i></span>
-              <span class="text">New Haven, CT, USA</span>
-            </li>
-          </ul>
-        </div>
-        <!--contact info section code ends-->
+            <section class="contactInfo" aria-labelledby="contact-title">
+                <h4 id="contact-title" class="title">Contact</h4>
+                <ul class="contact-list">
+                    <li>
+                        <span class="icon" aria-hidden="true"><i class="fa fa-envelope-o"></i></span>
+                        <span class="text">faisalkhan91&#64;gmail.com</span>
+                    </li>
+                    <li>
+                        <span class="icon" aria-hidden="true"><i class="fa fa-phone"></i></span>
+                        <span class="text">+1 (475)-355-7575</span>
+                    </li>
+                    <li>
+                        <span class="icon" aria-hidden="true"><i class="fa fa-globe"></i></span>
+                        <span class="text">http://faisalkhan.serveblog.net</span>
+                    </li>
+                    <li>
+                        <span class="icon" aria-hidden="true"><i class="fa fa-linkedin"></i></span>
+                        <span class="text">
+                            <a href="https://www.linkedin.com/in/faisalkhan91/" target="_blank" rel="noopener" aria-label="LinkedIn Profile">LinkedIn/me</a>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="icon" aria-hidden="true"><i class="fa fa-map-marker"></i></span>
+                        <span class="text">New Haven, CT, USA</span>
+                    </li>
+                </ul>
+            </section>
 
-        <!--Education details part starts-->
-        <div class="contactInfo education">
-          <h4 class="title">Education</h4>
-          <ul>
-            <li>
-              <h6>Year of Passing- 2019</h6>
-              <h5>Master of Science, Computer Science</h5>
-              <h5>Univerity of New Haven, New Haven, CT, USA</h5>
-            </li>
-            <li>
-              <h6>Year of Passing- 2013</h6>
-              <h5>Bachelor of Science, Electrical Engineering</h5>
-              <h5>VIT, Pune, Maharashtra, India</h5>
-            </li>
-            <li>
-              <h6>Year of Passing- 2009</h6>
-              <h5>High School</h5>
-              <h5>The Indian School, Isa Town, Bahrain</h5>
-            </li>
-          </ul>
-        </div>
-        <!--Education details part starts-->
-      </div>
-      <!--left side code ends-->
+            <section class="contactInfo education" aria-labelledby="education-title">
+                <h4 id="education-title" class="title">Education</h4>
+                <ul>
+                    <li>
+                        <h6>Year of Passing- 2019</h6>
+                        <h5>Master of Science, Computer Science</h5>
+                        <h5>University of New Haven, CT, USA</h5>
+                    </li>
+                    <li>
+                        <h6>Year of Passing- 2013</h6>
+                        <h5>Bachelor of Science, Electrical Engineering</h5>
+                        <h5>VIT, Pune, Maharashtra, India</h5>
+                    </li>
+                    <li>
+                        <h6>Year of Passing- 2009</h6>
+                        <h5>High School</h5>
+                        <h5>The Indian School, Isa Town, Bahrain</h5>
+                    </li>
+                </ul>
+            </section>
+        </aside>
 
-      <!--Right side code starts-->
-      <div class="right">
-        <div class="profile brown highlightTextOut">
-          <a class="profile_nav" alt="Overview" (click)="profileToggleFunction('overview')">Overview</a>
-          <a class="profile_nav" alt="Experience" (click)="profileToggleFunction('experience')">Experience</a>
-          <a class="profile_nav" alt="Skills" (click)="profileToggleFunction('skills')">Skills</a>
-          <a class="profile_nav" alt="Portfolio" (click)="profileToggleFunction('portfolio')">Portfolio</a>
-          <a class="profile_nav" alt="Achievements" (click)="profileToggleFunction('achievements')">Achievements</a>
-          <!-- <a class="profile_nav" alt="Interests" (click)="profileToggleFunction('interests')">Interests</a> -->
-        </div>
+        <!-- Main Content -->
+        <article class="right">
+            <nav class="profile brown highlightTextOut" aria-label="Profile Sections">
+                <button type="button" class="profile_nav" (click)="profileToggleFunction('overview')" [class.active]="currentToggle() === 'overview'" aria-label="Show Overview" alt="Overview">Overview</button>
+                <button type="button" class="profile_nav" (click)="profileToggleFunction('experience')" [class.active]="currentToggle() === 'experience'" aria-label="Show Experience" alt="Experience">Experience</button>
+                <button type="button" class="profile_nav" (click)="profileToggleFunction('skills')" [class.active]="currentToggle() === 'skills'" aria-label="Show Skills" alt="Skills">Skills</button>
+                <button type="button" class="profile_nav" (click)="profileToggleFunction('portfolio')" [class.active]="currentToggle() === 'portfolio'" aria-label="Show Portfolio" alt="Portfolio">Portfolio</button>
+                <button type="button" class="profile_nav" (click)="profileToggleFunction('achievements')" [class.active]="currentToggle() === 'achievements'" aria-label="Show Achievements" alt="Achievements">Achievements</button>
+            </nav>
 
-        @if (currentToggle() == 'overview') {
-          <div>
-            <app-overview></app-overview>
-          </div>
-        }
-        @if (currentToggle() == 'experience') {
-          <div>
-            <app-experience></app-experience>
-          </div>
-        }
-        @if (currentToggle() == 'skills') {
-          <div>
-            <app-skills></app-skills>
-          </div>
-        }
-        @if (currentToggle() == 'portfolio') {
-          <div>
-            <app-portfolio></app-portfolio>
-          </div>
-        }
-        @if (currentToggle() == 'achievements') {
-          <div>
-            <app-achievements></app-achievements>
-          </div>
-        }
-        @if (currentToggle() == 'interests') {
-          <div>
-            <app-interests></app-interests>
-          </div>
-        }
-
-      </div>
-      <!--right side code ends-->
+            <div class="content-area">
+                @switch (currentToggle()) {
+                    @case ('overview') { <app-overview /> }
+                    @case ('experience') { <app-experience /> }
+                    @case ('skills') { <app-skills /> }
+                    @case ('portfolio') { <app-portfolio /> }
+                    @case ('achievements') { <app-achievements /> }
+                    @case ('interests') { <app-interests /> }
+                }
+            </div>
+        </article>
     </div>
-    <!--container code ends-->
-  </div>
+</main>

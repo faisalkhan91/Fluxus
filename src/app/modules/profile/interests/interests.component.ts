@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+
+interface Hobby {
+  icon: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-interests',
@@ -8,5 +13,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InterestsComponent {
-
+  hobbies = signal<Hobby[]>([
+    { icon: 'fa-pencil-square', name: 'Drawing' },
+    { icon: 'fa-cutlery', name: 'Cooking' },
+    { icon: 'fa-music', name: 'Singing' },
+    { icon: 'fa-book', name: 'Reading' }
+  ]);
 }
