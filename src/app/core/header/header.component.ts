@@ -6,7 +6,10 @@ import { RouterLink } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   imports: [RouterLink],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'role': 'banner'
+  }
 })
 export class HeaderComponent {
 }
