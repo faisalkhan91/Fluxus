@@ -47,6 +47,7 @@
     top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
@@ -74,17 +75,18 @@
     text-transform: uppercase;
     font-weight: 600;
     letter-spacing: 1px;
+    margin-bottom: 10px;
 }
 
 .contactInfo ul {
     position: relative;
+    padding: 0;
+    list-style: none;
 }
 
 .contactInfo ul li {
     position: relative;
-    list-style: none;
     margin: 10px 0;
-    cursor: pointer;
 }
 
 .contactInfo ul li .icon {
@@ -97,7 +99,11 @@
 .contactInfo ul li .text {
     color: var(--color-bg);
     font-weight: 300;
-    margin-top: 10px;
+}
+
+.contactInfo ul li .text a {
+    color: inherit;
+    text-decoration: none;
 }
 
 .education {
@@ -109,40 +115,67 @@
     font-weight: 500;
 }
 
-.education h5:nth-child(2) {
-    color: var(--color-bg);
-    font-weight: 600;
-    margin-bottom: 3px;
-    margin-top: 3px;
-}
-
 .education h5 {
     color: var(--color-bg);
     font-weight: 300;
+}
+
+.education h5:nth-child(2) {
+    font-weight: 600;
+    margin-bottom: 3px;
+    margin-top: 3px;
 }
 
 .right {
     position: relative;
     background-color: var(--color-bg);
     padding: 50px;
+    overflow-y: auto;
 }
 
 /* Profile navbar attributes */
-div.profile {
+nav.profile {
     text-align: center;
-    padding: 10px 10px;
+    padding: 10px;
     border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: var(--spacing-md);
 }
 
-a.profile_nav {
+button.profile_nav {
+    background: none;
+    border: none;
     color: #FFF;
     text-decoration: none;
-    font: 20px Raleway;
-    margin: 0px 10px;
-    padding: 10px 10px;
+    font: 20px var(--font-main);
+    padding: 10px;
     position: relative;
-    z-index: 0;
     cursor: pointer;
+    transition: all 0.3s;
+}
+
+button.profile_nav:before {
+    position: absolute;
+    color: var(--color-primary);
+    top: 0px;
+    left: 0px;
+    padding: 10px;
+    overflow: hidden;
+    content: attr(alt);
+    transition: all 0.3s;
+    transform: scale(0.8);
+    opacity: 0;
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+}
+
+button.profile_nav:hover:before,
+button.profile_nav.active:before {
+    transform: scale(1);
+    opacity: 1;
 }
 
 .brown {
@@ -152,37 +185,25 @@ a.profile_nav {
 }
 
 /* Highlight text out  */
-div.highlightTextOut .profile_nav {
+nav.highlightTextOut button.profile_nav {
     color: rgba(0, 0, 0, 0.477);
 }
 
-div.highlightTextOut .profile_nav:before {
-    position: absolute;
-    color: rgb(43, 40, 40);
-    top: 0px;
-    left: 0px;
-    padding: 10px;
-    overflow: hidden;
-    content: attr(alt);
-    transition: all 0.3s;
-    transform: scale(0.8);
-    opacity: 0;
-}
-
-div.highlightTextOut .profile_nav:hover:before {
-    transform: scale(1);
-    opacity: 1;
+nav.highlightTextOut button.profile_nav.active,
+nav.highlightTextOut button.profile_nav:hover {
+    color: transparent; /* Hide original text to show pseudo-element */
 }
 
 @media (max-width: 1000px) {
     .container {
         margin: 10px;
         grid-template-columns: repeat(1, 1fr);
+        height: auto;
     }
 }
 
 @media (max-width: 480px) {
-    .profile .profile_nav {
-        display: grid;
+    nav.profile {
+        flex-direction: column;
     }
 }
