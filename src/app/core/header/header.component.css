@@ -6,6 +6,8 @@
     border-top: var(--spacing-sm) solid var(--color-header-border);
     border-left: var(--spacing-sm) solid var(--color-header-border);
     box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25) inset;
+    display: flex;
+    align-items: center;
 }
 
 .header-bar::after {
@@ -19,32 +21,34 @@
     border-bottom: var(--spacing-sm) solid var(--color-header-border);
     border-right: var(--spacing-sm) solid var(--color-header-border);
     transition: 0.3s linear all;
+    pointer-events: none;
 }
 
 .logo {
     position: absolute;
-    top: calc(50% + 1.5px);
     left: var(--spacing-sm);
-    transform: translateY(-50%);
     color: var(--color-logo);
     font-family: var(--font-logo);
     cursor: default;
     user-select: none;
-    margin: 0; /* Keeping 0 margin to prevent default h1 pushing the header height */
+    margin: 0;
 }
 
 .slider-menu {
     position: absolute;
     top: 0;
     right: 0;
+    z-index: 1;
+}
+
+.slider-menu ul {
     display: flex;
     list-style-type: none;
     margin: 0;
     padding: 0;
-    z-index: 1;
 }
 
-.slider-menu > li {
+.slider-menu ul li a {
     display: inline-flex;
     padding: 14px;
     margin-left: 2px;
@@ -53,9 +57,11 @@
     cursor: pointer;
     transition: 0.3s linear all;
     user-select: none;
+    text-decoration: none;
 }
 
-.slider-menu > li:hover {
+.slider-menu ul li a:hover,
+.slider-menu ul li a.active {
     color: var(--color-hover);
     box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
 }

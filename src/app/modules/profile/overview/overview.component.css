@@ -1,26 +1,33 @@
-.about:last-child {
-    margin-bottom: 0;
-    letter-spacing: 2px;
+.about {
+    margin-bottom: var(--spacing-lg);
 }
 
 .title2 {
     color: var(--color-primary);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+}
+
+.content p {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.distro-info {
+    margin-bottom: var(--spacing-lg);
 }
 
 .social ul {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     padding: 0;
+    list-style: none;
+    gap: var(--spacing-md);
 }
 
 .social ul li {
-    list-style: none;
-    color: var(--color-text);
     font-weight: 500;
-    margin: var(--spacing-sm) 0;
 }
 
 .social ul li .fa {
@@ -29,45 +36,33 @@
     margin-right: 6px;
 }
 
-.about .box {
-    display: flex;
-    flex-direction: row;
-    margin: var(--spacing-md) 0;
+.social ul li .platform {
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
-.about .box .year_company {
-    min-width: 150px;
+.social ul li a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-size: 0.9em;
 }
 
-.about .box .year_company h5 {
-    text-transform: uppercase;
-    font-weight: 600;
-    color: #858c90;
-}
-
-.about .box .text h4 {
-    text-transform: uppercase;
-    color: #13688f;
-    font-size: 15px;
+.social ul li a:hover {
+    text-decoration: underline;
 }
 
 @media (max-width: 1000px) {
     .social ul {
         grid-template-columns: repeat(2, 1fr);
     }
-
-    .title2 {
-        text-align: center;
-    }
 }
 
 @media (max-width: 600px) {
-    .about .box {
-        flex-direction: column;
+    .social ul {
+        grid-template-columns: 1fr;
     }
-
-    .about .box .year_company {
-        min-width: auto;
-        margin-bottom: 5px;
+    
+    .title2 {
+        text-align: center;
     }
 }

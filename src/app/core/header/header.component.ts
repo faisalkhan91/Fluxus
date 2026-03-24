@@ -1,16 +1,12 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
-  imports: [RouterLink],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'role': 'banner',
-    'style': 'display: block; width: 100%;'
-  }
+  imports: [RouterLink, RouterLinkActive],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent {
 }
