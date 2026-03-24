@@ -5,24 +5,20 @@
     place-items: center;
 }
 
-img {
-    padding: 0.75rem;
-}
-
 .badge {
     width: 7rem;
+    height: auto;
 }
 
 .badge-card {
-    background-color: #fff;
+    background-color: var(--color-bg);
     border-radius: 11px;
     box-shadow: 0 0 2px;
     padding: 5px;
     margin: 0.93em;
 }
 
-@media(max-width: 480px) {
-
+@media (max-width: 480px) {
     .achievements-wrapper {
         grid-template-columns: repeat(2, 1fr);    
     }

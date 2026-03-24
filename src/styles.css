@@ -10,8 +10,9 @@
     --color-gradient-start: rgb(235, 76, 171);
     --color-gradient-end: rgb(143, 89, 168);
     --color-white: #ffffff;
-    --color-white-alpha: rgba(255, 255, 255, 0.667);
     --color-white-alpha-low: rgba(255, 255, 255, 0.2);
+    --color-header-border: rgba(255, 255, 255, 0.667); /* Original #fffa */
+    --color-logo: rgba(255, 255, 255, 0.8); /* Original #fffc */
     --color-hover: #ffaaaa;
     
     /* Design Tokens - Typography */
@@ -36,4 +37,8 @@
 body {
     background-image: linear-gradient(to bottom right, var(--color-gradient-start), var(--color-gradient-end));
     min-height: 100vh;
+}
+
+p {
+    color: var(--color-text);
 }

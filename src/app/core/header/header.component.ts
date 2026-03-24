@@ -8,7 +8,8 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'role': 'banner'
+    'role': 'banner',
+    'style': 'display: block; width: 100%;'
   }
 })
 export class HeaderComponent {

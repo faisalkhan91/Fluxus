@@ -3,8 +3,8 @@
     height: 50px;
     min-width: 300px;
     border: var(--spacing-sm) solid transparent;
-    border-top: var(--spacing-sm) solid var(--color-white-alpha);
-    border-left: var(--spacing-sm) solid var(--color-white-alpha);
+    border-top: var(--spacing-sm) solid var(--color-header-border);
+    border-left: var(--spacing-sm) solid var(--color-header-border);
     box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25) inset;
 }
 
@@ -16,8 +16,8 @@
     width: 30%;
     height: 49px;
     border: var(--spacing-sm) solid transparent;
-    border-bottom: var(--spacing-sm) solid var(--color-white-alpha);
-    border-right: var(--spacing-sm) solid var(--color-white-alpha);
+    border-bottom: var(--spacing-sm) solid var(--color-header-border);
+    border-right: var(--spacing-sm) solid var(--color-header-border);
     transition: 0.3s linear all;
 }
 
@@ -26,12 +26,11 @@
     top: calc(50% + 1.5px);
     left: var(--spacing-sm);
     transform: translateY(-50%);
-    color: var(--color-white-alpha);
+    color: var(--color-logo);
     font-family: var(--font-logo);
     cursor: default;
     user-select: none;
-    font-size: 2rem;
-    margin: 0;
+    margin: 0; /* Keeping 0 margin to prevent default h1 pushing the header height */
 }
 
 .slider-menu {
