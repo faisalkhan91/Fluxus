@@ -1,0 +1,87 @@
+<div class="about-layout">
+  <section class="about-intro" aria-labelledby="about-title">
+    <ui-section-header title="About Me" decoration="// readme.md" />
+    <div class="bio-grid">
+      <div class="avatar-card">
+        <ui-glass-card [elevation]="2">
+          <div class="avatar-container">
+            <img
+              [ngSrc]="profile.personalInfo().avatar"
+              width="200"
+              height="200"
+              alt="Faisal Khan"
+              priority
+              class="about-avatar"
+            />
+          </div>
+          <h3 class="avatar-name">{{ profile.personalInfo().name }}</h3>
+          <p class="avatar-title">{{ profile.personalInfo().title }}</p>
+        </ui-glass-card>
+      </div>
+      <div class="bio-text">
+        @for (paragraph of profile.personalInfo().bio; track $index) {
+          <p>{{ paragraph }}</p>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="about-contact" aria-labelledby="contact-info-title">
+    <ui-section-header title="Contact" decoration="// config.yaml" />
+    <div class="contact-grid">
+      <ui-glass-card [hover]="true">
+        <div class="contact-item">
+          <ui-icon name="mail" [size]="18" />
+          <div>
+            <span class="contact-label">Email</span>
+            <a [href]="'mailto:' + profile.personalInfo().email">{{ profile.personalInfo().email }}</a>
+          </div>
+        </div>
+      </ui-glass-card>
+      <ui-glass-card [hover]="true">
+        <div class="contact-item">
+          <ui-icon name="phone" [size]="18" />
+          <div>
+            <span class="contact-label">Phone</span>
+            <span class="contact-value">{{ profile.personalInfo().phone }}</span>
+          </div>
+        </div>
+      </ui-glass-card>
+      <ui-glass-card [hover]="true">
+        <div class="contact-item">
+          <ui-icon name="map-pin" [size]="18" />
+          <div>
+            <span class="contact-label">Location</span>
+            <span class="contact-value">{{ profile.personalInfo().location }}</span>
+          </div>
+        </div>
+      </ui-glass-card>
+      <ui-glass-card [hover]="true">
+        <div class="contact-item">
+          <ui-icon name="linkedin" [size]="18" />
+          <div>
+            <span class="contact-label">LinkedIn</span>
+            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener">LinkedIn Profile</a>
+          </div>
+        </div>
+      </ui-glass-card>
+    </div>
+  </section>
+
+  <section class="about-education" aria-labelledby="education-title">
+    <ui-section-header title="Education" decoration="// credentials.ts" />
+    <div class="education-list">
+      @for (edu of profile.education(); track edu.year) {
+        <ui-glass-card [hover]="true">
+          <div class="edu-item">
+            <span class="edu-year">{{ edu.year }}</span>
+            <div>
+              <h4 class="edu-degree">{{ edu.degree }}</h4>
+              <p class="edu-institution">{{ edu.institution }}</p>
+            </div>
+          </div>
+        </ui-glass-card>
+      }
+    </div>
+  </section>
+</div>

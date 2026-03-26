@@ -1,0 +1,145 @@
+:host {
+  display: block;
+}
+
+.about-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.bio-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.avatar-card {
+  position: sticky;
+  top: var(--space-4);
+}
+
+.avatar-container {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto var(--space-4);
+  border: 2px solid var(--glass-border);
+}
+
+.about-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-name {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.avatar-title {
+  text-align: center;
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.bio-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.bio-text p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.contact-item ui-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.contact-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  margin-bottom: 2px;
+}
+
+.contact-value {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.education-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.edu-item {
+  display: flex;
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.edu-year {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 500;
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+.edu-degree {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.edu-institution {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .bio-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .avatar-card {
+    position: static;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
