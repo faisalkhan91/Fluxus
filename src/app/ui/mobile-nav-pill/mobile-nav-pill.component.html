@@ -1,0 +1,13 @@
+<div class="pill">
+  @for (item of items(); track item.route) {
+    <a
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      class="pill-item"
+      [attr.aria-label]="item.label"
+    >
+      <ui-icon [name]="item.icon" [size]="20" />
+      <span class="pill-label">{{ item.label }}</span>
+    </a>
+  }
+</div>

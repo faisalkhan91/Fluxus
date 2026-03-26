@@ -1,0 +1,155 @@
+:host {
+  display: block;
+}
+
+.certs-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.cert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-4);
+}
+
+.cert-card {
+  text-align: center;
+}
+
+.cert-badge {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.cert-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.05));
+}
+
+.cert-name {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.cert-issuer {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: var(--space-1);
+  display: block;
+}
+
+.courses-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.provider-name {
+  flex: 1;
+  text-align: left;
+}
+
+.course-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.accordion-icon {
+  transition: transform var(--transition-fast);
+  color: var(--text-muted);
+}
+
+.accordion-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.course-items {
+  margin-top: var(--space-4);
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.course-items li {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  position: relative;
+  list-style: none;
+}
+
+.course-items li::before {
+  content: '▸';
+  position: absolute;
+  left: calc(-1 * var(--space-4));
+  color: var(--accent);
+  font-size: 0.7rem;
+}
+
+.awards-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.award-item {
+  display: flex;
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.award-item ui-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.award-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .cert-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+  }
+
+  .cert-card {
+    min-width: 140px;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+}

@@ -1,0 +1,110 @@
+<div class="contact-layout">
+  <ui-section-header title="Contact" decoration="// ping.sh" />
+
+  <div class="contact-grid">
+    <ui-glass-card [elevation]="2" class="form-card">
+      @if (!submitted()) {
+        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+          <div class="form-group">
+            <label for="name" class="form-label">Name</label>
+            <input
+              id="name"
+              formControlName="name"
+              type="text"
+              class="form-input"
+              placeholder="Your name"
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input
+              id="email"
+              formControlName="email"
+              type="email"
+              class="form-input"
+              placeholder="your@email.com"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="subject" class="form-label">Subject</label>
+            <input
+              id="subject"
+              formControlName="subject"
+              type="text"
+              class="form-input"
+              placeholder="What's this about?"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="message" class="form-label">Message</label>
+            <textarea
+              id="message"
+              formControlName="message"
+              class="form-input form-textarea"
+              placeholder="Your message..."
+              rows="5"
+            ></textarea>
+          </div>
+
+          <ui-glow-button variant="primary" type="submit" [disabled]="contactForm.invalid">
+            <ui-icon name="send" [size]="16" />
+            Send Message
+          </ui-glow-button>
+        </form>
+      } @else {
+        <div class="success-state">
+          <ui-icon name="sparkles" [size]="40" />
+          <h3>Message Sent!</h3>
+          <p>Your email client should have opened. If not, feel free to reach out directly.</p>
+        </div>
+      }
+    </ui-glass-card>
+
+    <div class="contact-info">
+      <ui-glass-card [hover]="true">
+        <div class="info-item">
+          <ui-icon name="mail" [size]="20" />
+          <div>
+            <span class="info-label">Email</span>
+            <a [href]="'mailto:' + profile.personalInfo().email">{{ profile.personalInfo().email }}</a>
+          </div>
+        </div>
+      </ui-glass-card>
+
+      <ui-glass-card [hover]="true">
+        <div class="info-item">
+          <ui-icon name="map-pin" [size]="20" />
+          <div>
+            <span class="info-label">Location</span>
+            <span class="info-value">{{ profile.personalInfo().location }}</span>
+          </div>
+        </div>
+      </ui-glass-card>
+
+      <ui-glass-card [hover]="true">
+        <div class="info-item">
+          <ui-icon name="github" [size]="20" />
+          <div>
+            <span class="info-label">GitHub</span>
+            <a [href]="profile.personalInfo().github" target="_blank" rel="noopener">faisalkhan91</a>
+          </div>
+        </div>
+      </ui-glass-card>
+
+      <ui-glass-card [hover]="true">
+        <div class="info-item">
+          <ui-icon name="linkedin" [size]="20" />
+          <div>
+            <span class="info-label">LinkedIn</span>
+            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener">faisalkhan91</a>
+          </div>
+        </div>
+      </ui-glass-card>
+    </div>
+  </div>
+</div>
