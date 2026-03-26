@@ -1,234 +1,199 @@
-/* You can add global styles to this file, and also import other style files */
-
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans&family=Montserrat:wght@300&family=Parisienne&family=Quicksand&family=Raleway&family=Ubuntu&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap');
 
 :root {
-    --primary-color: #003147;
-    --secondary-color: #2a7da2;
-    --text-color: #333;
-    --background-color: #fff;
-    --gradient-start: rgb(235, 76, 171);
-    --gradient-end: rgb(143, 89, 168);
+  /* === Canvas === */
+  --surface-void: #07070b;
+  --surface-base: #0e0e14;
+  --surface-raised: #16161f;
+  --surface-overlay: #1e1e2a;
+
+  /* === Glass === */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-hover: rgba(255, 255, 255, 0.14);
+  --glass-blur: 20px;
+
+  /* === Accent (Crimson/Cardinal) === */
+  --accent: #c92a2a;
+  --accent-hover: #e03131;
+  --accent-glow: rgba(201, 42, 42, 0.35);
+  --accent-subtle: rgba(201, 42, 42, 0.08);
+
+  /* === Text === */
+  --text-primary: rgba(255, 255, 255, 0.90);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.30);
+
+  /* === Typography === */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Poppins', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-tech: 'Space Grotesk', sans-serif;
+
+  /* === Spacing === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* === Layout === */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 60px;
+  --tab-bar-height: 38px;
+  --nav-pill-height: 56px;
+
+  /* === Radius === */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* === Shadows === */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* === Transitions === */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === Z-Index === */
+  --z-sidebar: 100;
+  --z-tab-bar: 90;
+  --z-nav-pill: 200;
+  --z-bottom-sheet: 300;
+  --z-overlay: 400;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Josefin Sans', sans-serif;
+/* === Light Mode === */
+[data-theme="light"] {
+  --surface-void: #f0f0f3;
+  --surface-base: #f7f7f9;
+  --surface-raised: #ffffff;
+  --surface-overlay: #eaeaef;
+
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-hover: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-border-hover: rgba(0, 0, 0, 0.12);
+
+  --accent: #b91c1c;
+  --accent-hover: #dc2626;
+  --accent-glow: rgba(185, 28, 28, 0.2);
+  --accent-subtle: rgba(185, 28, 28, 0.06);
+
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-muted: rgba(0, 0, 0, 0.30);
+
+  --shadow-glass: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-accent-glow: 0 0 20px var(--accent-glow);
+  --shadow-subtle: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-    background-image: linear-gradient(to bottom right, var(--gradient-start), var(--gradient-end));
+  font-family: var(--font-body);
+  background-color: var(--surface-void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-/* This is the global style used in home and header component. */
-.header-bar {
-    position: relative;
-    height: 50px;
-    min-width: 300px;
-    border: 10px solid transparent;
-    border-top: 10px solid #fffa;
-    border-left: 10px solid #fffa;
-    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.25) inset;
+a {
+  color: var(--accent-hover);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.header-bar::after {
-    content: "";
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 30%;
-    height: 49px;
-    border: 10px solid transparent;
-    border-bottom: 10px solid #fffa;
-    border-right: 10px solid #fffa;
-    transition: 0.3s linear all;
+a:hover {
+  color: var(--accent);
 }
 
-.header-bar>.logo {
-    position: absolute;
-    top: calc(50% + 1.5px);
-    left: 10px;
-    transform: translateY(-50%);
-    color: #fffc;
-    font-family: "Parisienne", cursive;
-    cursor: default;
-    user-select: none;
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-.slider-menu {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    z-index: 1;
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-.slider-menu>li {
-    display: inline-flex;
-    padding: 14px;
-    margin-left: 2px;
-    font-family: "Quicksand", sans-serif;
-    color: var(--background-color);
-    cursor: pointer;
-    transition: 0.3s linear all;
-    user-select: none;
+img {
+  display: block;
+  max-width: 100%;
 }
 
-.slider-menu>li:hover {
-    color: #faa;
-    box-shadow: 0 50px 5px rgba(0, 0, 0, 0.15) inset;
+ul, ol {
+  list-style: none;
 }
 
-/* This is the global style used in home and header component. */
-
-.container {
-    position: relative;
-    background: var(--background-color);
-    width: 100%;
-    height: 1000px;
-    box-shadow: 0 35px 35px rgba(0, 0, 0, 0.2);
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-}
-
-.container .left {
-    position: relative;
-    background-image: radial-gradient(49% 81% at 45% 47%, #FFE20345 0%, #073AFF00 100%), radial-gradient(113% 91% at 17% -2%, rgba(199, 60, 227, 0.888) 1%, #FF000000 99%), radial-gradient(142% 91% at 83% 7%, #FFDB00FF 1%, #FF000000 99%), radial-gradient(142% 91% at -6% 74%, #FF0049FF 1%, #FF000000 99%), radial-gradient(142% 91% at 111% 84%, #FF7000FF 0%, #FF0000FF 100%);
-    padding: 40px;
-}
-
-.profileTxt {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.profileTxt .Imgbox {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    border: 1px solid white;
-    overflow: hidden;
-}
-
-.profileTxt .Imgbox img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    object-fit: cover;
-}
-
-.profileTxt h3 {
-    color: var(--background-color);
-    font-size: 1.5em;
-    margin-top: 20px;
-    text-transform: uppercase;
-    text-align: center;
-    font-weight: 600;
-    line-height: 1.4em;
-}
-
-.profileTxt span {
-    font-size: 0.8em;
-    font-weight: 300;
-}
-
-.contactInfo {
-    padding-top: 40px;
-}
-
-.title {
-    color: var(--background-color);
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
-
-.contactInfo ul {
-    position: relative;
-}
-
-.contactInfo ul li {
-    position: relative;
-    list-style: none;
-    margin: 10px 0;
-    cursor: pointer;
-}
-
-.contactInfo ul li .icon {
-    display: inline-block;
-    width: 30px;
-    font-size: 20px;
-    color: #b0b0b0
-}
-
-.contactInfo ul li .text {
-    color: var(--background-color);
-    font-weight: 300;
-    margin-top: 10px;
-}
-
-.contactInfo.education {
-    margin-bottom: 15px;
-}
-
-.contactInfo.education h6 {
-    color: #cdc084;
-    font-weight: 500;
-}
-
-.contactInfo.education h5:nth-child(2) {
-    color: var(--background-color);
-    font-weight: 600;
-    margin-bottom: 3px;
-    margin-top: 3px;
-}
-
-.contactInfo.education h5 {
-    color: var(--background-color);
-    font-weight: 300;
-}
-
-.contactInfo.language .percent {
-    position: relative;
-    width: 100%;
-    height: 4px;
-    background: #beeaff;
-    display: block;
-    margin-top: 5px;
-}
-
-.contactInfo.language .percent div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: #29bbff;
-}
-
-.container .right {
-    position: relative;
-    background-color: var(--background-color);
-    padding: 50px;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
 }
 
 p {
-    color: var(--text-color);
+  color: var(--text-secondary);
+  line-height: 1.7;
 }
 
-@media(max-width: 1000px) {
-    .container {
-        margin: 10px;
-        grid-template-columns: repeat(1, 1fr);
-    }
+::selection {
+  background-color: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }

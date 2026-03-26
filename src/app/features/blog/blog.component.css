@@ -1,0 +1,74 @@
+:host {
+  display: block;
+}
+
+.blog-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--tab-bar-height) - var(--space-16));
+}
+
+.terminal-card {
+  width: 100%;
+  max-width: 520px;
+}
+
+.terminal-title-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: var(--space-5);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red { background: #ff5f57; }
+.terminal-dot.yellow { background: #febc2e; }
+.terminal-dot.green { background: #28c840; }
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-right: 34px;
+}
+
+.terminal-body {
+  padding: var(--space-4) 0;
+}
+
+.terminal-line {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid var(--accent);
+  width: 0;
+  animation:
+    typing 2.4s steps(32, end) 0.5s forwards,
+    blink 600ms step-end infinite;
+}
+
+.prompt {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
