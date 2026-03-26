@@ -20,5 +20,6 @@ export class NavigationService {
     { label: 'Skills', route: '/skills', icon: 'layers' },
     { label: 'Projects', route: '/projects', icon: 'folder-git' },
     { label: 'Certs', route: '/certifications', icon: 'award' },
+    { label: 'Blog', route: '/blog', icon: 'file-text' },
   ];
 }

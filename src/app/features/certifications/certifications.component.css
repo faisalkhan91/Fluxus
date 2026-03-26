@@ -30,7 +30,7 @@
   width: 80px;
   height: 80px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.05));
+  filter: var(--icon-drop-shadow);
 }
 
 .cert-name {

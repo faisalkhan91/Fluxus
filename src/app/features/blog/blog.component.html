@@ -1,15 +1,46 @@
 <div class="blog-layout">
-  <ui-glass-card [elevation]="2" class="terminal-card">
-    <div class="terminal-title-bar">
-      <span class="terminal-dot red"></span>
-      <span class="terminal-dot yellow"></span>
-      <span class="terminal-dot green"></span>
-      <span class="terminal-title">blog.rss</span>
+  <ui-section-header
+    title="Blog"
+    subtitle="Thoughts on engineering, cloud, and craft"
+    decoration="// posts.rss"
+  />
+
+  <div class="disclaimer">
+    <div class="disclaimer-bar">
+      <span class="disclaimer-dot"></span>
+      <span class="disclaimer-label">WARN</span>
     </div>
-    <div class="terminal-body">
-      <p class="terminal-line typing" aria-label="Deploying blog, estimated arrival soon">
-        <span class="prompt">&gt;</span> deploying blog --eta soon...
-      </p>
+    <p class="disclaimer-text">
+      <span class="prompt">&gt;</span> blog.status === <span class="string">'preview'</span>
+      <span class="comment">// under active construction</span>
+    </p>
+  </div>
+
+  @if (blog.posts().length) {
+    <div class="post-grid">
+      @for (post of blog.posts(); track post.slug) {
+        <a [routerLink]="['/blog', post.slug]" class="post-link">
+          <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
+            <div class="post-meta">
+              <time class="post-date">
+                <ui-icon name="calendar" [size]="12" />
+                {{ post.date }}
+              </time>
+              <span class="post-reading-time">
+                <ui-icon name="clock" [size]="12" />
+                {{ post.readingTime }}
+              </span>
+            </div>
+            <h2 class="post-title">{{ post.title }}</h2>
+            <p class="post-excerpt">{{ post.excerpt }}</p>
+            <div class="post-tags">
+              @for (tag of post.tags; track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
+          </ui-glass-card>
+        </a>
+      }
     </div>
-  </ui-glass-card>
+  }
 </div>

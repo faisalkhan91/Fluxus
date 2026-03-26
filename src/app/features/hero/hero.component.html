@@ -41,5 +41,30 @@
         <ui-icon name="linkedin" [size]="20" />
       </a>
     </div>
+
+    @if (blog.latestPosts().length) {
+      <div class="latest-posts">
+        <p class="latest-posts-label">
+          <span class="label-decoration">//</span> latest from the blog
+        </p>
+        <div class="latest-posts-row">
+          @for (post of blog.latestPosts(); track post.slug) {
+            <a [routerLink]="['/blog', post.slug]" class="latest-post-link">
+              <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
+                <div class="latest-post-meta">
+                  <ui-icon name="calendar" [size]="12" />
+                  <time>{{ post.date }}</time>
+                  <span class="meta-separator">&middot;</span>
+                  <ui-icon name="clock" [size]="12" />
+                  <span>{{ post.readingTime }}</span>
+                </div>
+                <h3 class="latest-post-title">{{ post.title }}</h3>
+                <p class="latest-post-excerpt">{{ post.excerpt }}</p>
+              </ui-glass-card>
+            </a>
+          }
+        </div>
+      </div>
+    }
   </div>
 </section>
