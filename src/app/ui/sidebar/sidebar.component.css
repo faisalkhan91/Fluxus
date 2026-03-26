@@ -24,7 +24,6 @@
   align-items: center;
   padding: var(--space-4) var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--glass-border);
-  gap: var(--space-3);
   flex-shrink: 0;
 }
 
@@ -38,7 +37,17 @@
   flex-shrink: 0;
 }
 
-:host(:hover) .avatar-wrapper {
+.sidebar-home-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sidebar-home-link:hover .avatar-wrapper {
   border-color: var(--accent);
 }
 

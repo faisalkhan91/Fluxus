@@ -15,6 +15,7 @@ export class NavigationService {
   ];
 
   readonly mobileNavItems: MobileNavItem[] = [
+    { label: 'Home', route: '/hero', icon: 'home' },
     { label: 'About', route: '/about', icon: 'user' },
     { label: 'Work', route: '/experience', icon: 'briefcase' },
     { label: 'Skills', route: '/skills', icon: 'layers' },
