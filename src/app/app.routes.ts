@@ -50,6 +50,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/blog/blog.component').then(m => m.BlogComponent),
         data: { tab: { label: 'Blog', ext: '.rss', color: '#f78c40' } },
       },
+      {
+        path: 'blog/:slug',
+        loadComponent: () => import('./features/blog/blog-post/blog-post.component').then(m => m.BlogPostComponent),
+        data: { tab: { label: 'Blog', ext: '.rss', color: '#f78c40' } },
+      },
     ],
   },
 ];
