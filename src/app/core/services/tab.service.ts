@@ -41,6 +41,8 @@ export class TabService {
   }
 
   closeTab(tab: EditorTab): void {
+    if (tab.id === 'hero') return;
+
     const remaining = this.tabs().filter(t => t.id !== tab.id);
     this.tabs.set(remaining);
 

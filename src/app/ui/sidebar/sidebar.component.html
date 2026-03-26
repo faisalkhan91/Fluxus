@@ -1,13 +1,15 @@
 <div class="sidebar-header">
-  <div class="avatar-wrapper">
-    <img ngSrc="assets/images/profile/profile_picture.jpg" width="80" height="80" alt="Faisal Khan" priority class="avatar" />
-  </div>
-  @if (!collapsed()) {
-    <div class="identity">
-      <h2 class="name">Faisal Khan</h2>
-      <p class="role">Software Engineer</p>
+  <a routerLink="/hero" class="sidebar-home-link" aria-label="Go to Welcome page" title="Welcome">
+    <div class="avatar-wrapper">
+      <img ngSrc="assets/images/profile/profile_picture.jpg" width="80" height="80" alt="Faisal Khan" priority class="avatar" />
     </div>
-  }
+    @if (!collapsed()) {
+      <div class="identity">
+        <h2 class="name">Faisal Khan</h2>
+        <p class="role">Software Engineer</p>
+      </div>
+    }
+  </a>
 </div>
 
 <ul class="nav-list">

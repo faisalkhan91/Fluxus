@@ -10,14 +10,16 @@
       <span class="tab-dot" [style.background]="tab.color"></span>
       <span class="tab-label">{{ tab.label }}</span>
       <span class="tab-ext">{{ tab.ext }}</span>
-      <button
-        class="tab-close"
-        (click)="$event.stopPropagation(); tabClosed.emit(tab)"
-        [attr.aria-label]="'Close ' + tab.label"
-        tabindex="-1"
-      >
-        <ui-icon name="x" [size]="12" />
-      </button>
+      @if (tab.id !== 'hero') {
+        <button
+          class="tab-close"
+          (click)="$event.stopPropagation(); tabClosed.emit(tab)"
+          [attr.aria-label]="'Close ' + tab.label"
+          tabindex="-1"
+        >
+          <ui-icon name="x" [size]="12" />
+        </button>
+      }
     </button>
   }
 </div>
