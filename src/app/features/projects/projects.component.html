@@ -1,0 +1,28 @@
+<div class="projects-layout">
+  <ui-section-header title="Projects" decoration="// git log --oneline" />
+  <div class="projects-grid">
+    @for (project of projectsData.projects(); track project.title) {
+      <ui-glass-card [hover]="true" [glow]="!!project.featured" class="project-card">
+        <div class="project-image-wrapper">
+          <img [ngSrc]="project.image" [alt]="project.title" width="400" height="256" class="project-image" />
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">{{ project.title }}</h3>
+          <p class="project-desc">{{ project.description }}</p>
+          <div class="project-footer">
+            <div class="project-tags">
+              @for (tag of project.tags; track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
+            <a [href]="project.link" target="_blank" rel="noopener" class="project-link" [attr.aria-label]="'View ' + project.title + ' on GitHub'">
+              <ui-icon name="github" [size]="16" />
+              <span>Source</span>
+              <ui-icon name="external-link" [size]="12" />
+            </a>
+          </div>
+        </div>
+      </ui-glass-card>
+    }
+  </div>
+</div>

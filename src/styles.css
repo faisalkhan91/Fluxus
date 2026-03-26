@@ -1,44 +1,199 @@
-/* Global variables and base styles */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Josefin+Sans&family=Montserrat:wght@300&family=Parisienne&family=Quicksand&family=Raleway&family=Ubuntu&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Space+Grotesk:wght@400;500;600&display=swap');
 
 :root {
-    /* Design Tokens - Colors */
-    --color-primary: #003147;
-    --color-secondary: #2a7da2;
-    --color-text: #333;
-    --color-bg: #fff;
-    --color-gradient-start: rgb(235, 76, 171);
-    --color-gradient-end: rgb(143, 89, 168);
-    --color-white: #ffffff;
-    --color-white-alpha-low: rgba(255, 255, 255, 0.2);
-    --color-header-border: rgba(255, 255, 255, 0.667); /* Original #fffa */
-    --color-logo: rgba(255, 255, 255, 0.8); /* Original #fffc */
-    --color-hover: #ffaaaa;
-    
-    /* Design Tokens - Typography */
-    --font-main: 'Josefin Sans', sans-serif;
-    --font-logo: 'Parisienne', cursive;
-    --font-menu: 'Quicksand', sans-serif;
-    
-    /* Design Tokens - Spacing */
-    --spacing-sm: 10px;
-    --spacing-md: 20px;
-    --spacing-lg: 40px;
-    --spacing-xl: 50px;
+  /* === Canvas === */
+  --surface-void: #07070b;
+  --surface-base: #0e0e14;
+  --surface-raised: #16161f;
+  --surface-overlay: #1e1e2a;
+
+  /* === Glass === */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-border-hover: rgba(255, 255, 255, 0.14);
+  --glass-blur: 20px;
+
+  /* === Accent (Crimson/Cardinal) === */
+  --accent: #c92a2a;
+  --accent-hover: #e03131;
+  --accent-glow: rgba(201, 42, 42, 0.35);
+  --accent-subtle: rgba(201, 42, 42, 0.08);
+
+  /* === Text === */
+  --text-primary: rgba(255, 255, 255, 0.90);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-muted: rgba(255, 255, 255, 0.30);
+
+  /* === Typography === */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Poppins', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-tech: 'Space Grotesk', sans-serif;
+
+  /* === Spacing === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* === Layout === */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 60px;
+  --tab-bar-height: 38px;
+  --nav-pill-height: 56px;
+
+  /* === Radius === */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+
+  /* === Shadows === */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* === Transitions === */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === Z-Index === */
+  --z-sidebar: 100;
+  --z-tab-bar: 90;
+  --z-nav-pill: 200;
+  --z-bottom-sheet: 300;
+  --z-overlay: 400;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: var(--font-main);
+/* === Light Mode === */
+[data-theme="light"] {
+  --surface-void: #f0f0f3;
+  --surface-base: #f7f7f9;
+  --surface-raised: #ffffff;
+  --surface-overlay: #eaeaef;
+
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-hover: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-border-hover: rgba(0, 0, 0, 0.12);
+
+  --accent: #b91c1c;
+  --accent-hover: #dc2626;
+  --accent-glow: rgba(185, 28, 28, 0.2);
+  --accent-subtle: rgba(185, 28, 28, 0.06);
+
+  --text-primary: rgba(0, 0, 0, 0.87);
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-muted: rgba(0, 0, 0, 0.30);
+
+  --shadow-glass: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-accent-glow: 0 0 20px var(--accent-glow);
+  --shadow-subtle: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-    background-image: linear-gradient(to bottom right, var(--color-gradient-start), var(--color-gradient-end));
-    min-height: 100vh;
+  font-family: var(--font-body);
+  background-color: var(--surface-void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--accent-hover);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
 }
 
 p {
-    color: var(--color-text);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+::selection {
+  background-color: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
 }

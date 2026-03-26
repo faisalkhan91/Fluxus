@@ -1,0 +1,35 @@
+<div class="skills-layout">
+  @for (category of skillsData.categories(); track category.title) {
+    <section class="skill-section" [attr.aria-labelledby]="'skill-' + category.title">
+      <ui-section-header
+        [title]="category.title"
+        [subtitle]="category.subtitle"
+        [decoration]="'// ' + category.title.toLowerCase().replace(' ', '_') + '.json'"
+      />
+
+      @if (category.skills[0]?.iconSrc) {
+        <div class="badge-grid">
+          @for (skill of category.skills; track skill.name) {
+            <ui-skill-badge [name]="skill.name" [iconSrc]="skill.iconSrc" />
+          }
+        </div>
+      } @else {
+        <div class="bar-list">
+          @for (skill of category.skills; track skill.name) {
+            <ui-glass-card>
+              <div class="bar-item">
+                <div class="bar-header">
+                  <span class="bar-name">{{ skill.name }}</span>
+                  <span class="bar-percent">{{ skill.level }}%</span>
+                </div>
+                <div class="bar-track" role="progressbar" [attr.aria-valuenow]="skill.level" aria-valuemin="0" aria-valuemax="100">
+                  <div class="bar-fill" [style.width.%]="skill.level"></div>
+                </div>
+              </div>
+            </ui-glass-card>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
