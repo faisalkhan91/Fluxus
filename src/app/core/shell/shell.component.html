@@ -1,0 +1,40 @@
+@if (media.showSidebar()) {
+  <ui-sidebar
+    [items]="navService.sidebarItems"
+    [collapsed]="media.sidebarCollapsed()"
+    [isDark]="themeService.isDark()"
+    (resumeClicked)="onResumeDownload()"
+    (themeToggled)="onThemeToggle()"
+  />
+}
+
+<div class="main-area">
+  @if (media.showSidebar()) {
+    <ui-editor-tab-bar
+      [tabs]="tabService.openTabs()"
+      [activeTabId]="tabService.activeTabId()"
+      (tabSelected)="tabService.selectTab($event)"
+      (tabClosed)="tabService.closeTab($event)"
+    />
+  }
+
+  <main class="content" role="main">
+    <div class="route-container" [@routeAnimation]="prepareRoute(outlet)">
+      <router-outlet #outlet="outlet" />
+    </div>
+  </main>
+</div>
+
+@if (media.isMobile()) {
+  <button
+    class="mobile-theme-toggle"
+    (click)="onThemeToggle()"
+    [attr.aria-label]="themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+  >
+    <ui-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
+  </button>
+}
+
+@if (media.showMobileNav()) {
+  <ui-mobile-nav-pill [items]="navService.mobileNavItems" />
+}
