@@ -1,0 +1,209 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--surface-base);
+  border-right: 1px solid var(--glass-border);
+  padding: var(--space-6) 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-sidebar);
+  transition: width var(--transition-base);
+  overflow: hidden;
+}
+
+:host(.collapsed) {
+  width: var(--sidebar-collapsed);
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+
+.avatar-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--glass-border);
+  transition: border-color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.sidebar-home-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sidebar-home-link:hover .avatar-wrapper {
+  border-color: var(--accent);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+:host(.collapsed) .avatar-wrapper {
+  width: 36px;
+  height: 36px;
+}
+
+.identity {
+  text-align: center;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.role {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-family: var(--font-tech);
+  white-space: nowrap;
+}
+
+.nav-list {
+  flex: 1;
+  padding: var(--space-4) var(--space-2);
+  overflow-y: auto;
+}
+
+.nav-list li {
+  margin-bottom: var(--space-1);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+:host(.collapsed) .nav-item {
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.nav-item:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+}
+
+.nav-item.active ui-icon {
+  color: var(--accent);
+}
+
+.nav-label {
+  flex: 1;
+}
+
+.nav-ext {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.sidebar-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+  white-space: nowrap;
+  margin-bottom: var(--space-3);
+}
+
+.theme-toggle:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+  border-color: var(--glass-border-hover);
+}
+
+.theme-toggle--icon {
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.resume-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    box-shadow var(--transition-base);
+  white-space: nowrap;
+}
+
+.resume-btn:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-accent-glow);
+}
+
+.resume-btn--icon {
+  padding: var(--space-3);
+}

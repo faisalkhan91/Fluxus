@@ -1,0 +1,70 @@
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-bg">
+    <div class="glow glow--1"></div>
+    <div class="glow glow--2"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-greeting">
+      <span class="greeting-decoration">&gt;_</span> Hello, I'm
+    </p>
+    <h1 id="hero-heading" class="hero-name">
+      {{ profile.personalInfo().name }}
+    </h1>
+    <p class="hero-title">{{ profile.personalInfo().title }}</p>
+    <p class="hero-summary">
+      Building robust systems at the intersection of
+      <span class="highlight">Full-Stack Development</span>,
+      <span class="highlight">Cloud Architecture</span>, and
+      <span class="highlight">DevOps</span>.
+    </p>
+    <div class="hero-actions">
+      <a routerLink="/about">
+        <ui-glow-button variant="primary">
+          <ui-icon name="sparkles" [size]="16" />
+          Explore My Work
+        </ui-glow-button>
+      </a>
+      <a routerLink="/contact">
+        <ui-glow-button variant="secondary">
+          <ui-icon name="mail" [size]="16" />
+          Get in Touch
+        </ui-glow-button>
+      </a>
+    </div>
+    <div class="hero-social">
+      <a [href]="profile.personalInfo().github" target="_blank" rel="noopener" aria-label="GitHub Profile" class="social-link">
+        <ui-icon name="github" [size]="20" />
+      </a>
+      <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener" aria-label="LinkedIn Profile" class="social-link">
+        <ui-icon name="linkedin" [size]="20" />
+      </a>
+    </div>
+
+    @if (blog.latestPosts().length) {
+      <div class="latest-posts">
+        <p class="latest-posts-label">
+          <span class="label-decoration">//</span> latest from the blog
+        </p>
+        <div class="latest-posts-row">
+          @for (post of blog.latestPosts(); track post.slug) {
+            <a [routerLink]="['/blog', post.slug]" class="latest-post-link">
+              <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
+                <div class="latest-post-meta">
+                  <ui-icon name="calendar" [size]="12" />
+                  <time>{{ post.date }}</time>
+                  <span class="meta-separator">&middot;</span>
+                  <ui-icon name="clock" [size]="12" />
+                  <span>{{ post.readingTime }}</span>
+                </div>
+                <h3 class="latest-post-title">{{ post.title }}</h3>
+                <p class="latest-post-excerpt">{{ post.excerpt }}</p>
+              </ui-glass-card>
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>

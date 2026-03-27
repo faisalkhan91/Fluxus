@@ -1,0 +1,38 @@
+<div class="post-layout">
+  <nav class="post-nav">
+    <a routerLink="/blog" class="back-link">
+      <ui-icon name="arrow-left" [size]="16" />
+      <span>All Posts</span>
+    </a>
+  </nav>
+
+  @if (meta(); as post) {
+    <header class="post-header">
+      <div class="post-meta">
+        <time class="post-date">
+          <ui-icon name="calendar" [size]="14" />
+          {{ post.date }}
+        </time>
+        <span class="post-reading-time">
+          <ui-icon name="clock" [size]="14" />
+          {{ post.readingTime }}
+        </span>
+      </div>
+      <div class="post-tags">
+        @for (tag of post.tags; track tag) {
+          <span class="tag">{{ tag }}</span>
+        }
+      </div>
+    </header>
+  }
+
+  <ui-glass-panel class="post-content">
+    @if (loading()) {
+      <div class="post-loading">
+        <span class="loading-cursor">Loading post...</span>
+      </div>
+    } @else {
+      <article class="prose" [innerHTML]="content()"></article>
+    }
+  </ui-glass-panel>
+</div>

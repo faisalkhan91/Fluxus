@@ -1,0 +1,18 @@
+[
+  {
+    "slug": "building-cloud-native-pipelines",
+    "title": "Building Cloud-Native CI/CD Pipelines",
+    "date": "2026-03-20",
+    "excerpt": "A hands-on walkthrough of designing resilient, container-native CI/CD pipelines using GitHub Actions, Docker, and Kubernetes—from build triggers to zero-downtime deployments.",
+    "tags": ["DevOps", "Cloud", "CI/CD"],
+    "readingTime": "6 min"
+  },
+  {
+    "slug": "blog-post-template",
+    "title": "Blog Post Template",
+    "date": "2026-03-15",
+    "excerpt": "A ready-to-copy template that demonstrates all supported Markdown features: headings, code blocks, lists, blockquotes, and more.",
+    "tags": ["Template"],
+    "readingTime": "3 min"
+  }
+]

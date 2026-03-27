@@ -1,0 +1,63 @@
+<div class="certs-layout">
+  <section aria-labelledby="certs-title">
+    <ui-section-header title="Certifications" decoration="// verified.pem" />
+    <div class="cert-grid">
+      @for (cert of certsData.certifications(); track cert.name) {
+        <ui-glass-card [hover]="true" class="cert-card">
+          <div class="cert-badge">
+            <img [ngSrc]="cert.image" [alt]="cert.name" width="80" height="80" class="cert-img" />
+          </div>
+          <p class="cert-name">{{ cert.name }}</p>
+          @if (cert.issuer) {
+            <span class="cert-issuer">{{ cert.issuer }}</span>
+          }
+        </ui-glass-card>
+      }
+    </div>
+  </section>
+
+  <section aria-labelledby="courses-title">
+    <ui-section-header title="Courses" decoration="// learning.log" />
+    <div class="courses-list">
+      @for (provider of certsData.courseProviders(); track provider.name) {
+        <ui-glass-card>
+          <button
+            class="accordion-header"
+            (click)="toggleProvider(provider.name)"
+            [attr.aria-expanded]="expandedProvider() === provider.name"
+          >
+            <span class="provider-name">{{ provider.name }}</span>
+            <span class="course-count">{{ provider.courses.length }} courses</span>
+            <ui-icon
+              name="chevron-down"
+              [size]="16"
+              [class.rotated]="expandedProvider() === provider.name"
+              class="accordion-icon"
+            />
+          </button>
+          @if (expandedProvider() === provider.name) {
+            <ul class="course-items">
+              @for (course of provider.courses; track course) {
+                <li>{{ course }}</li>
+              }
+            </ul>
+          }
+        </ui-glass-card>
+      }
+    </div>
+  </section>
+
+  <section aria-labelledby="awards-title">
+    <ui-section-header title="Awards & Honors" decoration="// achievements.md" />
+    <div class="awards-list">
+      @for (award of certsData.awards(); track award.description) {
+        <ui-glass-card [hover]="true">
+          <div class="award-item">
+            <ui-icon name="award" [size]="18" />
+            <p>{{ award.description }}</p>
+          </div>
+        </ui-glass-card>
+      }
+    </div>
+  </section>
+</div>

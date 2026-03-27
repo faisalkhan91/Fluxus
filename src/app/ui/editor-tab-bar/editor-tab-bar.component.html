@@ -1,0 +1,25 @@
+<div class="tabs-scroll">
+  @for (tab of tabs(); track tab.id) {
+    <button
+      class="tab"
+      [class.active]="tab.id === activeTabId()"
+      role="tab"
+      [attr.aria-selected]="tab.id === activeTabId()"
+      (click)="tabSelected.emit(tab)"
+    >
+      <span class="tab-dot" [style.background]="tab.color"></span>
+      <span class="tab-label">{{ tab.label }}</span>
+      <span class="tab-ext">{{ tab.ext }}</span>
+      @if (tab.id !== 'hero') {
+        <button
+          class="tab-close"
+          (click)="$event.stopPropagation(); tabClosed.emit(tab)"
+          [attr.aria-label]="'Close ' + tab.label"
+          tabindex="-1"
+        >
+          <ui-icon name="x" [size]="12" />
+        </button>
+      }
+    </button>
+  }
+</div>

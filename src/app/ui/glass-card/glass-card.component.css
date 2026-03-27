@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  padding: var(--space-6);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
+}
+
+:host(.elevation-1) {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+:host(.elevation-2) {
+  background: var(--glass-bg-hover);
+  backdrop-filter: blur(calc(var(--glass-blur) * 1.5));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 1.5));
+}
+
+:host(.elevation-3) {
+  background: var(--glass-bg-elevated);
+  backdrop-filter: blur(calc(var(--glass-blur) * 2));
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) * 2));
+}
+
+:host(.hoverable:hover) {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glass);
+}
+
+:host(.glow:hover) {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-accent-glow);
+}
