@@ -36,7 +36,7 @@
 .glow--2 {
   width: 400px;
   height: 400px;
-  background: #3178c6;
+  background: var(--accent-secondary);
   bottom: -15%;
   left: -5%;
   animation-delay: 4s;
@@ -217,7 +217,7 @@
 
 @media (max-width: 768px) {
   .hero {
-    min-height: calc(100vh - var(--space-16));
+    min-height: calc(100vh - var(--nav-pill-height) - var(--space-12));
     padding: var(--space-6);
   }
 

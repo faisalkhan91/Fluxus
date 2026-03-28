@@ -29,6 +29,7 @@
   padding: var(--space-8);
   overflow-y: auto;
   position: relative;
+  view-transition-name: main-content;
 }
 
 :host(.mobile) .content {
@@ -46,8 +47,8 @@
   border-radius: 50%;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--text-secondary);
   display: flex;
   align-items: center;
