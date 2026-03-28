@@ -5,6 +5,7 @@
   border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
   overflow: hidden;
+  view-transition-name: tab-bar;
 }
 
 .tabs-scroll {

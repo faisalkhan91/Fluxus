@@ -1,7 +1,13 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { EditorTab } from '../../ui/editor-tab-bar/editor-tab-bar.component';
+
+interface TabData {
+  label: string;
+  ext: string;
+  color: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TabService {
@@ -19,21 +25,32 @@ export class TabService {
       const url = event.urlAfterRedirects;
       const segments = url.split('/').filter(Boolean);
       const routePath = segments[0] || 'hero';
-      this.openTab(routePath);
+
+      const tabData = this.resolveTabData();
+      if (tabData) {
+        this.openTab(routePath, tabData);
+      }
     });
   }
 
-  private openTab(routePath: string): void {
-    const routeData = this.getRouteData(routePath);
-    if (!routeData) return;
+  private resolveTabData(): TabData | null {
+    let route = this.router.routerState.root;
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+    const data = route.snapshot.data?.['tab'];
+    if (!data) return null;
+    return { label: data['label'], ext: data['ext'], color: data['color'] };
+  }
 
+  private openTab(routePath: string, tabData: TabData): void {
     const exists = this.tabs().find(t => t.id === routePath);
     if (!exists) {
       this.tabs.update(tabs => [...tabs, {
         id: routePath,
-        label: routeData.label,
-        ext: routeData.ext,
-        color: routeData.color,
+        label: tabData.label,
+        ext: tabData.ext,
+        color: tabData.color,
         route: '/' + routePath,
       }]);
     }
@@ -58,19 +75,5 @@ export class TabService {
 
   selectTab(tab: EditorTab): void {
     this.router.navigate([tab.route]);
-  }
-
-  private getRouteData(path: string): { label: string; ext: string; color: string } | null {
-    const map: Record<string, { label: string; ext: string; color: string }> = {
-      hero: { label: 'Welcome', ext: '.tsx', color: '#61dafb' },
-      about: { label: 'About', ext: '.md', color: '#519aba' },
-      experience: { label: 'Experience', ext: '.ts', color: '#3178c6' },
-      skills: { label: 'Skills', ext: '.json', color: '#cbcb41' },
-      projects: { label: 'Projects', ext: '.git', color: '#e64a19' },
-      certifications: { label: 'Certifications', ext: '.pem', color: '#41b883' },
-      contact: { label: 'Contact', ext: '.sh', color: '#89e051' },
-      blog: { label: 'Blog', ext: '.rss', color: '#f78c40' },
-    };
-    return map[path] ?? null;
   }
 }
