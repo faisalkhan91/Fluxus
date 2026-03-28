@@ -34,12 +34,11 @@
       </a>
     </div>
     <div class="hero-social">
-      <a [href]="profile.personalInfo().github" target="_blank" rel="noopener" aria-label="GitHub Profile" class="social-link">
-        <ui-icon name="github" [size]="20" />
-      </a>
-      <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener" aria-label="LinkedIn Profile" class="social-link">
-        <ui-icon name="linkedin" [size]="20" />
-      </a>
+      @for (link of profile.socialLinks(); track link.platform) {
+        <a [href]="link.url" target="_blank" rel="noopener" [attr.aria-label]="link.label" class="social-link">
+          <ui-icon [name]="link.icon" [size]="20" />
+        </a>
+      }
     </div>
 
     @if (blog.latestPosts().length) {

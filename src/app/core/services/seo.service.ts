@@ -3,9 +3,10 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { yearsOfExperience } from '../../shared/utils/career.utils';
 
-const SITE_NAME = 'Faisal Khan | Software Engineer';
-const DEFAULT_DESCRIPTION = 'Software Engineer specializing in Full-Stack Development, Cloud, AI, and DevOps.';
+const SITE_NAME = 'Faisal Khan | Senior Software Engineer';
+const DEFAULT_DESCRIPTION = `Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.`;
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
