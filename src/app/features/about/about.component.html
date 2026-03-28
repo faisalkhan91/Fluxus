@@ -65,6 +65,20 @@
           </div>
         </div>
       </ui-glass-card>
+
+      @for (link of profile.socialLinks(); track link.platform) {
+        @if (link.platform !== 'GitHub' && link.platform !== 'LinkedIn') {
+          <ui-glass-card [hover]="true">
+            <div class="contact-item">
+              <ui-icon [name]="link.icon" [size]="18" />
+              <div>
+                <span class="contact-label">{{ link.platform }}</span>
+                <a [href]="link.url" target="_blank" rel="noopener">{{ link.label }}</a>
+              </div>
+            </div>
+          </ui-glass-card>
+        }
+      }
     </div>
   </section>
 

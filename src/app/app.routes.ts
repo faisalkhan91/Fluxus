@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { yearsOfExperience } from './shared/utils/career.utils';
 
 export const routes: Routes = [
   {
@@ -15,7 +16,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/hero/hero.component').then(m => m.HeroComponent),
         data: {
           tab: { label: 'Welcome', ext: '.tsx', color: '#61dafb' },
-          seo: { title: 'Welcome', description: 'Faisal Khan — Senior Software Engineer specializing in Full-Stack Development, Cloud Architecture, AI, and DevOps.' },
+          seo: { title: 'Welcome', description: `Faisal Khan \u2014 Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.` },
         },
       },
       {
@@ -23,7 +24,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent),
         data: {
           tab: { label: 'About', ext: '.md', color: '#519aba' },
-          seo: { title: 'About', description: 'Background, education, and professional journey of Faisal Khan.' },
+          seo: { title: 'About', description: 'Background, education, and professional journey of Faisal Khan \u2014 Senior Software Engineer.' },
         },
       },
       {
@@ -31,7 +32,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/experience/experience.component').then(m => m.ExperienceComponent),
         data: {
           tab: { label: 'Experience', ext: '.ts', color: '#3178c6' },
-          seo: { title: 'Experience', description: 'Professional experience and career history of Faisal Khan.' },
+          seo: { title: 'Experience', description: `${yearsOfExperience()}+ years of professional experience across SoFi, Galileo, Cigna Healthcare, and more.` },
         },
       },
       {
@@ -39,7 +40,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/skills/skills.component').then(m => m.SkillsComponent),
         data: {
           tab: { label: 'Skills', ext: '.json', color: '#cbcb41' },
-          seo: { title: 'Skills', description: 'Technical skills and competencies in full-stack development, cloud, and DevOps.' },
+          seo: { title: 'Skills', description: 'Technical skills in full-stack development, cloud architecture, AI, and DevOps.' },
         },
       },
       {
@@ -47,7 +48,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/projects/projects.component').then(m => m.ProjectsComponent),
         data: {
           tab: { label: 'Projects', ext: '.git', color: '#e64a19' },
-          seo: { title: 'Projects', description: 'Open-source and professional projects by Faisal Khan.' },
+          seo: { title: 'Projects', description: 'Open-source and professional projects by Faisal Khan \u2014 from full-stack apps to CI/CD pipelines.' },
         },
       },
       {
@@ -55,7 +56,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/certifications/certifications.component').then(m => m.CertificationsComponent),
         data: {
           tab: { label: 'Certifications', ext: '.pem', color: '#41b883' },
-          seo: { title: 'Certifications', description: 'Professional certifications, courses, and industry recognition.' },
+          seo: { title: 'Certifications', description: 'Professional certifications in AWS, Azure, Google Cloud, and industry recognition.' },
         },
       },
       {
@@ -71,7 +72,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/blog/blog.component').then(m => m.BlogComponent),
         data: {
           tab: { label: 'Blog', ext: '.rss', color: '#f78c40' },
-          seo: { title: 'Blog', description: 'Technical articles and insights on software engineering, cloud, and AI.' },
+          seo: { title: 'Blog', description: 'Technical articles and insights on software engineering, cloud, AI, and DevOps.' },
         },
       },
       {
