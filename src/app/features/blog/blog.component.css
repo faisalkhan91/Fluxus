@@ -28,14 +28,14 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #febc2e;
+  background: var(--color-warning);
   flex-shrink: 0;
 }
 
 .disclaimer-label {
   font-size: 0.65rem;
   font-weight: 600;
-  color: #febc2e;
+  color: var(--color-warning);
   letter-spacing: 0.08em;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .string {
-  color: #28c840;
+  color: var(--color-success);
 }
 
 .comment {

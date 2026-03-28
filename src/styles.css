@@ -60,6 +60,16 @@
   --glass-bg-elevated: rgba(255, 255, 255, 0.08);
   --nav-pill-bg: rgba(14, 14, 20, 0.85);
 
+  /* === Secondary / Semantic Colors === */
+  --accent-secondary: #3178c6;
+  --color-warning: #febc2e;
+  --color-success: #28c840;
+  --backdrop-overlay: rgba(0, 0, 0, 0.6);
+
+  /* === Scrollbar === */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+
   /* === Decorative === */
   --icon-drop-shadow: drop-shadow(0 0 6px rgba(255, 255, 255, 0.1));
   --grid-line-color: rgba(255, 255, 255, 0.02);
@@ -105,6 +115,14 @@
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.75);
   --nav-pill-bg: rgba(255, 255, 255, 0.72);
+
+  --accent-secondary: #2563eb;
+  --color-warning: #f59e0b;
+  --color-success: #22c55e;
+  --backdrop-overlay: rgba(0, 0, 0, 0.4);
+
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
 
   --icon-drop-shadow: drop-shadow(0 0 6px rgba(0, 0, 0, 0.08));
   --grid-line-color: rgba(0, 0, 0, 0.04);
@@ -196,20 +214,12 @@ p {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--scrollbar-thumb);
   border-radius: var(--radius-pill);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-}
-
-[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* === Prose (rendered markdown via innerHTML) === */

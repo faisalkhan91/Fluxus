@@ -17,6 +17,13 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-glass);
+  max-width: calc(100vw - var(--space-8));
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pill::-webkit-scrollbar {
+  display: none;
 }
 
 .pill-item {
