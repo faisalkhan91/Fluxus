@@ -4,11 +4,12 @@ import {
   inject,
   signal,
   OnInit,
-  OnDestroy,
+  DestroyRef,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { Subject, switchMap, takeUntil } from 'rxjs';
+import { switchMap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
 import { BlogService } from '../../../core/services/blog.service';
@@ -21,16 +22,15 @@ import { BlogPost } from '../../../shared/models/blog-post.model';
   imports: [GlassPanelComponent, IconComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogPostComponent implements OnInit, OnDestroy {
+export class BlogPostComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private sanitizer = inject(DomSanitizer);
   private blog = inject(BlogService);
+  private destroyRef = inject(DestroyRef);
 
   readonly content = signal<SafeHtml>('');
   readonly meta = signal<BlogPost | undefined>(undefined);
   readonly loading = signal(true);
-
-  private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
     this.blog.loadPosts();
@@ -43,7 +43,7 @@ export class BlogPostComponent implements OnInit, OnDestroy {
           this.loading.set(true);
           return this.blog.getPostContent(slug);
         }),
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         next: html => {
@@ -56,10 +56,5 @@ export class BlogPostComponent implements OnInit, OnDestroy {
         },
         error: () => this.loading.set(false),
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

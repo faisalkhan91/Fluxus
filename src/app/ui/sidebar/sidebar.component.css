@@ -8,6 +8,7 @@
   padding: var(--space-6) 0;
   position: fixed;
   top: 0;
+  view-transition-name: sidebar;
   left: 0;
   z-index: var(--z-sidebar);
   transition: width var(--transition-base);
