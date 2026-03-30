@@ -36,7 +36,9 @@ export class ShellComponent {
   protected themeService = inject(ThemeService);
 
   onResumeDownload(): void {
-    window.open('assets/resume.pdf', '_blank');
+    if (typeof window !== 'undefined') {
+      window.open('assets/resume.pdf', '_blank');
+    }
   }
 
   onThemeToggle(): void {

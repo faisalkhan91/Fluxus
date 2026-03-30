@@ -37,7 +37,9 @@ export class ContactComponent {
       const mailto = `mailto:${this.profile.personalInfo().email}?subject=${encodeURIComponent(this.contactForm.value.subject ?? '')}&body=${encodeURIComponent(
         `From: ${this.contactForm.value.name} (${this.contactForm.value.email})\n\n${this.contactForm.value.message}`
       )}`;
-      window.open(mailto, '_blank');
+      if (typeof window !== 'undefined') {
+        window.open(mailto, '_blank');
+      }
       this.submitted.set(true);
     }
   }
