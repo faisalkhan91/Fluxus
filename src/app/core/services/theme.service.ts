@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, effect, DestroyRef, inject } from '@angular/core';
+import { Injectable, signal, computed, effect, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 export type Theme = 'light' | 'dark';
 
@@ -7,7 +8,9 @@ const STORAGE_KEY = 'theme';
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private destroyRef = inject(DestroyRef);
-  private mediaQuery = typeof window !== 'undefined'
+  private document = inject(DOCUMENT);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private mediaQuery = this.isBrowser
     ? window.matchMedia('(prefers-color-scheme: light)')
     : null;
 
@@ -17,16 +20,14 @@ export class ThemeService {
   constructor() {
     effect(() => {
       const t = this.theme();
-      if (typeof document !== 'undefined') {
-        if (t === 'dark') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', t);
-        }
+      if (t === 'dark') {
+        this.document.documentElement.removeAttribute('data-theme');
+      } else {
+        this.document.documentElement.setAttribute('data-theme', t);
       }
     });
 
-    if (this.mediaQuery && !localStorage.getItem(STORAGE_KEY)) {
+    if (this.isBrowser && this.mediaQuery && !localStorage.getItem(STORAGE_KEY)) {
       const onChange = (e: MediaQueryListEvent) => {
         if (!localStorage.getItem(STORAGE_KEY)) {
           this.theme.set(e.matches ? 'light' : 'dark');
@@ -40,11 +41,13 @@ export class ThemeService {
   toggle(): void {
     const next: Theme = this.isDark() ? 'light' : 'dark';
     this.theme.set(next);
-    localStorage.setItem(STORAGE_KEY, next);
+    if (this.isBrowser) {
+      localStorage.setItem(STORAGE_KEY, next);
+    }
   }
 
   private resolveInitial(): Theme {
-    if (typeof window === 'undefined') return 'dark';
+    if (!this.isBrowser) return 'dark';
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
     return this.mediaQuery?.matches ? 'light' : 'dark';

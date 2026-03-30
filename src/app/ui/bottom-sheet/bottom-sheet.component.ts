@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
 
 @Component({
@@ -12,6 +13,8 @@ import { IconComponent } from '../icon/icon.component';
   },
 })
 export class BottomSheetComponent {
+  private doc = inject(DOCUMENT);
+
   open = input(false);
   title = input<string>('');
   closed = output<void>();
@@ -33,10 +36,10 @@ export class BottomSheetComponent {
         this.closed.emit();
       }
       this.dragOffset.set(0);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('touchend', onEnd);
+      this.doc.removeEventListener('touchmove', onMove);
+      this.doc.removeEventListener('touchend', onEnd);
     };
-    document.addEventListener('touchmove', onMove, { passive: true });
-    document.addEventListener('touchend', onEnd);
+    this.doc.addEventListener('touchmove', onMove, { passive: true });
+    this.doc.addEventListener('touchend', onEnd);
   }
 }
