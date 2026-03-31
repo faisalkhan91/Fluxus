@@ -2,7 +2,7 @@
   display: block;
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border);
-  padding: var(--space-6);
+  padding: var(--glass-card-padding, var(--space-6));
   transition:
     background-color var(--transition-base),
     border-color var(--transition-base),

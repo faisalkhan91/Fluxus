@@ -4,8 +4,8 @@ import { Certification, CourseProvider, Award } from '../../shared/models/certif
 @Injectable({ providedIn: 'root' })
 export class CertificationsDataService {
   readonly certifications = signal<Certification[]>([
-    { name: 'Microsoft Certified: Azure AI Engineer Associate', image: 'assets/images/achievements/certifications/microsoft-certified-azure-ai-engineer-associate.png', issuer: 'Microsoft' },
-    { name: 'Splunk Cloud Administration', image: 'assets/images/achievements/certifications/splunk-cloud-administration.png', issuer: 'Splunk' },
+    { name: 'Microsoft Certified: Azure AI Engineer Associate', image: 'assets/images/achievements/certifications/microsoft-certified-azure-ai-engineer-associate.webp', issuer: 'Microsoft' },
+    { name: 'Splunk Cloud Administration', image: 'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png', issuer: 'Splunk' },
     { name: 'Microsoft Certified: Security, Compliance, and Identity Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png', issuer: 'Microsoft' },
     { name: 'Microsoft Certified: Azure Data Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png', issuer: 'Microsoft' },
     { name: 'Microsoft Certified: Azure AI Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png', issuer: 'Microsoft' },

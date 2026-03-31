@@ -1,6 +1,6 @@
 <div class="certs-layout">
   <section aria-labelledby="certs-title">
-    <ui-section-header title="Certifications" decoration="// verified.pem" />
+    <ui-section-header title="Certifications" headingId="certs-title" decoration="// verified.pem" />
     <div class="cert-grid">
       @for (cert of certsData.certifications(); track cert.name) {
         <ui-glass-card [hover]="true" class="cert-card">
@@ -17,7 +17,7 @@
   </section>
 
   <section aria-labelledby="courses-title">
-    <ui-section-header title="Courses" decoration="// learning.log" />
+    <ui-section-header title="Courses" headingId="courses-title" decoration="// learning.log" />
     <div class="courses-list">
       @for (provider of certsData.courseProviders(); track provider.name) {
         <ui-glass-card>
@@ -27,7 +27,7 @@
             [attr.aria-expanded]="expandedProvider() === provider.name"
           >
             <span class="provider-name">{{ provider.name }}</span>
-            <span class="course-count">{{ provider.courses.length }} courses</span>
+            <span class="course-count">{{ provider.courses.length }} {{ provider.courses.length === 1 ? 'course' : 'courses' }}</span>
             <ui-icon
               name="chevron-down"
               [size]="16"
@@ -48,7 +48,7 @@
   </section>
 
   <section aria-labelledby="awards-title">
-    <ui-section-header title="Awards & Honors" decoration="// achievements.md" />
+    <ui-section-header title="Awards & Honors" headingId="awards-title" decoration="// achievements.md" />
     <div class="awards-list">
       @for (award of certsData.awards(); track award.description) {
         <ui-glass-card [hover]="true">

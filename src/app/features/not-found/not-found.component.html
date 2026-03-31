@@ -1,27 +1,53 @@
-<div class="not-found">
+<section class="not-found" aria-labelledby="error-heading">
+  <div class="glitch-hero" aria-hidden="true">
+    <span class="glitch" data-text="404">404</span>
+  </div>
+
   <div class="terminal-window">
     <div class="terminal-bar">
       <span class="terminal-dot red"></span>
       <span class="terminal-dot yellow"></span>
       <span class="terminal-dot green"></span>
-      <span class="terminal-title">zsh — error</span>
+      <span class="terminal-title">zsh — diagnostics</span>
     </div>
     <div class="terminal-body">
       <p class="line"><span class="prompt">$</span> curl -I /{{ path }}</p>
-      <p class="line output">HTTP/1.1 <span class="error-code">404</span> Not Found</p>
-      <p class="line output">content-type: text/html</p>
-      <p class="line"><span class="prompt">$</span> echo "The page you're looking for doesn't exist."</p>
-      <p class="line output">The page you're looking for doesn't exist.</p>
+      <p class="line output">HTTP/1.1 <span class="status-code">404</span> Not Found</p>
+      <p class="line output">server: nginx/fluxus</p>
+      <p class="line blank"></p>
+      <p class="line"><span class="prompt">$</span> grep -r "{{ path }}" ./src/app/app.routes.ts</p>
+      <p class="line output error-msg">No matches found.</p>
+      <p class="line blank"></p>
+      <p class="line"><span class="prompt">$</span> echo <span class="string">"Route not found. Try one of these:"</span></p>
+      <p class="line output" id="error-heading">Route not found. Try one of these:</p>
       <p class="line"><span class="prompt">$</span> <span class="cursor-blink">_</span></p>
     </div>
   </div>
 
-  <div class="actions">
-    <a routerLink="/hero">
-      <ui-glow-button variant="primary">
-        <ui-icon name="arrow-left" [size]="16" />
-        Back to Home
-      </ui-glow-button>
+  <nav class="suggestions" aria-label="Suggested pages">
+    <a routerLink="/hero" class="suggestion-card">
+      <ui-icon name="home" [size]="18" />
+      <div class="suggestion-text">
+        <span class="suggestion-cmd">cd ~/home</span>
+        <span class="suggestion-label">Welcome</span>
+      </div>
+      <ui-icon name="chevron-right" [size]="14" />
     </a>
-  </div>
-</div>
+    <a routerLink="/about" class="suggestion-card">
+      <ui-icon name="user" [size]="18" />
+      <div class="suggestion-text">
+        <span class="suggestion-cmd">cat about.md</span>
+        <span class="suggestion-label">About Me</span>
+      </div>
+      <ui-icon name="chevron-right" [size]="14" />
+    </a>
+    <a routerLink="/blog" class="suggestion-card">
+      <ui-icon name="file-text" [size]="18" />
+      <div class="suggestion-text">
+        <span class="suggestion-cmd">ls ./blog/</span>
+        <span class="suggestion-label">Blog Posts</span>
+      </div>
+      <ui-icon name="chevron-right" [size]="14" />
+    </a>
+  </nav>
+</section>
