@@ -48,6 +48,7 @@
   --sidebar-collapsed: 60px;
   --tab-bar-height: 38px;
   --nav-pill-height: 56px;
+  --mobile-toggle-size: 40px;
 
   /* === Radius === */
   --radius-sm: 6px;
@@ -361,7 +362,9 @@ p {
 }
 
 .prose table {
-  width: 100%;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
   margin: var(--space-6) 0;
   font-size: 0.85rem;
@@ -411,7 +414,17 @@ p {
   }
 
   .prose pre code {
+    padding: var(--space-3);
     font-size: 0.75rem;
+  }
+
+  .prose table {
+    font-size: 0.78rem;
+  }
+
+  .prose th,
+  .prose td {
+    padding: var(--space-2) var(--space-3);
   }
 }
 

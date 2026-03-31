@@ -34,7 +34,7 @@
 
 :host(.mobile) .content {
   padding: var(--space-4);
-  padding-bottom: calc(var(--nav-pill-height) + var(--space-12));
+  padding-bottom: calc(var(--nav-pill-height) + var(--space-4) + var(--space-12));
 }
 
 .mobile-theme-toggle {
@@ -42,8 +42,8 @@
   top: var(--space-4);
   right: var(--space-4);
   z-index: var(--z-nav-pill);
-  width: 40px;
-  height: 40px;
+  width: var(--mobile-toggle-size);
+  height: var(--mobile-toggle-size);
   border-radius: 50%;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);

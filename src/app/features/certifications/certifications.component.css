@@ -12,7 +12,7 @@
 
 .cert-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--space-4);
 }
 
@@ -138,18 +138,43 @@
 }
 
 @media (max-width: 768px) {
+  .certs-layout {
+    gap: var(--space-8);
+  }
+
   .cert-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    display: flex;
+    align-items: stretch;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    display: flex;
     gap: var(--space-3);
-    padding-bottom: var(--space-3);
+    padding: var(--space-2) 0 var(--space-3);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .cert-grid::-webkit-scrollbar {
+    display: none;
   }
 
   .cert-card {
-    min-width: 140px;
+    min-width: 70vw;
+    width: 70vw;
     scroll-snap-align: center;
     flex-shrink: 0;
+    --glass-card-padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .cert-img {
+    width: 96px;
+    height: 96px;
+  }
+
+  .cert-name {
+    font-size: 0.8rem;
   }
 }

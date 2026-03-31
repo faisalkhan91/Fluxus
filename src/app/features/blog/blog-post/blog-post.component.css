@@ -71,6 +71,7 @@
 
 .post-content {
   padding: var(--space-8);
+  overflow: hidden;
 }
 
 .post-loading {
@@ -94,6 +95,6 @@
 
 @media (max-width: 768px) {
   .post-content {
-    padding: var(--space-5);
+    padding: var(--space-4);
   }
 }

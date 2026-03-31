@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { SectionHeaderComponent } from '../../ui/section-header/section-header.component';
 import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
@@ -14,4 +14,22 @@ import { ProjectsDataService } from '../../core/services/projects-data.service';
 })
 export class ProjectsComponent {
   protected projectsData = inject(ProjectsDataService);
+
+  private expandedSet = signal(new Set<string>());
+
+  protected isExpanded(title: string): boolean {
+    return this.expandedSet().has(title);
+  }
+
+  protected toggleExpand(title: string): void {
+    this.expandedSet.update(set => {
+      const next = new Set(set);
+      if (next.has(title)) {
+        next.delete(title);
+      } else {
+        next.add(title);
+      }
+      return next;
+    });
+  }
 }

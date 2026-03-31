@@ -39,3 +39,13 @@
   margin-top: var(--space-3);
   box-shadow: var(--shadow-accent-glow);
 }
+
+@media (max-width: 768px) {
+  .header-content {
+    padding-right: calc(var(--mobile-toggle-size) + var(--space-3));
+  }
+
+  :host {
+    margin-bottom: var(--space-6);
+  }
+}

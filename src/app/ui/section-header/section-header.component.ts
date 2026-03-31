@@ -4,7 +4,7 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
   selector: 'ui-section-header',
   template: `
     <div class="header-content">
-      <h2 class="title">{{ title() }}</h2>
+      <h2 class="title" [id]="headingId()">{{ title() }}</h2>
       @if (subtitle()) {
         <p class="subtitle">{{ subtitle() }}</p>
       }
@@ -19,6 +19,7 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 })
 export class SectionHeaderComponent {
   title = input.required<string>();
+  headingId = input<string>();
   subtitle = input<string>();
   decoration = input<string>();
 }
