@@ -3,8 +3,11 @@ import {
   ChangeDetectionStrategy,
   inject,
   signal,
+  computed,
   OnInit,
   DestroyRef,
+  ElementRef,
+  afterNextRender,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -27,10 +30,35 @@ export class BlogPostComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private blog = inject(BlogService);
   private destroyRef = inject(DestroyRef);
+  private elRef = inject(ElementRef);
 
   readonly content = signal<SafeHtml>('');
   readonly meta = signal<BlogPost | undefined>(undefined);
   readonly loading = signal(true);
+  readonly scrollProgress = signal(0);
+
+  readonly adjacentPosts = computed(() => {
+    const post = this.meta();
+    return post ? this.blog.getAdjacentPosts(post.slug) : { prev: undefined, next: undefined };
+  });
+
+  constructor() {
+    afterNextRender(() => {
+      const postLayout = this.elRef.nativeElement.querySelector('.post-layout') as HTMLElement | null;
+      if (!postLayout) return;
+
+      const onScroll = () => {
+        const rect = postLayout.getBoundingClientRect();
+        const total = postLayout.offsetHeight - window.innerHeight;
+        if (total <= 0) { this.scrollProgress.set(100); return; }
+        const scrolled = Math.max(0, -rect.top);
+        this.scrollProgress.set(Math.min(100, (scrolled / total) * 100));
+      };
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+    });
+  }
 
   ngOnInit(): void {
     this.blog.loadPosts();
