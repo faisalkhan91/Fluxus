@@ -1,5 +1,13 @@
 [
   {
+    "slug": "angular-signals-state-management",
+    "title": "Taming State with Angular Signals",
+    "date": "2026-03-28",
+    "excerpt": "Practical patterns for replacing BehaviorSubjects with Signals—service state, computed derivations, SSR safety, and when to still reach for RxJS.",
+    "tags": ["Angular", "TypeScript", "Architecture"],
+    "readingTime": "7 min"
+  },
+  {
     "slug": "building-cloud-native-pipelines",
     "title": "Building Cloud-Native CI/CD Pipelines",
     "date": "2026-03-20",
