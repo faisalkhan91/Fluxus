@@ -72,4 +72,13 @@ export class BlogService {
   getPostMeta(slug: string): BlogPost | undefined {
     return this.posts().find(p => p.slug === slug);
   }
+
+  getAdjacentPosts(slug: string): { prev?: BlogPost; next?: BlogPost } {
+    const all = this.posts();
+    const idx = all.findIndex(p => p.slug === slug);
+    return {
+      prev: idx > 0 ? all[idx - 1] : undefined,
+      next: idx < all.length - 1 ? all[idx + 1] : undefined,
+    };
+  }
 }

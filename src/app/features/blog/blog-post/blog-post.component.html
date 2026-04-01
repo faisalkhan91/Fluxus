@@ -1,4 +1,6 @@
 <div class="post-layout">
+  <div class="reading-progress" [style.width.%]="scrollProgress()"></div>
+
   <nav class="post-nav">
     <a routerLink="/blog" class="back-link">
       <ui-icon name="arrow-left" [size]="16" />
@@ -35,4 +37,27 @@
       <article class="prose" [innerHTML]="content()"></article>
     }
   </ui-glass-panel>
+
+  @if (adjacentPosts(); as nav) {
+    <nav class="post-footer-nav" aria-label="Post navigation">
+      @if (nav.prev) {
+        <a [routerLink]="['/blog', nav.prev.slug]" class="footer-nav-link footer-nav-prev">
+          <span class="footer-nav-direction">
+            <ui-icon name="arrow-left" [size]="14" />
+            Previous
+          </span>
+          <span class="footer-nav-title">{{ nav.prev.title }}</span>
+        </a>
+      }
+      @if (nav.next) {
+        <a [routerLink]="['/blog', nav.next.slug]" class="footer-nav-link footer-nav-next">
+          <span class="footer-nav-direction">
+            Next
+            <ui-icon name="arrow-right" [size]="14" />
+          </span>
+          <span class="footer-nav-title">{{ nav.next.title }}</span>
+        </a>
+      }
+    </nav>
+  }
 </div>
