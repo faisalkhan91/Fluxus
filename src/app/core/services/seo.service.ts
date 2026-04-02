@@ -26,6 +26,8 @@ export class SeoService {
       }
 
       const seo = route.snapshot.data?.['seo'];
+      if (seo?.['dynamicMeta']) return;
+
       const pageTitle = seo?.['title']
         ? `${seo['title']} — ${SITE_NAME}`
         : SITE_NAME;
