@@ -59,12 +59,14 @@
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .project-card.expanded .project-desc {
   -webkit-line-clamp: unset;
+  line-clamp: unset;
   display: block;
 }
 
@@ -155,6 +157,7 @@
 
   .project-desc {
     -webkit-line-clamp: 4;
+    line-clamp: 4;
   }
 
   .read-more-toggle {
@@ -162,6 +165,7 @@
   }
 
   .project-card.expanded .project-desc {
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
   }
 }

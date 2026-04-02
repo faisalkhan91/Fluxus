@@ -80,7 +80,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/blog/blog-post/blog-post.component').then(m => m.BlogPostComponent),
         data: {
           tab: { label: 'Blog', ext: '.rss', color: '#f78c40' },
-          seo: { title: 'Blog Post', description: 'A deep dive into a technical topic by Faisal Khan.' },
+          seo: { dynamicMeta: true },
         },
       },
       {
