@@ -7,7 +7,7 @@
 
 A personal portfolio site built with Angular 21, styled as a code-editor workspace. The entire application is statically generated (SSG) and served from a hardened NGINX container on Kubernetes.
 
-**Live:** [faisalkhan.dev](https://faisalkhan.dev)
+**Live:** [faisalkhan.dpdns.org](https://faisalkhan.dpdns.org)
 
 ![FluxusOverview](https://github.com/faisalkhan91/Fluxus/assets/25315418/ea068c29-3c10-4cdc-873e-ec6224bb7478)
 
