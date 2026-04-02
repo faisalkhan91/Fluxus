@@ -3,7 +3,7 @@ name: Build and Push ARM64 to GHCR
 on:
   push:
     branches:
-      - deployment_local  # Or main, depending on where you want to trigger it
+      - main  # Updated to trigger on pushes/merges to main
       
 env:
   REGISTRY: ghcr.io
