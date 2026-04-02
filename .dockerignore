@@ -1,0 +1,8 @@
+.git
+.angular
+.vscode
+.cursor
+.gemini
+node_modules
+dist
+*.md
