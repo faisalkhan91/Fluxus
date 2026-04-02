@@ -1,6 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, computed, inject, PLATFORM_ID } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject, PLATFORM_ID, ElementRef, effect } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { DomSanitizer } from '@angular/platform-browser';
 
 const ICONS: Record<string, string> = {
   home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
@@ -46,7 +45,6 @@ const ICONS: Record<string, string> = {
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    [innerHTML]="svgContent()"
     aria-hidden="true"
   ></svg>`,
   styles: [`:host { display: inline-flex; align-items: center; justify-content: center; }`],
@@ -56,12 +54,14 @@ export class IconComponent {
   name = input.required<string>();
   size = input(20);
 
-  private sanitizer = inject(DomSanitizer);
-  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private el = inject(ElementRef);
 
-  svgContent = computed(() => {
-    if (!this.isBrowser) return '';
-    const iconPath = ICONS[this.name()] ?? '';
-    return this.sanitizer.bypassSecurityTrustHtml(iconPath);
-  });
+  constructor() {
+    if (isPlatformBrowser(inject(PLATFORM_ID))) {
+      effect(() => {
+        const svg = this.el.nativeElement.querySelector('svg');
+        if (svg) svg.innerHTML = ICONS[this.name()] ?? '';
+      });
+    }
+  }
 }
