@@ -1,11 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <style>
+    .prompt { stroke: #c92a2a; fill: none }
+    .initials { fill: #e4e4e7 }
+    .cursor { stroke: #c92a2a }
     @media (prefers-color-scheme: light) {
-      .bg { fill: #f0f0f3; }
-      .letter { fill: #b91c1c; }
+      .prompt { stroke: #b91c1c }
+      .initials { fill: #1a1a1a }
+      .cursor { stroke: #b91c1c }
     }
   </style>
-  <rect class="bg" width="32" height="32" rx="6" fill="#07070b"/>
-  <path class="letter" fill="#c92a2a" d="M5 8h9.5v2.4H7.8v3.2h5.8v2.4H7.8V24H5V8z"/>
-  <path class="letter" fill="#c92a2a" d="M17 8h2.8v6.4L25.2 8H28.6l-6 7.2L29 24h-3.6l-4.8-6.8-1.8 2.1V24H17V8z"/>
+  <polyline points="1,8 7,16 1,24" class="prompt" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="9" y="25" font-family="'Fira Code', monospace" font-size="22" font-weight="700" class="initials" letter-spacing="-3">fk</text>
+  <line x1="26" y1="28" x2="31" y2="28" class="cursor" stroke-width="2.8" stroke-linecap="round"/>
 </svg>
