@@ -10,13 +10,15 @@ import {
   afterNextRender,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { switchMap } from 'rxjs';
+import { DomSanitizer, SafeHtml, Meta, Title } from '@angular/platform-browser';
+import { switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
+
+const SITE_URL = 'https://faisalkhan.dev';
 
 @Component({
   selector: 'app-blog-post',
@@ -31,6 +33,8 @@ export class BlogPostComponent implements OnInit {
   private blog = inject(BlogService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
+  private metaService = inject(Meta);
+  private titleService = inject(Title);
 
   readonly content = signal<SafeHtml>('');
   readonly meta = signal<BlogPost | undefined>(undefined);
@@ -61,15 +65,19 @@ export class BlogPostComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.blog.loadPosts();
-
     this.route.paramMap
       .pipe(
         switchMap(params => {
           const slug = params.get('slug') ?? '';
-          this.meta.set(this.blog.getPostMeta(slug));
           this.loading.set(true);
-          return this.blog.getPostContent(slug);
+          return this.blog.loadPosts().pipe(
+            tap(posts => {
+              const post = posts.find(p => p.slug === slug);
+              this.meta.set(post);
+              this.updateMetaTags(post);
+            }),
+            switchMap(() => this.blog.getPostContent(slug)),
+          );
         }),
         takeUntilDestroyed(this.destroyRef),
       )
@@ -77,12 +85,23 @@ export class BlogPostComponent implements OnInit {
         next: html => {
           this.content.set(this.sanitizer.bypassSecurityTrustHtml(html));
           this.loading.set(false);
-          if (!this.meta()) {
-            const slug = this.route.snapshot.paramMap.get('slug') ?? '';
-            this.meta.set(this.blog.getPostMeta(slug));
-          }
         },
         error: () => this.loading.set(false),
       });
+  }
+
+  private updateMetaTags(post: BlogPost | undefined): void {
+    if (!post) return;
+    const url = `${SITE_URL}/blog/${post.slug}`;
+    const title = `${post.title} — Faisal Khan`;
+
+    this.titleService.setTitle(title);
+    this.metaService.updateTag({ property: 'og:title', content: title });
+    this.metaService.updateTag({ property: 'og:description', content: post.excerpt });
+    this.metaService.updateTag({ property: 'og:url', content: url });
+    this.metaService.updateTag({ property: 'og:type', content: 'article' });
+    this.metaService.updateTag({ name: 'twitter:title', content: title });
+    this.metaService.updateTag({ name: 'twitter:description', content: post.excerpt });
+    this.metaService.updateTag({ name: 'description', content: post.excerpt });
   }
 }

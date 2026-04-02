@@ -53,24 +53,21 @@ export class BlogService {
 
   private manifest$: Observable<BlogPost[]> | undefined;
 
-  loadPosts(): void {
-    if (this.manifest$) return;
+  loadPosts(): Observable<BlogPost[]> {
+    if (!this.manifest$) {
+      this.manifest$ = this.http
+        .get<BlogPost[]>('assets/blog/posts.json')
+        .pipe(shareReplay(1));
 
-    this.manifest$ = this.http
-      .get<BlogPost[]>('assets/blog/posts.json')
-      .pipe(shareReplay(1));
-
-    this.manifest$.subscribe(posts => this.posts.set(posts));
+      this.manifest$.subscribe(posts => this.posts.set(posts));
+    }
+    return this.manifest$;
   }
 
   getPostContent(slug: string): Observable<string> {
     return this.http
       .get(`assets/blog/posts/${slug}.md`, { responseType: 'text' })
       .pipe(map(md => marked.parse(md) as string));
-  }
-
-  getPostMeta(slug: string): BlogPost | undefined {
-    return this.posts().find(p => p.slug === slug);
   }
 
   getAdjacentPosts(slug: string): { prev?: BlogPost; next?: BlogPost } {
