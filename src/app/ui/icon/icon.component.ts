@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 
 const ICONS: Record<string, string> = {
@@ -56,8 +57,10 @@ export class IconComponent {
   size = input(20);
 
   private sanitizer = inject(DomSanitizer);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   svgContent = computed(() => {
+    if (!this.isBrowser) return '';
     const iconPath = ICONS[this.name()] ?? '';
     return this.sanitizer.bypassSecurityTrustHtml(iconPath);
   });
