@@ -1,5 +1,11 @@
 @if (open()) {
-  <div class="backdrop" (click)="onBackdropClick()"></div>
+  <div
+    class="backdrop"
+    (click)="onBackdropClick()"
+    (keydown.enter)="onBackdropClick()"
+    tabindex="-1"
+    aria-hidden="true"
+  ></div>
   <div
     class="sheet"
     [style.transform]="'translateY(' + dragOffset() + 'px)'"
