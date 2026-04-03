@@ -20,4 +20,5 @@ jobs:
         id: release
         with:
           release-type: node
+          token: ${{ secrets.RELEASE_TOKEN }}
           bootstrap-sha: afdbe218336ce37e85d8fd230bf605be403ef9a8
