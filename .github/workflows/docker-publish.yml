@@ -3,7 +3,7 @@ name: Build and Push ARM64 to GHCR
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
