@@ -4,7 +4,9 @@
     class="sheet"
     [style.transform]="'translateY(' + dragOffset() + 'px)'"
     role="dialog"
+    aria-modal="true"
     [attr.aria-label]="title()"
+    tabindex="-1"
   >
     <div class="drag-handle" (touchstart)="onDragStart($event)">
       <span class="handle-bar"></span>

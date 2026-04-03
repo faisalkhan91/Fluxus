@@ -4,7 +4,7 @@ Modern software teams ship fast—sometimes dozens of times per day. But speed w
 
 ## Why "Cloud-Native" Matters
 
-Traditional CI/CD (Jenkins on a VM, anyone?) works, but it doesn't *scale*. Cloud-native pipelines treat infrastructure as code, run inside containers, and leverage managed services so you spend time on features, not firefighting.
+Traditional CI/CD (Jenkins on a VM, anyone?) works, but it doesn't _scale_. Cloud-native pipelines treat infrastructure as code, run inside containers, and leverage managed services so you spend time on features, not firefighting.
 
 Key principles:
 
@@ -14,13 +14,13 @@ Key principles:
 
 ## The Stack
 
-| Layer | Tool | Why |
-|-------|------|-----|
-| Source Control | GitHub | Branch protection, CODEOWNERS, PR checks |
-| CI Engine | GitHub Actions | Native integration, matrix builds, reusable workflows |
-| Container Runtime | Docker | Reproducible builds with multi-stage Dockerfiles |
-| Orchestration | Kubernetes (AKS) | Rolling deployments, health checks, auto-scaling |
-| Registry | Azure Container Registry | Geo-replicated, integrated with AKS |
+| Layer             | Tool                     | Why                                                   |
+| ----------------- | ------------------------ | ----------------------------------------------------- |
+| Source Control    | GitHub                   | Branch protection, CODEOWNERS, PR checks              |
+| CI Engine         | GitHub Actions           | Native integration, matrix builds, reusable workflows |
+| Container Runtime | Docker                   | Reproducible builds with multi-stage Dockerfiles      |
+| Orchestration     | Kubernetes (AKS)         | Rolling deployments, health checks, auto-scaling      |
+| Registry          | Azure Container Registry | Geo-replicated, integrated with AKS                   |
 
 ## A Minimal Pipeline
 
@@ -119,4 +119,4 @@ In a future post I'll cover **GitOps with Flux** — where the cluster itself wa
 
 ---
 
-*Thanks for reading. If you have questions or want to discuss CI/CD patterns, hit me up on the [Contact](/contact) page.*
+_Thanks for reading. If you have questions or want to discuss CI/CD patterns, hit me up on the [Contact](/contact) page._

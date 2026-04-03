@@ -10,7 +10,13 @@ import { NgOptimizedImage } from '@angular/common';
       }
       <span class="badge-name">{{ name() }}</span>
       @if (level()) {
-        <div class="badge-bar" role="progressbar" [attr.aria-valuenow]="level()" aria-valuemin="0" aria-valuemax="100">
+        <div
+          class="badge-bar"
+          role="progressbar"
+          [attr.aria-valuenow]="level()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
           <div class="badge-fill" [style.width.%]="level()"></div>
         </div>
       }

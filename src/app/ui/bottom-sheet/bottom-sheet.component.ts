@@ -1,4 +1,14 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  signal,
+  inject,
+  effect,
+  ElementRef,
+  OnDestroy,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
 
@@ -10,16 +20,48 @@ import { IconComponent } from '../icon/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.open]': 'open()',
+    '(document:keydown.escape)': 'onEscapeKey()',
   },
 })
-export class BottomSheetComponent {
+export class BottomSheetComponent implements OnDestroy {
   private doc = inject(DOCUMENT);
+  private elRef = inject(ElementRef);
 
   open = input(false);
   title = input<string>('');
   closed = output<void>();
 
   protected dragOffset = signal(0);
+
+  private previouslyFocused: HTMLElement | null = null;
+  private focusTrapListener: ((e: FocusEvent) => void) | null = null;
+
+  constructor() {
+    effect(() => {
+      if (this.open()) {
+        this.previouslyFocused = this.doc.activeElement as HTMLElement;
+        queueMicrotask(() => {
+          const sheet = this.elRef.nativeElement.querySelector('.sheet');
+          sheet?.focus();
+          this.enableFocusTrap();
+        });
+      } else {
+        this.disableFocusTrap();
+        this.previouslyFocused?.focus();
+        this.previouslyFocused = null;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.disableFocusTrap();
+  }
+
+  onEscapeKey(): void {
+    if (this.open()) {
+      this.closed.emit();
+    }
+  }
 
   onBackdropClick(): void {
     this.closed.emit();
@@ -41,5 +83,23 @@ export class BottomSheetComponent {
     };
     this.doc.addEventListener('touchmove', onMove, { passive: true });
     this.doc.addEventListener('touchend', onEnd);
+  }
+
+  private enableFocusTrap(): void {
+    this.focusTrapListener = (e: FocusEvent) => {
+      const sheet = this.elRef.nativeElement.querySelector('.sheet');
+      if (sheet && !sheet.contains(e.target as Node)) {
+        e.preventDefault();
+        sheet.focus();
+      }
+    };
+    this.doc.addEventListener('focusin', this.focusTrapListener);
+  }
+
+  private disableFocusTrap(): void {
+    if (this.focusTrapListener) {
+      this.doc.removeEventListener('focusin', this.focusTrapListener);
+      this.focusTrapListener = null;
+    }
   }
 }

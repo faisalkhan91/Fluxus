@@ -22,7 +22,13 @@
                   <span class="bar-name">{{ skill.name }}</span>
                   <span class="bar-percent">{{ skill.level }}%</span>
                 </div>
-                <div class="bar-track" role="progressbar" [attr.aria-valuenow]="skill.level" aria-valuemin="0" aria-valuemax="100">
+                <div
+                  class="bar-track"
+                  role="progressbar"
+                  [attr.aria-valuenow]="skill.level"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
                   <div class="bar-fill" [style.width.%]="skill.level"></div>
                 </div>
               </div>

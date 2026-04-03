@@ -6,9 +6,7 @@
   </div>
 
   <div class="hero-content">
-    <p class="hero-greeting">
-      <span class="greeting-decoration">&gt;_</span> Hello, I'm
-    </p>
+    <p class="hero-greeting"><span class="greeting-decoration">&gt;_</span> Hello, I'm</p>
     <h1 id="hero-heading" class="hero-name">
       {{ profile.personalInfo().name }}
     </h1>
@@ -16,8 +14,7 @@
     <p class="hero-summary">
       Building robust systems at the intersection of
       <span class="highlight">Full-Stack Development</span>,
-      <span class="highlight">Cloud Architecture</span>, and
-      <span class="highlight">DevOps</span>.
+      <span class="highlight">Cloud Architecture</span>, and <span class="highlight">DevOps</span>.
     </p>
     <div class="hero-actions">
       <a routerLink="/about">
@@ -35,7 +32,13 @@
     </div>
     <div class="hero-social">
       @for (link of profile.socialLinks(); track link.platform) {
-        <a [href]="link.url" target="_blank" rel="noopener" [attr.aria-label]="link.label" class="social-link">
+        <a
+          [href]="link.url"
+          target="_blank"
+          rel="noopener"
+          [attr.aria-label]="link.label"
+          class="social-link"
+        >
           <ui-icon [name]="link.icon" [size]="20" />
         </a>
       }

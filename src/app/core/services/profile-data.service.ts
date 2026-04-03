@@ -22,13 +22,36 @@ export class ProfileDataService {
   });
 
   readonly education = signal<Education[]>([
-    { year: '2019', degree: 'Master of Science, Computer Science', institution: 'University of New Haven, West Haven, CT, USA' },
-    { year: '2013', degree: 'Bachelor of Technology, Electronics and Telecommunications Engineering', institution: 'Vishwakarma Institute of Technology, Pune, Maharashtra, India' },
+    {
+      year: '2019',
+      degree: 'Master of Science, Computer Science',
+      institution: 'University of New Haven, West Haven, CT, USA',
+    },
+    {
+      year: '2013',
+      degree: 'Bachelor of Technology, Electronics and Telecommunications Engineering',
+      institution: 'Vishwakarma Institute of Technology, Pune, Maharashtra, India',
+    },
   ]);
 
   readonly socialLinks = signal<SocialLink[]>([
-    { platform: 'GitHub', url: 'https://github.com/faisalkhan91', icon: 'github', label: 'GitHub Profile' },
-    { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/faisalkhan91/', icon: 'linkedin', label: 'LinkedIn Profile' },
-    { platform: 'Credly', url: 'https://www.credly.com/users/faisalkhan91', icon: 'shield', label: 'Credly Certifications' },
+    {
+      platform: 'GitHub',
+      url: 'https://github.com/faisalkhan91',
+      icon: 'github',
+      label: 'GitHub Profile',
+    },
+    {
+      platform: 'LinkedIn',
+      url: 'https://www.linkedin.com/in/faisalkhan91/',
+      icon: 'linkedin',
+      label: 'LinkedIn Profile',
+    },
+    {
+      platform: 'Credly',
+      url: 'https://www.credly.com/users/faisalkhan91',
+      icon: 'shield',
+      label: 'Credly Certifications',
+    },
   ]);
 }

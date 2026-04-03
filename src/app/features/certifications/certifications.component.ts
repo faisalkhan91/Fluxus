@@ -17,6 +17,6 @@ export class CertificationsComponent {
   protected expandedProvider = signal<string | null>(null);
 
   toggleProvider(name: string): void {
-    this.expandedProvider.update(current => current === name ? null : name);
+    this.expandedProvider.update((current) => (current === name ? null : name));
   }
 }

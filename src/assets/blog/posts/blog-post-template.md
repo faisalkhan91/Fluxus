@@ -15,7 +15,7 @@ You can nest headings up to `####` for detailed breakdowns.
 Here's a showcase of inline formatting:
 
 - **Bold text** for emphasis
-- *Italic text* for nuance
+- _Italic text_ for nuance
 - `inline code` for technical terms
 - ~~Strikethrough~~ for corrections
 - [Links](/blog) work too
@@ -84,11 +84,11 @@ echo "Deploy complete."
 
 ## Tables
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Markdown rendering | Done | Using `marked` |
-| Syntax highlighting | Done | Via `highlight.js` |
-| Dark/Light themes | Done | Fully token-aware |
+| Feature             | Status | Notes              |
+| ------------------- | ------ | ------------------ |
+| Markdown rendering  | Done   | Using `marked`     |
+| Syntax highlighting | Done   | Via `highlight.js` |
+| Dark/Light themes   | Done   | Fully token-aware  |
 
 ## Horizontal Rule
 
@@ -113,4 +113,4 @@ Images can be added with standard Markdown syntax:
 
 ---
 
-*That's the template. Delete everything above your first heading and start writing!*
+_That's the template. Delete everything above your first heading and start writing!_

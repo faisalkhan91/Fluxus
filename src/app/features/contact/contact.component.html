@@ -71,7 +71,9 @@
           <ui-icon name="mail" [size]="20" />
           <div>
             <span class="info-label">Email</span>
-            <a [href]="'mailto:' + profile.personalInfo().email">{{ profile.personalInfo().email }}</a>
+            <a [href]="'mailto:' + profile.personalInfo().email">{{
+              profile.personalInfo().email
+            }}</a>
           </div>
         </div>
       </ui-glass-card>
@@ -91,7 +93,9 @@
           <ui-icon name="github" [size]="20" />
           <div>
             <span class="info-label">GitHub</span>
-            <a [href]="profile.personalInfo().github" target="_blank" rel="noopener">faisalkhan91</a>
+            <a [href]="profile.personalInfo().github" target="_blank" rel="noopener"
+              >faisalkhan91</a
+            >
           </div>
         </div>
       </ui-glass-card>
@@ -101,7 +105,9 @@
           <ui-icon name="linkedin" [size]="20" />
           <div>
             <span class="info-label">LinkedIn</span>
-            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener">faisalkhan91</a>
+            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener"
+              >faisalkhan91</a
+            >
           </div>
         </div>
       </ui-glass-card>

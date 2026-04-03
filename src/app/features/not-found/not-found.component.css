@@ -55,11 +55,22 @@
 }
 
 @keyframes glitch-shift {
-  0%, 80% { transform: translate(0); }
-  85% { transform: translate(-3px, 1px); }
-  90% { transform: translate(2px, -1px); }
-  95% { transform: translate(-1px, 2px); }
-  100% { transform: translate(0); }
+  0%,
+  80% {
+    transform: translate(0);
+  }
+  85% {
+    transform: translate(-3px, 1px);
+  }
+  90% {
+    transform: translate(2px, -1px);
+  }
+  95% {
+    transform: translate(-1px, 2px);
+  }
+  100% {
+    transform: translate(0);
+  }
 }
 
 /* === Terminal Window === */
@@ -91,9 +102,15 @@
   border-radius: 50%;
 }
 
-.terminal-dot.red { background: var(--accent); }
-.terminal-dot.yellow { background: var(--color-warning); }
-.terminal-dot.green { background: var(--color-success); }
+.terminal-dot.red {
+  background: var(--accent);
+}
+.terminal-dot.yellow {
+  background: var(--color-warning);
+}
+.terminal-dot.green {
+  background: var(--color-success);
+}
 
 .terminal-title {
   flex: 1;
@@ -150,7 +167,9 @@
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* === Suggestions === */

@@ -12,9 +12,7 @@ const TEXT_COLOR = '#e4e4e7';
 const BG_COLOR = '#0e0e14';
 
 function buildSvg(size, { withBackground = false } = {}) {
-  const bg = withBackground
-    ? `<rect width="32" height="32" rx="4" fill="${BG_COLOR}"/>`
-    : '';
+  const bg = withBackground ? `<rect width="32" height="32" rx="4" fill="${BG_COLOR}"/>` : '';
   return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="${size}" height="${size}">
   ${bg}
   <polyline points="1,8 7,16 1,24" fill="none" stroke="${ACCENT}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -48,12 +46,12 @@ async function generate() {
 
   const sizes = [16, 32, 48];
   const pngBuffers = await Promise.all(
-    sizes.map(s =>
+    sizes.map((s) =>
       sharp(buildSvg(s, { withBackground: false }))
         .resize(s, s)
         .png()
-        .toBuffer()
-    )
+        .toBuffer(),
+    ),
   );
 
   const icoBuffer = await pngToIco(pngBuffers);
@@ -63,7 +61,7 @@ async function generate() {
   console.log('\nDone.');
 }
 
-generate().catch(err => {
+generate().catch((err) => {
   console.error(err);
   process.exit(1);
 });

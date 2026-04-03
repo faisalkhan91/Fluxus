@@ -88,7 +88,9 @@
   color: var(--text-muted);
   cursor: pointer;
   opacity: 0;
-  transition: opacity var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    opacity var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .tab:hover .tab-close {

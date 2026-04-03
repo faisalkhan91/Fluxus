@@ -18,7 +18,7 @@ export interface SidebarNavItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.collapsed]': 'collapsed()',
-    'role': 'navigation',
+    role: 'navigation',
     'aria-label': 'Main Navigation',
   },
 })

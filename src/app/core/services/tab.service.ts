@@ -19,18 +19,18 @@ export class TabService {
   readonly activeTabId = computed(() => this.activeId());
 
   constructor() {
-    this.router.events.pipe(
-      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-    ).subscribe(event => {
-      const url = event.urlAfterRedirects;
-      const segments = url.split('/').filter(Boolean);
-      const routePath = segments[0] || 'hero';
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((event) => {
+        const url = event.urlAfterRedirects;
+        const segments = url.split('/').filter(Boolean);
+        const routePath = segments[0] || 'hero';
 
-      const tabData = this.resolveTabData();
-      if (tabData) {
-        this.openTab(routePath, tabData);
-      }
-    });
+        const tabData = this.resolveTabData();
+        if (tabData) {
+          this.openTab(routePath, tabData);
+        }
+      });
   }
 
   private resolveTabData(): TabData | null {
@@ -44,15 +44,18 @@ export class TabService {
   }
 
   private openTab(routePath: string, tabData: TabData): void {
-    const exists = this.tabs().find(t => t.id === routePath);
+    const exists = this.tabs().find((t) => t.id === routePath);
     if (!exists) {
-      this.tabs.update(tabs => [...tabs, {
-        id: routePath,
-        label: tabData.label,
-        ext: tabData.ext,
-        color: tabData.color,
-        route: '/' + routePath,
-      }]);
+      this.tabs.update((tabs) => [
+        ...tabs,
+        {
+          id: routePath,
+          label: tabData.label,
+          ext: tabData.ext,
+          color: tabData.color,
+          route: '/' + routePath,
+        },
+      ]);
     }
     this.activeId.set(routePath);
   }
@@ -60,7 +63,7 @@ export class TabService {
   closeTab(tab: EditorTab): void {
     if (tab.id === 'hero') return;
 
-    const remaining = this.tabs().filter(t => t.id !== tab.id);
+    const remaining = this.tabs().filter((t) => t.id !== tab.id);
     this.tabs.set(remaining);
 
     if (this.activeId() === tab.id) {

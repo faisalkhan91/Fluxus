@@ -8,13 +8,13 @@ In this post I'll share the patterns I've landed on after migrating a production
 
 RxJS isn't going anywhere — it's still the right tool for async streams, HTTP, and event composition. But for **synchronous, UI-bound state**, Signals win on every axis:
 
-| Concern | BehaviorSubject | Signal |
-|---------|----------------|--------|
-| Boilerplate | `.getValue()`, `.next()`, `| async` | `.set()`, `.update()`, direct read |
-| Change detection | Requires `OnPush` + `async` pipe | Granular, automatic |
-| Debugging | Stack traces point to operators | Stack traces point to `.set()` call |
-| Memory leaks | Easy to forget `unsubscribe` | No subscriptions to manage |
-| Computed values | `combineLatest` + `map` | `computed()` — cached and lazy |
+| Concern          | BehaviorSubject                  | Signal                              |
+| ---------------- | -------------------------------- | ----------------------------------- | ---------------------------------- |
+| Boilerplate      | `.getValue()`, `.next()`, `      | async`                              | `.set()`, `.update()`, direct read |
+| Change detection | Requires `OnPush` + `async` pipe | Granular, automatic                 |
+| Debugging        | Stack traces point to operators  | Stack traces point to `.set()` call |
+| Memory leaks     | Easy to forget `unsubscribe`     | No subscriptions to manage          |
+| Computed values  | `combineLatest` + `map`          | `computed()` — cached and lazy      |
 
 The mental model is simpler: a Signal is a value you can read synchronously and that automatically notifies anything that depends on it.
 
@@ -44,7 +44,7 @@ export class ThemeService {
   readonly isDark = signal(true);
 
   toggle(): void {
-    this.isDark.update(v => !v);
+    this.isDark.update((v) => !v);
   }
 }
 ```
@@ -91,8 +91,7 @@ For component state that doesn't need to be shared, signals replace class proper
       <spinner />
     } @else {
       @for (item of items(); track item.id) {
-        <card [data]="item" [expanded]="expandedIds().has(item.id)"
-              (toggle)="onToggle(item.id)" />
+        <card [data]="item" [expanded]="expandedIds().has(item.id)" (toggle)="onToggle(item.id)" />
       }
     }
   `,
@@ -104,7 +103,7 @@ export class ListComponent {
   readonly expandedIds = signal(new Set<string>());
 
   onToggle(id: string): void {
-    this.expandedIds.update(set => {
+    this.expandedIds.update((set) => {
       const next = new Set(set);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
@@ -131,9 +130,7 @@ export class ScrollComponent {
       };
 
       window.addEventListener('scroll', onScroll, { passive: true });
-      inject(DestroyRef).onDestroy(() =>
-        window.removeEventListener('scroll', onScroll),
-      );
+      inject(DestroyRef).onDestroy(() => window.removeEventListener('scroll', onScroll));
     });
   }
 }
@@ -181,4 +178,4 @@ The codebase will naturally converge over time. There's no big-bang migration re
 
 ---
 
-*The patterns in this post power the app you're reading right now. If you want to dig into the source, check out the [Projects](/projects) page or hit me up on [Contact](/contact).*
+_The patterns in this post power the app you're reading right now. If you want to dig into the source, check out the [Projects](/projects) page or hit me up on [Contact](/contact)._

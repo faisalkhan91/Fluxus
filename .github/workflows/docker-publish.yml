@@ -2,9 +2,13 @@ name: Build and Push ARM64 to GHCR
 
 on:
   push:
-    branches:
-      - main  # Updated to trigger on pushes/merges to main
-      
+    tags:
+      - "v*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -12,47 +16,66 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: read
-      packages: write # This allows the workflow to push the image to GHCR
+      packages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      # Sets up the emulator to build ARM64 on an x86 runner
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
 
       - name: Log in to GHCR
-        uses: docker/login-action@v4
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lowercase Repository Name
-        run: |
-          echo "IMAGE_REPO=$(echo ${{ env.IMAGE_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
 
       - name: Build and push
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: .
           platforms: linux/arm64
           push: true
-          # Tags the image with the branch name (e.g., latest or the branch name)
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ github.sha }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+          sbom: true
+          provenance: mode=max
+
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        env:
+          TRIVY_PLATFORM: linux/arm64
+        with:
+          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          trivyignores: .trivyignore
+
       - name: Checkout Homelab Monorepo
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: faisalkhan91/Homelab
           token: ${{ secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
@@ -61,14 +84,14 @@ jobs:
       - name: Update Kubernetes Manifest in Monorepo
         run: |
           cd Homelab/kubernetes/apps/fluxus/base
-          
-          # Replace the old image tag with the new Git commit hash in fluxus.yaml
-          sed -i "s|image: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}:${{ github.sha }}|g" fluxus.yaml
-          
-          # Configure Git as a bot
+
+          IMAGE_TAG="${GITHUB_REF_NAME#v}"
+          IMAGE_NAME="$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')"
+          sed -i "s|image: ${{ env.REGISTRY }}/${IMAGE_NAME}:.*|image: ${{ env.REGISTRY }}/${IMAGE_NAME}:${IMAGE_TAG}|g" fluxus.yaml
+
           git config --global user.name "GitOps Bot"
           git config --global user.email "actions@github.com"
-          
+
           git add fluxus.yaml
-          git commit -m "chore(fluxus): update image tag to ${{ github.sha }} [skip ci]"
+          git commit -m "chore(fluxus): release ${GITHUB_REF_NAME} [skip ci]"
           git push origin main

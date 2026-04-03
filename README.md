@@ -15,15 +15,15 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Angular 21.2.7 (standalone components, signals, `OnPush`) |
-| Rendering | SSG via `@angular/ssr` — 12 static routes prerendered at build time |
-| Styling | Scoped component CSS + global design tokens (`src/styles.css`) |
-| Blog | Markdown files rendered via `marked` + `highlight.js` |
-| Container | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.27-alpine` runtime |
-| Web Server | NGINX with gzip, granular cache policies, and full security headers |
-| Language | TypeScript 5.5 (strict mode, no `any`) |
+| Layer      | Technology                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------ |
+| Framework  | Angular 21.2.7 (standalone components, signals, `OnPush`)                                        |
+| Rendering  | SSG via `@angular/ssr` — 12 static routes prerendered at build time                              |
+| Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                   |
+| Blog       | Markdown files rendered via `marked` + `highlight.js`                                            |
+| Container  | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.27-alpine` runtime |
+| Web Server | NGINX with gzip, granular cache policies, and full security headers                              |
+| Language   | TypeScript 5.5 (strict mode, no `any`)                                                           |
 
 ## Features
 
@@ -125,19 +125,19 @@ src/
 <details>
 <summary><strong>Routes</strong></summary>
 
-| Route | Component | SSG |
-|---|---|---|
-| `/` | Redirect to `/hero` | — |
-| `/hero` | HeroComponent | Prerendered |
-| `/about` | AboutComponent | Prerendered |
-| `/experience` | ExperienceComponent | Prerendered |
-| `/skills` | SkillsComponent | Prerendered |
-| `/projects` | ProjectsComponent | Prerendered |
-| `/certifications` | CertificationsComponent | Prerendered |
-| `/contact` | ContactComponent | Prerendered |
-| `/blog` | BlogComponent | Prerendered |
-| `/blog/:slug` | BlogPostComponent | Prerendered (dynamic) |
-| `**` | NotFoundComponent | Client-side (CSR fallback) |
+| Route             | Component               | SSG                        |
+| ----------------- | ----------------------- | -------------------------- |
+| `/`               | Redirect to `/hero`     | —                          |
+| `/hero`           | HeroComponent           | Prerendered                |
+| `/about`          | AboutComponent          | Prerendered                |
+| `/experience`     | ExperienceComponent     | Prerendered                |
+| `/skills`         | SkillsComponent         | Prerendered                |
+| `/projects`       | ProjectsComponent       | Prerendered                |
+| `/certifications` | CertificationsComponent | Prerendered                |
+| `/contact`        | ContactComponent        | Prerendered                |
+| `/blog`           | BlogComponent           | Prerendered                |
+| `/blog/:slug`     | BlogPostComponent       | Prerendered (dynamic)      |
+| `**`              | NotFoundComponent       | Client-side (CSR fallback) |
 
 </details>
 
@@ -166,6 +166,7 @@ The post-build script `scripts/inject-blog-meta.mjs` injects post-specific OG/Tw
 ## Author
 
 **Faisal Khan**
+
 - GitHub: [@faisalkhan91](https://github.com/faisalkhan91)
 - LinkedIn: [Faisal Khan](https://linkedin.com/in/faisalkhan91)
 

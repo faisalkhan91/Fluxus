@@ -2,9 +2,20 @@
   <ui-section-header title="Projects" decoration="// git log --oneline" />
   <div class="projects-grid">
     @for (project of projectsData.projects(); track project.title) {
-      <ui-glass-card [hover]="true" [glow]="!!project.featured" class="project-card" [class.expanded]="isExpanded(project.title)">
+      <ui-glass-card
+        [hover]="true"
+        [glow]="!!project.featured"
+        class="project-card"
+        [class.expanded]="isExpanded(project.title)"
+      >
         <div class="project-image-wrapper">
-          <img [ngSrc]="project.image" [alt]="project.title" width="400" height="256" class="project-image" />
+          <img
+            [ngSrc]="project.image"
+            [alt]="project.title"
+            width="400"
+            height="256"
+            class="project-image"
+          />
         </div>
         <div class="project-body">
           <h3 class="project-title">{{ project.title }}</h3>
@@ -14,7 +25,11 @@
             class="read-more-toggle"
             [attr.aria-expanded]="isExpanded(project.title)"
             [attr.aria-controls]="'desc-' + project.title"
-            [attr.aria-label]="isExpanded(project.title) ? 'Show less about ' + project.title : 'Read more about ' + project.title"
+            [attr.aria-label]="
+              isExpanded(project.title)
+                ? 'Show less about ' + project.title
+                : 'Read more about ' + project.title
+            "
             (click)="toggleExpand(project.title)"
           >
             {{ isExpanded(project.title) ? '− Show less' : '+ Read more' }}
@@ -25,7 +40,13 @@
                 <span class="tag">{{ tag }}</span>
               }
             </div>
-            <a [href]="project.link" target="_blank" rel="noopener" class="project-link" [attr.aria-label]="'View ' + project.title + ' on GitHub'">
+            <a
+              [href]="project.link"
+              target="_blank"
+              rel="noopener"
+              class="project-link"
+              [attr.aria-label]="'View ' + project.title + ' on GitHub'"
+            >
               <ui-icon name="github" [size]="16" />
               <span>Source</span>
               <ui-icon name="external-link" [size]="12" />
