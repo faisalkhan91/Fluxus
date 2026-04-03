@@ -7,30 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0](https://github.com/faisalkhan91/Fluxus/compare/v1.1.0...v1.2.0) (2026-04-03)
 
-
 ### Features
 
-* Add adjacent post navigation and reading progress indicator to blog post component ([01ae611](https://github.com/faisalkhan91/Fluxus/commit/01ae611a554eb24861c3b12c3ea2e85300e084d4))
-* Add adjacent post navigation and reading progress indicator to blog post component ([4e8c342](https://github.com/faisalkhan91/Fluxus/commit/4e8c342dfdad2404ad99d2930d346c5b017de3bc))
-* Add blog feature with routing and styling enhancements ([55e33a6](https://github.com/faisalkhan91/Fluxus/commit/55e33a696f404f579803b495129715c0555b50c7))
-* Add custom Nginx configuration for SPA routing in Dockerfile ([503094d](https://github.com/faisalkhan91/Fluxus/commit/503094d50c23fa1505374fd0895f73d7eaf46e22))
-* Add new blog post on Angular Signals state management ([00c07ad](https://github.com/faisalkhan91/Fluxus/commit/00c07ad18560a42a86faf04d26411f10ea88c86d))
-* Enhance Angular configuration and improve server-side rendering support ([ca045b8](https://github.com/faisalkhan91/Fluxus/commit/ca045b8d2f1473c8ab8075bdeace788c7fcb21e3))
-* Enhance navigation and tab functionality with new home link and close tab logic ([f369a69](https://github.com/faisalkhan91/Fluxus/commit/f369a699907e467b2786535326854093144b48f6))
-* Enhance SEO and accessibility features across the application ([561b70c](https://github.com/faisalkhan91/Fluxus/commit/561b70c7a5a84cdee38fb38ce565e5a197c81f23))
-* Enhance SEO and styling across the application ([d9e9c96](https://github.com/faisalkhan91/Fluxus/commit/d9e9c96660838c15d4667cc1912d685d2943af8c))
-* Enhance SEO and styling across the application ([02cc35b](https://github.com/faisalkhan91/Fluxus/commit/02cc35bab5374b0dfffa5247efae82739e5a1d48))
-* Enhance styling and functionality across various components ([a3b965d](https://github.com/faisalkhan91/Fluxus/commit/a3b965dfe6b5eb635664bb68c87bdc3f2767d1cc))
-* Improve icon component to handle server-side rendering ([489c8e0](https://github.com/faisalkhan91/Fluxus/commit/489c8e0a836924c74d0f55c33781715819f39318))
-* Improve user profile and SEO details for enhanced visibility ([7e23b2a](https://github.com/faisalkhan91/Fluxus/commit/7e23b2a549de5c49135aefeab47dbdd80f926168))
-* Optimize Angular build and enhance NGINX configuration ([165ba6a](https://github.com/faisalkhan91/Fluxus/commit/165ba6ac74f432a1c3ea7d8f3efb88847f21761b))
-* Update profile and SEO details to reflect senior role and experience ([8d38c25](https://github.com/faisalkhan91/Fluxus/commit/8d38c2596939ec4c04b5b836d9c25b020d2fcaa9))
-
+- Add adjacent post navigation and reading progress indicator to blog post component ([01ae611](https://github.com/faisalkhan91/Fluxus/commit/01ae611a554eb24861c3b12c3ea2e85300e084d4))
+- Add adjacent post navigation and reading progress indicator to blog post component ([4e8c342](https://github.com/faisalkhan91/Fluxus/commit/4e8c342dfdad2404ad99d2930d346c5b017de3bc))
+- Add blog feature with routing and styling enhancements ([55e33a6](https://github.com/faisalkhan91/Fluxus/commit/55e33a696f404f579803b495129715c0555b50c7))
+- Add custom Nginx configuration for SPA routing in Dockerfile ([503094d](https://github.com/faisalkhan91/Fluxus/commit/503094d50c23fa1505374fd0895f73d7eaf46e22))
+- Add new blog post on Angular Signals state management ([00c07ad](https://github.com/faisalkhan91/Fluxus/commit/00c07ad18560a42a86faf04d26411f10ea88c86d))
+- Enhance Angular configuration and improve server-side rendering support ([ca045b8](https://github.com/faisalkhan91/Fluxus/commit/ca045b8d2f1473c8ab8075bdeace788c7fcb21e3))
+- Enhance navigation and tab functionality with new home link and close tab logic ([f369a69](https://github.com/faisalkhan91/Fluxus/commit/f369a699907e467b2786535326854093144b48f6))
+- Enhance SEO and accessibility features across the application ([561b70c](https://github.com/faisalkhan91/Fluxus/commit/561b70c7a5a84cdee38fb38ce565e5a197c81f23))
+- Enhance SEO and styling across the application ([d9e9c96](https://github.com/faisalkhan91/Fluxus/commit/d9e9c96660838c15d4667cc1912d685d2943af8c))
+- Enhance SEO and styling across the application ([02cc35b](https://github.com/faisalkhan91/Fluxus/commit/02cc35bab5374b0dfffa5247efae82739e5a1d48))
+- Enhance styling and functionality across various components ([a3b965d](https://github.com/faisalkhan91/Fluxus/commit/a3b965dfe6b5eb635664bb68c87bdc3f2767d1cc))
+- Improve icon component to handle server-side rendering ([489c8e0](https://github.com/faisalkhan91/Fluxus/commit/489c8e0a836924c74d0f55c33781715819f39318))
+- Improve user profile and SEO details for enhanced visibility ([7e23b2a](https://github.com/faisalkhan91/Fluxus/commit/7e23b2a549de5c49135aefeab47dbdd80f926168))
+- Optimize Angular build and enhance NGINX configuration ([165ba6a](https://github.com/faisalkhan91/Fluxus/commit/165ba6ac74f432a1c3ea7d8f3efb88847f21761b))
+- Update profile and SEO details to reflect senior role and experience ([8d38c25](https://github.com/faisalkhan91/Fluxus/commit/8d38c2596939ec4c04b5b836d9c25b020d2fcaa9))
 
 ### Bug Fixes
 
-* Remove unnecessary peer dependencies from package-lock.json ([60ad0b6](https://github.com/faisalkhan91/Fluxus/commit/60ad0b6e9a661b0e440016099c820d820fbac699))
-* resolve SSR NotYetImplemented error in IconComponent ([44eef70](https://github.com/faisalkhan91/Fluxus/commit/44eef70e1210d746408f76e0aeb66e315320576e))
+- Remove unnecessary peer dependencies from package-lock.json ([60ad0b6](https://github.com/faisalkhan91/Fluxus/commit/60ad0b6e9a661b0e440016099c820d820fbac699))
+- resolve SSR NotYetImplemented error in IconComponent ([44eef70](https://github.com/faisalkhan91/Fluxus/commit/44eef70e1210d746408f76e0aeb66e315320576e))
 
 ## [Unreleased]
 
