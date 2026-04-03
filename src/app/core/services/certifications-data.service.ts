@@ -4,14 +4,50 @@ import { Certification, CourseProvider, Award } from '../../shared/models/certif
 @Injectable({ providedIn: 'root' })
 export class CertificationsDataService {
   readonly certifications = signal<Certification[]>([
-    { name: 'Microsoft Certified: Azure AI Engineer Associate', image: 'assets/images/achievements/certifications/microsoft-certified-azure-ai-engineer-associate.webp', issuer: 'Microsoft' },
-    { name: 'Splunk Cloud Administration', image: 'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png', issuer: 'Splunk' },
-    { name: 'Microsoft Certified: Security, Compliance, and Identity Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png', issuer: 'Microsoft' },
-    { name: 'Microsoft Certified: Azure Data Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png', issuer: 'Microsoft' },
-    { name: 'Microsoft Certified: Azure AI Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png', issuer: 'Microsoft' },
-    { name: 'AWS Certified Cloud Practitioner', image: 'assets/images/achievements/certifications/aws-certified-cloud-practitioner.png', issuer: 'AWS' },
-    { name: 'Microsoft Certified: Azure Fundamentals', image: 'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png', issuer: 'Microsoft' },
-    { name: 'CRLA Level I, II and III', image: 'assets/images/achievements/certifications/CRLACertifiedL1.png', issuer: 'CRLA' },
+    {
+      name: 'Microsoft Certified: Azure AI Engineer Associate',
+      image:
+        'assets/images/achievements/certifications/microsoft-certified-azure-ai-engineer-associate.webp',
+      issuer: 'Microsoft',
+    },
+    {
+      name: 'Splunk Cloud Administration',
+      image: 'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png',
+      issuer: 'Splunk',
+    },
+    {
+      name: 'Microsoft Certified: Security, Compliance, and Identity Fundamentals',
+      image:
+        'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png',
+      issuer: 'Microsoft',
+    },
+    {
+      name: 'Microsoft Certified: Azure Data Fundamentals',
+      image:
+        'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png',
+      issuer: 'Microsoft',
+    },
+    {
+      name: 'Microsoft Certified: Azure AI Fundamentals',
+      image:
+        'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png',
+      issuer: 'Microsoft',
+    },
+    {
+      name: 'AWS Certified Cloud Practitioner',
+      image: 'assets/images/achievements/certifications/aws-certified-cloud-practitioner.png',
+      issuer: 'AWS',
+    },
+    {
+      name: 'Microsoft Certified: Azure Fundamentals',
+      image: 'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png',
+      issuer: 'Microsoft',
+    },
+    {
+      name: 'CRLA Level I, II and III',
+      image: 'assets/images/achievements/certifications/CRLACertifiedL1.png',
+      issuer: 'CRLA',
+    },
   ]);
 
   readonly courseProviders = signal<CourseProvider[]>([
@@ -47,18 +83,27 @@ export class CertificationsDataService {
     },
     {
       name: 'LinkedIn Learning',
-      courses: [
-        'Learning Ansible',
-        'Networking Foundations: Networking Basics',
-      ],
+      courses: ['Learning Ansible', 'Networking Foundations: Networking Basics'],
     },
   ]);
 
   readonly awards = signal<Award[]>([
-    { description: 'Winner at Charger Startup Weekend, pitching and building a technology prototype in a 54-hour competition.' },
-    { description: 'Member of Zeta Chapter of Upsilon Pi Epsilon International Honor Society for the Computing and Information Disciplines.' },
-    { description: 'Received outstanding CLR (Center for Learning Resources) Administrative Staff Award.' },
+    {
+      description:
+        'Winner at Charger Startup Weekend, pitching and building a technology prototype in a 54-hour competition.',
+    },
+    {
+      description:
+        'Member of Zeta Chapter of Upsilon Pi Epsilon International Honor Society for the Computing and Information Disciplines.',
+    },
+    {
+      description:
+        'Received outstanding CLR (Center for Learning Resources) Administrative Staff Award.',
+    },
     { description: 'Received Vodafone Star Award for exceptional performance and initiative.' },
-    { description: 'Recognized as a 2024 Honored Listee by Marquis Who\'s Who in America for professional achievement.' },
+    {
+      description:
+        "Recognized as a 2024 Honored Listee by Marquis Who's Who in America for professional achievement.",
+    },
   ]);
 }

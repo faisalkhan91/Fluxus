@@ -22,7 +22,7 @@ export class ProjectsComponent {
   }
 
   protected toggleExpand(title: string): void {
-    this.expandedSet.update(set => {
+    this.expandedSet.update((set) => {
       const next = new Set(set);
       if (next.has(title)) {
         next.delete(title);

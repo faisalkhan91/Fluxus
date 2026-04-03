@@ -16,7 +16,7 @@ export interface EditorTab {
   imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'role': 'tablist',
+    role: 'tablist',
     'aria-label': 'Open pages',
   },
 })

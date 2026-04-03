@@ -55,11 +55,9 @@ export class BlogService {
 
   loadPosts(): Observable<BlogPost[]> {
     if (!this.manifest$) {
-      this.manifest$ = this.http
-        .get<BlogPost[]>('assets/blog/posts.json')
-        .pipe(shareReplay(1));
+      this.manifest$ = this.http.get<BlogPost[]>('assets/blog/posts.json').pipe(shareReplay(1));
 
-      this.manifest$.subscribe(posts => this.posts.set(posts));
+      this.manifest$.subscribe((posts) => this.posts.set(posts));
     }
     return this.manifest$;
   }
@@ -67,12 +65,12 @@ export class BlogService {
   getPostContent(slug: string): Observable<string> {
     return this.http
       .get(`assets/blog/posts/${slug}.md`, { responseType: 'text' })
-      .pipe(map(md => marked.parse(md) as string));
+      .pipe(map((md) => marked.parse(md) as string));
   }
 
   getAdjacentPosts(slug: string): { prev?: BlogPost; next?: BlogPost } {
     const all = this.posts();
-    const idx = all.findIndex(p => p.slug === slug);
+    const idx = all.findIndex((p) => p.slug === slug);
     return {
       prev: idx > 0 ? all[idx - 1] : undefined,
       next: idx < all.length - 1 ? all[idx + 1] : undefined,

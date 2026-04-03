@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://faisalkhan.dev/</loc><priority>1.0</priority></url>
-  <url><loc>https://faisalkhan.dev/hero</loc><priority>1.0</priority></url>
-  <url><loc>https://faisalkhan.dev/about</loc><priority>0.8</priority></url>
-  <url><loc>https://faisalkhan.dev/experience</loc><priority>0.8</priority></url>
-  <url><loc>https://faisalkhan.dev/skills</loc><priority>0.7</priority></url>
-  <url><loc>https://faisalkhan.dev/projects</loc><priority>0.7</priority></url>
-  <url><loc>https://faisalkhan.dev/certifications</loc><priority>0.7</priority></url>
-  <url><loc>https://faisalkhan.dev/contact</loc><priority>0.6</priority></url>
-  <url><loc>https://faisalkhan.dev/blog</loc><priority>0.9</priority></url>
-  <url><loc>https://faisalkhan.dev/blog/angular-signals-state-management</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://faisalkhan.dev/blog/building-cloud-native-pipelines</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://faisalkhan.dev/blog/blog-post-template</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/</loc><priority>1.0</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/hero</loc><priority>1.0</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/about</loc><priority>0.8</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/experience</loc><priority>0.8</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/skills</loc><priority>0.7</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/projects</loc><priority>0.7</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/certifications</loc><priority>0.7</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/contact</loc><priority>0.6</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/blog</loc><priority>0.9</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/blog/angular-signals-state-management</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/blog/building-cloud-native-pipelines</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://faisalkhan.dpdns.org/blog/blog-post-template</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

@@ -34,7 +34,9 @@
           <ui-icon name="mail" [size]="18" />
           <div>
             <span class="contact-label">Email</span>
-            <a [href]="'mailto:' + profile.personalInfo().email">{{ profile.personalInfo().email }}</a>
+            <a [href]="'mailto:' + profile.personalInfo().email">{{
+              profile.personalInfo().email
+            }}</a>
           </div>
         </div>
       </ui-glass-card>
@@ -61,7 +63,9 @@
           <ui-icon name="linkedin" [size]="18" />
           <div>
             <span class="contact-label">LinkedIn</span>
-            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener">LinkedIn Profile</a>
+            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener"
+              >LinkedIn Profile</a
+            >
           </div>
         </div>
       </ui-glass-card>

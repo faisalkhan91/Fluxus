@@ -17,7 +17,9 @@ export class MediaQueryService {
 
   readonly isMobile = computed(() => this.breakpoint() === 'mobile');
   readonly isTablet = computed(() => this.breakpoint() === 'tablet');
-  readonly isDesktop = computed(() => this.breakpoint() === 'desktop' || this.breakpoint() === 'wide');
+  readonly isDesktop = computed(
+    () => this.breakpoint() === 'desktop' || this.breakpoint() === 'wide',
+  );
   readonly showSidebar = computed(() => !this.isMobile());
   readonly sidebarCollapsed = computed(() => this.breakpoint() === 'tablet');
   readonly showMobileNav = computed(() => this.isMobile());

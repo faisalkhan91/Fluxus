@@ -18,7 +18,7 @@ export const serverRoutes: ServerRoute[] = [
       const { join } = await import('node:path');
       const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
       const posts: { slug: string }[] = JSON.parse(raw);
-      return posts.map(p => ({ slug: p.slug }));
+      return posts.map((p) => ({ slug: p.slug }));
     },
   },
   { path: '**', renderMode: RenderMode.Prerender },

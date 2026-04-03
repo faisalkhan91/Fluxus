@@ -1,0 +1,4 @@
+# Trivy CVE ignore list
+# Add CVE IDs here to acknowledge and suppress known false positives.
+# Format: one CVE ID per line (e.g., CVE-2024-12345)
+# https://aquasecurity.github.io/trivy/latest/docs/configuration/filtering/#by-finding-ids

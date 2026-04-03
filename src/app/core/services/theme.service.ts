@@ -1,4 +1,12 @@
-import { Injectable, signal, computed, effect, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
+import {
+  Injectable,
+  signal,
+  computed,
+  effect,
+  DestroyRef,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 export type Theme = 'light' | 'dark';
@@ -10,9 +18,7 @@ export class ThemeService {
   private destroyRef = inject(DestroyRef);
   private document = inject(DOCUMENT);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private mediaQuery = this.isBrowser
-    ? window.matchMedia('(prefers-color-scheme: light)')
-    : null;
+  private mediaQuery = this.isBrowser ? window.matchMedia('(prefers-color-scheme: light)') : null;
 
   readonly theme = signal<Theme>(this.resolveInitial());
   readonly isDark = computed(() => this.theme() === 'dark');

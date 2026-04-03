@@ -19,9 +19,9 @@
   --accent-subtle: rgba(201, 42, 42, 0.08);
 
   /* === Text === */
-  --text-primary: rgba(255, 255, 255, 0.90);
+  --text-primary: rgba(255, 255, 255, 0.9);
   --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-muted: rgba(255, 255, 255, 0.30);
+  --text-muted: rgba(255, 255, 255, 0.3);
 
   /* === Typography === */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -92,7 +92,7 @@
 }
 
 /* === Light Mode === */
-[data-theme="light"] {
+[data-theme='light'] {
   --surface-void: #f0f0f3;
   --surface-base: #f7f7f9;
   --surface-raised: #ffffff;
@@ -110,7 +110,7 @@
 
   --text-primary: rgba(0, 0, 0, 0.87);
   --text-secondary: rgba(0, 0, 0, 0.55);
-  --text-muted: rgba(0, 0, 0, 0.30);
+  --text-muted: rgba(0, 0, 0, 0.3);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.75);
   --nav-pill-bg: rgba(255, 255, 255, 0.72);
@@ -182,11 +182,17 @@ img {
   max-width: 100%;
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 600;
   line-height: 1.3;
@@ -397,7 +403,7 @@ p {
   margin: var(--space-6) 0;
 }
 
-.prose input[type="checkbox"] {
+.prose input[type='checkbox'] {
   accent-color: var(--accent);
   margin-right: var(--space-2);
 }
@@ -427,29 +433,129 @@ p {
 }
 
 /* === Highlight.js — Dark (default) === */
-.hljs{color:#abb2bf}
-.hljs-comment,.hljs-quote{color:#5c6370;font-style:italic}
-.hljs-doctag,.hljs-formula,.hljs-keyword{color:#c678dd}
-.hljs-deletion,.hljs-name,.hljs-section,.hljs-selector-tag,.hljs-subst{color:#e06c75}
-.hljs-literal{color:#56b6c2}
-.hljs-addition,.hljs-attribute,.hljs-meta .hljs-string,.hljs-regexp,.hljs-string{color:#98c379}
-.hljs-attr,.hljs-number,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-pseudo,.hljs-template-variable,.hljs-type,.hljs-variable{color:#d19a66}
-.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-symbol,.hljs-title{color:#61aeee}
-.hljs-built_in,.hljs-class .hljs-title,.hljs-title.class_{color:#e6c07b}
-.hljs-emphasis{font-style:italic}
-.hljs-strong{font-weight:700}
-.hljs-link{text-decoration:underline}
+.hljs {
+  color: #abb2bf;
+}
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370;
+  font-style: italic;
+}
+.hljs-doctag,
+.hljs-formula,
+.hljs-keyword {
+  color: #c678dd;
+}
+.hljs-deletion,
+.hljs-name,
+.hljs-section,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #e06c75;
+}
+.hljs-literal {
+  color: #56b6c2;
+}
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string,
+.hljs-regexp,
+.hljs-string {
+  color: #98c379;
+}
+.hljs-attr,
+.hljs-number,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-pseudo,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable {
+  color: #d19a66;
+}
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-symbol,
+.hljs-title {
+  color: #61aeee;
+}
+.hljs-built_in,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: #e6c07b;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}
+.hljs-link {
+  text-decoration: underline;
+}
 
 /* === Highlight.js — Light === */
-[data-theme="light"] .hljs{color:#383a42}
-[data-theme="light"] .hljs-comment,[data-theme="light"] .hljs-quote{color:#a0a1a7;font-style:italic}
-[data-theme="light"] .hljs-doctag,[data-theme="light"] .hljs-formula,[data-theme="light"] .hljs-keyword{color:#a626a4}
-[data-theme="light"] .hljs-deletion,[data-theme="light"] .hljs-name,[data-theme="light"] .hljs-section,[data-theme="light"] .hljs-selector-tag,[data-theme="light"] .hljs-subst{color:#e45649}
-[data-theme="light"] .hljs-literal{color:#0184bb}
-[data-theme="light"] .hljs-addition,[data-theme="light"] .hljs-attribute,[data-theme="light"] .hljs-meta .hljs-string,[data-theme="light"] .hljs-regexp,[data-theme="light"] .hljs-string{color:#50a14f}
-[data-theme="light"] .hljs-attr,[data-theme="light"] .hljs-number,[data-theme="light"] .hljs-selector-attr,[data-theme="light"] .hljs-selector-class,[data-theme="light"] .hljs-selector-pseudo,[data-theme="light"] .hljs-template-variable,[data-theme="light"] .hljs-type,[data-theme="light"] .hljs-variable{color:#986801}
-[data-theme="light"] .hljs-bullet,[data-theme="light"] .hljs-link,[data-theme="light"] .hljs-meta,[data-theme="light"] .hljs-selector-id,[data-theme="light"] .hljs-symbol,[data-theme="light"] .hljs-title{color:#4078f2}
-[data-theme="light"] .hljs-built_in,[data-theme="light"] .hljs-class .hljs-title,[data-theme="light"] .hljs-title.class_{color:#c18401}
-[data-theme="light"] .hljs-emphasis{font-style:italic}
-[data-theme="light"] .hljs-strong{font-weight:700}
-[data-theme="light"] .hljs-link{text-decoration:underline}
+[data-theme='light'] .hljs {
+  color: #383a42;
+}
+[data-theme='light'] .hljs-comment,
+[data-theme='light'] .hljs-quote {
+  color: #a0a1a7;
+  font-style: italic;
+}
+[data-theme='light'] .hljs-doctag,
+[data-theme='light'] .hljs-formula,
+[data-theme='light'] .hljs-keyword {
+  color: #a626a4;
+}
+[data-theme='light'] .hljs-deletion,
+[data-theme='light'] .hljs-name,
+[data-theme='light'] .hljs-section,
+[data-theme='light'] .hljs-selector-tag,
+[data-theme='light'] .hljs-subst {
+  color: #e45649;
+}
+[data-theme='light'] .hljs-literal {
+  color: #0184bb;
+}
+[data-theme='light'] .hljs-addition,
+[data-theme='light'] .hljs-attribute,
+[data-theme='light'] .hljs-meta .hljs-string,
+[data-theme='light'] .hljs-regexp,
+[data-theme='light'] .hljs-string {
+  color: #50a14f;
+}
+[data-theme='light'] .hljs-attr,
+[data-theme='light'] .hljs-number,
+[data-theme='light'] .hljs-selector-attr,
+[data-theme='light'] .hljs-selector-class,
+[data-theme='light'] .hljs-selector-pseudo,
+[data-theme='light'] .hljs-template-variable,
+[data-theme='light'] .hljs-type,
+[data-theme='light'] .hljs-variable {
+  color: #986801;
+}
+[data-theme='light'] .hljs-bullet,
+[data-theme='light'] .hljs-link,
+[data-theme='light'] .hljs-meta,
+[data-theme='light'] .hljs-selector-id,
+[data-theme='light'] .hljs-symbol,
+[data-theme='light'] .hljs-title {
+  color: #4078f2;
+}
+[data-theme='light'] .hljs-built_in,
+[data-theme='light'] .hljs-class .hljs-title,
+[data-theme='light'] .hljs-title.class_ {
+  color: #c18401;
+}
+[data-theme='light'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='light'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='light'] .hljs-link {
+  text-decoration: underline;
+}

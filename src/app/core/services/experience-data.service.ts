@@ -10,7 +10,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Cloud Efficiency',
       duration: 'May 2026 - Present',
       achievements: [
-        'Moved internally from Galileo to take on a broader infrastructure mandate, driving cost efficiency across SoFi\'s multi-cloud footprint.',
+        "Moved internally from Galileo to take on a broader infrastructure mandate, driving cost efficiency across SoFi's multi-cloud footprint.",
         'Driving cloud cost optimization and infrastructure efficiency initiatives across AWS and Azure environments.',
         'Engineering platform-level tooling to surface cost anomalies and enforce resource governance at scale.',
       ],
@@ -20,7 +20,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Builder Tools',
       duration: 'April 2025 - April 2026',
       achievements: [
-        'Owned SoFi\'s internal developer experience platform, building Go-based tooling and AI-powered workflows that accelerated engineering velocity across 50+ teams.',
+        "Owned SoFi's internal developer experience platform, building Go-based tooling and AI-powered workflows that accelerated engineering velocity across 50+ teams.",
         'Designed and shipped AI-powered developer workflows leveraging Claude, Cursor, and Gemini CLI to automate repetitive infrastructure tasks.',
         'Developed Go-based microservices for internal platform APIs consumed by 50+ engineering teams.',
         'Championed DevOps best practices including GitOps (Argo CD), Terraform IaC, and containerized CI/CD pipelines.',
@@ -32,7 +32,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Observability',
       duration: 'April 2024 - March 2025',
       achievements: [
-        'Architected and operated the centralized observability platform serving 200+ microservices across Galileo\'s payment processing infrastructure.',
+        "Architected and operated the centralized observability platform serving 200+ microservices across Galileo's payment processing infrastructure.",
         'Built monitoring pipelines using Datadog, Grafana, and OpenTelemetry to achieve sub-minute alerting on critical payment flows.',
         'Implemented distributed tracing with Jaeger and OpenTelemetry, reducing mean time to resolution (MTTR) for production incidents.',
         'Developed custom Prometheus exporters and Grafana dashboards to surface SLI/SLO compliance across platform services.',
@@ -96,7 +96,7 @@ export class ExperienceDataService {
         'Delivered full-stack features for student-facing applications using Django, PostgreSQL, and Angular in agile sprints.',
         'Built RESTful API endpoints consumed by the Angular frontend.',
         'Maintained the PostgreSQL database layer and authored Django models for data persistence.',
-        'Administered the Linux infrastructure hosting the university\'s software platform.',
+        "Administered the Linux infrastructure hosting the university's software platform.",
       ],
     },
     {

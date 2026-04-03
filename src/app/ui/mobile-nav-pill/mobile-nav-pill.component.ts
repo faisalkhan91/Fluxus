@@ -15,7 +15,7 @@ export interface MobileNavItem {
   imports: [RouterLink, RouterLinkActive, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    'role': 'navigation',
+    role: 'navigation',
     'aria-label': 'Main Navigation',
   },
 })

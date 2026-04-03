@@ -18,7 +18,7 @@ import { IconComponent } from '../../../ui/icon/icon.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
 
-const SITE_URL = 'https://faisalkhan.dev';
+const SITE_URL = 'https://faisalkhan.dpdns.org';
 
 @Component({
   selector: 'app-blog-post',
@@ -48,13 +48,18 @@ export class BlogPostComponent implements OnInit {
 
   constructor() {
     afterNextRender(() => {
-      const postLayout = this.elRef.nativeElement.querySelector('.post-layout') as HTMLElement | null;
+      const postLayout = this.elRef.nativeElement.querySelector(
+        '.post-layout',
+      ) as HTMLElement | null;
       if (!postLayout) return;
 
       const onScroll = () => {
         const rect = postLayout.getBoundingClientRect();
         const total = postLayout.offsetHeight - window.innerHeight;
-        if (total <= 0) { this.scrollProgress.set(100); return; }
+        if (total <= 0) {
+          this.scrollProgress.set(100);
+          return;
+        }
         const scrolled = Math.max(0, -rect.top);
         this.scrollProgress.set(Math.min(100, (scrolled / total) * 100));
       };
@@ -67,12 +72,12 @@ export class BlogPostComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap
       .pipe(
-        switchMap(params => {
+        switchMap((params) => {
           const slug = params.get('slug') ?? '';
           this.loading.set(true);
           return this.blog.loadPosts().pipe(
-            tap(posts => {
-              const post = posts.find(p => p.slug === slug);
+            tap((posts) => {
+              const post = posts.find((p) => p.slug === slug);
               this.meta.set(post);
               this.updateMetaTags(post);
             }),
@@ -82,7 +87,7 @@ export class BlogPostComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: html => {
+        next: (html) => {
           this.content.set(this.sanitizer.bypassSecurityTrustHtml(html));
           this.loading.set(false);
         },
