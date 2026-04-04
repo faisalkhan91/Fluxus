@@ -11,6 +11,8 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -21,4 +23,3 @@ jobs:
         with:
           release-type: node
           token: ${{ secrets.RELEASE_TOKEN }}
-          bootstrap-sha: afdbe218336ce37e85d8fd230bf605be403ef9a8
