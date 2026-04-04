@@ -1,6 +1,6 @@
 <div class="about-layout">
   <section class="about-intro" aria-labelledby="about-title">
-    <ui-section-header title="About Me" decoration="// readme.md" />
+    <ui-section-header title="About Me" headingId="about-title" decoration="// readme.md" />
     <div class="bio-grid">
       <div class="avatar-card">
         <ui-glass-card [elevation]="2">
@@ -27,7 +27,7 @@
   </section>
 
   <section class="about-contact" aria-labelledby="contact-info-title">
-    <ui-section-header title="Contact" decoration="// config.yaml" />
+    <ui-section-header title="Contact" headingId="contact-info-title" decoration="// config.yaml" />
     <div class="contact-grid">
       <ui-glass-card [hover]="true">
         <div class="contact-item">
@@ -87,7 +87,7 @@
   </section>
 
   <section class="about-education" aria-labelledby="education-title">
-    <ui-section-header title="Education" decoration="// credentials.ts" />
+    <ui-section-header title="Education" headingId="education-title" decoration="// credentials.ts" />
     <div class="education-list">
       @for (edu of profile.education(); track edu.year) {
         <ui-glass-card [hover]="true">

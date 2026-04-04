@@ -17,18 +17,14 @@
       <span class="highlight">Cloud Architecture</span>, and <span class="highlight">DevOps</span>.
     </p>
     <div class="hero-actions">
-      <a routerLink="/about">
-        <ui-glow-button variant="primary">
-          <ui-icon name="sparkles" [size]="16" />
-          Explore My Work
-        </ui-glow-button>
-      </a>
-      <a routerLink="/contact">
-        <ui-glow-button variant="secondary">
-          <ui-icon name="mail" [size]="16" />
-          Get in Touch
-        </ui-glow-button>
-      </a>
+      <ui-glow-button variant="primary" (clicked)="navigateTo('/about')">
+        <ui-icon name="sparkles" [size]="16" />
+        Explore My Work
+      </ui-glow-button>
+      <ui-glow-button variant="secondary" (clicked)="navigateTo('/contact')">
+        <ui-icon name="mail" [size]="16" />
+        Get in Touch
+      </ui-glow-button>
     </div>
     <div class="hero-social">
       @for (link of profile.socialLinks(); track link.platform) {
@@ -55,7 +51,7 @@
               <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
                 <div class="latest-post-meta">
                   <ui-icon name="calendar" [size]="12" />
-                  <time>{{ post.date }}</time>
+                  <time [attr.datetime]="post.date">{{ post.date }}</time>
                   <span class="meta-separator">&middot;</span>
                   <ui-icon name="clock" [size]="12" />
                   <span>{{ post.readingTime }}</span>

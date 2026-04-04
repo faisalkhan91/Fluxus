@@ -1,9 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { siteUrl: SITE_URL, siteName: SITE_NAME } = require('../site.config.json');
 
 const DIST = join(process.cwd(), 'dist/fluxus/browser');
-const SITE_URL = 'https://faisalkhan.dpdns.org';
-const SITE_NAME = 'Faisal Khan | Senior Software Engineer';
 
 const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
 const posts = JSON.parse(raw);

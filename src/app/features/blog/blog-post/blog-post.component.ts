@@ -10,35 +10,35 @@ import {
   afterNextRender,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DomSanitizer, SafeHtml, Meta, Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
+import { TrustedHtmlPipe } from '../../../shared/pipes/trusted-html.pipe';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
-
-const SITE_URL = 'https://faisalkhan.dpdns.org';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-blog-post',
   templateUrl: './blog-post.component.html',
   styleUrl: './blog-post.component.css',
-  imports: [GlassPanelComponent, IconComponent, RouterLink],
+  imports: [GlassPanelComponent, IconComponent, RouterLink, TrustedHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogPostComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private sanitizer = inject(DomSanitizer);
   private blog = inject(BlogService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
   private metaService = inject(Meta);
   private titleService = inject(Title);
 
-  readonly content = signal<SafeHtml>('');
+  readonly content = signal('');
   readonly meta = signal<BlogPost | undefined>(undefined);
   readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
   readonly scrollProgress = signal(0);
 
   readonly adjacentPosts = computed(() => {
@@ -88,17 +88,20 @@ export class BlogPostComponent implements OnInit {
       )
       .subscribe({
         next: (html) => {
-          this.content.set(this.sanitizer.bypassSecurityTrustHtml(html));
+          this.content.set(html);
           this.loading.set(false);
         },
-        error: () => this.loading.set(false),
+        error: () => {
+          this.loading.set(false);
+          this.error.set('Failed to load blog post');
+        },
       });
   }
 
   private updateMetaTags(post: BlogPost | undefined): void {
     if (!post) return;
-    const url = `${SITE_URL}/blog/${post.slug}`;
-    const title = `${post.title} — Faisal Khan`;
+    const url = `${environment.siteUrl}/blog/${post.slug}`;
+    const title = `${post.title} — ${environment.siteName}`;
 
     this.titleService.setTitle(title);
     this.metaService.updateTag({ property: 'og:title', content: title });

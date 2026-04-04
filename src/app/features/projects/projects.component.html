@@ -19,12 +19,12 @@
         </div>
         <div class="project-body">
           <h3 class="project-title">{{ project.title }}</h3>
-          <p class="project-desc" [id]="'desc-' + project.title">{{ project.description }}</p>
+          <p class="project-desc" [id]="'desc-' + slugify(project.title)">{{ project.description }}</p>
           <button
             type="button"
             class="read-more-toggle"
             [attr.aria-expanded]="isExpanded(project.title)"
-            [attr.aria-controls]="'desc-' + project.title"
+            [attr.aria-controls]="'desc-' + slugify(project.title)"
             [attr.aria-label]="
               isExpanded(project.title)
                 ? 'Show less about ' + project.title
