@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3](https://github.com/faisalkhan91/Fluxus/compare/v1.2.2...v1.2.3) (2026-04-04)
+
+
+### Bug Fixes
+
+* **security:** ignore known base image vulnerabilities in Trivy scan ([26f705e](https://github.com/faisalkhan91/Fluxus/commit/26f705ee7021c7e0a16191b45d9707fb04867765))
+
 ## [1.2.2](https://github.com/faisalkhan91/Fluxus/compare/v1.2.1...v1.2.2) (2026-04-04)
 
 ### Bug Fixes
