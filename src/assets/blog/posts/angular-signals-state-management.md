@@ -8,13 +8,13 @@ In this post I'll share the patterns I've landed on after migrating a production
 
 RxJS isn't going anywhere — it's still the right tool for async streams, HTTP, and event composition. But for **synchronous, UI-bound state**, Signals win on every axis:
 
-| Concern          | BehaviorSubject                  | Signal                              |
-| ---------------- | -------------------------------- | ----------------------------------- | ---------------------------------- |
-| Boilerplate      | `.getValue()`, `.next()`, `      | async`                              | `.set()`, `.update()`, direct read |
-| Change detection | Requires `OnPush` + `async` pipe | Granular, automatic                 |
-| Debugging        | Stack traces point to operators  | Stack traces point to `.set()` call |
-| Memory leaks     | Easy to forget `unsubscribe`     | No subscriptions to manage          |
-| Computed values  | `combineLatest` + `map`          | `computed()` — cached and lazy      |
+| Concern          | BehaviorSubject                      | Signal                              |
+| ---------------- | ------------------------------------ | ----------------------------------- |
+| Boilerplate      | `.getValue()`, `.next()`, `\| async` | `.set()`, `.update()`, direct read  |
+| Change detection | Requires `OnPush` + `async` pipe     | Granular, automatic                 |
+| Debugging        | Stack traces point to operators      | Stack traces point to `.set()` call |
+| Memory leaks     | Easy to forget `unsubscribe`         | No subscriptions to manage          |
+| Computed values  | `combineLatest` + `map`              | `computed()` — cached and lazy      |
 
 The mental model is simpler: a Signal is a value you can read synchronously and that automatically notifies anything that depends on it.
 
