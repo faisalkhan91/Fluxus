@@ -34,6 +34,8 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 - **Full SEO** — Per-route `<title>`, `og:*`, `twitter:*` meta tags, canonical URLs, `sitemap.xml`, `robots.txt`
 - **Accessibility** — Skip-to-content link, WCAG AA focus styles, ARIA attributes on all interactive elements
 - **Security Headers** — CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Comprehensive Test Suite** — Component and service tests with Vitest, run in CI on every PR
+- **Automated CI/CD** — GitHub Actions quality gate, Release Please versioning, multi-arch Docker publish, Trivy scanning
 
 ---
 
@@ -86,6 +88,35 @@ docker run --rm -p 8080:8080 fluxus
 Open `http://localhost:8080/hero/` in your browser.
 
 The container runs as non-root (UID 101) on port 8080, ready for Kubernetes deployment with `readOnlyRootFilesystem: true` and all capabilities dropped.
+
+The image includes a `HEALTHCHECK` that polls `/healthz` every 30 seconds, so Docker reports container health without relying on an external orchestrator.
+
+Multi-architecture builds (`linux/amd64`, `linux/arm64`) are produced automatically on every tagged release.
+
+---
+
+## Testing
+
+Unit tests use [Vitest](https://vitest.dev/) with `jsdom`:
+
+```bash
+npm test              # watch mode
+npm test -- --watch=false  # single run (CI)
+```
+
+---
+
+## CI/CD
+
+| Workflow            | Trigger                              | What it does                                                  |
+| ------------------- | ------------------------------------ | ------------------------------------------------------------- |
+| **CI Quality Gate** | PR to `main`                         | Lint, format check, type check, unit tests, production build  |
+| **Release Please**  | Push to `main`                       | Creates/updates a release PR with changelog and version bump  |
+| **Docker Publish**  | `v*` tag (from Release Please merge) | Multi-arch Docker build, GHCR push, Trivy scan, GitOps deploy |
+
+**Dependabot** is configured for weekly updates across npm, Docker, and GitHub Actions dependencies, with grouping for Angular and ESLint packages.
+
+All base images in the Dockerfile are pinned by SHA256 digest for reproducible builds. The CI workflows pin every action by commit SHA.
 
 ---
 

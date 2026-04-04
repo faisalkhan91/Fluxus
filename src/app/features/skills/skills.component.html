@@ -1,8 +1,9 @@
 <div class="skills-layout">
   @for (category of skillsData.categories(); track category.title) {
-    <section class="skill-section" [attr.aria-labelledby]="'skill-' + category.title">
+    <section class="skill-section" [attr.aria-labelledby]="'skill-' + slugify(category.title)">
       <ui-section-header
         [title]="category.title"
+        [headingId]="'skill-' + slugify(category.title)"
         [subtitle]="category.subtitle"
         [decoration]="'// ' + category.title.toLowerCase().replace(' ', '_') + '.json'"
       />
@@ -28,6 +29,7 @@
                   [attr.aria-valuenow]="skill.level"
                   aria-valuemin="0"
                   aria-valuemax="100"
+                  [attr.aria-label]="skill.name + ' proficiency'"
                 >
                   <div class="bar-fill" [style.width.%]="skill.level"></div>
                 </div>

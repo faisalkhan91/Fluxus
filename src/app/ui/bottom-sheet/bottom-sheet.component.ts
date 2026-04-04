@@ -7,7 +7,7 @@ import {
   inject,
   effect,
   ElementRef,
-  OnDestroy,
+  DestroyRef,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
@@ -23,9 +23,10 @@ import { IconComponent } from '../icon/icon.component';
     '(document:keydown.escape)': 'onEscapeKey()',
   },
 })
-export class BottomSheetComponent implements OnDestroy {
+export class BottomSheetComponent {
   private doc = inject(DOCUMENT);
   private elRef = inject(ElementRef);
+  private destroyRef = inject(DestroyRef);
 
   open = input(false);
   title = input<string>('');
@@ -37,6 +38,8 @@ export class BottomSheetComponent implements OnDestroy {
   private focusTrapListener: ((e: FocusEvent) => void) | null = null;
 
   constructor() {
+    this.destroyRef.onDestroy(() => this.disableFocusTrap());
+
     effect(() => {
       if (this.open()) {
         this.previouslyFocused = this.doc.activeElement as HTMLElement;
@@ -51,10 +54,6 @@ export class BottomSheetComponent implements OnDestroy {
         this.previouslyFocused = null;
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.disableFocusTrap();
   }
 
   onEscapeKey(): void {
