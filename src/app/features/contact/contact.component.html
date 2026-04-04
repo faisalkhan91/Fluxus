@@ -14,7 +14,9 @@
               class="form-input"
               placeholder="Your name"
               autocomplete="name"
-              [attr.aria-invalid]="contactForm.get('name')?.invalid && contactForm.get('name')?.touched"
+              [attr.aria-invalid]="
+                contactForm.get('name')?.invalid && contactForm.get('name')?.touched
+              "
               aria-describedby="name-error"
             />
             @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
@@ -31,7 +33,9 @@
               class="form-input"
               placeholder="your@email.com"
               autocomplete="email"
-              [attr.aria-invalid]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched"
+              [attr.aria-invalid]="
+                contactForm.get('email')?.invalid && contactForm.get('email')?.touched
+              "
               aria-describedby="email-error"
             />
             @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
@@ -64,7 +68,9 @@
               class="form-input form-textarea"
               placeholder="Your message..."
               rows="5"
-              [attr.aria-invalid]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched"
+              [attr.aria-invalid]="
+                contactForm.get('message')?.invalid && contactForm.get('message')?.touched
+              "
               aria-describedby="message-error"
             ></textarea>
             @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {

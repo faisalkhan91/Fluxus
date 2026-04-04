@@ -24,7 +24,12 @@ const mockProfile = {
   ]),
   socialLinks: signal([
     { platform: 'GitHub', url: 'https://github.com/test', icon: 'github', label: 'GitHub' },
-    { platform: 'LinkedIn', url: 'https://linkedin.com/in/test', icon: 'linkedin', label: 'LinkedIn' },
+    {
+      platform: 'LinkedIn',
+      url: 'https://linkedin.com/in/test',
+      icon: 'linkedin',
+      label: 'LinkedIn',
+    },
     { platform: 'Credly', url: 'https://credly.com/test', icon: 'shield', label: 'Credly Certs' },
   ]),
 };
@@ -77,8 +82,8 @@ describe('AboutComponent', () => {
 
   it('should filter out GitHub and LinkedIn from the social links loop', () => {
     const contactItems = el.querySelectorAll('.about-contact .contact-item');
-    const platformLabels = Array.from(contactItems).map(
-      (item) => item.querySelector('.contact-label')?.textContent?.trim(),
+    const platformLabels = Array.from(contactItems).map((item) =>
+      item.querySelector('.contact-label')?.textContent?.trim(),
     );
     expect(platformLabels).toContain('Credly');
     expect(platformLabels.filter((l) => l === 'GitHub').length).toBe(0);

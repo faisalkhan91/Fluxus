@@ -5,14 +5,59 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0](https://github.com/faisalkhan91/Fluxus/compare/v1.2.4...v1.3.0) (2026-04-04)
+## [Unreleased]
 
+### Added
+
+- Comprehensive unit test suite for all feature and UI components (Vitest + jsdom)
+- `TrustedHtmlPipe` for safe HTML rendering in blog posts
+- `slugify` utility for generating valid HTML IDs from dynamic content
+- `HEALTHCHECK` instruction in Dockerfile polling `/healthz` endpoint
+- Centralized NGINX security headers via `security-headers.conf` include
+- `/healthz` health check endpoint in NGINX config
+- Dependabot configuration for npm, Docker, and GitHub Actions (`.github/dependabot.yml`)
+- `CODEOWNERS` file for automatic PR reviewer assignment
+- Pull request template with review checklist
+- `release-please-config.json` and `.release-please-manifest.json` for explicit Release Please configuration
+- Multi-architecture Docker builds (`linux/amd64`, `linux/arm64`)
+- Build artifact upload in CI workflow (7-day retention)
+- Environment files with `siteUrl` and `siteName` constants
+
+### Changed
+
+- Pinned Dockerfile base images by SHA256 digest for reproducible builds
+- Pinned all GitHub Actions by commit SHA
+- Release Please workflow updated to use config-file/manifest-file mode
+- Docker publish GitOps steps now conditional on `HOMELAB_PERSONAL_ACCESS_TOKEN` secret
+- Enabled `optimization.fonts: true` in Angular production config for font inlining
+- Replaced hardcoded URLs with `environment.siteUrl` / `environment.siteName`
+- Replaced `typeof window` checks with `isPlatformBrowser()` in `MediaQueryService`
+- Refactored `bypassSecurityTrustHtml` usage to `TrustedHtmlPipe` with strict CSP
+- Added `datetime` attributes to all `<time>` elements
+- Replaced invalid nested `<button>` in editor tab bar with semantic `<button>` + `role="tab"`
+- Fixed `aria-labelledby` references with dynamically generated valid IDs via `slugify`
+- Added ARIA attributes (`aria-controls`, `aria-selected`, `role`) to interactive components
+- Updated README with Testing, CI/CD, Docker HEALTHCHECK, and Dependabot documentation
+
+### Fixed
+
+- Nested interactive element violations (button-in-button, anchor-wrapping-button)
+- Missing `aria-labelledby` target IDs on section headers
+- Invalid HTML IDs containing spaces in Skills and Projects components
+- Blog post rendering raw HTML for non-existent posts (now shows error state)
+- Redundant `role="main"` on semantic `<main>` element
+
+### Security
+
+- Added Trivy vulnerability scanning with `.trivyignore` for known base image CVEs
+- Docker images pinned by digest to prevent supply-chain substitution
+- All CI actions pinned by commit SHA
+
+## [1.3.0](https://github.com/faisalkhan91/Fluxus/compare/v1.2.4...v1.3.0) (2026-04-04)
 
 ### Features
 
 * Major config changes ([a710005](https://github.com/faisalkhan91/Fluxus/commit/a710005c033a41926d858d406196b3f563c0fbf2))
-
-## [1.3.0](https://github.com/faisalkhan91/Fluxus/compare/v1.2.4...v1.3.0) (2026-04-04)
 
 ### Changed
 

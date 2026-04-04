@@ -87,7 +87,11 @@
   </section>
 
   <section class="about-education" aria-labelledby="education-title">
-    <ui-section-header title="Education" headingId="education-title" decoration="// credentials.ts" />
+    <ui-section-header
+      title="Education"
+      headingId="education-title"
+      decoration="// credentials.ts"
+    />
     <div class="education-list">
       @for (edu of profile.education(); track edu.year) {
         <ui-glass-card [hover]="true">

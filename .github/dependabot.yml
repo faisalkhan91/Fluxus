@@ -6,9 +6,9 @@ updates:
       interval: weekly
     groups:
       angular:
-        patterns: ["@angular/*"]
+        patterns: ['@angular/*']
       eslint:
-        patterns: ["eslint*", "angular-eslint", "typescript-eslint"]
+        patterns: ['eslint*', 'angular-eslint', 'typescript-eslint']
     open-pull-requests-limit: 10
 
   - package-ecosystem: docker
