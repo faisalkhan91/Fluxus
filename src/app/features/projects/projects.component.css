@@ -161,7 +161,7 @@
   }
 
   .read-more-toggle {
-    display: none;
+    font-size: 0.65rem;
   }
 
   .project-card.expanded .project-desc {

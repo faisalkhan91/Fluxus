@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
-import { switchMap, tap } from 'rxjs';
+import { EMPTY, switchMap, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
@@ -80,8 +80,15 @@ export class BlogPostComponent implements OnInit {
               const post = posts.find((p) => p.slug === slug);
               this.meta.set(post);
               this.updateMetaTags(post);
+              if (!post) {
+                this.error.set('Post not found');
+                this.loading.set(false);
+              }
             }),
-            switchMap(() => this.blog.getPostContent(slug)),
+            switchMap(() => {
+              if (this.error()) return EMPTY;
+              return this.blog.getPostContent(slug);
+            }),
           );
         }),
         takeUntilDestroyed(this.destroyRef),
