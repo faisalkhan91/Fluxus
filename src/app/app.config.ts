@@ -1,6 +1,6 @@
 import {
   ApplicationConfig,
-  provideZoneChangeDetection,
+  provideBrowserGlobalErrorListeners,
   provideAppInitializer,
   inject,
 } from '@angular/core';
@@ -13,7 +13,7 @@ import { SeoService } from './core/services/seo.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withViewTransitions()),
     provideAnimationsAsync(),
     provideHttpClient(withFetch()),
