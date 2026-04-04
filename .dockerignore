@@ -3,7 +3,15 @@
 .vscode
 .cursor
 .gemini
+.ai
+.github
 node_modules
 dist
 *.md
+*.spec.ts
 .env*
+.trivyignore
+.prettierrc
+.prettierignore
+eslint.config.js
+tsconfig.spec.json
