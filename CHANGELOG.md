@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2](https://github.com/faisalkhan91/Fluxus/compare/v1.2.1...v1.2.2) (2026-04-04)
+
+
+### Bug Fixes
+
+* **core:** bootstrap application and core runtime initialization logic ([9e3e0a3](https://github.com/faisalkhan91/Fluxus/commit/9e3e0a3b37dbcb25094699323a54f462493b88b0))
+
 ## [Unreleased]
 
 ### Changed
