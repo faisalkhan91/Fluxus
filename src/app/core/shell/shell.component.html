@@ -2,7 +2,7 @@
 
 @if (media.showSidebar()) {
   <ui-sidebar
-    [items]="navService.sidebarItems"
+    [items]="navService.sidebarItems()"
     [collapsed]="media.sidebarCollapsed()"
     [isDark]="themeService.isDark()"
     (resumeClicked)="onResumeDownload()"
@@ -20,7 +20,7 @@
     />
   }
 
-  <main id="main-content" class="content" role="main">
+  <main id="main-content" class="content">
     <div class="route-container" [@routeAnimation]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet" />
     </div>
@@ -38,5 +38,5 @@
 }
 
 @if (media.showMobileNav()) {
-  <ui-mobile-nav-pill [items]="navService.mobileNavItems" />
+  <ui-mobile-nav-pill [items]="navService.mobileNavItems()" />
 }

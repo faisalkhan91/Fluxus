@@ -93,7 +93,8 @@
     background-color var(--transition-fast);
 }
 
-.tab:hover .tab-close {
+.tab:hover .tab-close,
+.tab:focus-within .tab-close {
   opacity: 1;
 }
 

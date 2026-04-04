@@ -1,11 +1,15 @@
 <div class="tabs-scroll">
   @for (tab of tabs(); track tab.id) {
-    <button
+    <div
       class="tab"
       [class.active]="tab.id === activeTabId()"
       role="tab"
       [attr.aria-selected]="tab.id === activeTabId()"
+      [tabindex]="tab.id === activeTabId() ? 0 : -1"
       (click)="tabSelected.emit(tab)"
+      (keydown.enter)="tabSelected.emit(tab)"
+      (keydown.space)="$event.preventDefault(); tabSelected.emit(tab)"
+      (keydown.delete)="tab.id !== 'hero' && tabClosed.emit(tab)"
     >
       <span class="tab-dot" [style.background]="tab.color"></span>
       <span class="tab-label">{{ tab.label }}</span>
@@ -15,11 +19,10 @@
           class="tab-close"
           (click)="$event.stopPropagation(); tabClosed.emit(tab)"
           [attr.aria-label]="'Close ' + tab.label"
-          tabindex="-1"
         >
           <ui-icon name="x" [size]="12" />
         </button>
       }
-    </button>
+    </div>
   }
 </div>
