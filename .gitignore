@@ -41,5 +41,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Screen recordings
+*.mov
+
 # Environment variables
 .env
