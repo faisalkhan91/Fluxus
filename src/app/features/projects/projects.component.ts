@@ -4,6 +4,7 @@ import { SectionHeaderComponent } from '../../ui/section-header/section-header.c
 import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
 import { IconComponent } from '../../ui/icon/icon.component';
 import { ProjectsDataService } from '../../core/services/projects-data.service';
+import { slugify } from '../../shared/utils/string.utils';
 
 @Component({
   selector: 'app-projects',
@@ -14,6 +15,7 @@ import { ProjectsDataService } from '../../core/services/projects-data.service';
 })
 export class ProjectsComponent {
   protected projectsData = inject(ProjectsDataService);
+  protected slugify = slugify;
 
   private expandedSet = signal(new Set<string>());
 

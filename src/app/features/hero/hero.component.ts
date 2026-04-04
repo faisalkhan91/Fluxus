@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { GlowButtonComponent } from '../../ui/glow-button/glow-button.component';
 import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
 import { IconComponent } from '../../ui/icon/icon.component';
@@ -14,10 +14,15 @@ import { BlogService } from '../../core/services/blog.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroComponent implements OnInit {
+  private router = inject(Router);
   protected profile = inject(ProfileDataService);
   protected blog = inject(BlogService);
 
   ngOnInit(): void {
     this.blog.loadPosts();
+  }
+
+  navigateTo(path: string): void {
+    this.router.navigate([path]);
   }
 }

@@ -1,6 +1,7 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, DestroyRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EditorTab } from '../../ui/editor-tab-bar/editor-tab-bar.component';
 
 interface TabData {
@@ -12,6 +13,7 @@ interface TabData {
 @Injectable({ providedIn: 'root' })
 export class TabService {
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   private tabs = signal<EditorTab[]>([]);
   private activeId = signal<string>('');
 
@@ -20,7 +22,10 @@ export class TabService {
 
   constructor() {
     this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((event) => {
         const url = event.urlAfterRedirects;
         const segments = url.split('/').filter(Boolean);

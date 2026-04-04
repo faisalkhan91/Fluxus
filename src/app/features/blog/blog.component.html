@@ -11,7 +11,7 @@
         <a [routerLink]="['/blog', post.slug]" class="post-link">
           <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
             <div class="post-meta">
-              <time class="post-date">
+              <time class="post-date" [attr.datetime]="post.date">
                 <ui-icon name="calendar" [size]="12" />
                 {{ post.date }}
               </time>

@@ -1,11 +1,16 @@
-import { Injectable, signal, computed, DestroyRef, inject } from '@angular/core';
+import { Injectable, signal, computed, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export type BreakpointKey = 'mobile' | 'tablet' | 'desktop' | 'wide';
+
+/** SSR default: assume wide/desktop layout for prerendered HTML. */
+const SSR_DEFAULT_WIDTH = 1280;
 
 @Injectable({ providedIn: 'root' })
 export class MediaQueryService {
   private destroyRef = inject(DestroyRef);
-  private width = signal(typeof window !== 'undefined' ? window.innerWidth : 1280);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private width = signal(this.isBrowser ? window.innerWidth : SSR_DEFAULT_WIDTH);
 
   readonly breakpoint = computed<BreakpointKey>(() => {
     const w = this.width();
@@ -25,7 +30,7 @@ export class MediaQueryService {
   readonly showMobileNav = computed(() => this.isMobile());
 
   constructor() {
-    if (typeof window === 'undefined') return;
+    if (!this.isBrowser) return;
     const onResize = () => this.width.set(window.innerWidth);
     window.addEventListener('resize', onResize, { passive: true });
     this.destroyRef.onDestroy(() => window.removeEventListener('resize', onResize));
