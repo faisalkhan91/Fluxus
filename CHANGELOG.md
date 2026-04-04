@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.2](https://github.com/faisalkhan91/Fluxus/compare/v1.2.1...v1.2.2) (2026-04-04)
 
-
 ### Bug Fixes
 
-* **core:** bootstrap application and core runtime initialization logic ([9e3e0a3](https://github.com/faisalkhan91/Fluxus/commit/9e3e0a3b37dbcb25094699323a54f462493b88b0))
+- **core:** bootstrap application and core runtime initialization logic ([9e3e0a3](https://github.com/faisalkhan91/Fluxus/commit/9e3e0a3b37dbcb25094699323a54f462493b88b0))
 
 ## [Unreleased]
 
@@ -46,11 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.1](https://github.com/faisalkhan91/Fluxus/compare/v1.2.0...v1.2.1) (2026-04-03)
 
-
 ### Bug Fixes
 
-* remove obsolete CI error fix patch and update Karma configuration ([93bebe2](https://github.com/faisalkhan91/Fluxus/commit/93bebe2e51d855ef2cde94978531c3c009e5558a))
-* resolve CI lint errors and setup-node deprecation ([bdf4418](https://github.com/faisalkhan91/Fluxus/commit/bdf441858ea36cd8055cf36e705952dba656a2f1))
+- remove obsolete CI error fix patch and update Karma configuration ([93bebe2](https://github.com/faisalkhan91/Fluxus/commit/93bebe2e51d855ef2cde94978531c3c009e5558a))
+- resolve CI lint errors and setup-node deprecation ([bdf4418](https://github.com/faisalkhan91/Fluxus/commit/bdf441858ea36cd8055cf36e705952dba656a2f1))
 
 ## [1.2.0](https://github.com/faisalkhan91/Fluxus/compare/v1.1.0...v1.2.0) (2026-04-03)
 
@@ -76,7 +74,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove unnecessary peer dependencies from package-lock.json ([60ad0b6](https://github.com/faisalkhan91/Fluxus/commit/60ad0b6e9a661b0e440016099c820d820fbac699))
 - resolve SSR NotYetImplemented error in IconComponent ([44eef70](https://github.com/faisalkhan91/Fluxus/commit/44eef70e1210d746408f76e0aeb66e315320576e))
-
 
 ## [1.2.0] - 2026-04-01
 
