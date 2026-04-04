@@ -9,7 +9,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 
 **Live:** [faisalkhan.dpdns.org](https://faisalkhan.dpdns.org)
 
-![FluxusOverview](https://github.com/faisalkhan91/Fluxus/assets/25315418/ea068c29-3c10-4cdc-873e-ec6224bb7478)
+<video src="src/assets/images/fluxus-demo.mp4" width="100%" autoplay loop muted playsinline></video>
 
 ---
 
@@ -17,13 +17,13 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 
 | Layer      | Technology                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------ |
-| Framework  | Angular 21.2.7 (standalone components, signals, `OnPush`)                                        |
+| Framework  | Angular 21.2.7 (standalone components, signals, zoneless, `OnPush`)                              |
 | Rendering  | SSG via `@angular/ssr` — 12 static routes prerendered at build time                              |
 | Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                   |
 | Blog       | Markdown files rendered via `marked` + `highlight.js`                                            |
 | Container  | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.27-alpine` runtime |
 | Web Server | NGINX with gzip, granular cache policies, and full security headers                              |
-| Language   | TypeScript 5.5 (strict mode, no `any`)                                                           |
+| Language   | TypeScript 5.9 (strict mode, no `any`)                                                           |
 
 ## Features
 
