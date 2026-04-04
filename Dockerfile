@@ -10,7 +10,7 @@ COPY . .
 RUN npm run build:prod
 
 # Stage 2: Serve with non-root NGINX (UID 101, listens on 8080)
-FROM nginxinc/nginx-unprivileged:1.27-alpine@sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0
+FROM nginxinc/nginx-unprivileged:1.29-alpine@sha256:f99cc61bf1719f30230602036314ff6ba5dcede8965c5ed3ded71b8bbced3723
 LABEL org.opencontainers.image.title="Fluxus" \
       org.opencontainers.image.description="Angular 21 SSG portfolio — static site served by NGINX" \
       org.opencontainers.image.source="https://github.com/faisalkhan91/Fluxus" \
