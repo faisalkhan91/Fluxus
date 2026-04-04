@@ -7,8 +7,22 @@ import { BlogComponent } from './blog.component';
 import { BlogService } from '../../core/services/blog.service';
 
 const MOCK_POSTS = [
-  { slug: 'post-one', title: 'Post One', date: '2025-01-01', excerpt: 'First', tags: ['angular'], readingTime: '3 min' },
-  { slug: 'post-two', title: 'Post Two', date: '2025-02-01', excerpt: 'Second', tags: ['go'], readingTime: '5 min' },
+  {
+    slug: 'post-one',
+    title: 'Post One',
+    date: '2025-01-01',
+    excerpt: 'First',
+    tags: ['angular'],
+    readingTime: '3 min',
+  },
+  {
+    slug: 'post-two',
+    title: 'Post Two',
+    date: '2025-02-01',
+    excerpt: 'Second',
+    tags: ['go'],
+    readingTime: '5 min',
+  },
 ];
 
 const mockBlog = {
@@ -27,10 +41,7 @@ describe('BlogComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [BlogComponent],
-      providers: [
-        provideRouter([]),
-        { provide: BlogService, useValue: mockBlog },
-      ],
+      providers: [provideRouter([]), { provide: BlogService, useValue: mockBlog }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 

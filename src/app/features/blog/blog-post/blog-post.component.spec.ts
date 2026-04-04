@@ -11,9 +11,30 @@ import { BlogService } from '../../../core/services/blog.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
 
 const MOCK_POSTS: BlogPost[] = [
-  { slug: 'first-post', title: 'First Post', date: '2025-01-01', excerpt: 'First excerpt', tags: ['angular'], readingTime: '3 min' },
-  { slug: 'second-post', title: 'Second Post', date: '2025-02-01', excerpt: 'Second excerpt', tags: ['go'], readingTime: '5 min' },
-  { slug: 'third-post', title: 'Third Post', date: '2025-03-01', excerpt: 'Third excerpt', tags: ['rust'], readingTime: '4 min' },
+  {
+    slug: 'first-post',
+    title: 'First Post',
+    date: '2025-01-01',
+    excerpt: 'First excerpt',
+    tags: ['angular'],
+    readingTime: '3 min',
+  },
+  {
+    slug: 'second-post',
+    title: 'Second Post',
+    date: '2025-02-01',
+    excerpt: 'Second excerpt',
+    tags: ['go'],
+    readingTime: '5 min',
+  },
+  {
+    slug: 'third-post',
+    title: 'Third Post',
+    date: '2025-03-01',
+    excerpt: 'Third excerpt',
+    tags: ['rust'],
+    readingTime: '4 min',
+  },
 ];
 
 describe('BlogPostComponent', () => {
@@ -87,9 +108,7 @@ describe('BlogPostComponent', () => {
   });
 
   it('should update page title via Title service', () => {
-    expect(titleService.setTitle).toHaveBeenCalledWith(
-      expect.stringContaining('Second Post'),
-    );
+    expect(titleService.setTitle).toHaveBeenCalledWith(expect.stringContaining('Second Post'));
   });
 
   it('should update OG meta tags', () => {

@@ -28,7 +28,14 @@ const mockProfile = {
 const mockBlog = {
   loadPosts: vi.fn().mockReturnValue(of([])),
   latestPosts: signal([
-    { slug: 'test-post', title: 'Test Post', date: '2025-01-01', excerpt: 'Excerpt', tags: [], readingTime: '3 min' },
+    {
+      slug: 'test-post',
+      title: 'Test Post',
+      date: '2025-01-01',
+      excerpt: 'Excerpt',
+      tags: [],
+      readingTime: '3 min',
+    },
   ]),
 };
 

@@ -46,7 +46,12 @@ describe('ContactComponent', () => {
     windowOpenSpy.mockRestore();
   });
 
-  function fillForm(values: { name: string; email: string; subject: string; message: string }): void {
+  function fillForm(values: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }): void {
     const inputs = el.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.form-input');
     const nameInput = inputs[0];
     const emailInput = inputs[1];

@@ -19,7 +19,9 @@
         </div>
         <div class="project-body">
           <h3 class="project-title">{{ project.title }}</h3>
-          <p class="project-desc" [id]="'desc-' + slugify(project.title)">{{ project.description }}</p>
+          <p class="project-desc" [id]="'desc-' + slugify(project.title)">
+            {{ project.description }}
+          </p>
           <button
             type="button"
             class="read-more-toggle"
