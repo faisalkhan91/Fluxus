@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0](https://github.com/faisalkhan91/Fluxus/compare/fluxus-v2.0.0...fluxus-v2.1.0) (2026-04-05)
+
+
+### Features
+
+* force release pipeline to trigger ([7d5b4c0](https://github.com/faisalkhan91/Fluxus/commit/7d5b4c0256f9481e3380466dca7cbe2b056cc1f4))
+
+
+### Bug Fixes
+
+* Removed patch files ([8c875dc](https://github.com/faisalkhan91/Fluxus/commit/8c875dc94cd2d28a46f19e0e413566efe2a5daf6))
+
 ## [2.0.0](https://github.com/faisalkhan91/Fluxus/compare/fluxus-v1.3.0...fluxus-v2.0.0) (2026-04-04)
 
 
