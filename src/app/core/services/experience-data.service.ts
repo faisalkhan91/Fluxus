@@ -10,9 +10,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Cloud Efficiency',
       duration: 'May 2026 - Present',
       achievements: [
-        "Moved internally from Galileo to take on a broader infrastructure mandate, driving cost efficiency across SoFi's multi-cloud footprint.",
-        'Driving cloud cost optimization and infrastructure efficiency initiatives across AWS and Azure environments.',
-        'Engineering platform-level tooling to surface cost anomalies and enforce resource governance at scale.',
+        "After a year building SoFi's developer platform, I moved internally to tackle a broader infrastructure challenge: driving cost efficiency across the company's multi-cloud footprint spanning AWS and Azure. I now engineer platform-level tooling that surfaces cost anomalies in near-real-time and enforces resource governance at scale \u2014 ensuring that as SoFi's financial services platform grows, infrastructure spend stays accountable and optimized.",
       ],
     },
     {
@@ -20,10 +18,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Builder Tools',
       duration: 'April 2025 - April 2026',
       achievements: [
-        "Owned SoFi's internal developer experience platform, building Go-based tooling and AI-powered workflows that accelerated engineering velocity across 50+ teams.",
-        'Designed and shipped AI-powered developer workflows leveraging Claude, Cursor, and Gemini CLI to automate repetitive infrastructure tasks.',
-        'Developed Go-based microservices for internal platform APIs consumed by 50+ engineering teams.',
-        'Championed DevOps best practices including GitOps (Argo CD), Terraform IaC, and containerized CI/CD pipelines.',
+        "I owned SoFi's internal developer experience platform \u2014 the central tooling layer that 50+ engineering teams relied on daily. My focus was twofold: building Go-based microservices that powered the platform's self-service APIs, and designing AI-powered workflows using Claude, Cursor, and Gemini CLI to automate repetitive infrastructure tasks. I championed GitOps through Argo CD, codified infrastructure with Terraform, and pushed for containerized CI/CD pipelines that brought consistency and velocity to the release process across the organization.",
       ],
     },
     { type: 'period', title: 'Galileo Financial Technologies (A SoFi Company)' },
@@ -32,11 +27,8 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Observability',
       duration: 'April 2024 - March 2025',
       achievements: [
-        "Architected and operated the centralized observability platform serving 200+ microservices across Galileo's payment processing infrastructure.",
-        'Built monitoring pipelines using Datadog, Grafana, and OpenTelemetry to achieve sub-minute alerting on critical payment flows.',
-        'Implemented distributed tracing with Jaeger and OpenTelemetry, reducing mean time to resolution (MTTR) for production incidents.',
-        'Developed custom Prometheus exporters and Grafana dashboards to surface SLI/SLO compliance across platform services.',
-        'Partnered with SRE teams to establish observability standards and runbooks adopted org-wide.',
+        "At Galileo \u2014 SoFi's B2B payment processing arm powering billions in transactions for fintech clients worldwide \u2014 I architected and operated the centralized observability platform serving 200+ microservices. I built monitoring pipelines using Datadog, Grafana, and OpenTelemetry to achieve sub-minute alerting on critical payment flows, and implemented distributed tracing with Jaeger that meaningfully reduced mean time to resolution for production incidents.",
+        'Beyond instrumentation, I developed custom Prometheus exporters and Grafana dashboards that surfaced SLI/SLO compliance across platform services, giving engineering leadership clear visibility into system health. I partnered closely with SRE teams to establish observability standards and runbooks that were adopted organization-wide, creating a shared language for reliability across Galileo.',
       ],
     },
     { type: 'period', title: 'Cigna Healthcare' },
@@ -45,11 +37,8 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer',
       duration: 'April 2022 - March 2024',
       achievements: [
-        'Promoted to lead architecture decisions for enterprise monitoring and automation platforms, mentoring junior engineers and driving the shift to modern observability.',
-        'Designed and deployed CI/CD pipelines using Jenkins, Docker, and GitHub Actions, reducing deployment cycle times by 40%.',
-        'Owned the Apache Kafka data pipeline running on OpenShift, supporting real-time event streaming for claims processing.',
-        'Mentored junior engineers and led knowledge transfer sessions on cloud-native patterns and DevOps practices.',
-        'Drove migration of legacy monitoring to modern observability stacks (Splunk, Dynatrace, SolarWinds).',
+        "Promoted to lead architecture decisions for Cigna's enterprise monitoring and automation platforms, I operated in a HIPAA-regulated environment where the stakes were high and reliability was non-negotiable. I drove the organization's migration from legacy monitoring to modern observability stacks \u2014 Splunk, Dynatrace, and SolarWinds \u2014 while mentoring junior engineers and leading knowledge transfer sessions on cloud-native patterns and DevOps practices.",
+        'I designed and deployed CI/CD pipelines using Jenkins, Docker, and GitHub Actions that cut deployment cycle times by 40%, and owned the Apache Kafka data pipeline running on OpenShift that supported real-time event streaming for claims processing. This period sharpened my ability to balance technical leadership with hands-on delivery in a heavily regulated enterprise.',
       ],
     },
     {
@@ -57,13 +46,8 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'October 2019 - March 2022',
       achievements: [
-        'Built and automated enterprise healthcare platforms end-to-end\u2014from Angular frontends and Python scripting to Kafka data pipelines and mainframe monitoring.',
-        'Developed and enhanced application features using Angular and RESTful web services for internal healthcare platforms.',
-        'Built Python and PowerShell automation scripts that eliminated 20+ hours of manual operations per sprint.',
-        'Created custom monitoring frameworks in Python integrated with Splunk for proactive alerting on mainframe systems.',
-        'Engineered Selenium-based test automation suites using Python and Katalon, increasing regression test coverage.',
-        'Managed Oracle database data flows in Kafka clusters hosted on OpenShift pods and troubleshot production issues.',
-        'Approved and deployed releases across all environments using uDeploy as part of regular DevOps activities.',
+        "I joined Cigna's platform engineering team and quickly became the go-to engineer for end-to-end automation \u2014 from Angular frontends and Python scripting to Kafka data pipelines and mainframe monitoring. I built Python and PowerShell automation scripts that eliminated 20+ hours of manual operations per sprint, and created custom monitoring frameworks integrated with Splunk for proactive alerting on legacy mainframe systems.",
+        'On the application side, I developed and enhanced features using Angular and RESTful web services for internal healthcare platforms, while engineering Selenium-based test automation suites with Python and Katalon that significantly expanded regression coverage. I managed Oracle database data flows in Kafka clusters hosted on OpenShift and handled release approvals across environments using uDeploy \u2014 building the broad, systems-level perspective that defined my later career.',
       ],
     },
     { type: 'period', title: 'DCI Resources, LLC' },
@@ -72,10 +56,7 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'February 2019 - November 2019',
       achievements: [
-        'Drove the containerization and CI/CD modernization effort, migrating applications from monolithic to microservice architecture on Azure.',
-        'Developed and maintained automated CI/CD pipelines using Jenkins and GitLab for continuous code deployment.',
-        'Built and deployed Docker containers to migrate applications from monolithic to microservice architecture.',
-        'Deployed web applications on Azure and automated standard operating procedures with custom Python tooling.',
+        'I drove the containerization and CI/CD modernization effort at DCI, a minority-owned IT services firm specializing in enterprise support. I migrated applications from monolithic architecture to Docker-based microservices deployed on Azure, built automated pipelines using Jenkins and GitLab, and developed custom Python tooling that replaced manual standard operating procedures with repeatable, version-controlled automation.',
       ],
     },
     {
@@ -83,8 +64,7 @@ export class ExperienceDataService {
       role: 'Software Engineer Intern',
       duration: 'September 2018 - January 2019',
       achievements: [
-        'Established Git-based version control workflows and supported Azure cloud deployments during an intensive internship.',
-        'Implemented branching strategies and contributed to infrastructure automation scripts.',
+        'During an intensive internship, I established Git-based version control workflows and supported Azure cloud deployments, implementing branching strategies and contributing to infrastructure automation scripts that laid the groundwork for the team\u2019s DevOps transformation.',
       ],
     },
     { type: 'period', title: 'University of New Haven' },
@@ -93,10 +73,7 @@ export class ExperienceDataService {
       role: 'Python Developer',
       duration: 'January 2017 - May 2018',
       achievements: [
-        'Delivered full-stack features for student-facing applications using Django, PostgreSQL, and Angular in agile sprints.',
-        'Built RESTful API endpoints consumed by the Angular frontend.',
-        'Maintained the PostgreSQL database layer and authored Django models for data persistence.',
-        "Administered the Linux infrastructure hosting the university's software platform.",
+        "As part of my graduate studies, I served as a developer for the university's student-facing applications, delivering full-stack features using Django, PostgreSQL, and Angular in agile sprints. I built RESTful API endpoints consumed by the Angular frontend, maintained the PostgreSQL database layer and Django ORM models, and administered the Linux infrastructure hosting the platform.",
       ],
     },
     {
@@ -104,8 +81,7 @@ export class ExperienceDataService {
       role: 'Research Assistant',
       duration: 'May 2017 - July 2017',
       achievements: [
-        'Processed large-scale NOAA weather datasets using Hadoop MapReduce and built ML models to identify storm occurrence trends.',
-        'Visualized results in R Studio and Spyder using R and Python plotting libraries.',
+        'I processed large-scale NOAA weather datasets using Hadoop MapReduce and built machine learning models to identify storm occurrence trends, visualizing the results using R and Python plotting libraries. This was my first exposure to data engineering at scale and reinforced my interest in building systems that turn raw data into actionable insight.',
       ],
     },
     { type: 'period', title: 'Vodafone' },
@@ -114,10 +90,7 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'May 2014 - August 2016',
       achievements: [
-        'Managed cloud infrastructure and automated operations at enterprise scale\u2014spanning 100+ backup servers and 15,000 client servers across AWS and VMware.',
-        'Wrote Python and shell scripts to automate client package installations across 15,000+ servers.',
-        'Managed private cloud environments hosted on VMware ESXi using vSphere web client.',
-        'Designed and maintained backup policies (incremental, full, archive log) for Oracle databases using RMAN.',
+        "At Vodafone \u2014 one of the world's largest telecommunications companies \u2014 I managed cloud infrastructure and automated operations at true enterprise scale: 100+ backup servers and 15,000 client servers across AWS and VMware environments. I wrote Python and shell scripts to automate package installations across the entire fleet, managed private cloud environments on VMware ESXi, and designed backup policies for Oracle databases using RMAN. Working at this scale taught me that good automation isn't optional \u2014 it's survival.",
       ],
     },
     {
@@ -125,7 +98,7 @@ export class ExperienceDataService {
       role: 'Graduate Engineering Trainee',
       duration: 'February 2014 - April 2014',
       achievements: [
-        'Completed intensive onboarding in enterprise infrastructure management, shadowing senior engineers on AWS deployments and VMware administration.',
+        'Completed an intensive onboarding program in enterprise infrastructure management, shadowing senior engineers on AWS deployments and VMware administration. This period built the operational foundation that my subsequent infrastructure engineering career was built on.',
       ],
     },
     { type: 'period', title: 'Mphasis' },
@@ -134,8 +107,7 @@ export class ExperienceDataService {
       role: 'System Engineer',
       duration: 'June 2013 - January 2014',
       achievements: [
-        'Managed Red Hat Linux and VMware ESX environments for enterprise clients, maintaining 98% uptime through proactive Splunk monitoring and automated patching.',
-        'Automated server patching and hotfix deployments using bash scripts.',
+        'I launched my career at Mphasis, a Blackstone-backed enterprise IT services firm, managing Red Hat Linux and VMware ESX environments for enterprise clients. I maintained 98% uptime through proactive Splunk monitoring and automated server patching and hotfix deployments using bash scripts \u2014 learning early that reliability is earned through automation, not heroics.',
       ],
     },
   ]);
