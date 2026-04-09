@@ -37,6 +37,16 @@ export class SkillsDataService {
       ],
     },
     {
+      title: 'Platforms & AI',
+      subtitle: 'Proficiency',
+      skills: [
+        { name: 'AWS', level: 80 },
+        { name: 'Azure', level: 75 },
+        { name: 'Datadog', level: 85 },
+        { name: 'AI Engineering', level: 80 },
+      ],
+    },
+    {
       title: 'Languages',
       subtitle: 'Communication',
       skills: [

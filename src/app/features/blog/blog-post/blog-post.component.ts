@@ -108,7 +108,7 @@ export class BlogPostComponent implements OnInit {
   private updateMetaTags(post: BlogPost | undefined): void {
     if (!post) return;
     const url = `${environment.siteUrl}/blog/${post.slug}`;
-    const title = `${post.title} — ${environment.siteName}`;
+    const title = `${post.title} - ${environment.siteName}`;
 
     this.titleService.setTitle(title);
     this.metaService.updateTag({ property: 'og:title', content: title });
