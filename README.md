@@ -85,7 +85,7 @@ docker build -t fluxus .
 docker run --rm -p 8080:8080 fluxus
 ```
 
-Open `http://localhost:8080/hero/` in your browser.
+Open `http://localhost:8080/` in your browser.
 
 The container runs as non-root (UID 101) on port 8080, ready for Kubernetes deployment with `readOnlyRootFilesystem: true` and all capabilities dropped.
 
@@ -158,8 +158,7 @@ src/
 
 | Route             | Component               | SSG                        |
 | ----------------- | ----------------------- | -------------------------- |
-| `/`               | Redirect to `/hero`     | —                          |
-| `/hero`           | HeroComponent           | Prerendered                |
+| `/`               | HeroComponent           | Prerendered                |
 | `/about`          | AboutComponent          | Prerendered                |
 | `/experience`     | ExperienceComponent     | Prerendered                |
 | `/skills`         | SkillsComponent         | Prerendered                |

@@ -26,7 +26,14 @@
 
 @if (menuOpen()) {
   <div class="menu-overlay" (click)="closeMenu()" aria-hidden="true"></div>
-  <div class="menu-panel" role="dialog" aria-label="Navigation menu">
+  <div
+    class="menu-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Navigation menu"
+    tabindex="-1"
+    (keydown.escape)="closeMenu()"
+  >
     <div class="menu-header">
       <span class="menu-title">Navigate</span>
       <button class="menu-close" (click)="closeMenu()" aria-label="Close menu">

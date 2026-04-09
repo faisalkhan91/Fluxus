@@ -33,6 +33,7 @@ export class MobileNavPillComponent {
 
   openMenu(): void {
     this.menuOpen.set(true);
+    setTimeout(() => document.querySelector<HTMLElement>('.menu-panel')?.focus());
   }
 
   closeMenu(): void {

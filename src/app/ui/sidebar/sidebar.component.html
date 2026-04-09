@@ -20,7 +20,7 @@
 </div>
 
 <ul class="nav-list">
-  @for (item of items(); track $index) {
+  @for (item of items(); track item) {
     @if (item.type === 'divider') {
       @if (item.label && !collapsed()) {
         <li class="nav-divider" role="separator">
