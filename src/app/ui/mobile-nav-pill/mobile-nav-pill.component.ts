@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, ChangeDetectionStrategy, input, signal, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 
 export interface MobileNavItem {
@@ -20,5 +20,28 @@ export interface MobileNavItem {
   },
 })
 export class MobileNavPillComponent {
+  private router = inject(Router);
+
   items = input<MobileNavItem[]>([]);
+  menuItems = input<MobileNavItem[]>([]);
+
+  menuOpen = signal(false);
+
+  openMenu(): void {
+    this.menuOpen.set(true);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
+  }
+
+  navigateTo(route: string): void {
+    this.menuOpen.set(false);
+    this.router.navigate([route]);
+  }
+
+  isActive(route: string): boolean {
+    if (route === '/') return this.router.url === '/';
+    return this.router.url.startsWith(route);
+  }
 }

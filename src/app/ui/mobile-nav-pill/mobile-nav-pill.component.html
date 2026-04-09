@@ -3,6 +3,7 @@
     <a
       [routerLink]="item.route"
       routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.route === '/' }"
       class="pill-item"
       [attr.aria-label]="item.label"
     >
@@ -10,4 +11,44 @@
       <span class="pill-label">{{ item.label }}</span>
     </a>
   }
+
+  <button
+    class="pill-item"
+    [class.active]="menuOpen()"
+    (click)="openMenu()"
+    aria-label="Menu"
+    [attr.aria-expanded]="menuOpen()"
+  >
+    <ui-icon name="menu" [size]="20" />
+    <span class="pill-label">Menu</span>
+  </button>
 </div>
+
+@if (menuOpen()) {
+  <div class="menu-overlay" (click)="closeMenu()" aria-hidden="true"></div>
+  <div class="menu-panel" role="dialog" aria-label="Navigation menu">
+    <div class="menu-header">
+      <span class="menu-title">Navigate</span>
+      <button class="menu-close" (click)="closeMenu()" aria-label="Close menu">
+        <ui-icon name="x" [size]="20" />
+      </button>
+    </div>
+    <ul class="menu-list">
+      @for (item of menuItems(); track item.route) {
+        <li>
+          <button
+            class="menu-link"
+            [class.menu-link--active]="isActive(item.route)"
+            (click)="navigateTo(item.route)"
+          >
+            <ui-icon [name]="item.icon" [size]="20" />
+            <span>{{ item.label }}</span>
+            @if (isActive(item.route)) {
+              <ui-icon name="chevron-right" [size]="14" class="menu-link-indicator" />
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+}

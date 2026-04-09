@@ -8,12 +8,8 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'hero',
-        pathMatch: 'full',
-      },
-      {
-        path: 'hero',
         loadComponent: () => import('./features/hero/hero.component').then((m) => m.HeroComponent),
+        pathMatch: 'full',
         data: {
           tab: { label: 'Welcome', ext: '.tsx', color: '#61dafb' },
           seo: {
