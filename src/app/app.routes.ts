@@ -18,7 +18,7 @@ export const routes: Routes = [
           tab: { label: 'Welcome', ext: '.tsx', color: '#61dafb' },
           seo: {
             title: 'Welcome',
-            description: `Faisal Khan \u2014 Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.`,
+            description: `Faisal Khan - Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.`,
           },
         },
       },
@@ -31,7 +31,7 @@ export const routes: Routes = [
           seo: {
             title: 'About',
             description:
-              'Background, education, and professional journey of Faisal Khan \u2014 Senior Software Engineer.',
+              'Background, education, and professional journey of Faisal Khan - Senior Software Engineer.',
           },
         },
       },
@@ -69,7 +69,7 @@ export const routes: Routes = [
           seo: {
             title: 'Projects',
             description:
-              'Open-source and professional projects by Faisal Khan \u2014 from full-stack apps to CI/CD pipelines.',
+              'Open-source and professional projects by Faisal Khan - from full-stack apps to CI/CD pipelines.',
           },
         },
       },

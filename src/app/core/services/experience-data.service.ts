@@ -10,7 +10,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Cloud Efficiency',
       duration: 'May 2026 - Present',
       achievements: [
-        "After a year building SoFi's developer platform, I moved internally to tackle a broader infrastructure challenge: driving cost efficiency across the company's multi-cloud footprint spanning AWS and Azure. I now engineer platform-level tooling that surfaces cost anomalies in near-real-time and enforces resource governance at scale, ensuring that as SoFi's financial services platform grows, infrastructure spend stays accountable and optimized.",
+        "After leading cost optimization, infrastructure enablement, and AI-augmented tooling across SoFi and Galileo, I moved internally to tackle a broader mandate: driving cloud efficiency across the company's multi-cloud footprint spanning AWS and Azure. I engineer platform-level tooling that surfaces cost anomalies in near-real-time and enforces resource governance at scale, continuing to leverage AI-native development practices to accelerate delivery.",
       ],
     },
     {
@@ -18,7 +18,9 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Builder Tools',
       duration: 'April 2025 - April 2026',
       achievements: [
-        "I owned SoFi's internal developer experience platform, the central tooling layer that 50+ engineering teams relied on daily. My focus was twofold: building Go-based microservices that powered the platform's self-service APIs, and designing AI-powered workflows using Claude, Cursor, and Gemini CLI to automate repetitive infrastructure tasks. I championed GitOps through Argo CD, codified infrastructure with Terraform, and pushed for containerized CI/CD pipelines that brought consistency and velocity to the release process across the organization.",
+        "I led strategic cost optimization across SoFi's observability platforms, driving initiatives that delivered hundreds of thousands of dollars in annualized Datadog savings. I built Python analytics tooling to surface cost drivers, implemented intelligent data sampling strategies, and remediated high-cardinality metrics. I also enhanced Doghouse, an internal Go tool for managing Datadog assets and dashboard migrations, and built Spelunkie, a Python audit tool for analyzing Splunk resources, both of which became standard tooling for the observability team.",
+        "On the infrastructure side, I deployed Datadog agent configurations across Galileo's Kubernetes clusters and EC2 fleet, designed a hybrid ArgoCD and Terraform deployment strategy for monitoring agents, and built a Terraform module for streaming AWS CloudWatch logs into Coralogix via Firehose. I implemented SCIM-based identity management across both organizations, extended the Python logging library I had built at Galileo with built-in PII redaction, and continued leading the Coralogix migration.",
+        "I also invested deeply in AI-augmented engineering. I built Unsplunk, a Go-based migration tracker with an embedded AI agent powered by Claude that investigates complex Splunk-to-Coralogix migrations and auto-generates GitLab merge requests. I contributed to SoFi's LLM proxy, a LiteLLM gateway backed by AWS Bedrock, and adopted AI-native development practices using Claude Code, Cursor, and MCP to accelerate development workflows across the full software lifecycle.",
       ],
     },
     { type: 'period', title: 'Galileo Financial Technologies (A SoFi Company)' },
@@ -27,8 +29,8 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Observability',
       duration: 'April 2024 - March 2025',
       achievements: [
-        "At Galileo, SoFi's B2B payment processing arm powering billions in transactions for fintech clients worldwide, I architected and operated the centralized observability platform serving 200+ microservices. I built monitoring pipelines using Datadog, Grafana, and OpenTelemetry to achieve sub-minute alerting on critical payment flows, and implemented distributed tracing with Jaeger that meaningfully reduced mean time to resolution for production incidents.",
-        'Beyond instrumentation, I developed custom Prometheus exporters and Grafana dashboards that surfaced SLI/SLO compliance across platform services, giving engineering leadership clear visibility into system health. I partnered closely with SRE teams to establish observability standards and runbooks that were adopted organization-wide, creating a shared language for reliability across Galileo.',
+        "At Galileo, SoFi's payment processing arm powering billions in transactions, I owned the observability platform that monitored the health of 200+ microservices. I built Terraform and Python automation for infrastructure provisioning, created a custom logging library adopted by multiple teams, and strengthened our platform's security posture by implementing automated access controls and partnering directly with the cybersecurity team to close privilege gaps. I was also one of the early engineers to pilot GitHub Copilot for development workflows at the company.",
+        "The defining project of this role was leading the evaluation of 35+ vendors for a Unified Logging Platform, a company-wide initiative to consolidate how engineering teams monitor and troubleshoot their systems. I conducted hands-on proof-of-concept testing, recommended Coralogix as the go-forward solution, and helped teams across both Galileo and SoFi migrate from Splunk and Elastic/Kibana as the two organizations' infrastructure merged.",
       ],
     },
     { type: 'period', title: 'Cigna Healthcare' },
@@ -37,8 +39,8 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer',
       duration: 'April 2022 - March 2024',
       achievements: [
-        "Promoted to lead architecture decisions for Cigna's enterprise monitoring and automation platforms, I operated in a HIPAA-regulated environment where the stakes were high and reliability was non-negotiable. I drove the organization's migration from legacy monitoring to modern observability stacks (Splunk, Dynatrace, and SolarWinds) while mentoring junior engineers and leading knowledge transfer sessions on cloud-native patterns and DevOps practices.",
-        'I designed and deployed CI/CD pipelines using Jenkins, Docker, and GitHub Actions that cut deployment cycle times by 40%, and owned the Apache Kafka data pipeline running on OpenShift that supported real-time event streaming for claims processing. This period sharpened my ability to balance technical leadership with hands-on delivery in a heavily regulated enterprise.',
+        "Promoted to lead architecture decisions for Cigna's enterprise monitoring and automation platforms, I operated in a HIPAA-regulated environment where the stakes were high and reliability was non-negotiable. I drove the organization's migration from legacy monitoring to enterprise observability platforms (Splunk, Dynatrace, and SolarWinds) while mentoring junior engineers and leading knowledge transfer sessions on cloud-native patterns and DevOps practices.",
+        'I designed and deployed CI/CD pipelines using Jenkins and Docker that cut deployment cycle times by 40%, and owned the Apache Kafka data pipeline running on OpenShift that supported real-time event streaming for claims processing. During this period, I also developed AI-powered applications using Python and Azure AI services, spanning computer vision, natural language processing, and generative AI with OpenAI models, earning the Azure AI Engineer Associate certification. This role sharpened my ability to balance technical leadership with hands-on delivery in a heavily regulated enterprise.',
       ],
     },
     {
@@ -46,8 +48,8 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'October 2019 - March 2022',
       achievements: [
-        "I joined Cigna's platform engineering team and quickly became the go-to engineer for end-to-end automation, from Angular frontends and Python scripting to Kafka data pipelines and mainframe monitoring. I built Python and PowerShell automation scripts that eliminated 20+ hours of manual operations per sprint, and created custom monitoring frameworks integrated with Splunk for proactive alerting on legacy mainframe systems.",
-        'On the application side, I developed and enhanced features using Angular and RESTful web services for internal healthcare platforms, while engineering Selenium-based test automation suites with Python and Katalon that significantly expanded regression coverage. I managed Oracle database data flows in Kafka clusters hosted on OpenShift and handled release approvals across environments using uDeploy, building the broad, systems-level perspective that defined my later career.',
+        "I joined Cigna's platform engineering team and quickly became the go-to engineer for end-to-end automation, from Angular frontends and Python scripting to Kafka data pipelines and mainframe monitoring. I built Python and PowerShell automation scripts that eliminated roughly 30 hours of manual operations per week, and created custom monitoring frameworks integrated with Splunk for proactive alerting on legacy mainframe systems.",
+        'On the application side, I developed and enhanced features using Angular and RESTful web services for internal healthcare platforms, while engineering automated test suites with Python and Katalon that significantly expanded regression coverage. I managed Oracle database data flows in Kafka clusters hosted on OpenShift and handled release approvals across environments using uDeploy, building the broad, systems-level perspective that defined my later career.',
       ],
     },
     { type: 'period', title: 'DCI Resources, LLC' },
@@ -98,7 +100,7 @@ export class ExperienceDataService {
       role: 'Graduate Engineering Trainee',
       duration: 'February 2014 - April 2014',
       achievements: [
-        'Completed an intensive onboarding program in enterprise infrastructure management, shadowing senior engineers on AWS deployments and VMware administration. This period built the operational foundation that my subsequent infrastructure engineering career was built on.',
+        'Completed an intensive onboarding program in enterprise infrastructure management, shadowing senior engineers on AWS deployments and VMware administration. This period laid the operational foundation for my subsequent infrastructure engineering career.',
       ],
     },
     { type: 'period', title: 'Mphasis' },

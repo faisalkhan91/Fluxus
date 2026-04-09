@@ -15,9 +15,9 @@ export class ProfileDataService {
     github: 'https://github.com/faisalkhan91',
     avatar: 'assets/images/profile/profile_picture.jpg',
     bio: [
-      `Senior Software Engineer with ${yearsOfExperience()}+ years of experience architecting end-to-end systems\u2014from core infrastructure and data pipelines to backend services and front-end design. My work across fintech, healthcare, and telecom has shaped a pragmatic approach to building software that is powerful, reliable, and scalable.`,
+      `Senior Software Engineer with ${yearsOfExperience()}+ years of experience architecting end-to-end systems - from core infrastructure and data pipelines to backend services and front-end design. My work across fintech, healthcare, and telecom has shaped a pragmatic approach to building software that is powerful, reliable, and scalable.`,
       'Currently focused on the intersection of AI and platform engineering. I develop AI agents and build internal tooling with Go, leveraging the modern AI toolkit (Claude, Cursor, Gemini CLI) to deliver results faster. Grounded in DevOps culture, I utilize Python, Go, AWS, Azure, Kubernetes, Docker, and Terraform to create cohesive, high-performance systems.',
-      'My career spans leadership roles at SoFi, Galileo Financial Technologies, and Cigna Healthcare, backed by a Master\u2019s in Computer Science from the University of New Haven. I\u2019m passionate about continuous learning, automation, and finding innovative solutions to complex technical challenges.',
+      "My career spans leadership roles at SoFi, Galileo Financial Technologies, and Cigna Healthcare, backed by a Master's in Computer Science from the University of New Haven. I'm passionate about continuous learning, automation, and finding innovative solutions to complex technical challenges.",
     ],
   });
 
