@@ -10,7 +10,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Cloud Efficiency',
       duration: 'May 2026 - Present',
       achievements: [
-        "After leading cost optimization, infrastructure enablement, and AI-augmented tooling across SoFi and Galileo, I moved internally to tackle a broader mandate: driving cloud efficiency across the company's multi-cloud footprint spanning AWS and Azure. I engineer platform-level tooling that surfaces cost anomalies in near-real-time and enforces resource governance at scale, continuing to leverage AI-native development practices to accelerate delivery.",
+        "Lead cloud efficiency initiatives across SoFi's AWS and Azure footprint, building tooling that identifies cost anomalies in near real time, strengthens resource governance, and accelerates delivery through AI-native engineering practices.",
       ],
     },
     {
@@ -18,9 +18,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Builder Tools',
       duration: 'April 2025 - April 2026',
       achievements: [
-        "I led strategic cost optimization across SoFi's observability platforms, driving initiatives that delivered hundreds of thousands of dollars in annualized Datadog savings. I built Python analytics tooling to surface cost drivers, implemented intelligent data sampling strategies, and remediated high-cardinality metrics. I also enhanced Doghouse, an internal Go tool for managing Datadog assets and dashboard migrations, and built Spelunkie, a Python audit tool for analyzing Splunk resources, both of which became standard tooling for the observability team.",
-        "On the infrastructure side, I deployed Datadog agent configurations across Galileo's Kubernetes clusters and EC2 fleet, designed a hybrid ArgoCD and Terraform deployment strategy for monitoring agents, and built a Terraform module for streaming AWS CloudWatch logs into Coralogix via Firehose. I implemented SCIM-based identity management across both organizations, extended the Python logging library I had built at Galileo with built-in PII redaction, and continued leading the Coralogix migration.",
-        "I also invested deeply in AI-augmented engineering. I built Unsplunk, a Go-based migration tracker with an embedded AI agent powered by Claude that investigates complex Splunk-to-Coralogix migrations and auto-generates GitLab merge requests. I contributed to SoFi's LLM proxy, a LiteLLM gateway backed by AWS Bedrock, and adopted AI-native development practices using Claude Code, Cursor, and MCP to accelerate development workflows across the full software lifecycle.",
+        "Led observability cost optimization initiatives that delivered hundreds of thousands in annualized Datadog savings, built internal tooling that became standard across the team, expanded monitoring infrastructure across Kubernetes and EC2, and helped advance SoFi's AI-augmented engineering capabilities through internal platform and workflow tooling.",
       ],
     },
     { type: 'period', title: 'Galileo Financial Technologies (A SoFi Company)' },
@@ -29,8 +27,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer, Observability',
       duration: 'April 2024 - March 2025',
       achievements: [
-        "At Galileo, SoFi's payment processing arm powering billions in transactions, I owned the observability platform that monitored the health of 200+ microservices. I built Terraform and Python automation for infrastructure provisioning, created a custom logging library adopted by multiple teams, and strengthened our platform's security posture by implementing automated access controls and partnering directly with the cybersecurity team to close privilege gaps. I was also one of the early engineers to pilot GitHub Copilot for development workflows at the company.",
-        "The defining project of this role was leading the evaluation of 35+ vendors for a Unified Logging Platform, a company-wide initiative to consolidate how engineering teams monitor and troubleshoot their systems. I conducted hands-on proof-of-concept testing, recommended Coralogix as the go-forward solution, and helped teams across both Galileo and SoFi migrate from Splunk and Elastic/Kibana as the two organizations' infrastructure merged.",
+        'Owned the observability platform for 200+ microservices at Galileo, led the evaluation of 35+ vendors for a unified logging platform, selected Coralogix, and helped drive the migration from Splunk and Elastic as Galileo and SoFi infrastructure converged. Also built a Python logging library adopted across multiple teams.',
       ],
     },
     { type: 'period', title: 'Cigna Healthcare' },
@@ -39,8 +36,7 @@ export class ExperienceDataService {
       role: 'Senior Software Engineer',
       duration: 'April 2022 - March 2024',
       achievements: [
-        "Promoted to lead architecture decisions for Cigna's enterprise monitoring and automation platforms, I operated in a HIPAA-regulated environment where the stakes were high and reliability was non-negotiable. I drove the organization's migration from legacy monitoring to enterprise observability platforms (Splunk, Dynatrace, and SolarWinds) while mentoring junior engineers and leading knowledge transfer sessions on cloud-native patterns and DevOps practices.",
-        'I designed and deployed CI/CD pipelines using Jenkins and Docker that cut deployment cycle times by 40%, and owned the Apache Kafka data pipeline running on OpenShift that supported real-time event streaming for claims processing. During this period, I also developed AI-powered applications using Python and Azure AI services, spanning computer vision, natural language processing, and generative AI with OpenAI models, earning the Azure AI Engineer Associate certification. This role sharpened my ability to balance technical leadership with hands-on delivery in a heavily regulated enterprise.',
+        'Promoted to lead architecture for enterprise monitoring in a HIPAA-regulated environment, driving the migration to modern observability platforms, building CI/CD pipelines that cut deployment times by 40%, and owning Kafka-based event streaming for claims processing. Earned the Azure AI Engineer Associate certification through applied work in computer vision, NLP, and generative AI.',
       ],
     },
     {
@@ -48,8 +44,7 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'October 2019 - March 2022',
       achievements: [
-        "I joined Cigna's platform engineering team and quickly became the go-to engineer for end-to-end automation, from Angular frontends and Python scripting to Kafka data pipelines and mainframe monitoring. I built Python and PowerShell automation scripts that eliminated roughly 30 hours of manual operations per week, and created custom monitoring frameworks integrated with Splunk for proactive alerting on legacy mainframe systems.",
-        'On the application side, I developed and enhanced features using Angular and RESTful web services for internal healthcare platforms, while engineering automated test suites with Python and Katalon that significantly expanded regression coverage. I managed Oracle database data flows in Kafka clusters hosted on OpenShift and handled release approvals across environments using uDeploy, building the broad, systems-level perspective that defined my later career.',
+        'Built automation that eliminated 30 hours of manual work per week and became the go-to engineer for platform delivery spanning application development, monitoring, and data pipelines. Expanded regression coverage across internal healthcare platforms and developed custom alerting for legacy systems.',
       ],
     },
     { type: 'period', title: 'DCI Resources, LLC' },
@@ -58,7 +53,7 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'February 2019 - November 2019',
       achievements: [
-        'I drove the containerization and CI/CD modernization effort at DCI, a minority-owned IT services firm specializing in enterprise support. I migrated applications from monolithic architecture to Docker-based microservices deployed on Azure, built automated pipelines using Jenkins and GitLab, and developed custom Python tooling that replaced manual standard operating procedures with repeatable, version-controlled automation.',
+        'Led containerization and CI/CD modernization, moving monolithic applications to Docker-based services on Azure and establishing automated Jenkins and GitLab delivery pipelines.',
       ],
     },
     {
@@ -66,7 +61,7 @@ export class ExperienceDataService {
       role: 'Software Engineer Intern',
       duration: 'September 2018 - January 2019',
       achievements: [
-        "During an intensive internship, I established Git-based version control workflows and supported Azure cloud deployments, implementing branching strategies and contributing to infrastructure automation scripts that laid the groundwork for the team's DevOps transformation.",
+        "Helped establish Git workflows and support Azure deployments, contributing to the team's early DevOps transformation.",
       ],
     },
     { type: 'period', title: 'University of New Haven' },
@@ -75,7 +70,7 @@ export class ExperienceDataService {
       role: 'Python Developer',
       duration: 'January 2017 - May 2018',
       achievements: [
-        "As part of my graduate studies, I served as a developer for the university's student-facing applications, delivering full-stack features using Django, PostgreSQL, and Angular in agile sprints. I built RESTful API endpoints consumed by the Angular frontend, maintained the PostgreSQL database layer and Django ORM models, and administered the Linux infrastructure hosting the platform.",
+        'Delivered full-stack features for student-facing applications using Django, PostgreSQL, and Angular, building REST APIs and supporting the underlying Linux infrastructure.',
       ],
     },
     {
@@ -83,7 +78,7 @@ export class ExperienceDataService {
       role: 'Research Assistant',
       duration: 'May 2017 - July 2017',
       achievements: [
-        'I processed large-scale NOAA weather datasets using Hadoop MapReduce and built machine learning models to identify storm occurrence trends, visualizing the results using R and Python plotting libraries. This was my first exposure to data engineering at scale and reinforced my interest in building systems that turn raw data into actionable insight.',
+        'Analyzed large-scale NOAA weather datasets with Hadoop MapReduce and built machine learning models to identify storm trends, visualizing results with R and Python.',
       ],
     },
     { type: 'period', title: 'Vodafone' },
@@ -92,7 +87,7 @@ export class ExperienceDataService {
       role: 'Software Engineer',
       duration: 'May 2014 - August 2016',
       achievements: [
-        "At Vodafone, one of the world's largest telecommunications companies, I managed cloud infrastructure and automated operations at true enterprise scale: 100+ backup servers and 15,000 client servers across AWS and VMware environments. I wrote Python and shell scripts to automate package installations across the entire fleet, managed private cloud environments on VMware ESXi, and designed backup policies for Oracle databases using RMAN. Working at this scale taught me that good automation is not optional; it is survival.",
+        'Managed infrastructure at enterprise scale across AWS and VMware, supporting 100+ backup servers and 15,000 client servers. Automated fleet operations with Python and shell scripting and designed Oracle database backup policies using RMAN.',
       ],
     },
     {
@@ -100,7 +95,7 @@ export class ExperienceDataService {
       role: 'Graduate Engineering Trainee',
       duration: 'February 2014 - April 2014',
       achievements: [
-        'Completed an intensive onboarding program in enterprise infrastructure management, shadowing senior engineers on AWS deployments and VMware administration. This period laid the operational foundation for my subsequent infrastructure engineering career.',
+        'Completed an intensive onboarding program in enterprise infrastructure, supporting AWS and VMware deployments and building the operational foundation for my later infrastructure work.',
       ],
     },
     { type: 'period', title: 'Mphasis' },
@@ -109,7 +104,7 @@ export class ExperienceDataService {
       role: 'System Engineer',
       duration: 'June 2013 - January 2014',
       achievements: [
-        'I launched my career at Mphasis, a Blackstone-backed enterprise IT services firm, managing Red Hat Linux and VMware ESX environments for enterprise clients. I maintained 98% uptime through proactive Splunk monitoring and automated server patching and hotfix deployments using bash scripts, learning early that reliability is earned through automation, not heroics.',
+        'Managed Red Hat Linux and VMware ESX environments for enterprise clients, maintaining 98% uptime through proactive monitoring and automated patching.',
       ],
     },
   ]);
