@@ -4,10 +4,10 @@
       <ui-section-header
         [title]="category.title"
         [headingId]="'skill-' + slugify(category.title)"
-        [decoration]="'// ' + category.title.toLowerCase().replace(' ', '_') + '.json'"
+        [decoration]="'// ' + slugify(category.title) + '.json'"
       />
 
-      <div class="badge-grid">
+      <div class="badge-grid" [id]="'skill-grid-' + slugify(category.title)">
         @for (skill of visibleSkills(category); track skill.name) {
           <ui-skill-badge [name]="skill.name" [iconSrc]="skill.iconSrc" />
         }
