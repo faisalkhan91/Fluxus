@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { MobileNavPillComponent, MobileNavItem } from './mobile-nav-pill.component';
+import { MobileNavPillComponent, MobileNavItem, MobileMenuItem } from './mobile-nav-pill.component';
 
 const MOCK_ITEMS: MobileNavItem[] = [
   { label: 'Home', route: '/', icon: 'home' },
@@ -11,15 +11,17 @@ const MOCK_ITEMS: MobileNavItem[] = [
   { label: 'Contact', route: '/contact', icon: 'mail' },
 ];
 
-const MOCK_MENU_ITEMS: MobileNavItem[] = [
-  { label: 'Home', route: '/', icon: 'home' },
-  { label: 'About', route: '/about', icon: 'user' },
-  { label: 'Experience', route: '/experience', icon: 'briefcase' },
-  { label: 'Skills', route: '/skills', icon: 'layers' },
-  { label: 'Projects', route: '/projects', icon: 'folder-git' },
-  { label: 'Certifications', route: '/certifications', icon: 'award' },
-  { label: 'Blog', route: '/blog', icon: 'file-text' },
-  { label: 'Contact', route: '/contact', icon: 'mail' },
+const MOCK_MENU_ITEMS: MobileMenuItem[] = [
+  { type: 'link', label: 'Home', route: '/', icon: 'home' },
+  { type: 'link', label: 'About', route: '/about', icon: 'user' },
+  { type: 'link', label: 'Blog', route: '/blog', icon: 'file-text' },
+  { type: 'divider', label: 'Work' },
+  { type: 'link', label: 'Experience', route: '/experience', icon: 'briefcase' },
+  { type: 'link', label: 'Skills', route: '/skills', icon: 'layers' },
+  { type: 'link', label: 'Projects', route: '/projects', icon: 'folder-git' },
+  { type: 'link', label: 'Certifications', route: '/certifications', icon: 'award' },
+  { type: 'divider', label: '' },
+  { type: 'link', label: 'Contact', route: '/contact', icon: 'mail' },
 ];
 
 describe('MobileNavPillComponent', () => {
@@ -79,12 +81,35 @@ describe('MobileNavPillComponent', () => {
     expect(panel).toBeTruthy();
   });
 
-  it('should render all menu items in the overlay as buttons', () => {
+  it('should render link items as buttons in the overlay', () => {
     component.menuOpen.set(true);
     fixture.detectChanges();
     const links = el.querySelectorAll('.menu-link');
-    expect(links.length).toBe(MOCK_MENU_ITEMS.length);
+    expect(links.length).toBe(8);
     expect(links[0].tagName).toBe('BUTTON');
+  });
+
+  it('should render dividers in the overlay', () => {
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    const dividers = el.querySelectorAll('.menu-divider');
+    expect(dividers.length).toBe(2);
+  });
+
+  it('should render labeled divider with label text', () => {
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    const dividers = el.querySelectorAll('.menu-divider');
+    const labeledDivider = dividers[0].querySelector('.menu-divider-label');
+    expect(labeledDivider?.textContent?.trim()).toBe('Work');
+  });
+
+  it('should not render label for empty divider', () => {
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    const dividers = el.querySelectorAll('.menu-divider');
+    const emptyLabel = dividers[1].querySelector('.menu-divider-label');
+    expect(emptyLabel).toBeNull();
   });
 
   it('should close menu when close button is clicked', () => {

@@ -27,10 +27,23 @@ describe('NavigationService', () => {
     expect(labels).toEqual(['Home', 'About', 'Blog', 'Contact']);
   });
 
-  it('should provide mobile menu items with all pages', () => {
+  it('should provide mobile menu items with links and dividers', () => {
     const items = service.mobileMenuItems();
-    expect(items.length).toBe(8);
-    const labels = items.map((i) => i.label);
+    const links = items.filter((i) => i.type === 'link');
+    const dividers = items.filter((i) => i.type === 'divider');
+    expect(links.length).toBe(8);
+    expect(dividers.length).toBe(2);
+  });
+
+  it('should have a labeled Work divider in mobile menu items', () => {
+    const items = service.mobileMenuItems();
+    const workDivider = items.find((i) => i.type === 'divider' && i.label === 'Work');
+    expect(workDivider).toBeTruthy();
+  });
+
+  it('should include all page labels in mobile menu links', () => {
+    const items = service.mobileMenuItems();
+    const labels = items.filter((i) => i.type === 'link').map((i) => i.label);
     expect(labels).toContain('Home');
     expect(labels).toContain('Experience');
     expect(labels).toContain('Skills');

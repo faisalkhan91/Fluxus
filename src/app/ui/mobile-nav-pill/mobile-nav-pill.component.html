@@ -34,20 +34,29 @@
       </button>
     </div>
     <ul class="menu-list">
-      @for (item of menuItems(); track item.route) {
-        <li>
-          <button
-            class="menu-link"
-            [class.menu-link--active]="isActive(item.route)"
-            (click)="navigateTo(item.route)"
-          >
-            <ui-icon [name]="item.icon" [size]="20" />
-            <span>{{ item.label }}</span>
-            @if (isActive(item.route)) {
-              <ui-icon name="chevron-right" [size]="14" class="menu-link-indicator" />
+      @for (item of menuItems(); track $index) {
+        @if (item.type === 'divider') {
+          <li class="menu-divider" aria-hidden="true">
+            <span class="menu-divider-line"></span>
+            @if (item.label) {
+              <span class="menu-divider-label">{{ item.label }}</span>
             }
-          </button>
-        </li>
+          </li>
+        } @else {
+          <li>
+            <button
+              class="menu-link"
+              [class.menu-link--active]="isActive(item.route)"
+              (click)="navigateTo(item.route)"
+            >
+              <ui-icon [name]="item.icon" [size]="20" />
+              <span>{{ item.label }}</span>
+              @if (isActive(item.route)) {
+                <ui-icon name="chevron-right" [size]="14" class="menu-link-indicator" />
+              }
+            </button>
+          </li>
+        }
       }
     </ul>
   </div>
