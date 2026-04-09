@@ -8,6 +8,10 @@ export interface MobileNavItem {
   icon: string;
 }
 
+export type MobileMenuItem =
+  | { type: 'link'; label: string; route: string; icon: string }
+  | { type: 'divider'; label: string };
+
 @Component({
   selector: 'ui-mobile-nav-pill',
   templateUrl: './mobile-nav-pill.component.html',
@@ -23,7 +27,7 @@ export class MobileNavPillComponent {
   private router = inject(Router);
 
   items = input<MobileNavItem[]>([]);
-  menuItems = input<MobileNavItem[]>([]);
+  menuItems = input<MobileMenuItem[]>([]);
 
   menuOpen = signal(false);
 

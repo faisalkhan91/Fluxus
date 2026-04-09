@@ -166,6 +166,24 @@
   opacity: 0.6;
 }
 
+.menu-divider {
+  padding: var(--space-4) var(--space-5) var(--space-2);
+}
+
+.menu-divider-line {
+  display: block;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.menu-divider-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
