@@ -17,8 +17,9 @@ describe('TabService', () => {
       providers: [
         provideRouter([
           {
-            path: 'hero',
+            path: '',
             component: DummyComponent,
+            pathMatch: 'full',
             data: { tab: { label: 'Home', ext: '.tsx', color: '#61dafb' } },
           },
           {
@@ -31,14 +32,13 @@ describe('TabService', () => {
             component: DummyComponent,
             data: { tab: { label: 'Contact', ext: '.sh', color: '#f97316' } },
           },
-          { path: '', redirectTo: 'hero', pathMatch: 'full' },
         ]),
       ],
     });
 
     router = TestBed.inject(Router);
     service = TestBed.inject(TabService);
-    await router.navigate(['/hero']);
+    await router.navigate(['/']);
   });
 
   it('should be created', () => {
@@ -58,7 +58,7 @@ describe('TabService', () => {
 
   it('should not duplicate tabs on repeated navigation', async () => {
     await router.navigate(['/about']);
-    await router.navigate(['/hero']);
+    await router.navigate(['/']);
     await router.navigate(['/about']);
 
     const aboutTabs = service.openTabs().filter((t) => t.id === 'about');

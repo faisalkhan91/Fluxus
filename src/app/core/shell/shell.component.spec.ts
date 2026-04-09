@@ -26,6 +26,7 @@ const mockTabService = {
 const mockNavService = {
   sidebarItems: signal([]),
   mobileNavItems: signal([]),
+  mobileMenuItems: signal([]),
 };
 
 const mockThemeService = {

@@ -1,5 +1,5 @@
 <div class="sidebar-header">
-  <a routerLink="/hero" class="sidebar-home-link" aria-label="Go to Welcome page" title="Welcome">
+  <a routerLink="/" class="sidebar-home-link" aria-label="Go to Welcome page" title="Welcome">
     <div class="avatar-wrapper">
       <img
         ngSrc="assets/images/profile/profile_picture.jpg"
@@ -20,21 +20,31 @@
 </div>
 
 <ul class="nav-list">
-  @for (item of items(); track item.route) {
-    <li>
-      <a
-        [routerLink]="item.route"
-        routerLinkActive="active"
-        class="nav-item"
-        [attr.aria-label]="item.label"
-      >
-        <ui-icon [name]="item.icon" [size]="18" />
-        @if (!collapsed()) {
-          <span class="nav-label">{{ item.label }}</span>
-          <span class="nav-ext">{{ item.ext }}</span>
-        }
-      </a>
-    </li>
+  @for (item of items(); track $index) {
+    @if (item.type === 'divider') {
+      @if (item.label && !collapsed()) {
+        <li class="nav-divider" role="separator">
+          <span class="divider-label">{{ item.label }}</span>
+        </li>
+      } @else {
+        <li class="nav-divider nav-divider--line" role="separator"></li>
+      }
+    } @else {
+      <li>
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="nav-item"
+          [attr.aria-label]="item.label"
+        >
+          <ui-icon [name]="item.icon" [size]="18" />
+          @if (!collapsed()) {
+            <span class="nav-label">{{ item.label }}</span>
+            <span class="nav-ext">{{ item.ext }}</span>
+          }
+        </a>
+      </li>
+    }
   }
 </ul>
 

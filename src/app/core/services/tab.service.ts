@@ -58,7 +58,7 @@ export class TabService {
           label: tabData.label,
           ext: tabData.ext,
           color: tabData.color,
-          route: '/' + routePath,
+          route: routePath === 'hero' ? '/' : '/' + routePath,
         },
       ]);
     }
@@ -76,7 +76,7 @@ export class TabService {
       if (last) {
         this.router.navigate([last.route]);
       } else {
-        this.router.navigate(['/hero']);
+        this.router.navigate(['/']);
       }
     }
   }

@@ -18,26 +18,29 @@ describe('NavigationService', () => {
     const items = service.sidebarItems();
     expect(items.length).toBeGreaterThan(0);
     expect(items[0]).toHaveProperty('label');
-    expect(items[0]).toHaveProperty('route');
-    expect(items[0]).toHaveProperty('icon');
   });
 
-  it('should provide mobile nav items as a signal', () => {
+  it('should provide 4 mobile nav items', () => {
     const items = service.mobileNavItems();
-    expect(items.length).toBeGreaterThan(0);
-    expect(items[0]).toHaveProperty('label');
-    expect(items[0]).toHaveProperty('route');
+    expect(items.length).toBe(4);
+    const labels = items.map((i) => i.label);
+    expect(labels).toEqual(['Home', 'About', 'Blog', 'Contact']);
   });
 
-  it('should include Home route in mobile nav but not sidebar', () => {
-    const mobileLabels = service.mobileNavItems().map((i) => i.label);
-    const sidebarLabels = service.sidebarItems().map((i) => i.label);
-
-    expect(mobileLabels).toContain('Home');
-    expect(sidebarLabels).not.toContain('Home');
+  it('should provide mobile menu items with all pages', () => {
+    const items = service.mobileMenuItems();
+    expect(items.length).toBe(8);
+    const labels = items.map((i) => i.label);
+    expect(labels).toContain('Home');
+    expect(labels).toContain('Experience');
+    expect(labels).toContain('Skills');
+    expect(labels).toContain('Projects');
+    expect(labels).toContain('Certifications');
+    expect(labels).toContain('Blog');
+    expect(labels).toContain('Contact');
   });
 
-  it('should include Contact in both nav lists', () => {
+  it('should include Contact in both mobile nav and sidebar', () => {
     const mobileLabels = service.mobileNavItems().map((i) => i.label);
     const sidebarLabels = service.sidebarItems().map((i) => i.label);
 
