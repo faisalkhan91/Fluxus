@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1](https://github.com/faisalkhan91/Fluxus/compare/v2.1.0...v2.1.1) (2026-04-12)
+
+
+### Bug Fixes
+
+* suppress CVE-2026-28390 in .trivyignore ([b5f2555](https://github.com/faisalkhan91/Fluxus/commit/b5f2555c31bac134b63dd6a3c42322ce51ae5c8a))
+* suppress CVE-2026-28390 in .trivyignore ([b0a31c1](https://github.com/faisalkhan91/Fluxus/commit/b0a31c1c44f31f2e310631199c1172c3adf3a71e))
+
 ## [2.1.0](https://github.com/faisalkhan91/Fluxus/compare/v2.0.0...v2.1.0) (2026-04-12)
 
 
