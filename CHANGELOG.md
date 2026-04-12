@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0](https://github.com/faisalkhan91/Fluxus/compare/v2.0.0...v2.1.0) (2026-04-12)
+
+
+### Features
+
+* Experience and Navigation Upgrades ([931f69b](https://github.com/faisalkhan91/Fluxus/commit/931f69baecee749792ca5f3a480d244cc4530ec7))
+
+
+### Bug Fixes
+
+* **changelog:** correct version comparison links and update README for routing changes ([86e3d15](https://github.com/faisalkhan91/Fluxus/commit/86e3d15d217223f77d25702e0b909e606556f117))
+
+
+### Miscellaneous
+
+* update package dependencies and enhance profile descriptions ([501d4da](https://github.com/faisalkhan91/Fluxus/commit/501d4dab4190a75ed0e83bc29c1b65b0b7f614f4))
+* update package-lock.json and refine experience descriptions ([878a11b](https://github.com/faisalkhan91/Fluxus/commit/878a11b6f25045af88aae4561bf7114a5625a108))
+
+
+### Refactoring
+
+* **bottom-sheet:** remove bottom sheet component and associated styles ([c143701](https://github.com/faisalkhan91/Fluxus/commit/c143701e94cfd3af81edc606ce759eb480c9adc1))
+* **experience-data:** enhance clarity and conciseness of experience descriptions ([fc61867](https://github.com/faisalkhan91/Fluxus/commit/fc6186772594652bf9c7a62da953e954af20eb62))
+* **experience-data:** further enhance clarity and conciseness of experience descriptions ([e01ffe7](https://github.com/faisalkhan91/Fluxus/commit/e01ffe7d4dfd272af162daa5e3f161eba7fbc542))
+* **navigation:** enhance mobile menu structure with dividers and improved item types ([05734e9](https://github.com/faisalkhan91/Fluxus/commit/05734e9af4282ecb0629684772eb730355a0d81c))
+* **navigation:** update routing and navigation structure for improved clarity ([3124154](https://github.com/faisalkhan91/Fluxus/commit/3124154350b79af23a78c31cfee66b2a5229e48b))
+* **skills:** enhance skills component with media query support and dynamic badge display ([6221210](https://github.com/faisalkhan91/Fluxus/commit/6221210689acc95058aa91863b6d6264a54627c3))
+* **skills:** restructure skills categories and enhance UI interactions ([a7c1314](https://github.com/faisalkhan91/Fluxus/commit/a7c131422c59ec86b355051a1170f9c9bc950bf9))
+* **timeline:** update entry details layout and styling ([d8b05a3](https://github.com/faisalkhan91/Fluxus/commit/d8b05a3fe5516493fecd6a8956cee30e8af1be60))
+
 ## [2.0.0](https://github.com/faisalkhan91/Fluxus/compare/v1.3.0...v2.0.0) (2026-04-05)
 
 
