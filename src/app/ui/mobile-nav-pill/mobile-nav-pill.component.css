@@ -1,9 +1,18 @@
 :host {
   position: fixed;
   bottom: var(--space-4);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
   z-index: var(--z-nav-pill);
+  pointer-events: none;
+}
+
+.pill,
+.menu-overlay,
+.menu-panel {
+  pointer-events: auto;
 }
 
 .pill {
@@ -11,23 +20,12 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-2);
-  padding-right: var(--space-4);
   background: var(--nav-pill-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-glass);
-  max-width: calc(100vw - var(--space-6));
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--space-3);
-  -webkit-overflow-scrolling: touch;
-}
-
-.pill::-webkit-scrollbar {
-  display: none;
 }
 
 .pill-item {
@@ -35,16 +33,18 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
   color: var(--text-muted);
   text-decoration: none;
+  font-family: inherit;
+  cursor: pointer;
   transition:
     color var(--transition-fast),
     background-color var(--transition-fast);
   min-width: 44px;
-  flex-shrink: 0;
-  scroll-snap-align: center;
 }
 
 .pill-item:hover {
@@ -61,4 +61,143 @@
   font-weight: 500;
   letter-spacing: 0.02em;
   white-space: nowrap;
+}
+
+/* Full-screen menu overlay */
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: calc(var(--z-nav-pill) + 10);
+  animation: fadeIn var(--transition-base) forwards;
+}
+
+.menu-panel {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-base);
+  z-index: calc(var(--z-nav-pill) + 11);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s ease-out forwards;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+
+.menu-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.menu-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.menu-close:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.menu-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-4);
+}
+
+.menu-list li {
+  margin-bottom: var(--space-1);
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4) var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.menu-link:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.menu-link--active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+}
+
+.menu-link-indicator {
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+.menu-divider {
+  padding: var(--space-4) var(--space-5) var(--space-2);
+}
+
+.menu-divider-line {
+  display: block;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.menu-divider-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

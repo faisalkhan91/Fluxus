@@ -4,39 +4,28 @@
       <ui-section-header
         [title]="category.title"
         [headingId]="'skill-' + slugify(category.title)"
-        [subtitle]="category.subtitle"
-        [decoration]="'// ' + category.title.toLowerCase().replace(' ', '_') + '.json'"
+        [decoration]="'// ' + slugify(category.title) + '.json'"
       />
 
-      @if (category.skills[0]?.iconSrc) {
-        <div class="badge-grid">
-          @for (skill of category.skills; track skill.name) {
-            <ui-skill-badge [name]="skill.name" [iconSrc]="skill.iconSrc" />
+      <div class="badge-grid" [id]="'skill-grid-' + slugify(category.title)">
+        @for (skill of visibleSkills(category); track skill.name) {
+          <ui-skill-badge [name]="skill.name" [iconSrc]="skill.iconSrc" />
+        }
+      </div>
+
+      @if (hiddenCount(category) > 0) {
+        <button
+          class="expand-toggle"
+          (click)="toggleCategory(category.title)"
+          [attr.aria-expanded]="isExpanded(category.title)"
+          [attr.aria-controls]="'skill-grid-' + slugify(category.title)"
+        >
+          @if (isExpanded(category.title)) {
+            Show less
+          } @else {
+            + {{ hiddenCount(category) }} more
           }
-        </div>
-      } @else {
-        <div class="bar-list">
-          @for (skill of category.skills; track skill.name) {
-            <ui-glass-card>
-              <div class="bar-item">
-                <div class="bar-header">
-                  <span class="bar-name">{{ skill.name }}</span>
-                  <span class="bar-percent">{{ skill.level }}%</span>
-                </div>
-                <div
-                  class="bar-track"
-                  role="progressbar"
-                  [attr.aria-valuenow]="skill.level"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  [attr.aria-label]="skill.name + ' proficiency'"
-                >
-                  <div class="bar-fill" [style.width.%]="skill.level"></div>
-                </div>
-              </div>
-            </ui-glass-card>
-          }
-        </div>
+        </button>
       }
     </section>
   }

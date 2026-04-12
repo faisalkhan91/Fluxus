@@ -3,12 +3,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
 
-export interface SidebarNavItem {
-  label: string;
-  ext: string;
-  route: string;
-  icon: string;
-}
+export type SidebarItem =
+  | { type: 'link'; label: string; ext: string; route: string; icon: string }
+  | { type: 'divider'; label: string };
 
 @Component({
   selector: 'ui-sidebar',
@@ -23,7 +20,7 @@ export interface SidebarNavItem {
   },
 })
 export class SidebarComponent {
-  items = input<SidebarNavItem[]>([]);
+  items = input<SidebarItem[]>([]);
   collapsed = input(false);
   isDark = input(true);
   resumeClicked = output<void>();

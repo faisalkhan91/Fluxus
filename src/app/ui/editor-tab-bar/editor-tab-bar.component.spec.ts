@@ -4,7 +4,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EditorTabBarComponent, EditorTab } from './editor-tab-bar.component';
 
 const MOCK_TABS: EditorTab[] = [
-  { id: 'hero', label: 'Welcome', ext: '.tsx', color: '#61dafb', route: '/hero' },
+  { id: 'hero', label: 'Welcome', ext: '.tsx', color: '#61dafb', route: '/' },
   { id: 'about', label: 'About', ext: '.md', color: '#42a5f5', route: '/about' },
   { id: 'blog', label: 'Blog', ext: '.rss', color: '#ff9800', route: '/blog' },
 ];

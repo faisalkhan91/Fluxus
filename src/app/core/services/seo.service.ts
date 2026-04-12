@@ -31,7 +31,7 @@ export class SeoService {
         if (seo?.['dynamicMeta']) return;
 
         const pageTitle = seo?.['title']
-          ? `${seo['title']} — ${environment.siteName}`
+          ? `${seo['title']} - ${environment.siteName}`
           : environment.siteName;
         const description = seo?.['description'] ?? DEFAULT_DESCRIPTION;
 

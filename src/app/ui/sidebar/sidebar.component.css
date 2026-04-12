@@ -139,6 +139,24 @@
   opacity: 0.6;
 }
 
+.nav-divider {
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+
+.nav-divider--line {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.divider-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
 .sidebar-footer {
   padding: var(--space-4);
   border-top: 1px solid var(--glass-border);
