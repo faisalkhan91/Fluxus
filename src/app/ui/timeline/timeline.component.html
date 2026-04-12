@@ -15,12 +15,8 @@
             <span class="entry-duration">{{ item.duration }}</span>
           }
           <h4 class="entry-title">{{ item.subtitle }}</h4>
-          @if (item.details && item.details.length > 0) {
-            <ul class="entry-details">
-              @for (detail of item.details; track $index) {
-                <li>{{ detail }}</li>
-              }
-            </ul>
+          @for (detail of item.details; track $index) {
+            <p class="entry-paragraph">{{ detail }}</p>
           }
         </ui-glass-card>
       </div>

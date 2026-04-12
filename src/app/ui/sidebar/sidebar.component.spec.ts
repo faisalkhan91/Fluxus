@@ -2,11 +2,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { SidebarComponent, SidebarNavItem } from './sidebar.component';
+import { SidebarComponent, SidebarItem } from './sidebar.component';
 
-const MOCK_ITEMS: SidebarNavItem[] = [
-  { label: 'About', ext: '.md', route: '/about', icon: 'user' },
-  { label: 'Blog', ext: '.rss', route: '/blog', icon: 'file-text' },
+const MOCK_ITEMS: SidebarItem[] = [
+  { type: 'link', label: 'About', ext: '.md', route: '/about', icon: 'user' },
+  { type: 'link', label: 'Blog', ext: '.rss', route: '/blog', icon: 'file-text' },
+  { type: 'divider', label: 'Work' },
+  { type: 'link', label: 'Experience', ext: '.ts', route: '/experience', icon: 'briefcase' },
 ];
 
 describe('SidebarComponent', () => {
@@ -34,22 +36,30 @@ describe('SidebarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render nav items', () => {
+  it('should render nav link items', () => {
     const items = el.querySelectorAll('.nav-item');
-    expect(items.length).toBe(2);
+    expect(items.length).toBe(3);
+  });
+
+  it('should render divider with label', () => {
+    const divider = el.querySelector('.nav-divider');
+    expect(divider).toBeTruthy();
+    expect(divider?.querySelector('.divider-label')?.textContent?.trim()).toBe('Work');
   });
 
   it('should show labels when expanded', () => {
     const labels = el.querySelectorAll('.nav-label');
-    expect(labels.length).toBe(2);
+    expect(labels.length).toBe(3);
     expect(labels[0].textContent?.trim()).toBe('About');
   });
 
-  it('should hide labels when collapsed', () => {
+  it('should hide labels and divider labels when collapsed', () => {
     fixture.componentRef.setInput('collapsed', true);
     fixture.detectChanges();
     const labels = el.querySelectorAll('.nav-label');
     expect(labels.length).toBe(0);
+    const dividerLabels = el.querySelectorAll('.divider-label');
+    expect(dividerLabels.length).toBe(0);
   });
 
   it('should show identity block when expanded', () => {
