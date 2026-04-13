@@ -1,5 +1,13 @@
 [
   {
+    "slug": "homelab-storage-foundation",
+    "title": "Architecting the Foundation: Decoupling Storage at the Edge",
+    "date": "2026-04-12",
+    "excerpt": "Phase 1 of my homelab overhaul: Engineering a dedicated, decoupled storage tier with CMR mechanical disks, NVMe flash pools, and localized DC power resiliency.",
+    "tags": ["Homelab", "Storage", "Architecture", "GitOps"],
+    "readingTime": "8 min"
+  },
+  {
     "slug": "angular-signals-state-management",
     "title": "Taming State with Angular Signals",
     "date": "2026-03-28",
