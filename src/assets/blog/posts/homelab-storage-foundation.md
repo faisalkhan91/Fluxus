@@ -6,37 +6,7 @@ This environment is currently undergoing a complete architectural overhaul. As t
 
 Therefore, the absolute first step in this homelab journey is establishing the physical foundation of the storage tier. We are building a dedicated network-attached storage (NAS) appliance capable of feeding the Proxmox nodes over the network without introducing brittle dependencies.
 
-## The Architectural Vision
-
-Before we touch hardware, we define the "why." In a modern homelab, storage should not be an afterthought or a internal disk on a compute node. It is a first-class service.
-
-```mermaid
-graph TD
-    subgraph "Compute Layer (Ephemeral)"
-        P1[Proxmox Node 1]
-        P2[Proxmox Node 2]
-        P3[Proxmox Node 3]
-    end
-
-    subgraph "Storage Tier (Permanent)"
-        NAS[UGREEN NASync DXP4800 Plus]
-        subgraph "Volume Tiers"
-            CMR[(Capacity: 3x 8TB WD Red Plus CMR)]
-            NVMe[(Performance: 2x 1TB Samsung 990 EVO Plus)]
-        end
-    end
-
-    subgraph "Safety & Resiliency"
-        UPS[UGREEN 120W DC UPS]
-    end
-
-    P1 -- NFS/iSCSI --- NAS
-    P2 -- NFS/iSCSI --- NAS
-    P3 -- NFS/iSCSI --- NAS
-    NAS --- CMR
-    NAS --- NVMe
-    UPS -- DC Power --- NAS
-```
+![The hardware stack for the new decoupled storage tier](/assets/images/blog/homelab-storage/hardware-stack.jpg)
 
 ## The Edge Appliance: Compute for Storage
 
@@ -63,7 +33,7 @@ By strictly enforcing the use of CMR drives, the architecture guarantees predict
 
 Bulk storage handles archiving, but infrastructure-as-code (IaC) workflows demand IOPS. When Proxmox VMs are booting, or when Terraform and FluxCD are querying state files, storage latency must be virtually non-existent.
 
-![Dual Gen 4 NVMe drives installed directly to the mainboard](/assets/images/blog/homelab-storage/nvme-drives.jpg)
+![Dual Gen 4 NVMe drives installed directly to the mainboard for high-IOPS workloads](/assets/images/blog/homelab-storage/nvme-drives.jpg)
 
 To solve for this, the hot tier utilizes dual **Samsung 990 EVO Plus 1TB NVMe SSDs**. Populating the internal PCIe Gen 4 M.2 slots provides a mirrored 1TB flash pool. This dual-tier approach offers architectural flexibility: these drives can be configured as an L2ARC/ZIL caching layer to accelerate the mechanical disks, or they can be presented directly to Proxmox as a dedicated, ultra-fast block volume for critical databases and state files.
 
@@ -74,6 +44,18 @@ A storage system is only as robust as its power delivery. A sudden power loss du
 ![UGREEN 120W DC UPS providing localized battery backup](/assets/images/blog/homelab-storage/dc-ups.jpg)
 
 Rather than relying entirely on a broader rack-level AC UPS, this architecture implements a localized **UGREEN 120W DC UPS** directly inline with the NAS. Because it outputs DC power straight to the appliance, it offers a zero-millisecond transfer time. This targeted redundancy measure ensures that if upstream power fails, the storage array maintains power long enough to flush all volatile write caches to non-volatile disk and execute a graceful automated shutdown. 
+
+## Assembly and Final Integration
+
+The assembly process is straightforward but requires precision to ensure proper airflow and secure connections.
+
+![Assembly of the storage array components](/assets/images/blog/homelab-storage/assembly.jpg)
+
+The physical foundation is now racked, cabled, and powered. The state has been isolated into a resilient, tiered hardware appliance.
+
+![Final setup and integration - View 1](/assets/images/blog/homelab-storage/final-setup-1.jpg)
+
+![Final setup and integration - View 2](/assets/images/blog/homelab-storage/final-setup-2.jpg)
 
 ---
 
@@ -87,10 +69,6 @@ Rather than relying entirely on a broader rack-level AC UPS, this architecture i
 | **Power Protection**| UGREEN 120W DC UPS            | Local Power Fail-safe     | 0ms Transfer, DC-to-DC      |
 
 ## Moving Up the Stack
-
-The physical foundation is now racked, cabled, and powered. The state has been isolated into a resilient, tiered hardware appliance.
-
-![The assembly process and final integration](/assets/images/blog/homelab-storage/final-2.jpg)
 
 With the hardware engineered, the next phase shifts to the software layer. Future posts will break down the block storage formatting, the network share configuration, and the Terraform modules required to seamlessly integrate this appliance into the homelab's GitOps pipeline. 
 
