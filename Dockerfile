@@ -15,6 +15,12 @@ LABEL org.opencontainers.image.title="Fluxus" \
       org.opencontainers.image.description="Angular 21 SSG portfolio — static site served by NGINX" \
       org.opencontainers.image.source="https://github.com/faisalkhan91/Fluxus" \
       org.opencontainers.image.authors="Faisal Khan"
+
+# Update musl and zlib to fix high-severity vulnerabilities
+USER root
+RUN apk add --no-cache --upgrade musl musl-utils zlib
+USER 101
+
 COPY --link --from=build /app/dist/fluxus/browser /usr/share/nginx/html
 # index.csr.html is the Angular CSR bootstrap shell — when served as 404.html,
 # Angular boots client-side and the router renders the glitch NotFoundComponent.
