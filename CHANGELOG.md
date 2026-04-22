@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1](https://github.com/faisalkhan91/Fluxus/compare/v2.2.0...v2.2.1) (2026-04-22)
+
+
+### Miscellaneous
+
+* **deps-dev:** bump typescript-eslint ([580a520](https://github.com/faisalkhan91/Fluxus/commit/580a520f48f3263548e1b7a809df23c5a6949830))
+* **deps-dev:** bump typescript-eslint from 8.56.1 to 8.59.0 in the eslint group across 1 directory ([9721b46](https://github.com/faisalkhan91/Fluxus/commit/9721b469aeae0adfc56a5d949ae038cac980c976))
+
 ## [2.2.0](https://github.com/faisalkhan91/Fluxus/compare/v2.1.1...v2.2.0) (2026-04-22)
 
 
