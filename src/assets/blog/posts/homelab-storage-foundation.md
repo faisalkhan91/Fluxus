@@ -22,10 +22,11 @@ A robust storage architecture requires deliberate tiering. For the primary capac
 
 ![WD Red Plus 8TB: Ensuring stable write latency under sustained load](assets/images/blog/homelab-storage/mechanical-disks.jpg)
 
-When engineering a NAS, validating the magnetic recording technology of the disks is a critical hardware decision. These are **Conventional Magnetic Recording (CMR)** drives. 
+When engineering a NAS, validating the magnetic recording technology of the disks is a critical hardware decision. These are **Conventional Magnetic Recording (CMR)** drives.
 
 > ### ⚠️ The SMR Trap
-> The market is currently saturated with Shingled Magnetic Recording (SMR) drives, which are fundamentally incompatible with resilient parity arrays. SMR drives experience catastrophic IOPS degradation during continuous write operations or array rebuilds. 
+>
+> The market is currently saturated with Shingled Magnetic Recording (SMR) drives, which are fundamentally incompatible with resilient parity arrays. SMR drives experience catastrophic IOPS degradation during continuous write operations or array rebuilds.
 
 By strictly enforcing the use of CMR drives, the architecture guarantees predictable latency and safe rebuild times. Running three of these in a RAID 5/parity configuration yields a highly available bulk pool with single-disk fault tolerance.
 
@@ -43,7 +44,7 @@ A storage system is only as robust as its power delivery. A sudden power loss du
 
 ![UGREEN 120W DC UPS providing localized battery backup](assets/images/blog/homelab-storage/dc-ups.jpg)
 
-Rather than relying entirely on a broader rack-level AC UPS, this architecture implements a localized **UGREEN 120W DC UPS** directly inline with the NAS. Because it outputs DC power straight to the appliance, it offers a zero-millisecond transfer time. This targeted redundancy measure ensures that if upstream power fails, the storage array maintains power long enough to flush all volatile write caches to non-volatile disk and execute a graceful automated shutdown. 
+Rather than relying entirely on a broader rack-level AC UPS, this architecture implements a localized **UGREEN 120W DC UPS** directly inline with the NAS. Because it outputs DC power straight to the appliance, it offers a zero-millisecond transfer time. This targeted redundancy measure ensures that if upstream power fails, the storage array maintains power long enough to flush all volatile write caches to non-volatile disk and execute a graceful automated shutdown.
 
 ## Assembly and Final Integration
 
@@ -61,15 +62,15 @@ The physical foundation is now racked, cabled, and powered. The state has been i
 
 ## Hardware Specification Manifest
 
-| Component          | Model                          | Role                      | Key Specification           |
-|--------------------|--------------------------------|---------------------------|-----------------------------|
-| **Chassis/CPU**    | UGREEN NASync DXP4800 Plus     | Storage Controller        | Intel Pentium Gold 8505     |
-| **Capacity Disks** | 3x WD Red Plus 8TB             | Bulk Storage Pool         | CMR, 5600 RPM, SATA 6Gb/s   |
-| **Performance SSD**| 2x Samsung 990 EVO Plus 1TB    | Flash Tier / Cache        | NVMe Gen 4, 7450 MB/s Read  |
-| **Power Protection**| UGREEN 120W DC UPS            | Local Power Fail-safe     | 0ms Transfer, DC-to-DC      |
+| Component            | Model                       | Role                  | Key Specification          |
+| -------------------- | --------------------------- | --------------------- | -------------------------- |
+| **Chassis/CPU**      | UGREEN NASync DXP4800 Plus  | Storage Controller    | Intel Pentium Gold 8505    |
+| **Capacity Disks**   | 3x WD Red Plus 8TB          | Bulk Storage Pool     | CMR, 5600 RPM, SATA 6Gb/s  |
+| **Performance SSD**  | 2x Samsung 990 EVO Plus 1TB | Flash Tier / Cache    | NVMe Gen 4, 7450 MB/s Read |
+| **Power Protection** | UGREEN 120W DC UPS          | Local Power Fail-safe | 0ms Transfer, DC-to-DC     |
 
 ## Moving Up the Stack
 
-With the hardware engineered, the next phase shifts to the software layer. Future posts will break down the block storage formatting, the network share configuration, and the Terraform modules required to seamlessly integrate this appliance into the homelab's GitOps pipeline. 
+With the hardware engineered, the next phase shifts to the software layer. Future posts will break down the block storage formatting, the network share configuration, and the Terraform modules required to seamlessly integrate this appliance into the homelab's GitOps pipeline.
 
 Stay tuned as we move from physical bits to logical bytes.
