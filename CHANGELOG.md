@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0](https://github.com/faisalkhan91/Fluxus/compare/v2.1.1...v2.2.0) (2026-04-22)
+
+
+### Features
+
+* **blog:** add homelab storage architecture post ([da06567](https://github.com/faisalkhan91/Fluxus/commit/da0656739366796c26d872ef641f8e2a0e559127))
+* **blog:** correct image mapping and add all assembly photos ([38a2296](https://github.com/faisalkhan91/Fluxus/commit/38a2296beb897086cb9b0902c533b6ab9d5469ef))
+* New blog post ([aea1340](https://github.com/faisalkhan91/Fluxus/commit/aea1340ee481738f7a1b3f36b0f005cda3b32fab))
+
+
+### Bug Fixes
+
+* **blog:** update image paths to be relative ([621b6cc](https://github.com/faisalkhan91/Fluxus/commit/621b6cc1b508315accdbba8a4ca9ba99c16fb5f2))
+
+
+### Miscellaneous
+
+* **deps:** bump docker/build-push-action from 7.0.0 to 7.1.0 ([eda252c](https://github.com/faisalkhan91/Fluxus/commit/eda252c8684e548ee42a229894d8fc39656213cc))
+* **deps:** bump docker/login-action from 4.0.0 to 4.1.0 ([3b5cd47](https://github.com/faisalkhan91/Fluxus/commit/3b5cd47276eb9262ebdb53440a6b8fb4e950b1c2))
+* **deps:** bump nginxinc/nginx-unprivileged from 1.27-alpine to 1.29-alpine ([11cb7c0](https://github.com/faisalkhan91/Fluxus/commit/11cb7c0a23003b2d3632aabf1f03e5a664dfb345))
+
 ## [2.1.1](https://github.com/faisalkhan91/Fluxus/compare/v2.1.0...v2.1.1) (2026-04-12)
 
 
