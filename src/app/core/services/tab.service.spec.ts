@@ -83,6 +83,18 @@ describe('TabService', () => {
     expect(navigateSpy).toHaveBeenCalled();
   });
 
+  it('closeAllTabs() keeps only the hero tab and routes home', async () => {
+    await router.navigate(['/about']);
+    await router.navigate(['/contact']);
+    expect(service.openTabs().length).toBeGreaterThan(1);
+
+    const navigateSpy = vi.spyOn(router, 'navigate');
+    service.closeAllTabs();
+
+    expect(service.openTabs().map((t) => t.id)).toEqual(['hero']);
+    expect(navigateSpy).toHaveBeenCalledWith(['/']);
+  });
+
   it('should navigate to a tab via selectTab', () => {
     const navigateSpy = vi.spyOn(router, 'navigate');
     const tab: EditorTab = {

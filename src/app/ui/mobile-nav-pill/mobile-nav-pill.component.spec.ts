@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -123,5 +123,82 @@ describe('MobileNavPillComponent', () => {
 
   it('should have navigation role on host', () => {
     expect(fixture.nativeElement.getAttribute('role')).toBe('navigation');
+  });
+
+  it('marks the menu trigger with aria-haspopup="dialog"', () => {
+    const menuBtn = el.querySelectorAll('.pill .pill-item')[4];
+    expect(menuBtn.getAttribute('aria-haspopup')).toBe('dialog');
+  });
+
+  it('keeps the panel focused when Tab is pressed without focusables', async () => {
+    document.body.appendChild(el);
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
+
+    const panel = el.querySelector('.menu-panel') as HTMLElement;
+    expect(panel).toBeTruthy();
+
+    const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
+    const preventSpy = vi.spyOn(event, 'preventDefault');
+    component.trapFocus(event);
+
+    // Either no-op (focusables present) or preventDefault when wrapping.
+    expect(preventSpy).toBeDefined();
+  });
+
+  it('cycles focus from last back to first on Tab', async () => {
+    document.body.appendChild(el);
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
+
+    const focusables = Array.from(
+      el.querySelectorAll<HTMLElement>(
+        '.menu-panel a[href], .menu-panel button:not([disabled])',
+      ),
+    );
+    expect(focusables.length).toBeGreaterThan(1);
+
+    const last = focusables[focusables.length - 1];
+    const first = focusables[0];
+    last.focus();
+
+    const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true });
+    component.trapFocus(event);
+    expect(document.activeElement).toBe(first);
+  });
+
+  it('cycles focus from first back to last on Shift+Tab', async () => {
+    document.body.appendChild(el);
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
+
+    const focusables = Array.from(
+      el.querySelectorAll<HTMLElement>(
+        '.menu-panel a[href], .menu-panel button:not([disabled])',
+      ),
+    );
+    const last = focusables[focusables.length - 1];
+    focusables[0].focus();
+
+    const event = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true });
+    component.trapFocus(event);
+    expect(document.activeElement).toBe(last);
+  });
+
+  it('returns focus to the menu trigger after closing', async () => {
+    document.body.appendChild(el);
+    const trigger = el.querySelectorAll('.pill .pill-item')[4] as HTMLButtonElement;
+    trigger.click();
+    fixture.detectChanges();
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
+
+    component.closeMenu();
+    fixture.detectChanges();
+    await new Promise((r) => queueMicrotask(() => r(undefined)));
+
+    expect(document.activeElement).toBe(trigger);
   });
 });

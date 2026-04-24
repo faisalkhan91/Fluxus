@@ -1,4 +1,13 @@
-import { Component, ChangeDetectionStrategy, input, signal, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ElementRef,
+  effect,
+  input,
+  signal,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 
@@ -31,13 +40,26 @@ export class MobileNavPillComponent {
 
   menuOpen = signal(false);
 
+  protected menuTrigger = viewChild<ElementRef<HTMLButtonElement>>('menuTrigger');
+  protected menuPanel = viewChild<ElementRef<HTMLElement>>('menuPanel');
+
+  constructor() {
+    effect(() => {
+      const open = this.menuOpen();
+      const panel = this.menuPanel();
+      if (open && panel) {
+        queueMicrotask(() => panel.nativeElement.focus());
+      }
+    });
+  }
+
   openMenu(): void {
     this.menuOpen.set(true);
-    setTimeout(() => document.querySelector<HTMLElement>('.menu-panel')?.focus());
   }
 
   closeMenu(): void {
     this.menuOpen.set(false);
+    queueMicrotask(() => this.menuTrigger()?.nativeElement.focus());
   }
 
   navigateTo(route: string): void {
@@ -48,5 +70,37 @@ export class MobileNavPillComponent {
   isActive(route: string): boolean {
     if (route === '/') return this.router.url === '/';
     return this.router.url.startsWith(route);
+  }
+
+  trapFocus(event: KeyboardEvent): void {
+    if (event.key !== 'Tab') return;
+    const panel = this.menuPanel()?.nativeElement;
+    if (!panel) return;
+
+    const focusables = Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => !el.hasAttribute('disabled'));
+
+    if (focusables.length === 0) {
+      event.preventDefault();
+      panel.focus();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = panel.ownerDocument.activeElement as HTMLElement | null;
+
+    if (event.shiftKey) {
+      if (active === first || active === panel) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else if (active === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 }

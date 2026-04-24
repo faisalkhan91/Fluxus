@@ -17,13 +17,12 @@
       [activeTabId]="tabService.activeTabId()"
       (tabSelected)="tabService.selectTab($event)"
       (tabClosed)="tabService.closeTab($event)"
+      (closeAllRequested)="tabService.closeAllTabs()"
     />
   }
 
   <main id="main-content" class="content">
-    <div class="route-container" [@routeAnimation]="prepareRoute(outlet)">
-      <router-outlet #outlet="outlet" />
-    </div>
+    <router-outlet />
   </main>
 </div>
 

@@ -43,10 +43,10 @@ describe('BlogPostComponent', () => {
   let el: HTMLElement;
   let paramMapSubject: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   let mockBlog: {
-    loadPosts: ReturnType<typeof vi.fn>;
     getPostContent: ReturnType<typeof vi.fn>;
     getAdjacentPosts: ReturnType<typeof vi.fn>;
     posts: ReturnType<typeof signal<BlogPost[]>>;
+    error: ReturnType<typeof signal<string | null>>;
   };
   let titleService: Title;
   let metaService: Meta;
@@ -55,13 +55,13 @@ describe('BlogPostComponent', () => {
     paramMapSubject = new BehaviorSubject(convertToParamMap({ slug: 'second-post' }));
 
     mockBlog = {
-      loadPosts: vi.fn().mockReturnValue(of(MOCK_POSTS)),
       getPostContent: vi.fn().mockReturnValue(of('<p>Post content</p>')),
       getAdjacentPosts: vi.fn().mockReturnValue({
         prev: MOCK_POSTS[0],
         next: MOCK_POSTS[2],
       }),
       posts: signal(MOCK_POSTS),
+      error: signal<string | null>(null),
     };
 
     await TestBed.configureTestingModule({
@@ -90,7 +90,6 @@ describe('BlogPostComponent', () => {
   });
 
   it('should load post content for the slug', () => {
-    expect(mockBlog.loadPosts).toHaveBeenCalled();
     expect(mockBlog.getPostContent).toHaveBeenCalledWith('second-post');
   });
 
@@ -121,7 +120,6 @@ describe('BlogPostComponent', () => {
   });
 
   it('should set error for missing slug', () => {
-    mockBlog.loadPosts.mockReturnValue(of(MOCK_POSTS));
     mockBlog.getPostContent.mockClear();
     paramMapSubject.next(convertToParamMap({ slug: 'nonexistent' }));
     fixture.detectChanges();
@@ -155,7 +153,6 @@ describe('BlogPostComponent', () => {
   });
 
   it('should render error state when error is set', () => {
-    mockBlog.loadPosts.mockReturnValue(of(MOCK_POSTS));
     paramMapSubject.next(convertToParamMap({ slug: 'nonexistent' }));
     fixture.detectChanges();
     const errorBlock = el.querySelector('.post-error');

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
 import { IconComponent } from '../../ui/icon/icon.component';
@@ -12,10 +12,6 @@ import { BlogService } from '../../core/services/blog.service';
   imports: [GlassCardComponent, IconComponent, SectionHeaderComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogComponent implements OnInit {
+export class BlogComponent {
   protected blog = inject(BlogService);
-
-  ngOnInit(): void {
-    this.blog.loadPosts();
-  }
 }

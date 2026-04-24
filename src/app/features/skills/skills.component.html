@@ -1,4 +1,10 @@
 <div class="skills-layout">
+  <ui-section-header
+    title="Skills"
+    headingId="skills-title"
+    decoration="// stack.json"
+    [level]="1"
+  />
   @for (category of skillsData.categories(); track category.title) {
     <section class="skill-section" [attr.aria-labelledby]="'skill-' + slugify(category.title)">
       <ui-section-header

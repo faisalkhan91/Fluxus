@@ -1,4 +1,9 @@
 <div class="experience-layout">
-  <ui-section-header title="Experience" decoration="// changelog.ts" />
+  <ui-section-header
+    title="Experience"
+    headingId="experience-title"
+    decoration="// changelog.ts"
+    [level]="1"
+  />
   <ui-timeline [items]="timelineEntries()" />
 </div>

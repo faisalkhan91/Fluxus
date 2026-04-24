@@ -63,6 +63,8 @@
   --accent-secondary: #3178c6;
   --color-warning: #febc2e;
   --color-success: #28c840;
+  --error: #f87171;
+  --error-subtle: rgba(248, 113, 113, 0.12);
 
   /* === Scrollbar === */
   --scrollbar-thumb: rgba(255, 255, 255, 0.1);
@@ -114,6 +116,8 @@
   --accent-secondary: #2563eb;
   --color-warning: #f59e0b;
   --color-success: #22c55e;
+  --error: #b91c1c;
+  --error-subtle: rgba(185, 28, 28, 0.1);
 
   --scrollbar-thumb: rgba(0, 0, 0, 0.12);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
@@ -201,6 +205,18 @@ p {
 ::selection {
   background-color: var(--accent-subtle);
   color: var(--text-primary);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 ::-webkit-scrollbar {

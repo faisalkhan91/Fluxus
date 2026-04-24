@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { of } from 'rxjs';
 import { BlogComponent } from './blog.component';
 import { BlogService } from '../../core/services/blog.service';
 
@@ -26,7 +25,6 @@ const MOCK_POSTS = [
 ];
 
 const mockBlog = {
-  loadPosts: vi.fn().mockReturnValue(of(MOCK_POSTS)),
   posts: signal(MOCK_POSTS),
 };
 
@@ -53,10 +51,6 @@ describe('BlogComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should call loadPosts on init', () => {
-    expect(mockBlog.loadPosts).toHaveBeenCalled();
   });
 
   it('should render post cards when posts exist', () => {

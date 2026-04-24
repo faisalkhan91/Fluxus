@@ -1,5 +1,10 @@
 <div class="projects-layout">
-  <ui-section-header title="Projects" decoration="// git log --oneline" />
+  <ui-section-header
+    title="Projects"
+    headingId="projects-title"
+    decoration="// git log --oneline"
+    [level]="1"
+  />
   <div class="projects-grid">
     @for (project of projectsData.projects(); track project.title) {
       <ui-glass-card

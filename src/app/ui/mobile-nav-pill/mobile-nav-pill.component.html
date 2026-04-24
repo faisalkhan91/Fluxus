@@ -13,11 +13,14 @@
   }
 
   <button
+    #menuTrigger
+    type="button"
     class="pill-item"
     [class.active]="menuOpen()"
     (click)="openMenu()"
     aria-label="Menu"
     [attr.aria-expanded]="menuOpen()"
+    aria-haspopup="dialog"
   >
     <ui-icon name="menu" [size]="20" />
     <span class="pill-label">Menu</span>
@@ -27,12 +30,14 @@
 @if (menuOpen()) {
   <div class="menu-overlay" (click)="closeMenu()" aria-hidden="true"></div>
   <div
+    #menuPanel
     class="menu-panel"
     role="dialog"
     aria-modal="true"
     aria-label="Navigation menu"
     tabindex="-1"
     (keydown.escape)="closeMenu()"
+    (keydown)="trapFocus($event)"
   >
     <div class="menu-header">
       <span class="menu-title">Navigate</span>
