@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
-import { provideRouter, RouterOutlet } from '@angular/router';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
 import { ShellComponent } from './shell.component';
 import { MediaQueryService } from '../services/media-query.service';
 import { TabService } from '../services/tab.service';
@@ -53,7 +52,6 @@ describe('ShellComponent', () => {
       imports: [ShellComponent],
       providers: [
         provideRouter([]),
-        provideNoopAnimations(),
         { provide: MediaQueryService, useValue: mockMedia },
         { provide: TabService, useValue: mockTabService },
         { provide: NavigationService, useValue: mockNavService },
@@ -124,18 +122,6 @@ describe('ShellComponent', () => {
   it('should call window.open with resume PDF on onResumeDownload', () => {
     component.onResumeDownload();
     expect(windowOpenSpy).toHaveBeenCalledWith('assets/resume.pdf', '_blank');
-  });
-
-  it('should return empty string from prepareRoute when outlet has no data', () => {
-    const result = component.prepareRoute({ activatedRouteData: {} } as RouterOutlet);
-    expect(result).toBe('');
-  });
-
-  it('should return label from prepareRoute when outlet has tab data', () => {
-    const result = component.prepareRoute({
-      activatedRouteData: { tab: { label: 'About' } },
-    } as unknown as RouterOutlet);
-    expect(result).toBe('About');
   });
 
   it('should render skip link', () => {

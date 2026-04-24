@@ -1,10 +1,16 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
+export type HeadingLevel = 1 | 2;
+
 @Component({
   selector: 'ui-section-header',
   template: `
     <div class="header-content">
-      <h2 class="title" [id]="headingId()">{{ title() }}</h2>
+      @if (level() === 1) {
+        <h1 class="title" [attr.id]="headingId() ?? null">{{ title() }}</h1>
+      } @else {
+        <h2 class="title" [attr.id]="headingId() ?? null">{{ title() }}</h2>
+      }
       @if (subtitle()) {
         <p class="subtitle">{{ subtitle() }}</p>
       }
@@ -22,4 +28,5 @@ export class SectionHeaderComponent {
   headingId = input<string>();
   subtitle = input<string>();
   decoration = input<string>();
+  level = input<HeadingLevel>(2);
 }

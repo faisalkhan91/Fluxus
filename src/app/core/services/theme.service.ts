@@ -24,23 +24,27 @@ export class ThemeService {
   readonly isDark = computed(() => this.theme() === 'dark');
 
   constructor() {
-    effect(() => {
-      const t = this.theme();
-      if (t === 'dark') {
-        this.document.documentElement.removeAttribute('data-theme');
-      } else {
-        this.document.documentElement.setAttribute('data-theme', t);
-      }
-    });
-
-    if (this.isBrowser && this.mediaQuery && !localStorage.getItem(STORAGE_KEY)) {
-      const onChange = (e: MediaQueryListEvent) => {
-        if (!localStorage.getItem(STORAGE_KEY)) {
-          this.theme.set(e.matches ? 'light' : 'dark');
+    // The inline pre-paint script in index.html sets `data-theme` before first paint
+    // to avoid FOUC. This effect only mirrors runtime toggles into the DOM.
+    if (this.isBrowser) {
+      effect(() => {
+        const t = this.theme();
+        if (t === 'dark') {
+          this.document.documentElement.removeAttribute('data-theme');
+        } else {
+          this.document.documentElement.setAttribute('data-theme', t);
         }
-      };
-      this.mediaQuery.addEventListener('change', onChange);
-      this.destroyRef.onDestroy(() => this.mediaQuery?.removeEventListener('change', onChange));
+      });
+
+      if (this.mediaQuery && !localStorage.getItem(STORAGE_KEY)) {
+        const onChange = (e: MediaQueryListEvent) => {
+          if (!localStorage.getItem(STORAGE_KEY)) {
+            this.theme.set(e.matches ? 'light' : 'dark');
+          }
+        };
+        this.mediaQuery.addEventListener('change', onChange);
+        this.destroyRef.onDestroy(() => this.mediaQuery?.removeEventListener('change', onChange));
+      }
     }
   }
 

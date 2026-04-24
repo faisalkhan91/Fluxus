@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { ApplicationRef, ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
@@ -36,9 +37,21 @@ describe('BlogService', () => {
   let service: BlogService;
   let httpTesting: HttpTestingController;
 
+  async function flushPosts(payload: BlogPost[] = MOCK_POSTS): Promise<void> {
+    // The httpResource defers its initial fetch until the first effect run; tick once.
+    TestBed.tick();
+    httpTesting.expectOne('assets/blog/posts.json').flush(payload);
+    await TestBed.inject(ApplicationRef).whenStable();
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        // Suppress the synthetic resource error logging so test output stays clean.
+        { provide: ErrorHandler, useValue: { handleError: () => undefined } },
+      ],
     });
     service = TestBed.inject(BlogService);
     httpTesting = TestBed.inject(HttpTestingController);
@@ -48,33 +61,23 @@ describe('BlogService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should start with empty posts', () => {
+  it('starts with the default empty value before the resource resolves', () => {
     expect(service.posts()).toEqual([]);
   });
 
-  it('should start with null error', () => {
+  it('starts with null error', () => {
     expect(service.error()).toBeNull();
   });
 
-  it('should load and cache posts', () => {
-    service.loadPosts().subscribe();
-    const req = httpTesting.expectOne('assets/blog/posts.json');
-    req.flush(MOCK_POSTS);
+  it('loads posts and exposes them sorted by date descending', async () => {
+    await flushPosts();
 
-    expect(service.posts()).toEqual(MOCK_POSTS);
+    const slugs = service.posts().map((p) => p.slug);
+    expect(slugs).toEqual(['post-two', 'post-three', 'post-one']);
   });
 
-  it('should reuse the same observable on subsequent calls', () => {
-    const obs1 = service.loadPosts();
-    const obs2 = service.loadPosts();
-    expect(obs1).toBe(obs2);
-
-    httpTesting.expectOne('assets/blog/posts.json').flush(MOCK_POSTS);
-  });
-
-  it('should return latest posts sorted by date descending', () => {
-    service.loadPosts().subscribe();
-    httpTesting.expectOne('assets/blog/posts.json').flush(MOCK_POSTS);
+  it('latestPosts returns the first 2 sorted posts', async () => {
+    await flushPosts();
 
     const latest = service.latestPosts();
     expect(latest).toHaveLength(2);
@@ -82,35 +85,40 @@ describe('BlogService', () => {
     expect(latest[1].slug).toBe('post-three');
   });
 
-  it('should set error on HTTP failure', () => {
-    service.loadPosts().subscribe();
+  it('exposes the error signal on HTTP failure', async () => {
+    TestBed.tick();
     httpTesting
       .expectOne('assets/blog/posts.json')
       .error(new ProgressEvent('error'), { status: 500 });
+    await TestBed.inject(ApplicationRef).whenStable();
 
     expect(service.error()).toBe('Failed to load blog posts');
     expect(service.posts()).toEqual([]);
   });
 
-  it('should return adjacent posts', () => {
-    service.loadPosts().subscribe();
-    httpTesting.expectOne('assets/blog/posts.json').flush(MOCK_POSTS);
+  it('getAdjacentPosts walks the date-sorted list (prev = newer, next = older)', async () => {
+    await flushPosts();
 
-    const adj = service.getAdjacentPosts('post-two');
-    expect(adj.prev?.slug).toBe('post-one');
-    expect(adj.next?.slug).toBe('post-three');
+    const adj = service.getAdjacentPosts('post-three');
+    expect(adj.prev?.slug).toBe('post-two');
+    expect(adj.next?.slug).toBe('post-one');
   });
 
-  it('should return undefined for first post prev and last post next', () => {
-    service.loadPosts().subscribe();
-    httpTesting.expectOne('assets/blog/posts.json').flush(MOCK_POSTS);
+  it('returns undefined for newest post prev and oldest post next', async () => {
+    await flushPosts();
 
-    const first = service.getAdjacentPosts('post-one');
-    expect(first.prev).toBeUndefined();
-    expect(first.next?.slug).toBe('post-two');
+    const newest = service.getAdjacentPosts('post-two');
+    expect(newest.prev).toBeUndefined();
+    expect(newest.next?.slug).toBe('post-three');
 
-    const last = service.getAdjacentPosts('post-three');
-    expect(last.prev?.slug).toBe('post-two');
-    expect(last.next).toBeUndefined();
+    const oldest = service.getAdjacentPosts('post-one');
+    expect(oldest.prev?.slug).toBe('post-three');
+    expect(oldest.next).toBeUndefined();
+  });
+
+  it('returns empty object for unknown slug', async () => {
+    await flushPosts();
+
+    expect(service.getAdjacentPosts('nope')).toEqual({});
   });
 });

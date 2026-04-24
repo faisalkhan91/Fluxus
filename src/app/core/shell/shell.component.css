@@ -51,16 +51,6 @@
   view-transition-name: main-content;
 }
 
-.route-container {
-  display: grid;
-  grid-template: 1fr / 1fr;
-}
-
-.route-container > *:not(router-outlet) {
-  grid-column: 1;
-  grid-row: 1;
-}
-
 :host(.mobile) .content {
   padding: var(--space-4);
   padding-bottom: calc(var(--nav-pill-height) + var(--space-4) + var(--space-12));

@@ -1,28 +1,56 @@
-<div class="tabs-scroll">
-  @for (tab of tabs(); track tab.id) {
-    <div
-      class="tab"
-      [class.active]="tab.id === activeTabId()"
-      role="tab"
-      [attr.aria-selected]="tab.id === activeTabId()"
-      [tabindex]="tab.id === activeTabId() ? 0 : -1"
-      (click)="tabSelected.emit(tab)"
-      (keydown.enter)="tabSelected.emit(tab)"
-      (keydown.space)="$event.preventDefault(); tabSelected.emit(tab)"
-      (keydown.delete)="tab.id !== 'hero' && tabClosed.emit(tab)"
-    >
-      <span class="tab-dot" [style.background]="tab.color"></span>
-      <span class="tab-label">{{ tab.label }}</span>
-      <span class="tab-ext">{{ tab.ext }}</span>
-      @if (tab.id !== 'hero') {
-        <button
-          class="tab-close"
-          (click)="$event.stopPropagation(); tabClosed.emit(tab)"
-          [attr.aria-label]="'Close ' + tab.label"
-        >
-          <ui-icon name="x" [size]="12" />
-        </button>
-      }
-    </div>
-  }
+<div class="tabs-viewport">
+  <div #scrollContainer class="tabs-scroll">
+    @for (tab of tabs(); track tab.id; let i = $index) {
+      <button
+        type="button"
+        class="tab"
+        [class.active]="tab.id === activeTabId()"
+        role="tab"
+        [attr.aria-selected]="tab.id === activeTabId()"
+        [tabindex]="tab.id === activeTabId() ? 0 : -1"
+        (click)="tabSelected.emit(tab)"
+        (keydown.delete)="tab.id !== 'hero' && tabClosed.emit(tab)"
+        (keydown.arrowleft)="onArrow($event, i, -1)"
+        (keydown.arrowright)="onArrow($event, i, 1)"
+      >
+        <span class="tab-dot" [style.background]="tab.color"></span>
+        <span class="tab-label">{{ tab.label }}</span>
+        <span class="tab-ext">{{ tab.ext }}</span>
+        @if (tab.id !== 'hero') {
+          <span
+            class="tab-close"
+            role="button"
+            [attr.aria-label]="'Close ' + tab.label"
+            tabindex="-1"
+            (click)="$event.stopPropagation(); tabClosed.emit(tab)"
+          >
+            <ui-icon name="x" [size]="12" />
+          </span>
+        }
+      </button>
+    }
+  </div>
+  <span
+    class="scroll-fade scroll-fade--left"
+    [class.visible]="showLeftFade()"
+    aria-hidden="true"
+  ></span>
+  <span
+    class="scroll-fade scroll-fade--right"
+    [class.visible]="showRightFade()"
+    aria-hidden="true"
+  ></span>
 </div>
+
+@if (closableCount() > 0) {
+  <button
+    type="button"
+    class="close-all"
+    (click)="closeAllRequested.emit()"
+    aria-label="Close all tabs except Welcome"
+    title="Close all tabs"
+  >
+    <ui-icon name="x" [size]="12" />
+    <span class="close-all-label">Close all</span>
+  </button>
+}

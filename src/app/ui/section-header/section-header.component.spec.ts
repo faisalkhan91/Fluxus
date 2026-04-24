@@ -56,4 +56,18 @@ describe('SectionHeaderComponent', () => {
     const deco = el.querySelector('.decoration');
     expect(deco?.textContent?.trim()).toBe('// test.ts');
   });
+
+  it('renders an h1 when level is 1', () => {
+    fixture.componentRef.setInput('level', 1);
+    fixture.detectChanges();
+    expect(el.querySelector('h1')?.textContent?.trim()).toBe('Test Title');
+    expect(el.querySelector('h2')).toBeNull();
+  });
+
+  it('preserves the headingId on the h1 when level is 1', () => {
+    fixture.componentRef.setInput('level', 1);
+    fixture.componentRef.setInput('headingId', 'page-heading');
+    fixture.detectChanges();
+    expect(el.querySelector('h1')?.id).toBe('page-heading');
+  });
 });

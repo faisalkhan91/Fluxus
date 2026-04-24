@@ -81,6 +81,12 @@ export class TabService {
     }
   }
 
+  closeAllTabs(): void {
+    const hero = this.tabs().find((t) => t.id === 'hero');
+    this.tabs.set(hero ? [hero] : []);
+    this.router.navigate(['/']);
+  }
+
   selectTab(tab: EditorTab): void {
     this.router.navigate([tab.route]);
   }

@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
 import { HeroComponent } from './hero.component';
 import { ProfileDataService } from '../../core/services/profile-data.service';
 import { BlogService } from '../../core/services/blog.service';
@@ -26,7 +25,6 @@ const mockProfile = {
 };
 
 const mockBlog = {
-  loadPosts: vi.fn().mockReturnValue(of([])),
   latestPosts: signal([
     {
       slug: 'test-post',
@@ -67,10 +65,6 @@ describe('HeroComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should call blog.loadPosts on init', () => {
-    expect(mockBlog.loadPosts).toHaveBeenCalled();
   });
 
   it('should render the user name', () => {

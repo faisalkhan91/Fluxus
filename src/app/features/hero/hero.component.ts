@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { GlowButtonComponent } from '../../ui/glow-button/glow-button.component';
 import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
@@ -13,14 +13,10 @@ import { BlogService } from '../../core/services/blog.service';
   imports: [RouterLink, GlowButtonComponent, GlassCardComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeroComponent implements OnInit {
+export class HeroComponent {
   private router = inject(Router);
   protected profile = inject(ProfileDataService);
   protected blog = inject(BlogService);
-
-  ngOnInit(): void {
-    this.blog.loadPosts();
-  }
 
   navigateTo(path: string): void {
     this.router.navigate([path]);

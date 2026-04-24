@@ -1,94 +1,146 @@
 <div class="contact-layout">
-  <ui-section-header title="Contact" decoration="// ping.sh" />
+  <ui-section-header
+    title="Contact"
+    headingId="contact-title"
+    decoration="// ping.sh"
+    [level]="1"
+  />
 
   <div class="contact-grid">
     <ui-glass-card [elevation]="2" class="form-card">
-      @if (!submitted()) {
-        <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
-          <div class="form-group">
-            <label for="name" class="form-label">Name</label>
-            <input
-              id="name"
-              formControlName="name"
-              type="text"
-              class="form-input"
-              placeholder="Your name"
-              autocomplete="name"
-              [attr.aria-invalid]="
-                contactForm.get('name')?.invalid && contactForm.get('name')?.touched
-              "
-              aria-describedby="name-error"
-            />
-            @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
-              <span id="name-error" class="form-error" role="alert">Name is required</span>
-            }
-          </div>
+      @switch (stage()) {
+        @case ('editing') {
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+            <div class="form-group">
+              <label for="name" class="form-label">Name</label>
+              <input
+                id="name"
+                formControlName="name"
+                type="text"
+                class="form-input"
+                placeholder="Your name"
+                autocomplete="name"
+                [attr.aria-invalid]="
+                  contactForm.get('name')?.invalid && contactForm.get('name')?.touched
+                "
+                aria-describedby="name-error"
+              />
+              @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
+                <span id="name-error" class="form-error" role="alert">Name is required</span>
+              }
+            </div>
 
-          <div class="form-group">
-            <label for="email" class="form-label">Email</label>
-            <input
-              id="email"
-              formControlName="email"
-              type="email"
-              class="form-input"
-              placeholder="your@email.com"
-              autocomplete="email"
-              [attr.aria-invalid]="
-                contactForm.get('email')?.invalid && contactForm.get('email')?.touched
-              "
-              aria-describedby="email-error"
-            />
-            @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
-              <span id="email-error" class="form-error" role="alert">
-                @if (contactForm.get('email')?.hasError('required')) {
-                  Email is required
-                } @else {
-                  Please enter a valid email address
-                }
-              </span>
-            }
-          </div>
+            <div class="form-group">
+              <label for="email" class="form-label">Email</label>
+              <input
+                id="email"
+                formControlName="email"
+                type="email"
+                class="form-input"
+                placeholder="your@email.com"
+                autocomplete="email"
+                [attr.aria-invalid]="
+                  contactForm.get('email')?.invalid && contactForm.get('email')?.touched
+                "
+                aria-describedby="email-error"
+              />
+              @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
+                <span id="email-error" class="form-error" role="alert">
+                  @if (contactForm.get('email')?.hasError('required')) {
+                    Email is required
+                  } @else {
+                    Please enter a valid email address
+                  }
+                </span>
+              }
+            </div>
 
-          <div class="form-group">
-            <label for="subject" class="form-label">Subject</label>
-            <input
-              id="subject"
-              formControlName="subject"
-              type="text"
-              class="form-input"
-              placeholder="What's this about?"
-            />
-          </div>
+            <div class="form-group">
+              <label for="subject" class="form-label">Subject</label>
+              <input
+                id="subject"
+                formControlName="subject"
+                type="text"
+                class="form-input"
+                placeholder="What's this about?"
+              />
+            </div>
 
-          <div class="form-group">
-            <label for="message" class="form-label">Message</label>
-            <textarea
-              id="message"
-              formControlName="message"
-              class="form-input form-textarea"
-              placeholder="Your message..."
-              rows="5"
-              [attr.aria-invalid]="
-                contactForm.get('message')?.invalid && contactForm.get('message')?.touched
-              "
-              aria-describedby="message-error"
-            ></textarea>
-            @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
-              <span id="message-error" class="form-error" role="alert">Message is required</span>
-            }
-          </div>
+            <div class="form-group">
+              <label for="message" class="form-label">Message</label>
+              <textarea
+                id="message"
+                formControlName="message"
+                class="form-input form-textarea"
+                placeholder="Your message..."
+                rows="5"
+                [attr.aria-invalid]="
+                  contactForm.get('message')?.invalid && contactForm.get('message')?.touched
+                "
+                aria-describedby="message-error"
+              ></textarea>
+              @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
+                <span id="message-error" class="form-error" role="alert">Message is required</span>
+              }
+            </div>
 
-          <ui-glow-button variant="primary" type="submit" [disabled]="contactForm.invalid">
-            <ui-icon name="send" [size]="16" />
-            Send Message
-          </ui-glow-button>
-        </form>
-      } @else {
-        <div class="success-state">
-          <ui-icon name="sparkles" [size]="40" />
-          <h3>Message Sent!</h3>
-          <p>Your email client should have opened. If not, feel free to reach out directly.</p>
-        </div>
+            <p class="form-hint" id="submit-hint">
+              <ui-icon name="mail" [size]="14" />
+              Sending opens your default email client with this message pre-filled.
+            </p>
+
+            <div class="form-actions">
+              <ui-glow-button
+                variant="primary"
+                type="submit"
+                [disabled]="contactForm.invalid"
+                aria-describedby="submit-hint"
+              >
+                <ui-icon name="send" [size]="16" />
+                Send Message
+              </ui-glow-button>
+              <button type="button" class="link-button" (click)="copyEmail()">
+                <ui-icon [name]="emailCopied() ? 'sparkles' : 'mail'" [size]="14" />
+                {{ emailCopied() ? 'Email copied!' : 'Copy email instead' }}
+              </button>
+            </div>
+          </form>
+        }
+        @case ('awaiting-confirmation') {
+          <div class="confirm-state" role="status" aria-live="polite">
+            <ui-icon name="mail" [size]="40" />
+            <h3>Did your email client open?</h3>
+            <p>
+              We tried to launch your default mail app with the message pre-filled. If nothing
+              happened, you can copy the address and email me directly.
+            </p>
+            <div class="confirm-actions">
+              <ui-glow-button variant="primary" type="button" (click)="confirmSent()">
+                <ui-icon name="sparkles" [size]="16" />
+                Yes, it opened
+              </ui-glow-button>
+              <button type="button" class="link-button" (click)="copyEmail()">
+                <ui-icon [name]="emailCopied() ? 'sparkles' : 'mail'" [size]="14" />
+                {{ emailCopied() ? 'Email copied!' : 'Copy email instead' }}
+              </button>
+              <button type="button" class="link-button" (click)="backToForm()">
+                <ui-icon name="arrow-left" [size]="14" />
+                Back to form
+              </button>
+            </div>
+          </div>
+        }
+        @case ('sent') {
+          <div class="success-state" role="status" aria-live="polite">
+            <ui-icon name="sparkles" [size]="40" />
+            <h3>Message Sent!</h3>
+            <p>Thanks for reaching out. I'll respond as soon as possible.</p>
+            <button type="button" class="link-button" (click)="backToForm()">
+              <ui-icon name="arrow-left" [size]="14" />
+              Send another
+            </button>
+          </div>
+        }
       }
     </ui-glass-card>
 

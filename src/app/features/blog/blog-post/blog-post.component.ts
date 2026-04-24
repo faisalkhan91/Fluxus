@@ -11,8 +11,8 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
-import { EMPTY, switchMap, tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EMPTY, filter, switchMap, take, tap } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
 import { TrustedHtmlPipe } from '../../../shared/pipes/trusted-html.pipe';
@@ -69,13 +69,20 @@ export class BlogPostComponent implements OnInit {
     });
   }
 
+  // Mirror the BlogService posts signal as an observable so we can react to
+  // route slug changes and the resource loading in the same pipeline.
+  private posts$ = toObservable(this.blog.posts);
+
   ngOnInit(): void {
     this.route.paramMap
       .pipe(
         switchMap((params) => {
           const slug = params.get('slug') ?? '';
           this.loading.set(true);
-          return this.blog.loadPosts().pipe(
+          this.error.set(null);
+          return this.posts$.pipe(
+            filter((posts) => posts.length > 0 || !!this.blog.error()),
+            take(1),
             tap((posts) => {
               const post = posts.find((p) => p.slug === slug);
               this.meta.set(post);

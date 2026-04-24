@@ -8,7 +8,6 @@ import { MediaQueryService } from '../services/media-query.service';
 import { TabService } from '../services/tab.service';
 import { NavigationService } from '../services/navigation.service';
 import { ThemeService } from '../services/theme.service';
-import { routeAnimation } from '../../shared/animations/route.animations';
 
 @Component({
   selector: 'app-shell',
@@ -27,7 +26,6 @@ import { routeAnimation } from '../../shared/animations/route.animations';
     '[class.sidebar-collapsed]': 'media.sidebarCollapsed()',
     '[class.mobile]': 'media.isMobile()',
   },
-  animations: [routeAnimation],
 })
 export class ShellComponent {
   protected media = inject(MediaQueryService);
@@ -43,9 +41,5 @@ export class ShellComponent {
 
   onThemeToggle(): void {
     this.themeService.toggle();
-  }
-
-  prepareRoute(outlet: RouterOutlet): string {
-    return outlet?.activatedRouteData?.['tab']?.['label'] ?? '';
   }
 }

@@ -67,6 +67,7 @@ const ICONS: Record<string, string> = {
     stroke-linecap="round"
     stroke-linejoin="round"
     aria-hidden="true"
+    focusable="false"
   ></svg>`,
   styles: [
     `

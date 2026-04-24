@@ -99,12 +99,50 @@ describe('ContactComponent', () => {
     expect(url).toContain('John');
   });
 
-  it('should show success state after valid submit', () => {
+  it('shows the confirmation step (not success) after a valid submit', () => {
     fillForm({ name: 'John', email: 'john@test.com', subject: '', message: 'Test' });
     component.onSubmit();
     fixture.detectChanges();
-    expect(el.querySelector('.success-state')).toBeTruthy();
+    expect(el.querySelector('.confirm-state')).toBeTruthy();
+    expect(el.querySelector('.success-state')).toBeNull();
     expect(el.querySelector('form')).toBeNull();
+  });
+
+  it('only flips to the success state when the user confirms send', () => {
+    fillForm({ name: 'John', email: 'john@test.com', subject: '', message: 'Test' });
+    component.onSubmit();
+    component.confirmSent();
+    fixture.detectChanges();
+    expect(el.querySelector('.success-state')).toBeTruthy();
+    expect(el.querySelector('.confirm-state')).toBeNull();
+  });
+
+  it('returns to the form when "back to form" is clicked', () => {
+    fillForm({ name: 'John', email: 'john@test.com', subject: '', message: 'Test' });
+    component.onSubmit();
+    component.backToForm();
+    fixture.detectChanges();
+    expect(el.querySelector('form')).toBeTruthy();
+    expect(component.stage()).toBe('editing');
+  });
+
+  it('renders a hint about opening the email client', () => {
+    expect(el.querySelector('.form-hint')?.textContent ?? '').toContain('email client');
+  });
+
+  it('exposes a copy-email button', () => {
+    expect(el.textContent ?? '').toContain('Copy email instead');
+  });
+
+  it('writes the email to the clipboard via copyEmail()', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    await component.copyEmail();
+    expect(writeText).toHaveBeenCalledWith('test@example.com');
+    expect(component.emailCopied()).toBe(true);
   });
 
   it('should show name required error when touched and empty', () => {
