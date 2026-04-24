@@ -6,7 +6,7 @@
       decoration="// verified.pem"
       [level]="1"
     />
-    <div class="cert-grid">
+    <div class="cert-grid" tabindex="0" role="group" aria-label="Certifications">
       @for (cert of certsData.certifications(); track cert.name) {
         <ui-glass-card [hover]="true" class="cert-card">
           <div class="cert-badge">

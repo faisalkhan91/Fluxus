@@ -2,18 +2,23 @@
 /**
  * Headless structural audit of the prerendered Fluxus build.
  *
- * Checks:
- *  - One <h1> per top-level route (V8/C4)
- *  - All <ui-icon>-rendered <svg> elements have non-empty bodies (V8/C2)
+ * Guards against silent SSR regressions (e.g. an SSR-thrown binding that
+ * leaves every signal interpolation empty in the static HTML — see commit
+ * 4b5f5cf for the original incident).
+ *
+ * Checks per top-level route:
+ *  - <title>, <meta name="description">, <link rel="canonical">,
+ *    og:url/type/image, twitter:card/image (C1)
+ *  - Exactly one <h1> with rendered text (C4 + SSR sanity)
+ *  - All <svg> shells carry aria-hidden="true" (C2 / a11y)
  *  - Inline pre-paint theme script is in <head> (C3)
- *  - Editor tabs are <button role="tab"> with arrow-key handlers (C6)
- *  - Mobile nav menu trigger has aria-haspopup="dialog" (C5)
- *  - 404 page exposes a visually-hidden h1 + 3 suggestion cards (H9)
- *  - Per-route <title>, <meta name="description">, <link rel="canonical">,
- *    og:url, og:type, og:image, twitter:card all match the route (C1)
+ *  - Skip-to-content link (a11y)
+ *  - Editor tabs are <button role="tab"> with valid roving tabindex
+ *    and no nested <button> (C6)
+ *  - Mobile nav menu trigger advertises aria-haspopup="dialog" (C5)
  *  - Blog post page advertises og:type=article (C1)
  *
- * Run after `npm run build:prod`.
+ * Run via `npm run audit:prerender` after `npm run build:prod`.
  */
 
 import { readFileSync, existsSync } from 'node:fs';
@@ -220,18 +225,6 @@ function checkBlogPost() {
   }
 }
 
-function check404() {
-  const { dom } = loadDoc('about/index.html');
-  const stylesheet = dom.window.document.querySelector(
-    'link[rel="stylesheet"][href*="styles"]',
-  );
-  if (!stylesheet) {
-    pushIssue('/404', 'no styles bundle reference (cannot validate visually-hidden)');
-    return;
-  }
-  pushWin('/404', 'visually-hidden h1 verified by NotFoundComponent spec');
-}
-
 console.log('Auditing prerendered build at', BUILD_DIR);
 console.log('---');
 
@@ -248,8 +241,6 @@ try {
 } catch (err) {
   pushIssue(BLOG_POST.path, `audit threw: ${err.message}`);
 }
-
-check404();
 
 console.log(`Wins (${wins.length}):`);
 for (const w of wins) console.log('  ✓', w);
