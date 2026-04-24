@@ -46,3 +46,8 @@ Thumbs.db
 
 # Environment variables
 .env
+
+# Playwright
+/playwright-report/
+/test-results/
+/.playwright/

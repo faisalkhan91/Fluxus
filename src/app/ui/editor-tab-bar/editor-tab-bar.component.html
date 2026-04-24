@@ -1,5 +1,5 @@
 <div class="tabs-viewport">
-  <div #scrollContainer class="tabs-scroll">
+  <div #scrollContainer class="tabs-scroll" role="tablist" aria-label="Open pages">
     @for (tab of tabs(); track tab.id; let i = $index) {
       <button
         type="button"
@@ -19,9 +19,7 @@
         @if (tab.id !== 'hero') {
           <span
             class="tab-close"
-            role="button"
-            [attr.aria-label]="'Close ' + tab.label"
-            tabindex="-1"
+            aria-hidden="true"
             (click)="$event.stopPropagation(); tabClosed.emit(tab)"
           >
             <ui-icon name="x" [size]="12" />

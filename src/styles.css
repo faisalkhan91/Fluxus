@@ -19,9 +19,12 @@
   --accent-subtle: rgba(201, 42, 42, 0.08);
 
   /* === Text === */
+  /* Tuned to satisfy WCAG AA (4.5:1) over --surface-base. Pushing
+     --text-muted below ~0.6 fails contrast on small UI labels (file
+     extensions, divider text). */
   --text-primary: rgba(255, 255, 255, 0.9);
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-muted: rgba(255, 255, 255, 0.3);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.6);
 
   /* === Typography === */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -107,8 +110,8 @@
   --accent-subtle: rgba(185, 28, 28, 0.06);
 
   --text-primary: rgba(0, 0, 0, 0.87);
-  --text-secondary: rgba(0, 0, 0, 0.55);
-  --text-muted: rgba(0, 0, 0, 0.3);
+  --text-secondary: rgba(0, 0, 0, 0.7);
+  --text-muted: rgba(0, 0, 0, 0.6);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.75);
   --nav-pill-bg: rgba(255, 255, 255, 0.72);
@@ -568,4 +571,23 @@ p {
 }
 [data-theme='light'] .hljs-link {
   text-decoration: underline;
+}
+
+/* WCAG 2.3.3 — honor user's reduced-motion preference. Collapses every
+   animation, transition, and View Transitions pseudo-element animation to a
+   near-zero duration so the UI remains static during motion-sensitive use. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

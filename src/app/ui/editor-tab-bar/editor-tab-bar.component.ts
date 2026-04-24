@@ -30,10 +30,6 @@ export interface EditorTab {
   styleUrl: './editor-tab-bar.component.css',
   imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    role: 'tablist',
-    'aria-label': 'Open pages',
-  },
 })
 export class EditorTabBarComponent implements AfterViewInit {
   private host = inject<ElementRef<HTMLElement>>(ElementRef);

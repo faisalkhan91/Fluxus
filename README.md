@@ -67,7 +67,7 @@ Open `http://localhost:4300/` in your browser.
 npm run build:prod
 ```
 
-This runs `ng build --configuration production` followed by `node scripts/inject-blog-meta.mjs`, which replaces default OG/Twitter/title tags in each prerendered blog HTML with post-specific values.
+This runs `ng build --configuration production` followed by `node scripts/inject-meta.mjs`, which rewrites per-route `<title>`, `<meta name="description">`, canonical, and Open Graph / Twitter tags in every prerendered HTML file.
 
 Build output goes to `dist/fluxus/browser/` — 12 prerendered static routes as directories with `index.html` inside each.
 
@@ -103,6 +103,35 @@ Unit tests use [Vitest](https://vitest.dev/) with `jsdom`:
 npm test              # watch mode
 npm test -- --watch=false  # single run (CI)
 ```
+
+---
+
+## Quality gates
+
+Four layered checks guard the build. The CI workflow runs the first two on every PR; the prerender audit and the Playwright pass run locally before a release tag.
+
+| Gate                       | Command                                                  | What it catches                                                                                  |
+| -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Unit tests                 | `npm test -- --watch=false`                              | 230+ Vitest specs across components and services                                                 |
+| Static analysis            | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`         | ESLint, Angular template rules, strict TypeScript                                                |
+| Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`) | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script |
+| Live visual / a11y pass    | `npm run e2e` (after `npm run build:prod`)               | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`           |
+
+The `e2e` pass uses [Playwright](https://playwright.dev/) + [`@axe-core/playwright`](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright). On a fresh checkout, install the chromium browser binary once:
+
+```bash
+npm run e2e:install
+```
+
+Then build the site and run the pass:
+
+```bash
+npm run build:prod
+npm run e2e          # headless
+npm run e2e:ui       # interactive UI mode for debugging
+```
+
+Tests live in `tests/e2e/` and run against the prerendered output served via `http-server` on `:4300`.
 
 ---
 
@@ -187,7 +216,7 @@ Posts are Markdown files in `src/assets/blog/posts/`. Metadata lives in `src/ass
 }
 ```
 
-The post-build script `scripts/inject-blog-meta.mjs` injects post-specific OG/Twitter meta into each prerendered blog HTML.
+The post-build script `scripts/inject-meta.mjs` injects per-route and post-specific OG/Twitter meta into each prerendered HTML file.
 
 </details>
 

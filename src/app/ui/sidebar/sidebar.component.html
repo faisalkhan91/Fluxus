@@ -23,11 +23,11 @@
   @for (item of items(); track item) {
     @if (item.type === 'divider') {
       @if (item.label && !collapsed()) {
-        <li class="nav-divider" role="separator">
+        <li class="nav-divider" aria-hidden="true">
           <span class="divider-label">{{ item.label }}</span>
         </li>
       } @else {
-        <li class="nav-divider nav-divider--line" role="separator"></li>
+        <li class="nav-divider nav-divider--line" aria-hidden="true"></li>
       }
     } @else {
       <li>

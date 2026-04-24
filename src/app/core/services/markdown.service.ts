@@ -39,6 +39,11 @@ export class MarkdownService {
   );
 
   render(md: string): string {
-    return this.marked.parse(md) as string;
+    const html = this.marked.parse(md) as string;
+    // Make every code block keyboard-scrollable. The .prose pre rule in
+    // styles.css gives the block `overflow-x: auto`, which axe-core flags as
+    // a non-focusable scrollable region (WCAG 2.1.1). Adding tabindex="0"
+    // lets keyboard users scroll horizontally without changing visuals.
+    return html.replace(/<pre>/g, '<pre tabindex="0">');
   }
 }
