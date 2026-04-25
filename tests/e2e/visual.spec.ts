@@ -10,7 +10,10 @@ import { test, expect, seedTheme, enableReducedMotion, PRERENDERED_ROUTES } from
  * content for layout-shift detection.
  *
  * Update the baselines after intentional design changes with:
- *   npx playwright test tests/e2e/visual.spec.ts --update-snapshots
+ *   npm run e2e:visual:update
+ *
+ * The plain `playwright test` invocation skips this file unless
+ * `VISUAL_REGRESSION=1` is set — see `testIgnore` in `playwright.config.ts`.
  */
 const THEMES = ['dark', 'light'] as const;
 

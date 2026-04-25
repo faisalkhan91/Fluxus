@@ -6,34 +6,84 @@
       decoration="// posts.rss"
       [level]="1"
     />
-    <a class="subscribe-link" href="/feed.xml" rel="alternate" type="application/atom+xml">
+    <a
+      class="subscribe-link"
+      href="/feed.xml"
+      rel="alternate"
+      type="application/atom+xml"
+      title="Subscribe via Atom feed reader"
+    >
       <ui-icon name="rss" [size]="14" />
-      <span>Subscribe</span>
+      <span>Subscribe (Atom)</span>
     </a>
   </header>
 
   @if (blog.posts().length) {
     <div class="post-grid">
-      @for (post of blog.posts(); track post.slug) {
-        <a [routerLink]="['/blog', post.slug]" class="post-link">
+      @for (post of blog.posts(); track post.slug; let isFirst = $first) {
+        <a
+          [routerLink]="['/blog', post.slug]"
+          class="post-link"
+          [class.post-link--featured]="isFirst"
+        >
           <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
-            <div class="post-meta">
-              <time class="post-date" [attr.datetime]="post.date">
-                <ui-icon name="calendar" [size]="12" />
-                {{ post.date }}
-              </time>
-              <span class="post-reading-time">
-                <ui-icon name="clock" [size]="12" />
-                {{ post.readingTime }}
-              </span>
-            </div>
-            <h2 class="post-title">{{ post.title }}</h2>
-            <p class="post-excerpt">{{ post.excerpt }}</p>
-            <div class="post-tags">
-              @for (tag of post.tags; track tag) {
-                <span class="tag">{{ tag }}</span>
-              }
-            </div>
+            @if (isFirst) {
+              <!--
+                Featured (newest) post: side-thumbnail layout. Cover sits in
+                the left grid column (~320px wide on desktop) and the body
+                (`.post-card-body`) takes the right column. Below 768px the
+                grid collapses and the cover stacks on top with a clamped
+                aspect ratio so the image stays compact on phones.
+              -->
+              <figure class="post-card-cover">
+                <img
+                  [src]="featuredCover(post)"
+                  [alt]="post.title"
+                  [width]="featuredCoverDims(post).w"
+                  [height]="featuredCoverDims(post).h"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
+              </figure>
+              <div class="post-card-body">
+                <div class="post-meta">
+                  <time class="post-date" [attr.datetime]="post.date">
+                    <ui-icon name="calendar" [size]="12" />
+                    {{ formatDate(post.date) }}
+                  </time>
+                  <span class="post-reading-time">
+                    <ui-icon name="clock" [size]="12" />
+                    {{ post.readingTime }}
+                  </span>
+                </div>
+                <h2 class="post-title">{{ post.title }}</h2>
+                <p class="post-excerpt">{{ post.excerpt }}</p>
+                <div class="post-tags">
+                  @for (tag of post.tags; track tag) {
+                    <span class="tag">{{ tag }}</span>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="post-meta">
+                <time class="post-date" [attr.datetime]="post.date">
+                  <ui-icon name="calendar" [size]="12" />
+                  {{ formatDate(post.date) }}
+                </time>
+                <span class="post-reading-time">
+                  <ui-icon name="clock" [size]="12" />
+                  {{ post.readingTime }}
+                </span>
+              </div>
+              <h2 class="post-title">{{ post.title }}</h2>
+              <p class="post-excerpt">{{ post.excerpt }}</p>
+              <div class="post-tags">
+                @for (tag of post.tags; track tag) {
+                  <span class="tag">{{ tag }}</span>
+                }
+              </div>
+            }
           </ui-glass-card>
         </a>
       }

@@ -17,7 +17,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/e2e',
   // Skip visual.spec from the default suite — it owns its own snapshot
-  // baselines under tests/e2e/__screenshots__/ and is opt-in via
+  // baselines under tests/e2e/visual.spec.ts-snapshots/ and is opt-in via
   // `npm run e2e:visual`. Keeps the day-to-day suite hermetic.
   testIgnore: process.env['VISUAL_REGRESSION'] === '1' ? [] : ['**/visual.spec.ts'],
   fullyParallel: true,

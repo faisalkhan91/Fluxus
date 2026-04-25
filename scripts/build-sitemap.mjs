@@ -42,15 +42,33 @@ function urlEntry(loc, priority, lastmod) {
   return `  <url><loc>${escape(loc)}</loc>${lastmodTag}<priority>${priority}</priority></url>`;
 }
 
+// Tag-archive slug helper (must match `slugify` in src/app/shared/utils/string.utils.ts).
+function tagSlug(value) {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 const today = new Date().toISOString().slice(0, 10);
+const livePosts = posts.filter((p) => !p.draft);
+
+// Unique tag slugs across all non-draft posts (matches the prerender list).
+const tagSlugs = Array.from(
+  new Set(livePosts.flatMap((p) => (p.tags ?? []).map(tagSlug))),
+)
+  .filter(Boolean)
+  .sort();
 
 const entries = [
   ...STATIC_ROUTES.map(([path, priority]) =>
     urlEntry(`${SITE_URL}${path === '/' ? '/' : path}`, priority, today),
   ),
-  ...posts
-    .filter((p) => !p.draft)
-    .map((p) => urlEntry(`${SITE_URL}/blog/${p.slug}`, '0.8', p.date)),
+  ...livePosts.map((p) => urlEntry(`${SITE_URL}/blog/${p.slug}`, '0.8', p.date)),
+  ...tagSlugs.map((slug) => urlEntry(`${SITE_URL}/blog/tag/${slug}`, '0.4', today)),
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -68,5 +86,5 @@ try {
 
 await writeFile(DIST_SITEMAP, xml, 'utf-8');
 console.log(
-  `Wrote ${DIST_SITEMAP} with ${STATIC_ROUTES.length} routes + ${posts.filter((p) => !p.draft).length} blog posts.`,
+  `Wrote ${DIST_SITEMAP} with ${STATIC_ROUTES.length} routes + ${livePosts.length} blog posts + ${tagSlugs.length} tag archives.`,
 );

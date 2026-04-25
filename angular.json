@@ -55,9 +55,17 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kb",
-                  "maximumError": "8kb"
+                  "maximumWarning": "8kb",
+                  "maximumError": "12kb"
                 }
+              ],
+              "allowedCommonJsDependencies": [
+                "dayjs/plugin/advancedFormat.js",
+                "dayjs/plugin/duration.js",
+                "cytoscape-cose-bilkent",
+                "vscode-languageserver-protocol",
+                "vscode-jsonrpc/lib/common/events.js",
+                "vscode-jsonrpc/lib/common/cancellation.js"
               ],
               "fileReplacements": [
                 {

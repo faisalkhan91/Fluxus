@@ -32,18 +32,27 @@ function escape(value) {
     .replace(/"/g, '&quot;');
 }
 
+/**
+ * Date-only post strings (`YYYY-MM-DD`) get pinned to **noon UTC** so the
+ * published timestamp falls on the author-intended calendar day for every
+ * feed reader timezone. UTC midnight would print the previous day in the
+ * Americas; local midnight on the build host is non-deterministic.
+ */
+function postIsoTimestamp(date) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date)) return `${date}T12:00:00Z`;
+  return new Date(date).toISOString();
+}
+
 const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'))
   .filter((p) => !p.draft)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-const updated = posts[0]?.date
-  ? new Date(posts[0].date).toISOString()
-  : new Date().toISOString();
+const updated = posts[0]?.date ? postIsoTimestamp(posts[0].date) : new Date().toISOString();
 
 const entries = posts
   .map((post) => {
     const url = `${SITE_URL}/blog/${post.slug}`;
-    const published = new Date(post.date).toISOString();
+    const published = postIsoTimestamp(post.date);
     return `  <entry>
     <title>${escape(post.title)}</title>
     <link href="${url}"/>

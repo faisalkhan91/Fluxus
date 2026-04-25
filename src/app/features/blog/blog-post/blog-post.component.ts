@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  Injector,
   inject,
   signal,
   computed,
@@ -15,22 +16,56 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { httpResource } from '@angular/common/http';
+import { DOCUMENT, NgOptimizedImage } from '@angular/common';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
+import { GlassCardComponent } from '../../../ui/glass-card/glass-card.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
 import { TrustedHtmlPipe } from '../../../shared/pipes/trusted-html.pipe';
 import { BlogService } from '../../../core/services/blog.service';
 import { MarkdownService } from '../../../core/services/markdown.service';
 import { ProfileDataService } from '../../../core/services/profile-data.service';
+import { ErrorToastService } from '../../../core/services/error-toast.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
 import { environment } from '../../../../environments/environment';
 import { slugify } from '../../../shared/utils/string.utils';
-import { computeReadingTime, formatPostDate } from '../../../shared/utils/blog.utils';
+import { formatPostDate } from '../../../shared/utils/blog.utils';
+import { IMAGE_DIMS } from '../../../core/services/image-dims.generated';
+
+/**
+ * Drop the markdown body's leading `# Heading` line so the rendered HTML
+ * doesn't duplicate the post title that the template already renders in
+ * `.post-header h1`. Only the first non-empty line is considered, and the
+ * line must match `^#\s+` (a single `#` followed by whitespace — i.e. an
+ * H1). Any trailing CR (Windows line endings) is tolerated. Lower-depth
+ * leading headings (`##`, `###`, ...) and mid-document H1s are preserved.
+ */
+function stripLeadingH1(md: string): string {
+  const lines = md.split(/\r?\n/);
+  let i = 0;
+  while (i < lines.length && lines[i].trim() === '') i++;
+  if (i >= lines.length) return md;
+  // Strict match: exactly one `#` then whitespace. `##`, `###`, ... fall
+  // through unchanged.
+  if (!/^#\s+/.test(lines[i])) return md;
+  // Drop the heading line plus a single trailing blank line so paragraph
+  // spacing matches what the markdown originally implied.
+  let j = i + 1;
+  if (j < lines.length && lines[j].trim() === '') j++;
+  return [...lines.slice(0, i), ...lines.slice(j)].join('\n');
+}
 
 @Component({
   selector: 'app-blog-post',
   templateUrl: './blog-post.component.html',
   styleUrl: './blog-post.component.css',
-  imports: [GlassPanelComponent, IconComponent, RouterLink, TrustedHtmlPipe],
+  imports: [
+    GlassPanelComponent,
+    GlassCardComponent,
+    IconComponent,
+    NgOptimizedImage,
+    RouterLink,
+    TrustedHtmlPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogPostComponent {
@@ -40,10 +75,14 @@ export class BlogPostComponent {
   // marked + highlight.js graph only ships with this lazy route chunk.
   private md = inject(MarkdownService);
   protected profile = inject(ProfileDataService);
+  private toasts = inject(ErrorToastService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
+  // Captured so the afterNextRender effect can register an effect of its own.
+  private injector = inject(Injector);
   private metaService = inject(Meta);
   private titleService = inject(Title);
+  private document = inject(DOCUMENT);
 
   protected slug = toSignal(
     this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')),
@@ -63,12 +102,38 @@ export class BlogPostComponent {
 
   readonly meta = computed<BlogPost | undefined>(() => {
     const slug = this.slug();
-    return this.blog.posts().find((p) => p.slug === slug);
+    // Use `allPosts` (drafts included) so a direct draft URL still resolves
+    // to its meta — drafts are excluded from list/feed/sitemap by `posts()`,
+    // not from individual page rendering.
+    return this.blog.allPosts().find((p) => p.slug === slug);
   });
 
-  readonly content = computed(() => {
+  /**
+   * Combined rendered HTML + extracted TOC, recomputed when the body changes.
+   *
+   * The leading `# Title` line of every post markdown file is stripped before
+   * parsing because the post title is now rendered explicitly in
+   * `.post-header h1` above the cover image — keeping the markdown's H1 here
+   * would emit a duplicate heading inside `.prose`. Only the first non-empty
+   * line is examined and only when it matches `^#\s+`, so mid-document H1
+   * usage (rare, but legal) is preserved.
+   */
+  private readonly rendered = computed(() => {
     const raw = this.postBody.value();
-    return raw ? this.md.render(raw) : '';
+    if (!raw) return { html: '', toc: [] };
+    return this.md.renderWithToc(stripLeadingH1(raw));
+  });
+
+  readonly content = computed(() => this.rendered().html);
+
+  /**
+   * Visible only when the post has at least 4 h2-or-h3 headings — short posts
+   * don't benefit from a TOC. The CSS additionally hides it on viewports
+   * narrower than 1280 px.
+   */
+  readonly toc = computed(() => {
+    const list = this.rendered().toc;
+    return list.length >= 4 ? list : [];
   });
 
   readonly loading = computed(() => this.postBody.isLoading());
@@ -77,7 +142,7 @@ export class BlogPostComponent {
     if (this.postBody.error()) return 'Failed to load blog post';
     // Wait until the posts manifest has loaded before deciding "not found".
     if (this.blog.loading() || this.postBody.isLoading()) return null;
-    if (this.slug() && this.blog.posts().length > 0 && !this.meta()) {
+    if (this.slug() && this.blog.allPosts().length > 0 && !this.meta()) {
       return 'Post not found';
     }
     return null;
@@ -93,12 +158,39 @@ export class BlogPostComponent {
     return !!(adj.prev || adj.next);
   });
 
-  /** Auto-derived reading time (when body is loaded), falling back to manifest. */
-  readonly readingTime = computed(() => {
-    const raw = this.postBody.value();
-    if (raw) return computeReadingTime(raw);
-    return this.meta()?.readingTime ?? '';
+  /** Up to 3 posts that share the most tags with this one. */
+  readonly relatedPosts = computed(() => {
+    const slug = this.slug();
+    return slug ? this.blog.getRelatedPosts(slug, 3) : [];
   });
+
+  /** Series metadata for the current post when it belongs to one. */
+  readonly series = computed(() => {
+    const slug = this.slug();
+    return slug ? this.blog.getSeries(slug) : undefined;
+  });
+
+  /**
+   * Intrinsic dimensions for the cover image, looked up from the build-time
+   * IMAGE_DIMS map so the hero banner doesn't trigger CLS while it loads.
+   * Falls back to a 16:9 placeholder so the layout still reserves space.
+   */
+  readonly coverDims = computed(() => {
+    const cover = this.meta()?.cover;
+    if (!cover) return { w: 1600, h: 900 };
+    if (/^https?:/i.test(cover)) return { w: 1600, h: 900 };
+    const key = cover.replace(/^\.?\/?/, '');
+    const dim = IMAGE_DIMS[key];
+    return dim ? { w: dim.w, h: dim.h } : { w: 1600, h: 900 };
+  });
+
+  /**
+   * Reading time read straight from the manifest. The build script
+   * `scripts/sync-reading-times.mjs` recomputes this from the markdown body
+   * before every prod build (and is exposed as `npm run sync:reading-times`),
+   * so manifest + prerender + SPA always agree.
+   */
+  readonly readingTime = computed(() => this.meta()?.readingTime ?? '');
 
   /** Locale-aware date label, e.g. "April 12, 2026". */
   readonly formattedDate = computed(() => {
@@ -126,18 +218,92 @@ export class BlogPostComponent {
 
   readonly linkCopied = signal(false);
 
+  /**
+   * Mirrors `'share' in navigator` so the template can render the native
+   * Share button only on platforms that support the Web Share API. Reads
+   * the value lazily on the browser only — `navigator` is undefined under
+   * SSR, so the button is omitted from the prerendered HTML and Angular
+   * hydrates it on first paint without a layout shift (the share row is
+   * a flex container with `flex-wrap`, so adding a button at the start
+   * doesn't affect siblings).
+   */
+  readonly canWebShare = computed(() => {
+    if (typeof navigator === 'undefined') return false;
+    return typeof navigator.share === 'function';
+  });
+
+  /**
+   * Invokes the native Share sheet (iOS/Android, Edge/Chrome on Windows,
+   * Safari on macOS). Aborted shares (user cancelled) are silent — they
+   * raise an `AbortError` we intentionally swallow. Any other failure
+   * shows a toast so the user knows the action didn't take effect.
+   */
+  protected async shareViaWebShare(): Promise<void> {
+    const post = this.meta();
+    const slug = this.slug();
+    if (!post || !slug) return;
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') return;
+    try {
+      await navigator.share({
+        title: post.title,
+        text: post.excerpt,
+        url: `${environment.siteUrl}/blog/${slug}`,
+      });
+    } catch (err) {
+      // AbortError is the user dismissing the share sheet — not an error.
+      if ((err as { name?: string })?.name === 'AbortError') return;
+      this.toasts.push({
+        title: 'Could not open the share sheet',
+        detail: 'Use one of the other share options below instead.',
+      });
+    }
+  }
+
   protected async copyShareLink(): Promise<void> {
     const slug = this.slug();
     if (!slug) return;
     const url = `${environment.siteUrl}/blog/${slug}`;
-    try {
-      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        this.linkCopied.set(true);
-        setTimeout(() => this.linkCopied.set(false), 1500);
+
+    if (await this.copyToClipboard(url)) {
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 1500);
+    } else {
+      this.toasts.push({
+        title: 'Could not copy the link',
+        detail: 'Your browser blocked clipboard access — try copying the URL from the address bar.',
+      });
+    }
+  }
+
+  /**
+   * Copies `text` to the clipboard, returning `true` on success.
+   * Falls back to the legacy `<textarea>` + `document.execCommand('copy')`
+   * pattern on insecure contexts / older browsers where
+   * `navigator.clipboard.writeText` rejects or is missing.
+   */
+  private async copyToClipboard(text: string): Promise<boolean> {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Permissions / insecure context — try the fallback.
       }
+    }
+    if (typeof document === 'undefined') return false;
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'absolute';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return ok;
     } catch {
-      // best-effort
+      return false;
     }
   }
 
@@ -145,7 +311,14 @@ export class BlogPostComponent {
     return slugify(tag);
   }
 
+  protected formatDate(iso: string): string {
+    return formatPostDate(iso);
+  }
+
   readonly scrollProgress = signal(0);
+
+  /** Integer 0-100 for the reading bar's `aria-valuenow`. */
+  readonly readingProgressLabel = computed(() => Math.round(this.scrollProgress()));
 
   constructor() {
     // Update <title> + meta tags as the post resolves.
@@ -154,14 +327,45 @@ export class BlogPostComponent {
       if (post) untracked(() => this.updateMetaTags(post));
     });
 
+    // Sync `<link rel="prev|next">` to the current post's series neighbours.
+    // Tracks `series()` separately so the links update on slug navigation
+    // and disappear (or shift) the moment the user moves through the series.
+    effect(() => {
+      const series = this.series();
+      const slug = this.slug();
+      untracked(() => this.updateSeriesLinkRels(slug, series));
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.removeLinkRel('prev');
+      this.removeLinkRel('next');
+    });
+
     afterNextRender(() => {
       const root = this.elRef.nativeElement as HTMLElement;
       const postLayout = root.querySelector('.post-layout') as HTMLElement | null;
       if (!postLayout) return;
 
+      // Pick the element that is _actually_ scrolling. The shell gives
+      // `<main class="content">` `overflow-y: auto`, but the column-flex
+      // layout (`:host { min-height: 100vh }` + children with `flex: 1`)
+      // lets it grow with its content instead of constraining it — so
+      // under normal post lengths the document root is what scrolls and
+      // `.content` never fires a scroll event. We only treat `.content`
+      // as the scroller if it actually has a scrollable overflow; otherwise
+      // we fall through to the document root. The matching CSS path uses
+      // `animation-timeline: scroll(root)` for the same reason.
+      const contentEl = postLayout.closest('main.content') as HTMLElement | null;
+      const docScroller =
+        (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
+      const scroller =
+        contentEl && contentEl.scrollHeight - contentEl.clientHeight > 1
+          ? contentEl
+          : docScroller;
+
       // Skip the JS scroll listener entirely on browsers that support
       // CSS scroll-driven animations — the `.reading-progress` bar is then
-      // animated via `animation-timeline: scroll(root)` on the compositor
+      // animated via `animation-timeline: scroll(nearest)` on the compositor
       // (see styles.css), which is cheaper and always smooth.
       const cssScrollDriven =
         typeof CSS !== 'undefined' &&
@@ -169,46 +373,270 @@ export class BlogPostComponent {
         CSS.supports('animation-timeline: scroll()');
 
       if (!cssScrollDriven) {
-        const onScroll = () => {
-          const rect = postLayout.getBoundingClientRect();
-          const total = postLayout.offsetHeight - window.innerHeight;
+        // rAF-throttle the progress recompute. Scroll fires faster than the
+        // compositor frame on trackpads/wheels, so coalescing to one update
+        // per animation frame keeps INP healthy without losing fidelity —
+        // the eye can't perceive the bar moving more often than 60 Hz.
+        let rafHandle = 0;
+        let scheduled = false;
+        const recompute = () => {
+          scheduled = false;
+          rafHandle = 0;
+          const total = scroller.scrollHeight - scroller.clientHeight;
           if (total <= 0) {
             this.scrollProgress.set(100);
             return;
           }
-          const scrolled = Math.max(0, -rect.top);
-          this.scrollProgress.set(Math.min(100, (scrolled / total) * 100));
+          this.scrollProgress.set(Math.min(100, (scroller.scrollTop / total) * 100));
+        };
+        // When the document is the scroller, scroll events fire on `window`
+        // (or `document`), not on `document.documentElement` — listening on
+        // the element itself would never receive them.
+        const target: EventTarget = scroller === docScroller ? window : scroller;
+        const onScroll = () => {
+          if (scheduled) return;
+          scheduled = true;
+          rafHandle = requestAnimationFrame(recompute);
         };
 
-        window.addEventListener('scroll', onScroll, { passive: true });
-        this.destroyRef.onDestroy(() => window.removeEventListener('scroll', onScroll));
+        // `passive: true` lets the browser keep scroll on the compositor
+        // thread; without it Chrome treats the listener as a potential
+        // preventDefault() and synchronises scrolling with the main thread.
+        target.addEventListener('scroll', onScroll, { passive: true });
+        // Seed the bar so it reflects any initial scroll restoration
+        // (e.g. browser back-forward navigation lands you mid-post).
+        recompute();
+        this.destroyRef.onDestroy(() => {
+          target.removeEventListener('scroll', onScroll);
+          if (rafHandle) cancelAnimationFrame(rafHandle);
+        });
       }
 
-      // One delegated click listener for every code-block "Copy" button. The
-      // markup is generated by MarkdownService — see the `code` renderer.
+      // One delegated click listener for every code-block "Copy" button and
+      // every heading permalink anchor. The markup for both is generated by
+      // MarkdownService — see the `code` and `heading` renderer overrides.
       const onClick = async (event: MouseEvent) => {
         const target = event.target as HTMLElement | null;
-        const button = target?.closest('.copy-btn') as HTMLButtonElement | null;
+        if (!target) return;
+
+        // 1. Heading permalink anchors. The renderer emits `href="#id"`
+        //    plus `data-anchor-id="id"`; we hijack the click to update the
+        //    URL bar without bouncing the reader to "/" via <base href>.
+        const anchor = target.closest('.anchor[data-anchor-id]') as HTMLAnchorElement | null;
+        if (anchor) {
+          await this.handleAnchorClick(event, anchor);
+          return;
+        }
+
+        // 2. Code-block "Copy" buttons.
+        const button = target.closest('.copy-btn') as HTMLButtonElement | null;
         if (!button) return;
         const code = button.parentElement?.querySelector('code')?.textContent ?? '';
-        try {
-          if (navigator.clipboard?.writeText) {
-            await navigator.clipboard.writeText(code);
-          }
-          const original = button.textContent;
-          button.textContent = 'Copied!';
-          button.classList.add('copy-btn--copied');
-          setTimeout(() => {
-            button.textContent = original;
-            button.classList.remove('copy-btn--copied');
-          }, 1500);
-        } catch {
-          // Best-effort; older browsers / blocked clipboard just no-op.
+        const ok = await this.copyToClipboard(code);
+        if (!ok) {
+          this.toasts.push({
+            title: 'Could not copy the snippet',
+            detail: 'Your browser blocked clipboard access. Select the code manually instead.',
+          });
+          return;
         }
+        const originalText = button.textContent;
+        const originalLabel = button.getAttribute('aria-label');
+        button.textContent = 'Copied!';
+        button.setAttribute('aria-label', 'Code copied to clipboard');
+        button.classList.add('copy-btn--copied');
+        setTimeout(() => {
+          button.textContent = originalText;
+          if (originalLabel !== null) button.setAttribute('aria-label', originalLabel);
+          button.classList.remove('copy-btn--copied');
+        }, 1500);
       };
       postLayout.addEventListener('click', onClick);
       this.destroyRef.onDestroy(() => postLayout.removeEventListener('click', onClick));
+
+      // Rewrite every permalink anchor's href to the post's absolute URL
+      // so right-click "Copy link" yields a useful shareable URL. Re-runs
+      // on every content swap so navigated-to posts get fresh hrefs.
+      this.rewriteAnchorHrefs(postLayout);
+      effect(
+        () => {
+          this.content();
+          untracked(() => this.rewriteAnchorHrefs(postLayout));
+        },
+        { injector: this.injector },
+      );
+
+      // Lazy-render any ```mermaid fences. The mermaid lib is heavy (~500
+      // KB) so it's dynamically imported only when a post actually contains
+      // a diagram — non-mermaid posts pay nothing. A small effect re-runs
+      // the scan whenever content() changes (slug navigation). The render
+      // itself is deferred via requestIdleCallback so the LCP frame and
+      // first INP-eligible interactions aren't delayed by mermaid parsing.
+      this.scheduleMermaidRender(postLayout);
+      effect(
+        () => {
+          this.content();
+          untracked(() => this.scheduleMermaidRender(postLayout));
+        },
+        { injector: this.injector },
+      );
+
     });
+  }
+
+  /**
+   * Rewrite every `[data-anchor-id]` permalink emitted by `MarkdownService`
+   * so its `href` resolves against the current post URL instead of the
+   * `<base href="/">` site root. Without this, clicking `<a href="#x">` on
+   * a post would navigate the reader to `/#x` (the home route) and lose
+   * their place. The data attribute is the stable identifier; the href
+   * is purely cosmetic for "copy link as".
+   */
+  private rewriteAnchorHrefs(root: HTMLElement): void {
+    const slug = this.slug();
+    if (!slug) return;
+    const base = `/blog/${slug}`;
+    const anchors = root.querySelectorAll<HTMLAnchorElement>('.anchor[data-anchor-id]');
+    anchors.forEach((a) => {
+      const id = a.getAttribute('data-anchor-id') ?? '';
+      if (!id) return;
+      a.setAttribute('href', `${base}#${id}`);
+    });
+  }
+
+  /**
+   * Click handler for permalink anchors. Updates the URL hash via
+   * `history.replaceState` (so back/forward isn't polluted), copies the
+   * absolute URL to the clipboard, and pulses a toast to confirm the
+   * copy succeeded. Modifier-clicks fall through to the browser so
+   * "open in new tab" / "copy link" continue to work as expected.
+   */
+  private async handleAnchorClick(event: MouseEvent, anchor: HTMLAnchorElement): Promise<void> {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    const id = anchor.getAttribute('data-anchor-id') ?? '';
+    const slug = this.slug();
+    if (!id || !slug) return;
+    const path = `/blog/${slug}#${id}`;
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(window.history.state, '', path);
+      const target = this.document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Move keyboard focus to the heading itself so the next Tab
+        // continues from the section the reader just navigated to.
+        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+        target.focus({ preventScroll: true });
+      }
+    }
+    if (await this.copyToClipboard(`${environment.siteUrl}${path}`)) {
+      this.toasts.push({
+        title: 'Section link copied',
+        detail: 'A link to this section is now on your clipboard.',
+      });
+    }
+  }
+
+  /**
+   * Defer the actual mermaid render until the browser is idle. Falls back
+   * to a 200 ms `setTimeout` on Safari (which still ships no
+   * `requestIdleCallback`) so the import never blocks the first paint or
+   * the first input.
+   */
+  private scheduleMermaidRender(root: HTMLElement): void {
+    if (typeof window === 'undefined') return;
+    type IdleWindow = Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+    };
+    const w = window as IdleWindow;
+    const run = () => void this.renderMermaidIfNeeded(root);
+    if (typeof w.requestIdleCallback === 'function') {
+      w.requestIdleCallback(run, { timeout: 1500 });
+    } else {
+      setTimeout(run, 200);
+    }
+  }
+
+  /**
+   * Finds every `.mermaid-source` placeholder emitted by MarkdownService
+   * and replaces it with rendered SVG via the mermaid lib. Lazy import +
+   * one initialisation per page; no-ops on the server.
+   */
+  private async renderMermaidIfNeeded(root: HTMLElement): Promise<void> {
+    if (typeof window === 'undefined') return;
+    const placeholders = Array.from(
+      root.querySelectorAll<HTMLElement>('.mermaid-source[data-mermaid-source]'),
+    );
+    if (placeholders.length === 0) return;
+    try {
+      const mermaid = (await import('mermaid')).default;
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+        securityLevel: 'strict',
+      });
+      let id = 0;
+      for (const node of placeholders) {
+        const source = node.textContent ?? '';
+        try {
+          const { svg } = await mermaid.render(`mermaid-${Date.now()}-${id++}`, source);
+          const wrapper = document.createElement('figure');
+          wrapper.className = 'mermaid';
+          wrapper.innerHTML = svg;
+          node.replaceWith(wrapper);
+        } catch {
+          // On failure, leave the source visible so the reader can still see
+          // the diagram intent (matches the no-JS prerender behaviour).
+          node.removeAttribute('data-mermaid-source');
+        }
+      }
+    } catch {
+      // mermaid lib failed to load — leave placeholders intact.
+    }
+  }
+
+  /**
+   * Mirror the post's series neighbours onto `<link rel="prev|next">` in
+   * the document head. Search engines and reading-mode UIs use these
+   * hints to stitch a multi-part article into a single logical document.
+   * Renders nothing for one-off posts and clears stale entries the moment
+   * the route changes.
+   */
+  private updateSeriesLinkRels(
+    slug: string,
+    series: { posts: BlogPost[]; index: number } | undefined,
+  ): void {
+    if (!slug || !series || series.posts.length < 2) {
+      this.removeLinkRel('prev');
+      this.removeLinkRel('next');
+      return;
+    }
+    const prev = series.posts[series.index - 1];
+    const next = series.posts[series.index + 1];
+    this.setLinkRel('prev', prev ? `${environment.siteUrl}/blog/${prev.slug}` : null);
+    this.setLinkRel('next', next ? `${environment.siteUrl}/blog/${next.slug}` : null);
+  }
+
+  /** Upsert a `<link rel="…">` entry, or remove it when `href` is null. */
+  private setLinkRel(rel: 'prev' | 'next', href: string | null): void {
+    if (!href) {
+      this.removeLinkRel(rel);
+      return;
+    }
+    const head = this.document.head;
+    let link = head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+    if (!link) {
+      link = this.document.createElement('link');
+      link.rel = rel;
+      head.appendChild(link);
+    }
+    link.href = href;
+  }
+
+  private removeLinkRel(rel: 'prev' | 'next'): void {
+    this.document.head.querySelector(`link[rel="${rel}"]`)?.remove();
   }
 
   private updateMetaTags(post: BlogPost): void {

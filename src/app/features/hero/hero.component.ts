@@ -5,6 +5,7 @@ import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
 import { IconComponent } from '../../ui/icon/icon.component';
 import { ProfileDataService } from '../../core/services/profile-data.service';
 import { BlogService } from '../../core/services/blog.service';
+import { formatPostDate } from '../../shared/utils/blog.utils';
 
 @Component({
   selector: 'app-hero',
@@ -20,5 +21,9 @@ export class HeroComponent {
 
   navigateTo(path: string): void {
     this.router.navigate([path]);
+  }
+
+  protected formatDate(iso: string): string {
+    return formatPostDate(iso);
   }
 }
