@@ -1,0 +1,48 @@
+name: Smoke
+
+# Decoupled from the release pipeline so we can verify the deployed revision
+# AFTER the GitOps PR is merged and Argo / Flux finishes rolling pods, rather
+# than racing the rollout. Trigger manually after the GitOps PR lands; the
+# optional schedule turns it into a continuous liveness probe.
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily 14:07 UTC — surfaces a stale or broken deploy without waiting
+    # for the next release. Cron deliberately offset to avoid GH peak.
+    - cron: '7 14 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  healthz:
+    name: Probe /healthz
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Skip cleanly when no smoke target is configured (e.g. forks).
+    if: ${{ vars.SMOKE_URL != '' }}
+
+    steps:
+      - name: Poll until healthy or timeout
+        env:
+          SMOKE_URL: ${{ vars.SMOKE_URL }}
+        run: |
+          set -euo pipefail
+          deadline=$(( $(date +%s) + 600 ))
+          attempt=0
+          until [ "$(date +%s)" -ge "$deadline" ]; do
+            attempt=$((attempt + 1))
+            status=$(curl -sk -o /dev/null -w '%{http_code}' "${SMOKE_URL%/}/healthz" || echo "000")
+            echo "attempt ${attempt}: /healthz -> ${status}"
+            if [ "$status" = "200" ]; then
+              echo "Smoke check passed."
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::Smoke check timed out after 10 minutes waiting for ${SMOKE_URL%/}/healthz"
+          exit 1

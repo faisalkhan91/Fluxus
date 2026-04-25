@@ -1,7 +1,11 @@
 # syntax=docker/dockerfile:1
 
-# Stage 1: Build the Angular SSG application
-FROM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS build
+# Stage 1: Build the Angular SSG application.
+# `--platform=$BUILDPLATFORM` keeps the Node build native to the runner
+# (e.g. amd64) even when the final image is requested for arm64 — the
+# output is static HTML/JS/CSS so it's arch-independent and we'd otherwise
+# be running `npm` under QEMU emulation, which adds many minutes per build.
+FROM --platform=$BUILDPLATFORM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS build
 WORKDIR /app
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci

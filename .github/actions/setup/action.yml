@@ -1,0 +1,23 @@
+name: Setup Node and dependencies
+description: Set up Node from .nvmrc and install npm dependencies via the lockfile. Assumes the repo is already checked out.
+
+# This composite owns the per-job boilerplate so individual jobs can declare
+# only the work they're actually doing. Node version comes from .nvmrc so
+# local dev, Docker, and CI all read from the same source of truth.
+#
+# Checkout is intentionally NOT included: a local composite action's
+# action.yml has to exist in the workspace before the runner can resolve
+# `uses: ./.github/actions/setup`, so callers must run actions/checkout
+# first.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+
+    - name: Install dependencies
+      run: npm ci
+      shell: bash
