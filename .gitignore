@@ -51,3 +51,8 @@ Thumbs.db
 /playwright-report/
 /test-results/
 /.playwright/
+
+# Ad-hoc Atom feed spot-check — `node scripts/build-feed.mjs feed.xml`
+# drops a copy here so you can open it in a browser without running the
+# full prod build pipeline. Real feed.xml ships from dist/ at deploy.
+/feed.xml

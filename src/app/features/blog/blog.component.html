@@ -6,15 +6,27 @@
       decoration="// posts.rss"
       [level]="1"
     />
+    <!--
+      `rel="alternate"` + `type="application/atom+xml"` mirror the
+      `<link>` discovery tag in src/index.html so feed-reader browser
+      extensions also recognise this visible link as the feed entry
+      point. `target="_blank"` opens the raw XML in a fresh tab so the
+      reader keeps their place on the blog index — clicking through to
+      a wall of XML in the same tab feels like a navigation mistake.
+      `rel="noopener"` keeps the new window from getting a window.opener
+      handle back to us (defence in depth even though the target is
+      same-origin).
+    -->
     <a
       class="subscribe-link"
       href="/feed.xml"
-      rel="alternate"
+      rel="alternate noopener"
       type="application/atom+xml"
-      title="Subscribe via Atom feed reader"
+      target="_blank"
+      title="Subscribe via your feed reader"
     >
       <ui-icon name="rss" [size]="14" />
-      <span>Subscribe (Atom)</span>
+      <span>Subscribe</span>
     </a>
   </header>
 
