@@ -2,12 +2,22 @@ name: Publish image
 
 on:
   push:
+    # Tag pushes always run a release-shaped publish (full semver tag set).
     tags:
       - 'v*'
+    # Pushes to main run a content-shaped publish ONLY when prerendered
+    # blog content changes — the routes in src/app/app.routes.server.ts
+    # are RenderMode.Prerender, so a new post needs a new image to ship.
+    # `paths:` only applies to the branch trigger; tag pushes are unaffected.
+    branches: [main]
+    paths:
+      - 'src/assets/blog/**'
 
+# Don't cancel an in-progress publish: it's already minting an image and
+# opening a Homelab GitOps PR. A second push should queue, not abort.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   REGISTRY: ghcr.io
@@ -29,6 +39,9 @@ jobs:
     outputs:
       image: ${{ steps.image-ref.outputs.ref }}
       version: ${{ steps.image-ref.outputs.version }}
+      kind: ${{ steps.ctx.outputs.kind }}
+      gitops_branch: ${{ steps.ctx.outputs.gitops-branch }}
+      gitops_title: ${{ steps.ctx.outputs.gitops-title }}
       has_homelab_creds: ${{ steps.gate.outputs.has_homelab_creds }}
 
     steps:
@@ -44,6 +57,28 @@ jobs:
             echo "has_homelab_creds=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_homelab_creds=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Single decision point: tag pushes -> release-shaped publish (semver),
+      # branch pushes -> content-shaped publish (content-<sha>). Every
+      # downstream step (metadata-action, image-ref, gitops-bump) reads
+      # from these outputs so the rest of the workflow stays linear.
+      - name: Compute publish context
+        id: ctx
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+            echo "kind=release"                                       >> "$GITHUB_OUTPUT"
+            echo "image-tag=${VERSION}"                               >> "$GITHUB_OUTPUT"
+            echo "gitops-branch=gitops/fluxus-${VERSION}"             >> "$GITHUB_OUTPUT"
+            echo "gitops-title=chore(fluxus): release v${VERSION}"    >> "$GITHUB_OUTPUT"
+          else
+            SHORT="${GITHUB_SHA:0:7}"
+            echo "kind=content"                                       >> "$GITHUB_OUTPUT"
+            echo "image-tag=content-${SHORT}"                         >> "$GITHUB_OUTPUT"
+            echo "gitops-branch=gitops/fluxus-content-${SHORT}"       >> "$GITHUB_OUTPUT"
+            echo "gitops-title=content(fluxus): blog update ${SHORT}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout repository
@@ -69,10 +104,14 @@ jobs:
         uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # `type=semver` only fires on tag refs and `type=sha,enable=...`
+          # only fires on branch refs, so each kind of push gets exactly the
+          # right tag set without explicit branching.
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest
+            type=sha,prefix=content-,format=short,enable=${{ github.ref_type == 'branch' }}
 
       - name: Build and push
         id: build
@@ -88,16 +127,21 @@ jobs:
           sbom: true
           provenance: mode=max
 
-      # Pull a stable image reference + version string out of the metadata
-      # so downstream steps (Trivy, GitOps) all agree on what we shipped.
+      # Build a stable image reference using the computed tag explicitly,
+      # rather than `head -n1`-ing meta.outputs.tags (which could pick up
+      # `latest` and confuse downstream Trivy/GitOps). For content
+      # publishes `version` carries `content-<sha>`; for releases it
+      # carries the bare semver. Either way, it's the value the GitOps
+      # `sed` writes into the manifest.
       - name: Resolve image reference
         id: image-ref
+        env:
+          IMAGE_TAG: ${{ steps.ctx.outputs.image-tag }}
         run: |
           set -euo pipefail
-          REF=$(printf '%s\n' "${{ steps.meta.outputs.tags }}" | head -n1)
-          VERSION="${GITHUB_REF_NAME#v}"
-          echo "ref=${REF}" >> "$GITHUB_OUTPUT"
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          IMAGE_NAME_LOWER="$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
+          echo "ref=${REGISTRY}/${IMAGE_NAME_LOWER}:${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${IMAGE_TAG}"                              >> "$GITHUB_OUTPUT"
 
       # Single-pass Trivy: writes SARIF AND gates on HIGH/CRITICAL in one
       # invocation. `limit-severities-for-sarif: true` is what makes the
@@ -184,26 +228,31 @@ jobs:
           yq e '.' fluxus.yaml > /dev/null
           grep -qF "image: ${NEW_IMAGE}" fluxus.yaml
 
-      - name: Open release PR in Homelab
+      # Branch / title / body / labels all flow from the `ctx` outputs in
+      # the upstream job, so this step doesn't care whether it's shipping a
+      # release or a blog update — the surrounding text adapts.
+      - name: Open GitOps PR in Homelab
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           path: Homelab
           token: ${{ steps.app-token.outputs.token || secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
-          branch: gitops/fluxus-${{ needs.build-and-push.outputs.version }}
+          branch: ${{ needs.build-and-push.outputs.gitops_branch }}
           base: main
-          commit-message: |
-            chore(fluxus): release v${{ needs.build-and-push.outputs.version }}
-          title: 'chore(fluxus): release v${{ needs.build-and-push.outputs.version }}'
+          commit-message: ${{ needs.build-and-push.outputs.gitops_title }}
+          title: ${{ needs.build-and-push.outputs.gitops_title }}
           body: |
-            Automated bump from [Fluxus tag v${{ needs.build-and-push.outputs.version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ needs.build-and-push.outputs.version }}).
+            ${{ needs.build-and-push.outputs.kind == 'release'
+                 && format('Automated bump from [Fluxus tag v{0}]({1}/{2}/releases/tag/v{0}).', needs.build-and-push.outputs.version, github.server_url, github.repository)
+                 || format('Automated bump from [Fluxus commit {3}]({1}/{2}/commit/{0}) (blog content).', github.sha, github.server_url, github.repository, needs.build-and-push.outputs.version) }}
 
             - Image: `${{ needs.build-and-push.outputs.image }}`
             - Triggered by: ${{ github.actor }}
             - Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Merge to let Argo / Flux roll the new image. Close the PR to abort the release.
+            Merge to let Argo / Flux roll the new image. Close the PR to abort.
           delete-branch: true
           sign-commits: true
           labels: |
             gitops
             fluxus
+            ${{ needs.build-and-push.outputs.kind }}
