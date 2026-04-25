@@ -74,44 +74,23 @@ describe('ShellComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show sidebar when showSidebar is true', () => {
+  // Chrome elements render unconditionally so the prerendered HTML is the
+  // same for every viewport. CSS @media queries handle visibility, which the
+  // Playwright responsive specs cover end-to-end.
+  it('should render the sidebar unconditionally', () => {
     expect(el.querySelector('ui-sidebar')).toBeTruthy();
   });
 
-  it('should hide sidebar when showSidebar is false', () => {
-    mockMedia.showSidebar.set(false);
-    fixture.detectChanges();
-    expect(el.querySelector('ui-sidebar')).toBeNull();
-  });
-
-  it('should show editor tab bar when showSidebar is true', () => {
+  it('should render the editor tab bar unconditionally', () => {
     expect(el.querySelector('ui-editor-tab-bar')).toBeTruthy();
   });
 
-  it('should hide editor tab bar when showSidebar is false', () => {
-    mockMedia.showSidebar.set(false);
-    fixture.detectChanges();
-    expect(el.querySelector('ui-editor-tab-bar')).toBeNull();
-  });
-
-  it('should show mobile theme FAB when isMobile is true', () => {
-    mockMedia.isMobile.set(true);
-    fixture.detectChanges();
+  it('should render the mobile theme FAB unconditionally', () => {
     expect(el.querySelector('.mobile-theme-toggle')).toBeTruthy();
   });
 
-  it('should hide mobile theme FAB when isMobile is false', () => {
-    expect(el.querySelector('.mobile-theme-toggle')).toBeNull();
-  });
-
-  it('should show mobile nav pill when showMobileNav is true', () => {
-    mockMedia.showMobileNav.set(true);
-    fixture.detectChanges();
+  it('should render the mobile nav pill unconditionally', () => {
     expect(el.querySelector('ui-mobile-nav-pill')).toBeTruthy();
-  });
-
-  it('should hide mobile nav pill when showMobileNav is false', () => {
-    expect(el.querySelector('ui-mobile-nav-pill')).toBeNull();
   });
 
   it('should call themeService.toggle on onThemeToggle', () => {

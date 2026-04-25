@@ -35,7 +35,7 @@
           [routerLink]="item.route"
           routerLinkActive="active"
           class="nav-item"
-          [attr.aria-label]="item.label"
+          [attr.aria-label]="collapsed() ? item.label : null"
         >
           <ui-icon [name]="item.icon" [size]="18" />
           @if (!collapsed()) {

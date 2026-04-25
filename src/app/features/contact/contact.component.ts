@@ -45,6 +45,16 @@ export class ContactComponent {
   readonly emailCopied = signal(false);
   readonly submitted = computed(() => this.stage() === 'sent');
 
+  /**
+   * Returns the matching error span id for `aria-describedby` only when that
+   * span is currently rendered. Wiring `aria-describedby` to a non-existent
+   * id is an Axe violation (`aria-valid-attr-value`).
+   */
+  protected errorIdFor(field: 'name' | 'email' | 'message'): string | null {
+    const control = this.contactForm.get(field);
+    return control?.invalid && control.touched ? `${field}-error` : null;
+  }
+
   onSubmit(): void {
     if (!this.contactForm.valid) return;
 

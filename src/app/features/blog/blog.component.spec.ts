@@ -25,7 +25,9 @@ const MOCK_POSTS = [
 ];
 
 const mockBlog = {
-  posts: signal(MOCK_POSTS),
+  posts: signal<typeof MOCK_POSTS>(MOCK_POSTS),
+  loading: signal(false),
+  error: signal<string | null>(null),
 };
 
 describe('BlogComponent', () => {
@@ -36,6 +38,8 @@ describe('BlogComponent', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     mockBlog.posts.set(MOCK_POSTS);
+    mockBlog.loading.set(false);
+    mockBlog.error.set(null);
 
     await TestBed.configureTestingModule({
       imports: [BlogComponent],
@@ -76,5 +80,34 @@ describe('BlogComponent', () => {
     fixture.detectChanges();
     const grid = el.querySelector('.post-grid');
     expect(grid).toBeNull();
+  });
+
+  it('should show a loading state while the resource is in flight', () => {
+    mockBlog.posts.set([]);
+    mockBlog.loading.set(true);
+    fixture.detectChanges();
+    const status = el.querySelector('.blog-status');
+    expect(status).toBeTruthy();
+    expect(status?.getAttribute('role')).toBe('status');
+    expect(status?.textContent).toContain('Loading');
+  });
+
+  it('should show an error state when the posts request fails', () => {
+    mockBlog.posts.set([]);
+    mockBlog.loading.set(false);
+    mockBlog.error.set('Failed to load blog posts');
+    fixture.detectChanges();
+    const error = el.querySelector('.blog-status--error');
+    expect(error).toBeTruthy();
+    expect(error?.getAttribute('role')).toBe('alert');
+    expect(error?.textContent).toContain('Failed to load blog posts');
+  });
+
+  it('should show an empty-state message when no posts and no error', () => {
+    mockBlog.posts.set([]);
+    fixture.detectChanges();
+    const status = el.querySelector('.blog-status');
+    expect(status).toBeTruthy();
+    expect(status?.textContent).toContain('No posts published');
   });
 });

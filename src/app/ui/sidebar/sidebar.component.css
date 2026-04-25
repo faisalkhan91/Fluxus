@@ -225,3 +225,31 @@
 .resume-btn--icon {
   padding: var(--space-3);
 }
+
+/*
+  CSS-driven responsive layout (instead of signal-bound classes) so the SSR
+  markup is identical for every viewport. The [collapsed] input keeps applying
+  the .collapsed host class for runtime reactivity; these @media queries
+  handle the SSR/initial-paint window before signals settle on the client.
+*/
+@media (min-width: 768px) and (max-width: 1023px) {
+  :host {
+    width: var(--sidebar-collapsed);
+  }
+
+  .avatar-wrapper {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: var(--space-3);
+  }
+}
+
+@media (max-width: 767px) {
+  :host {
+    display: none;
+  }
+}

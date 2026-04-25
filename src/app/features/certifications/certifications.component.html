@@ -30,6 +30,7 @@
             class="accordion-header"
             (click)="toggleProvider(provider.name)"
             [attr.aria-expanded]="expandedProvider() === provider.name"
+            [attr.aria-controls]="panelId(provider.name)"
           >
             <span class="provider-name">{{ provider.name }}</span>
             <span class="course-count"
@@ -44,7 +45,7 @@
             />
           </button>
           @if (expandedProvider() === provider.name) {
-            <ul class="course-items">
+            <ul class="course-items" [id]="panelId(provider.name)">
               @for (course of provider.courses; track course) {
                 <li>{{ course }}</li>
               }

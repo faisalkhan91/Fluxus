@@ -10,6 +10,14 @@ interface TabData {
   color: string;
 }
 
+const HERO_TAB: EditorTab = {
+  id: 'hero',
+  label: 'Welcome',
+  ext: '.tsx',
+  color: '#61dafb',
+  route: '/',
+};
+
 @Injectable({ providedIn: 'root' })
 export class TabService {
   private router = inject(Router);
@@ -33,7 +41,7 @@ export class TabService {
 
         const tabData = this.resolveTabData();
         if (tabData) {
-          this.openTab(routePath, tabData);
+          this.openTab(routePath, tabData, url);
         }
       });
   }
@@ -48,20 +56,33 @@ export class TabService {
     return { label: data['label'], ext: data['ext'], color: data['color'] };
   }
 
-  private openTab(routePath: string, tabData: TabData): void {
-    const exists = this.tabs().find((t) => t.id === routePath);
-    if (!exists) {
-      this.tabs.update((tabs) => [
-        ...tabs,
-        {
-          id: routePath,
-          label: tabData.label,
-          ext: tabData.ext,
-          color: tabData.color,
-          route: routePath === 'hero' ? '/' : '/' + routePath,
-        },
-      ]);
+  private openTab(routePath: string, tabData: TabData, fullUrl: string): void {
+    // Deep-linking to a non-home route should still pin the Welcome tab on
+    // the left, matching what users expect from a tabbed editor UI.
+    if (this.tabs().length === 0 && routePath !== 'hero') {
+      this.tabs.set([HERO_TAB]);
     }
+
+    // Keep tab.route in sync with the full URL so reselecting (e.g. the
+    // "Blog" tab from inside /blog/some-slug) navigates back to the same
+    // place rather than dropping the slug.
+    const route = routePath === 'hero' ? '/' : fullUrl;
+    const next: EditorTab = {
+      id: routePath,
+      label: tabData.label,
+      ext: tabData.ext,
+      color: tabData.color,
+      route,
+    };
+
+    this.tabs.update((tabs) => {
+      const idx = tabs.findIndex((t) => t.id === routePath);
+      if (idx === -1) return [...tabs, next];
+      // Preserve order; just refresh the route in place.
+      const copy = tabs.slice();
+      copy[idx] = next;
+      return copy;
+    });
     this.activeId.set(routePath);
   }
 

@@ -44,7 +44,8 @@
     }
   </ui-glass-panel>
 
-  @if (adjacentPosts(); as nav) {
+  @if (hasAdjacent()) {
+    @let nav = adjacentPosts();
     <nav class="post-footer-nav" aria-label="Post navigation">
       @if (nav.prev) {
         <a [routerLink]="['/blog', nav.prev.slug]" class="footer-nav-link footer-nav-prev">

@@ -4,6 +4,7 @@ import { SectionHeaderComponent } from '../../ui/section-header/section-header.c
 import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
 import { IconComponent } from '../../ui/icon/icon.component';
 import { CertificationsDataService } from '../../core/services/certifications-data.service';
+import { slugify } from '../../shared/utils/string.utils';
 
 @Component({
   selector: 'app-certifications',
@@ -15,6 +16,11 @@ import { CertificationsDataService } from '../../core/services/certifications-da
 export class CertificationsComponent {
   protected certsData = inject(CertificationsDataService);
   protected expandedProvider = signal<string | null>(null);
+
+  /** Stable id for the courses panel that the accordion button controls. */
+  protected panelId(name: string): string {
+    return `courses-${slugify(name)}`;
+  }
 
   toggleProvider(name: string): void {
     this.expandedProvider.update((current) => (current === name ? null : name));
