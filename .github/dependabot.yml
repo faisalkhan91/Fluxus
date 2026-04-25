@@ -4,19 +4,57 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 10
+    labels: [dependencies, npm]
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
     groups:
       angular:
-        patterns: ['@angular/*']
+        patterns: ['@angular/*', 'angular-eslint']
       eslint:
-        patterns: ['eslint*', 'angular-eslint', 'typescript-eslint']
-    open-pull-requests-limit: 10
+        patterns: ['eslint*', 'typescript-eslint', '@eslint/*']
+      types:
+        patterns: ['@types/*']
+        exclude-patterns: ['@types/node']
+      npm-minor-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # Angular 21 requires TS 5.9.x; TS 6 lands with Angular 22.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      # @types/node tracks the Node major pinned in Dockerfile + .nvmrc + engines.
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
+    labels: [dependencies, docker]
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      docker-minor-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
+    ignore:
+      # Pinned to Node 24 in package.json engines + .nvmrc; bump deliberately.
+      - dependency-name: node
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    labels: [dependencies, github-actions]
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      actions-minor-patch:
+        patterns: ['*']
+        update-types: [minor, patch]
