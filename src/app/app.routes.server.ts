@@ -17,18 +17,20 @@ export const serverRoutes: ServerRoute[] = [
       const { readFile } = await import('node:fs/promises');
       const { join } = await import('node:path');
       const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
-      const posts: { tags: string[] }[] = JSON.parse(raw);
+      const posts: { tags: string[]; draft?: boolean }[] = JSON.parse(raw);
       const tags = new Set<string>();
-      for (const p of posts) {
+      // Drafts are excluded so we don't prerender (or sitemap) tag pages
+      // whose only contributing post isn't publicly listed.
+      for (const p of posts.filter((p) => !p.draft)) {
         for (const tag of p.tags ?? []) {
-          tags.add(
-            tag
-              .toLowerCase()
-              .trim()
-              .replace(/[^\w\s-]/g, '')
-              .replace(/[\s_]+/g, '-')
-              .replace(/-+/g, '-'),
-          );
+          const slug = tag
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+          if (slug) tags.add(slug);
         }
       }
       return Array.from(tags).map((tag) => ({ tag }));
@@ -42,6 +44,9 @@ export const serverRoutes: ServerRoute[] = [
       const { readFile } = await import('node:fs/promises');
       const { join } = await import('node:path');
       const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
+      // Drafts are still prerendered at /blog/<slug> so the author can review
+      // the page in production form before publishing — they're just hidden
+      // from the listing surfaces and the sitemap/feed.
       const posts: { slug: string }[] = JSON.parse(raw);
       return posts.map((p) => ({ slug: p.slug }));
     },

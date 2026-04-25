@@ -1,6 +1,20 @@
 <div class="post-layout">
-  <div class="reading-progress" [style.width.%]="scrollProgress()"></div>
+  <div
+    class="reading-progress"
+    role="progressbar"
+    aria-label="Reading progress"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [attr.aria-valuenow]="readingProgressLabel()"
+    [style.width.%]="scrollProgress()"
+  ></div>
 
+  <!--
+    Mirrors the tag-page breadcrumb: Home > Blog > <Post title>. The current
+    post title is the one item that carries `aria-current="page"`, and "Blog"
+    is restored to a link so visitors can navigate up. The matching
+    BreadcrumbList JSON-LD lives in scripts/inject-meta.mjs.
+  -->
   <nav aria-label="Breadcrumb" class="post-breadcrumb">
     <ol>
       <li><a routerLink="/">Home</a></li>
@@ -11,13 +25,42 @@
     </ol>
   </nav>
 
+  <!--
+    Header sits above the (optional) series banner and cover image so the
+    reader sees the post title, date, and meta immediately on landing.
+    Source order is intentionally: breadcrumb -> header -> series -> cover
+    -> TOC -> body. The first `# Heading` of the markdown body is stripped
+    in BlogPostComponent.content() to avoid a duplicate <h1>.
+  -->
   @if (meta(); as post) {
     <header class="post-header">
+      <!--
+        Series eyebrow renders above the title for any post that belongs to
+        a series, regardless of sibling count. The full `.post-series`
+        banner below still only renders for series with two or more posts
+        (so you don't get a "Part 1 of 1" badge with a one-item list); the
+        eyebrow keeps the series context visible until the next part ships.
+      -->
+      @if (post.series) {
+        <p class="post-series-eyebrow">
+          <span class="post-series-eyebrow-name">{{ post.series }}</span>
+          @if (post.seriesOrder) {
+            <span aria-hidden="true" class="post-series-eyebrow-sep">·</span>
+            <span class="post-series-eyebrow-phase">Phase {{ post.seriesOrder }}</span>
+          }
+        </p>
+      }
+      <h1 class="post-title">{{ post.title }}</h1>
       <div class="post-meta">
         <time class="post-date" [attr.datetime]="post.date">
           <ui-icon name="calendar" [size]="14" />
           {{ formattedDate() }}
         </time>
+        @if (post.updated && post.updated !== post.date) {
+          <time class="post-updated" [attr.datetime]="post.updated">
+            Updated {{ formatDate(post.updated) }}
+          </time>
+        }
         <span class="post-reading-time">
           <ui-icon name="clock" [size]="14" />
           {{ readingTime() }}
@@ -34,6 +77,76 @@
         }
       </div>
     </header>
+  }
+
+  <!--
+    Hide the series banner when only one post exists in the series — a "Part 1
+    of 1" badge with a one-item list is noise. The banner reappears the moment
+    a second post in the same series ships.
+  -->
+  @if (series(); as info) {
+    @if (info.posts.length > 1) {
+      <aside class="post-series" aria-label="Post series">
+        <p class="post-series-meta">
+          <strong>{{ info.series }}</strong>
+          <span class="post-series-position">Part {{ info.index + 1 }} of {{ info.posts.length }}</span>
+        </p>
+        <ol class="post-series-list">
+          @for (entry of info.posts; track entry.slug; let i = $index) {
+            <li>
+              @if (entry.slug === slug()) {
+                <span class="post-series-link post-series-link--current" aria-current="true">
+                  <span class="post-series-index">{{ i + 1 }}.</span>
+                  {{ entry.title }}
+                </span>
+              } @else {
+                <a [routerLink]="['/blog', entry.slug]" class="post-series-link">
+                  <span class="post-series-index">{{ i + 1 }}.</span>
+                  {{ entry.title }}
+                </a>
+              }
+            </li>
+          }
+        </ol>
+      </aside>
+    }
+  }
+
+  @if (meta()?.cover; as cover) {
+    <figure class="post-cover">
+      <img
+        [src]="cover"
+        [alt]="meta()?.title ?? ''"
+        [width]="coverDims().w"
+        [height]="coverDims().h"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+    </figure>
+  }
+
+  @if (toc().length) {
+    <!--
+      `aria-labelledby` must point at a real heading so screen readers list
+      this region under the page's heading outline, not as an unlabelled
+      complementary landmark. The visible "On this page" label is rendered
+      as the same <h2> so sighted and AT users see the same affordance.
+    -->
+    <aside class="post-toc" aria-labelledby="post-toc-heading">
+      <h2 id="post-toc-heading" class="post-toc-title">On this page</h2>
+      <ol class="post-toc-list">
+        @for (entry of toc(); track entry.id) {
+          <li [class.post-toc-h3]="entry.depth === 3">
+            <!--
+              `routerLink` + `fragment` keeps the URL on /blog/<slug># so the
+              `<base href="/">` doesn't resolve a bare `href="#x"` to "/#x".
+            -->
+            <a [routerLink]="['/blog', slug()]" [fragment]="entry.id">{{ entry.text }}</a>
+          </li>
+        }
+      </ol>
+    </aside>
   }
 
   <ui-glass-panel class="post-content">
@@ -56,6 +169,23 @@
     <footer class="post-footer">
       <div class="post-share" aria-label="Share this post">
         <span class="share-label">Share:</span>
+        <!--
+          Native share button — only rendered when the platform exposes
+          `navigator.share`. Sits at the start of the row so it's the
+          first thing a touch user sees. Falling back to the per-network
+          links keeps desktop and unsupported browsers fully functional.
+        -->
+        @if (canWebShare()) {
+          <button
+            type="button"
+            class="share-link share-link--native"
+            (click)="shareViaWebShare()"
+            aria-label="Share via your device's share sheet"
+          >
+            <ui-icon name="share" [size]="14" />
+            <span>Share</span>
+          </button>
+        }
         <a
           [href]="shareUrls().twitter"
           target="_blank"
@@ -89,17 +219,62 @@
           <ui-icon name="mail" [size]="14" />
           <span>Email</span>
         </a>
-        <button type="button" class="share-link" (click)="copyShareLink()">
+        <button
+          type="button"
+          class="share-link"
+          (click)="copyShareLink()"
+          [attr.aria-live]="'polite'"
+          [attr.aria-label]="linkCopied() ? 'Link copied to clipboard' : 'Copy link to this post'"
+        >
           <ui-icon [name]="linkCopied() ? 'sparkles' : 'send'" [size]="14" />
           <span>{{ linkCopied() ? 'Copied!' : 'Copy link' }}</span>
         </button>
       </div>
 
-      <p class="post-byline">
-        Written by <strong>{{ profile.personalInfo().name }}</strong>,
-        {{ profile.personalInfo().title }}
-      </p>
+      @let author = profile.personalInfo();
+      <ui-glass-card class="post-author">
+        <a routerLink="/about" class="post-author-avatar-link" [attr.aria-label]="'Read more about ' + author.name">
+          <img
+            [ngSrc]="author.avatar"
+            width="64"
+            height="64"
+            [alt]="author.name + ', ' + author.title"
+            class="post-author-avatar"
+          />
+        </a>
+        <div class="post-author-body">
+          <p class="post-author-eyebrow">Written by</p>
+          <p class="post-author-name">
+            <a routerLink="/about">{{ author.name }}</a>
+          </p>
+          <p class="post-author-title">{{ author.title }}</p>
+          <a routerLink="/about" class="post-author-cta">
+            <span>Read more about me</span>
+            <ui-icon name="arrow-right" [size]="14" />
+          </a>
+        </div>
+      </ui-glass-card>
     </footer>
+  }
+
+  @if (relatedPosts().length) {
+    <section class="post-related" aria-labelledby="post-related-heading">
+      <h2 id="post-related-heading" class="post-related-title">You might also like</h2>
+      <ul class="post-related-list">
+        @for (related of relatedPosts(); track related.slug) {
+          <li>
+            <a [routerLink]="['/blog', related.slug]" class="post-related-link">
+              <span class="post-related-headline">{{ related.title }}</span>
+              <span class="post-related-meta">
+                <time [attr.datetime]="related.date">{{ formatDate(related.date) }}</time>
+                <span aria-hidden="true">·</span>
+                <span>{{ related.readingTime }}</span>
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    </section>
   }
 
   @if (hasAdjacent()) {

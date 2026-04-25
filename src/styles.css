@@ -166,6 +166,19 @@ a:hover {
   color: var(--accent);
 }
 
+/*
+  Focus indicator contract — meets WCAG 2.2 SC 2.4.13 (Focus Appearance):
+  - 2 CSS px solid outline, satisfying the perimeter-thickness criterion.
+  - 2 px outline-offset moves the ring off the element so background colours
+    on focused glass cards / share buttons don't eat into it.
+  - Colour is the accent red, which the design tokens guarantee against
+    both surface palettes:
+      • Dark theme: --accent #c92a2a vs --bg #0a0a0a → ~3.7:1
+      • Light theme: --accent #b91c1c vs --bg #ffffff → ~7.3:1
+    Both clear the SC 2.4.13 3:1 floor against the unfocused background.
+  - We deliberately let `outline` (not box-shadow) draw the ring so it
+    pierces transform/clip stacks on glass cards and never gets clipped.
+*/
 a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -250,6 +263,99 @@ p {
 .prose :is(h1, h2, h3, h4) {
   /* Offset hash navigation so anchored headings don't tuck under sticky chrome. */
   scroll-margin-top: var(--space-8);
+  /*
+    Headings host the permalink anchor (rendered by MarkdownService). The
+    anchor is absolutely positioned, so the heading itself is positioned
+    relative to give it an anchor (pun intended). `display: flex; align-items: baseline`
+    keeps the heading text and the leading `#` symbol on the same baseline
+    when the anchor becomes visible.
+  */
+  position: relative;
+}
+
+/*
+  Heading permalink anchor. Hidden by default so it doesn't compete with
+  the heading typography; revealed on heading hover/focus and on direct
+  focus of the anchor (keyboard tab). A small chain-link SVG icon sits in
+  the gutter to the left of the heading on viewports wide enough for it;
+  on narrow viewports it inlines after the text so it doesn't push the
+  heading off the left edge of the column. Color comes from the parent
+  via `currentColor` on the SVG, so the muted-to-accent transition below
+  applies automatically.
+*/
+.prose .anchor {
+  position: absolute;
+  left: calc(-1 * var(--space-6));
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  /*
+    Sized to the heading's first line-box so flex centering puts the
+    icon on the same visual midline as the heading text. `.prose` sets
+    `line-height: 1.8`, so a naive `height: 1em` would only cover the
+    text's font-size and centre the icon near the top of the line box —
+    visually well above the heading's cap line. `1lh` resolves to the
+    used line-height of the parent heading (1.8 for h2/h3/h4, 1.2 for
+    h1), keeping the icon centered no matter which heading depth it's
+    attached to.
+  */
+  height: 1lh;
+  padding: 0 var(--space-2);
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+}
+
+.prose .anchor svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.prose :is(h1, h2, h3, h4):hover .anchor,
+.prose :is(h1, h2, h3, h4):focus-within .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
+}
+
+.prose .anchor:hover,
+.prose .anchor:focus-visible {
+  color: var(--accent-hover);
+}
+
+@media (max-width: 900px) {
+  /*
+    Below ~900px the negative-left positioning would clip outside the
+    reading column, so the anchor flips to inline-after the heading and
+    only appears on hover/focus. The SVG sizing inherits from the base
+    rule above.
+  */
+  .prose .anchor {
+    position: static;
+    margin-left: var(--space-2);
+    padding: 0 4px;
+  }
+}
+
+/*
+  WCAG 2.2 SC 2.4.11 (Focus Not Obscured, Minimum) — when a sticky bar
+  (the reading progress strip, the editor tab bar, the mobile nav pill)
+  paints over the top of the viewport, a focused element scrolled into
+  view by the browser must not end up underneath it. `scroll-margin-top`
+  is the cheapest fix: every interactive element inside `.prose` (links
+  embedded in copy, callout buttons, code blocks the user tabs into via
+  the copy-btn, anchored headings via :target) reserves the same offset.
+  Outside `.prose` we apply it to .post-toc-list links and .post-related
+  / .post-footer-nav targets that share the sticky chrome.
+*/
+.prose :is(a, button, [tabindex], pre, [id]),
+.post-toc-list a,
+.post-related-link,
+.footer-nav-link,
+.post-author-cta,
+.tag--link {
+  scroll-margin-top: var(--space-8);
 }
 
 .prose h1 {
@@ -294,6 +400,13 @@ p {
 .prose p {
   margin-bottom: var(--space-4);
   color: var(--text-secondary);
+  /*
+    Constrain body paragraphs to ~70 CSS characters to keep line length in the
+    "easy to read" 50-75ch range recommended by readability research. Figures,
+    code blocks, headings, tables, and callouts deliberately keep the full
+    container width — they're chunked content, not flowing prose.
+  */
+  max-width: 70ch;
 }
 
 .prose a {
@@ -333,6 +446,8 @@ p {
   margin-bottom: var(--space-2);
   color: var(--text-secondary);
   line-height: 1.7;
+  /* Mirror the paragraph measure cap so list items stay equally readable. */
+  max-width: 70ch;
 }
 
 .prose li::marker {
@@ -467,6 +582,100 @@ p {
   margin: var(--space-6) 0;
 }
 
+/* GitHub-style callout admonitions emitted by MarkdownService for
+   `> [!INFO|TIP|NOTE|WARNING|CAUTION] Title\n> body` markdown blocks. Each
+   kind gets a left border and tinted title color; the body uses the standard
+   prose paragraph spacing. */
+.prose .callout {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+
+.prose .callout > :first-child {
+  margin-top: 0;
+}
+
+.prose .callout > :last-child {
+  margin-bottom: 0;
+}
+
+.prose .callout-title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.prose .callout--note {
+  border-left-color: var(--accent-secondary);
+}
+.prose .callout--note .callout-title {
+  color: var(--accent-secondary);
+}
+
+.prose .callout--tip {
+  border-left-color: var(--color-success);
+}
+.prose .callout--tip .callout-title {
+  color: var(--color-success);
+}
+
+.prose .callout--info {
+  border-left-color: var(--accent-secondary);
+}
+.prose .callout--info .callout-title {
+  color: var(--accent-secondary);
+}
+
+.prose .callout--warning {
+  border-left-color: var(--color-warning);
+}
+.prose .callout--warning .callout-title {
+  color: var(--color-warning);
+}
+
+.prose .callout--caution {
+  border-left-color: var(--error);
+}
+.prose .callout--caution .callout-title {
+  color: var(--error);
+}
+
+/* Markdown images render inside a <figure> with the alt text exposed as a
+   visible <figcaption> beneath the image. Inside a figure the img keeps the
+   same look but loses the standalone vertical margin (figure owns spacing). */
+.prose figure {
+  margin: var(--space-6) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.prose figure img {
+  margin: 0;
+}
+
+.prose figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  /*
+    Bumped from --text-muted so figure captions clear WCAG AA contrast in both
+    themes. Figcaptions describe images and act as inline documentation, so
+    they need the same readability budget as body copy.
+  */
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+}
+
 .prose input[type='checkbox'] {
   accent-color: var(--accent);
   margin-right: var(--space-2);
@@ -496,7 +705,12 @@ p {
   }
 }
 
-/* === Highlight.js — Dark (default) === */
+/* === Highlight.js — Dark (default) ===
+   Stays global because the markdown body renders via [innerHTML] (no
+   component encapsulation context to receive scoped rules). Moving them
+   into the lazy blog-post chunk would require either ViewEncapsulation.None
+   (leaks the rest of that component's styles) or a runtime <link> injection
+   (SSR/FOUC complexity). The ~3 KB cost is the simpler trade-off. */
 .hljs {
   color: #abb2bf;
 }
@@ -641,6 +855,20 @@ p {
   ::view-transition-new(*) {
     animation: none !important;
   }
+
+  /*
+    The blog reading-progress bar is purely decorative motion. With the
+    global reduced-motion override above it would otherwise snap to 100%
+    width (animation duration collapses to 0.01ms but `animation-fill-mode:
+    both` keeps the end frame, and the JS path's `width` transitions are
+    also collapsed). Hide it entirely so the user gets no spurious "100%
+    read" indicator. The progressbar role still survives in the DOM, so
+    AT users that explicitly query progress are unaffected (most don't —
+    they rely on landmarks and headings instead).
+  */
+  app-blog-post .reading-progress {
+    display: none !important;
+  }
 }
 
 /* === Print stylesheet ===
@@ -746,8 +974,15 @@ p {
 }
 
 /* Scroll-driven reading progress bar — runs on the compositor with zero JS
-   wherever supported. The matching JS scroll listener in BlogPostComponent
-   short-circuits when CSS.supports('animation-timeline: scroll()') is true,
+   wherever supported. We deliberately target `scroll(root)` (the viewport's
+   root scroller, i.e. the document) instead of `scroll(nearest)`: the shell
+   gives `<main class="content">` `overflow-y: auto`, but the column-flex
+   layout (`:host { min-height: 100vh }` + children with `flex: 1`) lets
+   `.content` grow with its content rather than constraining it, so the
+   document is what actually scrolls. `scroll(nearest)` would otherwise
+   latch onto `.content` and stall at 0% until something forced it to
+   overflow internally. The matching JS scroll listener in
+   BlogPostComponent short-circuits when CSS.supports() reports support,
    so the two never fight for the same property. */
 @supports (animation-timeline: scroll()) {
   app-blog-post .reading-progress {

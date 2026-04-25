@@ -13,6 +13,7 @@ const MOCK_POSTS = [
     excerpt: 'First',
     tags: ['angular'],
     readingTime: '3 min',
+    cover: 'assets/images/blog/cover-one.webp',
   },
   {
     slug: 'post-two',
@@ -82,6 +83,40 @@ describe('BlogComponent', () => {
     expect(hintLinks.length).toBe(2);
     expect(hintLinks[0].getAttribute('href')).toBe('/blog/tag/angular');
     expect(hintLinks[1].getAttribute('href')).toBe('/blog/tag/go');
+  });
+
+  it('should mark only the first post as featured (no LATEST pseudo-element)', () => {
+    const links = el.querySelectorAll('.post-link');
+    expect(links[0].classList.contains('post-link--featured')).toBe(true);
+    expect(links[1].classList.contains('post-link--featured')).toBe(false);
+  });
+
+  it('renders a cover image inside the featured card from the post.cover field', () => {
+    // First card: explicit cover wins.
+    const cover = el.querySelector('.post-link--featured .post-card-cover img');
+    expect(cover).toBeTruthy();
+    expect(cover?.getAttribute('src')).toBe('assets/images/blog/cover-one.webp');
+    expect(cover?.getAttribute('alt')).toBe('Post One');
+    // Falls back to (1200, 630) when not in IMAGE_DIMS — keeps CLS bounded.
+    expect(cover?.getAttribute('width')).toBeTruthy();
+    expect(cover?.getAttribute('height')).toBeTruthy();
+  });
+
+  it('falls back to the build-time OG card when the featured post has no cover', () => {
+    mockBlog.posts.set([
+      { ...MOCK_POSTS[0], cover: undefined },
+      MOCK_POSTS[1],
+    ]);
+    fixture.detectChanges();
+    const cover = el.querySelector('.post-link--featured .post-card-cover img');
+    expect(cover?.getAttribute('src')).toBe('/og/post-one.png');
+  });
+
+  it('does not render a cover image inside non-featured cards', () => {
+    const nonFeaturedCovers = el.querySelectorAll(
+      '.post-link:not(.post-link--featured) .post-card-cover',
+    );
+    expect(nonFeaturedCovers.length).toBe(0);
   });
 
   it('should not render grid when posts are empty', () => {

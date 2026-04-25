@@ -6,7 +6,11 @@ import {
   provideZonelessChangeDetection,
   inject,
 } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
+import {
+  provideRouter,
+  withInMemoryScrolling,
+  withViewTransitions,
+} from '@angular/router';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideClientHydration, withIncrementalHydration } from '@angular/platform-browser';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -23,7 +27,17 @@ export const appConfig: ApplicationConfig = {
     // re-introduce zone change detection by adding zone.js to polyfills.
     provideZonelessChangeDetection(),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withViewTransitions()),
+    provideRouter(
+      routes,
+      withViewTransitions(),
+      // anchorScrolling makes [routerLink][fragment] actually scroll to the
+      // matching id; scrollPositionRestoration restores prior position on
+      // back/forward navigation. Required for the in-page TOC to work.
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'enabled',
+      }),
+    ),
     provideHttpClient(withFetch()),
     // withIncrementalHydration enables event replay automatically and lets
     // `@defer` blocks above the fold avoid hydration layout shift.

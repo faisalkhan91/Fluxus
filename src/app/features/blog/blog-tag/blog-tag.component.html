@@ -41,9 +41,23 @@
             </div>
             <h2 class="post-title">{{ post.title }}</h2>
             <p class="post-excerpt">{{ post.excerpt }}</p>
+            <!-- Render every tag (not just the active one) so cards on the
+                 tag archive look like the cards on /blog and reveal what
+                 else each post covers. -->
+            <div class="post-tags">
+              @for (tag of post.tags; track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
           </ui-glass-card>
         </a>
       }
     </div>
+    <p class="tag-grid-footer">
+      <a routerLink="/blog" class="tag-back-link">
+        <ui-icon name="arrow-left" [size]="14" />
+        <span>View all posts</span>
+      </a>
+    </p>
   }
 </div>

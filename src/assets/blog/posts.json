@@ -5,7 +5,10 @@
     "date": "2026-04-12",
     "excerpt": "Phase 1 of my homelab overhaul: Engineering a dedicated, decoupled storage tier with CMR mechanical disks, NVMe flash pools, and localized DC power resiliency.",
     "tags": ["Homelab", "Storage", "Architecture", "GitOps"],
-    "readingTime": "8 min"
+    "readingTime": "7 min",
+    "cover": "assets/images/blog/homelab-storage/hardware-stack.webp",
+    "series": "Homelab Architecture",
+    "seriesOrder": 1
   },
   {
     "slug": "angular-signals-state-management",
@@ -13,7 +16,7 @@
     "date": "2026-03-28",
     "excerpt": "Practical patterns for replacing BehaviorSubjects with Signals—service state, computed derivations, SSR safety, and when to still reach for RxJS.",
     "tags": ["Angular", "TypeScript", "Architecture"],
-    "readingTime": "7 min"
+    "readingTime": "3 min"
   },
   {
     "slug": "building-cloud-native-pipelines",
@@ -21,7 +24,7 @@
     "date": "2026-03-20",
     "excerpt": "A hands-on walkthrough of designing resilient, container-native CI/CD pipelines using GitHub Actions, Docker, and Kubernetes—from build triggers to zero-downtime deployments.",
     "tags": ["DevOps", "Cloud", "CI/CD"],
-    "readingTime": "6 min"
+    "readingTime": "2 min"
   },
   {
     "slug": "blog-post-template",
@@ -29,6 +32,7 @@
     "date": "2026-03-15",
     "excerpt": "A ready-to-copy template that demonstrates all supported Markdown features: headings, code blocks, lists, blockquotes, and more.",
     "tags": ["Template"],
-    "readingTime": "3 min"
+    "readingTime": "1 min",
+    "draft": true
   }
 ]

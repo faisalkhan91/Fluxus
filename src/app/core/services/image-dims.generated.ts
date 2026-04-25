@@ -41,37 +41,21 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     "w": 600,
     "h": 600
   },
-  "assets/images/blog/homelab-storage/assembly.webp": {
-    "w": 1600,
-    "h": 2133
-  },
-  "assets/images/blog/homelab-storage/chassis.webp": {
-    "w": 1600,
-    "h": 1200
-  },
-  "assets/images/blog/homelab-storage/dc-ups.webp": {
-    "w": 1600,
-    "h": 2133
-  },
-  "assets/images/blog/homelab-storage/final-setup-1.webp": {
-    "w": 1600,
-    "h": 2133
-  },
-  "assets/images/blog/homelab-storage/final-setup-2.webp": {
-    "w": 1600,
-    "h": 2133
-  },
   "assets/images/blog/homelab-storage/hardware-stack.webp": {
     "w": 1600,
     "h": 1200
   },
-  "assets/images/blog/homelab-storage/mechanical-disks.webp": {
+  "assets/images/blog/homelab-storage/nvme-collage.webp": {
+    "w": 1600,
+    "h": 1066
+  },
+  "assets/images/blog/homelab-storage/ugreen-ups.webp": {
     "w": 1600,
     "h": 1200
   },
-  "assets/images/blog/homelab-storage/nvme-drives.webp": {
+  "assets/images/blog/homelab-storage/wd-red-collage.webp": {
     "w": 1600,
-    "h": 1200
+    "h": 1066
   },
   "assets/images/og-image.png": {
     "w": 1200,

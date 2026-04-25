@@ -5,6 +5,118 @@
 .post-layout {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+}
+
+/*
+  Sticky table of contents — only visible when the post has 4+ h2/h3
+  headings (BlogPostComponent.toc gates that), and only on viewports with
+  enough horizontal room to hang the TOC alongside the column without
+  encroaching on the reading width.
+
+  >=1280px we promote `.post-layout` to a 2-column CSS Grid so the TOC
+  occupies a real track instead of being yanked out of flow with
+  `float: right` + `margin-right: -260px`. The grid only activates when
+  `.post-toc` is actually present (`:has(.post-toc)`); otherwise the
+  layout collapses back to its single-column flow and we don't reserve
+  empty whitespace on the right for posts without a TOC.
+*/
+.post-toc {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .post-layout:has(.post-toc) {
+    max-width: 1080px;
+    display: grid;
+    grid-template-columns: minmax(0, 800px) 240px;
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+
+  /*
+    Pin every non-TOC child into the prose column so they keep their
+    existing block flow. `min-width: 0` defends against grid items
+    refusing to shrink past their intrinsic content width (long URLs in
+    code blocks, wide tables, etc.).
+  */
+  .post-layout:has(.post-toc) > *:not(.post-toc) {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .post-toc {
+    display: block;
+    grid-column: 2;
+    /*
+      Anchor the TOC to row 2 — beside `.post-header` (eyebrow + title +
+      meta + tags) rather than row 1 (the breadcrumb). The breadcrumb is
+      a navigation crumb, not part of the article; visually pinning the
+      TOC to the title region reads as "this list belongs to *this* post"
+      and matches the convention used by MDN, Stripe Docs, Vercel Docs,
+      and Tailwind Docs.
+
+      The `span 99` covers every implicit row from row 2 down so the TOC
+      can sticky-scroll alongside the entire article body. `2 / -1`
+      doesn't work because `-1` resolves against the *explicit* grid
+      (line 1, since we don't set `grid-template-rows`), which would
+      collapse the span to row 2 only and inflate that row to the TOC's
+      intrinsic height. A large explicit span keeps each implicit row
+      sized to its own column-1 content while `align-self: start`
+      pins the TOC to the top of its (now genuinely tall) span area.
+    */
+    grid-row: 2 / span 99;
+    position: sticky;
+    top: var(--space-6);
+    align-self: start;
+    padding: var(--space-3);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+}
+
+.post-toc-title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.post-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-toc-list a {
+  display: block;
+  padding: 4px var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.post-toc-list a:hover,
+.post-toc-list a:focus-visible {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.post-toc-h3 a {
+  padding-left: var(--space-4);
+  color: var(--text-muted);
+  font-size: 0.72rem;
 }
 
 .reading-progress {
@@ -84,6 +196,53 @@
   margin-bottom: var(--space-6);
 }
 
+/*
+  Series eyebrow above the title. Provides the "Homelab Architecture · Phase
+  1" context for any post that belongs to a series, even before a second
+  part ships (the full `.post-series` navigation banner is still gated on
+  >= 2 posts). The label uses the accent colour so it reads as a topic tag
+  without competing with the heading typography.
+*/
+.post-series-eyebrow {
+  margin: 0 0 var(--space-2);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-hover);
+}
+
+.post-series-eyebrow-sep {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.post-series-eyebrow-phase {
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+/*
+  Page title for the post. Replaces the markdown body's `# Heading` (which
+  is stripped in BlogPostComponent.content() to avoid duplicating the H1).
+  Sized with clamp() so the title scales fluidly between phone and desktop
+  without crossing the heading hierarchy boundaries set by .prose h2.
+*/
+.post-title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
 .post-meta {
   display: flex;
   align-items: center;
@@ -92,7 +251,8 @@
 }
 
 .post-date,
-.post-reading-time {
+.post-reading-time,
+.post-updated {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
@@ -100,6 +260,10 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   letter-spacing: 0.02em;
+}
+
+.post-updated {
+  color: var(--text-secondary);
 }
 
 .post-tags {
@@ -120,6 +284,18 @@
   transition:
     background-color var(--transition-fast),
     color var(--transition-fast);
+}
+
+/*
+  Tag pills double as navigation links inside the post header. Anchors
+  must clear WCAG 2.2 SC 2.5.8 (24×24), so the link variant gets a
+  taller touch target than the static metadata pills used elsewhere.
+*/
+.tag--link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px var(--space-3);
 }
 
 .tag--link:hover,
@@ -185,7 +361,16 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
+  /*
+    WCAG 2.2 SC 2.5.8 (Target Size, Minimum) requires interactive
+    targets to be at least 24×24 CSS pixels. The previous --space-1 (4px)
+    vertical padding rendered some share buttons at ~22px tall depending
+    on the icon's intrinsic line-height. Bumping the vertical padding to
+    --space-2 (8px) plus an explicit min-height guarantees the target
+    box clears the threshold without changing the visual rhythm.
+  */
+  padding: var(--space-2) var(--space-3);
+  min-height: 28px;
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--glass-border);
@@ -211,21 +396,289 @@
   font-size: 0.7rem;
 }
 
-/* Single-line attribution under the share row. Intentionally chrome-free —
-   no card, no avatar — to keep the post footer light. */
-.post-byline {
+/* Author card sits below the share row. Replaces the old single-line
+   .post-byline so the attribution gets the visual weight a portfolio post
+   deserves — avatar + name + title + CTA into /about. The card itself is a
+   <ui-glass-card>; this rule positions the slot content inside it. */
+.post-author {
+  margin-top: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.post-author-avatar-link {
+  display: inline-flex;
+  border-radius: var(--radius-full, 999px);
+  outline-offset: 3px;
+  text-decoration: none;
+}
+
+.post-author-avatar {
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  object-fit: cover;
+}
+
+.post-author-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-author-eyebrow {
   margin: 0;
-  padding: var(--space-3) var(--space-2) 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.post-author-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.post-author-name a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.post-author-name a:hover,
+.post-author-name a:focus-visible {
+  color: var(--accent-hover);
+}
+
+.post-author-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.post-author-cta {
+  align-self: flex-start;
+  margin-top: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-hover);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: color var(--transition-fast);
+}
+
+.post-author-cta:hover,
+.post-author-cta:focus-visible {
+  color: var(--accent);
+}
+
+@media (max-width: 480px) {
+  .post-author {
+    grid-template-columns: 1fr;
+    text-align: left;
+    gap: var(--space-3);
+  }
+
+  .post-author-avatar-link {
+    justify-self: start;
+  }
+}
+
+/* Mermaid diagrams. The placeholder is shown until the lazy mermaid lib
+   replaces it with a `<figure class="mermaid">` containing rendered SVG. */
+.mermaid-source {
+  margin: var(--space-6) 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  color: var(--text-muted);
+}
+
+.mermaid {
+  margin: var(--space-6) 0;
   text-align: center;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Hero banner shown when the post declares a `cover` field. Renders the
+   image at full content width with rounded corners; intrinsic dimensions
+   come from the build-time IMAGE_DIMS map so the layout never shifts.
+   The header (title + meta) sits *above* the cover, so the cover gets
+   no top margin of its own — the header's --space-6 bottom margin is
+   the only gap. */
+.post-cover {
+  margin: 0 0 var(--space-6);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface-base);
+}
+
+.post-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Series banner shown above the post header when the post belongs to a
+   `series`. Lists every part with the current one highlighted. */
+.post-series {
+  margin: 0 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+}
+
+.post-series-meta {
+  margin: 0 0 var(--space-3);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.post-series-meta strong {
+  color: var(--accent-hover);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+.post-series-position {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.post-series-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.post-series-link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.post-series-link:hover,
+.post-series-link:focus-visible {
+  color: var(--accent-hover);
+}
+
+.post-series-link--current {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.post-series-index {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
-  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  min-width: 1.5em;
 }
 
-.post-byline strong {
-  color: var(--text-primary);
+/* "You might also like" — picks up to 3 posts that share tags with the
+   current one. Lives between the byline and prev/next nav. */
+.post-related {
+  margin-top: var(--space-10);
+  padding: var(--space-5);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+.post-related-title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.post-related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.post-related-link {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color var(--transition-fast);
+}
+
+.post-related-link:hover,
+.post-related-link:focus-visible {
+  background: var(--glass-bg-hover);
+}
+
+.post-related-headline {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.post-related-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .post-related-link {
+    flex-wrap: wrap;
+  }
 }
 
 .post-footer-nav {

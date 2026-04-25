@@ -53,21 +53,68 @@
   display: block;
 }
 
-.post-link:first-child {
+/* The newest post is rendered as a hero card spanning the full grid width.
+   The size difference is communicated by a side thumbnail (see
+   `.post-card-cover`) — no "LATEST" pill needed. The featured flag is
+   data-driven via `[class.post-link--featured]="$first"` so we can later
+   swap "newest" for any other rule (e.g. an explicit `featured: true` flag)
+   without touching CSS. */
+.post-link--featured {
   grid-column: 1 / -1;
 }
 
-.post-link:first-child .post-card::before {
-  content: '// latest';
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--accent);
-  letter-spacing: 0.04em;
-  margin-bottom: var(--space-3);
+/* Featured card uses a 2-column grid: thumbnail left (~320px), body right.
+   `padding: 0` lets the cover bleed flush against the card's left edge;
+   the body re-supplies its own padding via `.post-card-body` so the text
+   has consistent breathing room without needing a column-gap. */
+.post-link--featured .post-card {
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  align-items: stretch;
 }
 
-.post-link:first-child .post-title {
+.post-card-cover {
+  margin: 0;
+  background: var(--surface-base);
+  overflow: hidden;
+}
+
+.post-link--featured .post-card-cover {
+  /*
+    Capped 4:3 thumbnail keeps the hero from dominating the fold while
+    still giving the cover enough presence to anchor the card. `height:
+    100%` lets the figure stretch to match the body column when the body
+    grows taller than the thumbnail's intrinsic height; `max-height` then
+    clamps the upper bound on extra-wide viewports.
+  */
+  aspect-ratio: 4 / 3;
+  height: 100%;
+  max-height: 280px;
+}
+
+.post-card-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Subtle zoom on hover mirrors the GlassCard hover lift. */
+  transition: transform var(--transition-medium, 200ms ease-out);
+}
+
+.post-link--featured:hover .post-card-cover img,
+.post-link--featured:focus-visible .post-card-cover img {
+  transform: scale(1.02);
+}
+
+.post-link--featured .post-card-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+}
+
+.post-link--featured .post-title {
   font-size: 1.5rem;
 }
 
@@ -190,5 +237,20 @@
 @media (max-width: 768px) {
   .post-grid {
     grid-template-columns: 1fr;
+  }
+
+  /*
+    Below 768px the featured hero collapses back to a stacked layout: the
+    cover sits on top with a clamped 16:9 thumbnail (max 220px tall) so the
+    image stays compact on phone and the body still gets the full width
+    underneath.
+  */
+  .post-link--featured .post-card {
+    grid-template-columns: 1fr;
+  }
+
+  .post-link--featured .post-card-cover {
+    aspect-ratio: 16 / 9;
+    max-height: 220px;
   }
 }

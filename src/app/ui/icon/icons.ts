@@ -109,6 +109,11 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'path', d: 'm22 2-7 20-4-9-9-4Z' },
     { tag: 'path', d: 'm22 2-11 11' },
   ],
+  share: [
+    { tag: 'path', d: 'M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8' },
+    { tag: 'polyline', points: '16 6 12 2 8 6' },
+    { tag: 'line', x1: '12', y1: '2', x2: '12', y2: '15' },
+  ],
   sparkles: [
     {
       tag: 'path',

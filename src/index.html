@@ -84,6 +84,14 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
+    <!--
+      Preconnect to our own origin so NgOptimizedImage's `priority` flag on
+      the sidebar avatar (and any future LCP image) silences NG02956. The
+      hint is a no-op for same-origin requests but keeps Angular happy and
+      future-proofs against moving image hosting onto a CDN.
+    -->
+    <link rel="preconnect" href="https://faisalkhan.dpdns.org" crossorigin />
+
     <!-- Fonts: preconnect + stylesheet (not CSS @import, avoids render-blocking chain) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
