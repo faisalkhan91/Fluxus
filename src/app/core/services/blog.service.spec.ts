@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ApplicationRef, ErrorHandler } from '@angular/core';
+import { ErrorHandler } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { BlogService } from './blog.service';
 import { BlogPost } from '@shared/models/blog-post.model';
+import { flushPosts } from '@testing/blog-mocks';
+import { waitForEffects } from '@testing/signals';
 
 const MOCK_POSTS: BlogPost[] = [
   {
@@ -37,13 +39,6 @@ describe('BlogService', () => {
   let service: BlogService;
   let httpTesting: HttpTestingController;
 
-  async function flushPosts(payload: BlogPost[] = MOCK_POSTS): Promise<void> {
-    // The httpResource defers its initial fetch until the first effect run; tick once.
-    TestBed.tick();
-    httpTesting.expectOne('assets/blog/posts.json').flush(payload);
-    await TestBed.inject(ApplicationRef).whenStable();
-  }
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -70,14 +65,14 @@ describe('BlogService', () => {
   });
 
   it('loads posts and exposes them sorted by date descending', async () => {
-    await flushPosts();
+    await flushPosts(httpTesting, MOCK_POSTS);
 
     const slugs = service.posts().map((p) => p.slug);
     expect(slugs).toEqual(['post-two', 'post-three', 'post-one']);
   });
 
   it('latestPosts returns the first 2 sorted posts', async () => {
-    await flushPosts();
+    await flushPosts(httpTesting, MOCK_POSTS);
 
     const latest = service.latestPosts();
     expect(latest).toHaveLength(2);
@@ -90,14 +85,14 @@ describe('BlogService', () => {
     httpTesting
       .expectOne('assets/blog/posts.json')
       .error(new ProgressEvent('error'), { status: 500 });
-    await TestBed.inject(ApplicationRef).whenStable();
+    await waitForEffects();
 
     expect(service.error()).toBe('Failed to load blog posts');
     expect(service.posts()).toEqual([]);
   });
 
   it('getAdjacentPosts walks the date-sorted list (prev = newer, next = older)', async () => {
-    await flushPosts();
+    await flushPosts(httpTesting, MOCK_POSTS);
 
     const adj = service.getAdjacentPosts('post-three');
     expect(adj.prev?.slug).toBe('post-two');
@@ -105,7 +100,7 @@ describe('BlogService', () => {
   });
 
   it('returns undefined for newest post prev and oldest post next', async () => {
-    await flushPosts();
+    await flushPosts(httpTesting, MOCK_POSTS);
 
     const newest = service.getAdjacentPosts('post-two');
     expect(newest.prev).toBeUndefined();
@@ -117,7 +112,7 @@ describe('BlogService', () => {
   });
 
   it('returns empty object for unknown slug', async () => {
-    await flushPosts();
+    await flushPosts(httpTesting, MOCK_POSTS);
 
     expect(service.getAdjacentPosts('nope')).toEqual({});
   });
