@@ -8,20 +8,33 @@
  * Run via `npm run build:prod` (chained after `inject-meta.mjs`).
  */
 import { readFile, writeFile, stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { siteUrl: SITE_URL, siteName: SITE_NAME } = require('../site.config.json');
 
-const FEED_PATH = join(process.cwd(), 'dist/fluxus/browser/feed.xml');
+// Optional positional output path. With no arg, writes to the prod
+// build output (chained from `npm run build:prod` after `ng build`).
+// Pass any other path to spot-check the feed without a full prod build,
+// e.g. `node scripts/build-feed.mjs feed.xml` drops a copy in the repo
+// root (gitignored) that you can open in a browser or drag into a feed
+// reader to verify formatting/dates after a `posts.json` change.
+const customOut = process.argv[2];
 const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
+const FEED_PATH = customOut
+  ? resolve(process.cwd(), customOut)
+  : join(process.cwd(), 'dist/fluxus/browser/feed.xml');
 
-try {
-  await stat(join(process.cwd(), 'dist/fluxus/browser'));
-} catch {
-  console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
-  process.exit(1);
+// The dist/ existence check only matters for the default (prod) path —
+// a spot-check run targets the repo root or wherever the user points it.
+if (!customOut) {
+  try {
+    await stat(join(process.cwd(), 'dist/fluxus/browser'));
+  } catch {
+    console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
+    process.exit(1);
+  }
 }
 
 function escape(value) {
