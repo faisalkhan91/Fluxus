@@ -49,23 +49,33 @@
     display: block;
     grid-column: 2;
     /*
-      Anchor the TOC to row 2 — beside `.post-header` (eyebrow + title +
-      meta + tags) rather than row 1 (the breadcrumb). The breadcrumb is
-      a navigation crumb, not part of the article; visually pinning the
-      TOC to the title region reads as "this list belongs to *this* post"
-      and matches the convention used by MDN, Stripe Docs, Vercel Docs,
-      and Tailwind Docs.
+      Anchor the TOC's top to the row that holds `.post-content` (the
+      article body) so the panel meets the start of the prose rather
+      than floating up beside the breadcrumb / title. The body's row
+      depends on which optional column-1 blocks render — the source
+      order is breadcrumb (row 1), post-header (row 2), [post-series],
+      [post-cover], post-content — so the row is computed below:
 
-      The `span 99` covers every implicit row from row 2 down so the TOC
-      can sticky-scroll alongside the entire article body. `2 / -1`
-      doesn't work because `-1` resolves against the *explicit* grid
-      (line 1, since we don't set `grid-template-rows`), which would
-      collapse the span to row 2 only and inflate that row to the TOC's
-      intrinsic height. A large explicit span keeps each implicit row
-      sized to its own column-1 content while `align-self: start`
-      pins the TOC to the top of its (now genuinely tall) span area.
+        - default                     -> row 3 (no series, no cover)
+        - series-only OR cover-only   -> row 4
+        - series + cover              -> row 5
+
+      The `:has()` overrides immediately after this rule handle the two
+      bumped cases. `.post-series` only renders for series with 2+ posts
+      (the template skips the banner for one-off entries), so the
+      selector matches the user-visible state, not the data shape.
+
+      The `span 99` covers every implicit row from the start row down so
+      the TOC can sticky-scroll alongside the entire article body.
+      `<start> / -1` doesn't work because `-1` resolves against the
+      *explicit* grid (line 1, since we don't set `grid-template-rows`),
+      which would collapse the span to a single row and inflate it to
+      the TOC's intrinsic height. A large explicit span keeps each
+      implicit row sized to its own column-1 content while
+      `align-self: start` pins the TOC to the top of its (now genuinely
+      tall) span area.
     */
-    grid-row: 2 / span 99;
+    grid-row: 3 / span 99;
     position: sticky;
     top: var(--space-6);
     align-self: start;
@@ -75,6 +85,15 @@
     border-radius: var(--radius-md);
     font-size: 0.78rem;
     line-height: 1.4;
+  }
+
+  .post-layout:has(.post-cover):not(:has(.post-series)) .post-toc,
+  .post-layout:has(.post-series):not(:has(.post-cover)) .post-toc {
+    grid-row: 4 / span 99;
+  }
+
+  .post-layout:has(.post-series):has(.post-cover) .post-toc {
+    grid-row: 5 / span 99;
   }
 }
 
