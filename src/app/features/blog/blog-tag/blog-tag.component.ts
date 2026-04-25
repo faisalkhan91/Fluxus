@@ -4,13 +4,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-import { GlassCardComponent } from '../../../ui/glass-card/glass-card.component';
-import { IconComponent } from '../../../ui/icon/icon.component';
-import { SectionHeaderComponent } from '../../../ui/section-header/section-header.component';
-import { BlogService } from '../../../core/services/blog.service';
-import { slugify } from '../../../shared/utils/string.utils';
-import { formatPostDate } from '../../../shared/utils/blog.utils';
-import { environment } from '../../../../environments/environment';
+import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
+import { IconComponent } from '@ui/icon/icon.component';
+import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { BlogService } from '@core/services/blog.service';
+import { slugify } from '@shared/utils/string.utils';
+import { formatPostDate } from '@shared/utils/blog.utils';
+import { environment } from '@env/environment';
 
 const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
 

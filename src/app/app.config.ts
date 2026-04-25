@@ -18,7 +18,7 @@ import { routes } from './app.routes';
 import { SeoService } from './core/services/seo.service';
 import { AppErrorHandler } from './core/services/app-error-handler';
 import { WebVitalsService } from './core/services/web-vitals.service';
-import { environment } from '../environments/environment';
+import { environment } from '@env/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ContactComponent } from './contact.component';
-import { ProfileDataService } from '../../core/services/profile-data.service';
+import { ProfileDataService } from '@core/services/profile-data.service';
 
 const mockProfile = {
   personalInfo: signal({

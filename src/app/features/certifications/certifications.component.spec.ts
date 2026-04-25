@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { CertificationsComponent } from './certifications.component';
-import { CertificationsDataService } from '../../core/services/certifications-data.service';
+import { CertificationsDataService } from '@core/services/certifications-data.service';
 
 const mockData = {
   certifications: signal([

@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { TimelineItem } from '../../shared/models/experience.model';
+import { TimelineItem } from '@shared/models/experience.model';
 
 @Injectable({ providedIn: 'root' })
 export class ExperienceDataService {

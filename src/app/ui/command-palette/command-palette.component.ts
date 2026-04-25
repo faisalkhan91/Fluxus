@@ -13,8 +13,8 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
-import { NavigationService } from '../../core/services/navigation.service';
-import { BlogService } from '../../core/services/blog.service';
+import { NavigationService } from '@core/services/navigation.service';
+import { BlogService } from '@core/services/blog.service';
 
 interface CommandItem {
   /** Stable id for keyboard selection / track-by. */

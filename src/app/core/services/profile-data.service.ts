@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
-import { PersonalInfo, Education, SocialLink } from '../../shared/models/profile.model';
-import { yearsOfExperience } from '../../shared/utils/career.utils';
+import { PersonalInfo, Education, SocialLink } from '@shared/models/profile.model';
+import { yearsOfExperience } from '@shared/utils/career.utils';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileDataService {

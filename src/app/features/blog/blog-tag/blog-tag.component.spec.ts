@@ -7,9 +7,9 @@ import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { BlogTagComponent } from './blog-tag.component';
-import { BlogService } from '../../../core/services/blog.service';
-import { BlogPost } from '../../../shared/models/blog-post.model';
-import { environment } from '../../../../environments/environment';
+import { BlogService } from '@core/services/blog.service';
+import { BlogPost } from '@shared/models/blog-post.model';
+import { environment } from '@env/environment';
 
 const MOCK_POSTS: BlogPost[] = [
   {

@@ -3,8 +3,8 @@ import { ComponentFixture, TestBed, DeferBlockBehavior } from '@angular/core/tes
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
 import { HeroComponent } from './hero.component';
-import { ProfileDataService } from '../../core/services/profile-data.service';
-import { BlogService } from '../../core/services/blog.service';
+import { ProfileDataService } from '@core/services/profile-data.service';
+import { BlogService } from '@core/services/blog.service';
 
 const mockProfile = {
   personalInfo: signal({

@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { SkillsComponent } from './skills.component';
-import { SkillsDataService } from '../../core/services/skills-data.service';
-import { MediaQueryService } from '../../core/services/media-query.service';
-import { SkillCategory } from '../../shared/models/skill.model';
+import { SkillsDataService } from '@core/services/skills-data.service';
+import { MediaQueryService } from '@core/services/media-query.service';
+import { SkillCategory } from '@shared/models/skill.model';
 
 const MOCK_CATEGORIES: SkillCategory[] = [
   {

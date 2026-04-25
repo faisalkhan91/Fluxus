@@ -1,7 +1,7 @@
 import { ErrorHandler, Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ErrorToastService } from './error-toast.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 /**
  * Cheap structural matcher for "the dynamic import that loads a route chunk

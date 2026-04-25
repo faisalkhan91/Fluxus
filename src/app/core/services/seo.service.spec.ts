@@ -6,7 +6,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { SeoService } from './seo.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 @Component({ template: '' })
 class DummyComponent {}

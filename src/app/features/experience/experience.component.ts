@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
-import { SectionHeaderComponent } from '../../ui/section-header/section-header.component';
-import { TimelineComponent, TimelineEntry } from '../../ui/timeline/timeline.component';
-import { ExperienceDataService } from '../../core/services/experience-data.service';
+import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { TimelineComponent, TimelineEntry } from '@ui/timeline/timeline.component';
+import { ExperienceDataService } from '@core/services/experience-data.service';
 
 @Component({
   selector: 'app-experience',

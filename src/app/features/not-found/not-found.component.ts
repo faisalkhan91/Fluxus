@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/c
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
-import { IconComponent } from '../../ui/icon/icon.component';
+import { IconComponent } from '@ui/icon/icon.component';
 
 @Component({
   selector: 'app-not-found',

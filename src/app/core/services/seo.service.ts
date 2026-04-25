@@ -4,8 +4,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { yearsOfExperience } from '../../shared/utils/career.utils';
-import { environment } from '../../../environments/environment';
+import { yearsOfExperience } from '@shared/utils/career.utils';
+import { environment } from '@env/environment';
 
 const DEFAULT_DESCRIPTION = `Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.`;
 const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;

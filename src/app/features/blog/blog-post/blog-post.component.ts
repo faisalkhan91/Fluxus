@@ -17,19 +17,19 @@ import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
 import { httpResource } from '@angular/common/http';
 import { DOCUMENT, NgOptimizedImage } from '@angular/common';
-import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
-import { GlassCardComponent } from '../../../ui/glass-card/glass-card.component';
-import { IconComponent } from '../../../ui/icon/icon.component';
-import { TrustedHtmlPipe } from '../../../shared/pipes/trusted-html.pipe';
-import { BlogService } from '../../../core/services/blog.service';
-import { MarkdownService } from '../../../core/services/markdown.service';
-import { ProfileDataService } from '../../../core/services/profile-data.service';
-import { ErrorToastService } from '../../../core/services/error-toast.service';
-import { BlogPost } from '../../../shared/models/blog-post.model';
-import { environment } from '../../../../environments/environment';
-import { slugify } from '../../../shared/utils/string.utils';
-import { formatPostDate } from '../../../shared/utils/blog.utils';
-import { IMAGE_DIMS } from '../../../core/services/image-dims.generated';
+import { GlassPanelComponent } from '@ui/glass-panel/glass-panel.component';
+import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
+import { IconComponent } from '@ui/icon/icon.component';
+import { TrustedHtmlPipe } from '@shared/pipes/trusted-html.pipe';
+import { BlogService } from '@core/services/blog.service';
+import { MarkdownService } from '@core/services/markdown.service';
+import { ProfileDataService } from '@core/services/profile-data.service';
+import { ErrorToastService } from '@core/services/error-toast.service';
+import { BlogPost } from '@shared/models/blog-post.model';
+import { environment } from '@env/environment';
+import { slugify } from '@shared/utils/string.utils';
+import { formatPostDate } from '@shared/utils/blog.utils';
+import { IMAGE_DIMS } from '@core/services/image-dims.generated';
 
 /**
  * Drop the markdown body's leading `# Heading` line so the rendered HTML

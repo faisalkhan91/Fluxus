@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { NavigationService } from '../../core/services/navigation.service';
+import { NavigationService } from '@core/services/navigation.service';
 import { routes } from '../../app.routes';
 
 function collectPaths(routeList: typeof routes, parent = ''): string[] {

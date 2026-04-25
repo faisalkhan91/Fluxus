@@ -8,8 +8,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { BehaviorSubject } from 'rxjs';
 import { BlogPostComponent } from './blog-post.component';
-import { BlogService } from '../../../core/services/blog.service';
-import { BlogPost } from '../../../shared/models/blog-post.model';
+import { BlogService } from '@core/services/blog.service';
+import { BlogPost } from '@shared/models/blog-post.model';
 
 const MOCK_POSTS: BlogPost[] = [
   {

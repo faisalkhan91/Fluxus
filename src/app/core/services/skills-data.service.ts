@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { SkillCategory } from '../../shared/models/skill.model';
+import { SkillCategory } from '@shared/models/skill.model';
 
 @Injectable({ providedIn: 'root' })
 export class SkillsDataService {
