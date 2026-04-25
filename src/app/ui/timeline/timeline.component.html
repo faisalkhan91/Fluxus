@@ -15,7 +15,7 @@
             <span class="entry-duration">{{ item.duration }}</span>
           }
           <h4 class="entry-title">{{ item.subtitle }}</h4>
-          @for (detail of item.details; track $index) {
+          @for (detail of item.details ?? []; track $index) {
             <p class="entry-paragraph">{{ detail }}</p>
           }
         </ui-glass-card>

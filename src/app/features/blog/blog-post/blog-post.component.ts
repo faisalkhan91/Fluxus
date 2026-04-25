@@ -4,19 +4,22 @@ import {
   inject,
   signal,
   computed,
-  OnInit,
+  effect,
+  untracked,
   DestroyRef,
   ElementRef,
   afterNextRender,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
-import { EMPTY, filter, switchMap, take, tap } from 'rxjs';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { httpResource } from '@angular/common/http';
 import { GlassPanelComponent } from '../../../ui/glass-panel/glass-panel.component';
 import { IconComponent } from '../../../ui/icon/icon.component';
 import { TrustedHtmlPipe } from '../../../shared/pipes/trusted-html.pipe';
 import { BlogService } from '../../../core/services/blog.service';
+import { MarkdownService } from '../../../core/services/markdown.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
 import { environment } from '../../../../environments/environment';
 
@@ -27,26 +30,74 @@ import { environment } from '../../../../environments/environment';
   imports: [GlassPanelComponent, IconComponent, RouterLink, TrustedHtmlPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogPostComponent implements OnInit {
+export class BlogPostComponent {
   private route = inject(ActivatedRoute);
   private blog = inject(BlogService);
+  // MarkdownService is injected here (not in BlogService) so the heavy
+  // marked + highlight.js graph only ships with this lazy route chunk.
+  private md = inject(MarkdownService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
   private metaService = inject(Meta);
   private titleService = inject(Title);
 
-  readonly content = signal('');
-  readonly meta = signal<BlogPost | undefined>(undefined);
-  readonly loading = signal(true);
-  readonly error = signal<string | null>(null);
-  readonly scrollProgress = signal(0);
+  protected slug = toSignal(
+    this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')),
+    { initialValue: '' },
+  );
+
+  // Reactive markdown body. Re-fires automatically when slug() changes and
+  // resets to the empty default while loading — fixing the stale-content
+  // flash that the previous subscribe-based pipeline had.
+  private postBody = httpResource.text(
+    () => {
+      const slug = this.slug();
+      return slug ? `assets/blog/posts/${slug}.md` : undefined;
+    },
+    { defaultValue: '' },
+  );
+
+  readonly meta = computed<BlogPost | undefined>(() => {
+    const slug = this.slug();
+    return this.blog.posts().find((p) => p.slug === slug);
+  });
+
+  readonly content = computed(() => {
+    const raw = this.postBody.value();
+    return raw ? this.md.render(raw) : '';
+  });
+
+  readonly loading = computed(() => this.postBody.isLoading());
+
+  readonly error = computed<string | null>(() => {
+    if (this.postBody.error()) return 'Failed to load blog post';
+    // Wait until the posts manifest has loaded before deciding "not found".
+    if (this.blog.loading() || this.postBody.isLoading()) return null;
+    if (this.slug() && this.blog.posts().length > 0 && !this.meta()) {
+      return 'Post not found';
+    }
+    return null;
+  });
 
   readonly adjacentPosts = computed(() => {
     const post = this.meta();
     return post ? this.blog.getAdjacentPosts(post.slug) : { prev: undefined, next: undefined };
   });
 
+  readonly hasAdjacent = computed(() => {
+    const adj = this.adjacentPosts();
+    return !!(adj.prev || adj.next);
+  });
+
+  readonly scrollProgress = signal(0);
+
   constructor() {
+    // Update <title> + meta tags as the post resolves.
+    effect(() => {
+      const post = this.meta();
+      if (post) untracked(() => this.updateMetaTags(post));
+    });
+
     afterNextRender(() => {
       const postLayout = this.elRef.nativeElement.querySelector(
         '.post-layout',
@@ -69,51 +120,7 @@ export class BlogPostComponent implements OnInit {
     });
   }
 
-  // Mirror the BlogService posts signal as an observable so we can react to
-  // route slug changes and the resource loading in the same pipeline.
-  private posts$ = toObservable(this.blog.posts);
-
-  ngOnInit(): void {
-    this.route.paramMap
-      .pipe(
-        switchMap((params) => {
-          const slug = params.get('slug') ?? '';
-          this.loading.set(true);
-          this.error.set(null);
-          return this.posts$.pipe(
-            filter((posts) => posts.length > 0 || !!this.blog.error()),
-            take(1),
-            tap((posts) => {
-              const post = posts.find((p) => p.slug === slug);
-              this.meta.set(post);
-              this.updateMetaTags(post);
-              if (!post) {
-                this.error.set('Post not found');
-                this.loading.set(false);
-              }
-            }),
-            switchMap(() => {
-              if (this.error()) return EMPTY;
-              return this.blog.getPostContent(slug);
-            }),
-          );
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (html) => {
-          this.content.set(html);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-          this.error.set('Failed to load blog post');
-        },
-      });
-  }
-
-  private updateMetaTags(post: BlogPost | undefined): void {
-    if (!post) return;
+  private updateMetaTags(post: BlogPost): void {
     const url = `${environment.siteUrl}/blog/${post.slug}`;
     const title = `${post.title} - ${environment.siteName}`;
 

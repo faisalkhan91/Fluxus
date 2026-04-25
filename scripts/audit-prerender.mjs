@@ -16,17 +16,19 @@
  *  - Editor tabs are <button role="tab"> with valid roving tabindex
  *    and no nested <button> (C6)
  *  - Mobile nav menu trigger advertises aria-haspopup="dialog" (C5)
- *  - Blog post page advertises og:type=article (C1)
+ *  - Every prerendered blog post advertises og:type=article and contains an
+ *    <h1> with rendered text from the markdown body
  *
  * Run via `npm run audit:prerender` after `npm run build:prod`.
  */
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 
 const BUILD_DIR = resolve('dist/fluxus/browser');
 const SITE_URL = 'https://faisalkhan.dpdns.org';
+const BLOG_DIR = join(BUILD_DIR, 'blog');
 
 const ROUTES = [
   { path: '/', file: 'index.html', title: /Welcome - /, h1Required: true },
@@ -48,11 +50,6 @@ const ROUTES = [
   { path: '/contact', file: 'contact/index.html', title: /^Contact - /, h1Required: true },
   { path: '/blog', file: 'blog/index.html', title: /^Blog - /, h1Required: true },
 ];
-
-const BLOG_POST = {
-  path: '/blog/angular-signals-state-management',
-  file: 'blog/angular-signals-state-management/index.html',
-};
 
 const issues = [];
 const wins = [];
@@ -139,10 +136,9 @@ function checkRoute(route) {
     }
   }
 
-  // <ui-icon>-rendered <svg>s are intentionally empty in SSR (content is
-  // injected via a browser-only effect to keep SSR safe and avoid breaking
-  // signal interpolations elsewhere on the page). All <svg> shells should
-  // still have a11y attributes.
+  // Every <ui-icon>-rendered <svg> must carry aria-hidden="true" (and
+  // since the v2 icon refactor, the path/line/polyline children are also
+  // present in the prerendered HTML — see icons.ts).
   if (/<svg(?![^>]*aria-hidden="true")/i.test(html)) {
     pushIssue(route.path, '<svg> without aria-hidden="true" found');
   } else {
@@ -197,10 +193,20 @@ function checkRoute(route) {
   return { html, doc };
 }
 
-function checkBlogPost() {
-  const { dom } = loadDoc(BLOG_POST.file);
+function listBlogPostSlugs() {
+  if (!existsSync(BLOG_DIR)) return [];
+  return readdirSync(BLOG_DIR).filter((entry) => {
+    const full = join(BLOG_DIR, entry);
+    if (!statSync(full).isDirectory()) return false;
+    return existsSync(join(full, 'index.html'));
+  });
+}
+
+function checkBlogPost(slug) {
+  const file = `blog/${slug}/index.html`;
+  const route = `/blog/${slug}`;
+  const { dom, html } = loadDoc(file);
   const doc = dom.window.document;
-  const route = BLOG_POST.path;
 
   // og:type should be "article" for blog posts
   const ogType = attr(doc.querySelector('meta[property="og:type"]'), 'content');
@@ -217,11 +223,19 @@ function checkBlogPost() {
     pushIssue(route, `canonical mismatch: got "${canonical}", expected "${expected}"`);
   }
 
-  // h1 for the post title (raw match, see explanation in checkRoute)
-  if (!/<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(doc.documentElement.outerHTML)) {
-    pushIssue(route, 'no <h1> on blog post');
+  // h1 with rendered text. The post title comes from the markdown body, so
+  // a missing <h1> means either the markdown forgot the heading or the
+  // SSR markdown render path silently returned empty content.
+  const h1Matches = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) ?? [];
+  const h1Texts = h1Matches
+    .map((m) => m.replace(/<[^>]+>/g, '').replace(/&nbsp;|&#?\w+;/g, ' ').trim())
+    .filter((t) => t.length > 0);
+  if (h1Texts.length === 0) {
+    pushIssue(route, 'no <h1> with rendered text on blog post (check markdown body)');
+  } else if (h1Texts.length > 1) {
+    pushIssue(route, `multiple non-empty <h1> elements (${h1Texts.length}): ${h1Texts.join(', ')}`);
   } else {
-    pushWin(route, '<h1> OK on blog post');
+    pushWin(route, `<h1> OK ("${h1Texts[0].slice(0, 40)}")`);
   }
 }
 
@@ -236,10 +250,17 @@ for (const route of ROUTES) {
   }
 }
 
-try {
-  checkBlogPost();
-} catch (err) {
-  pushIssue(BLOG_POST.path, `audit threw: ${err.message}`);
+const blogSlugs = listBlogPostSlugs();
+if (blogSlugs.length === 0) {
+  pushIssue('/blog/*', 'no prerendered blog posts found in dist/fluxus/browser/blog/');
+} else {
+  for (const slug of blogSlugs) {
+    try {
+      checkBlogPost(slug);
+    } catch (err) {
+      pushIssue(`/blog/${slug}`, `audit threw: ${err.message}`);
+    }
+  }
 }
 
 console.log(`Wins (${wins.length}):`);

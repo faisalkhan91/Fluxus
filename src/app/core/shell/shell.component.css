@@ -23,24 +23,30 @@
   top: var(--space-4);
 }
 
+/*
+  Layout is driven by viewport @media queries (not by signal-bound host
+  classes) so the SSR markup works for every breakpoint with no hydration
+  layout shift. Default = wide desktop. Override at smaller breakpoints.
+*/
 .main-area {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  margin-left: var(--sidebar-width);
   transition: margin-left var(--transition-base);
 }
 
-:host(.sidebar-visible) .main-area {
-  margin-left: var(--sidebar-width);
+@media (max-width: 1023px) {
+  .main-area {
+    margin-left: var(--sidebar-collapsed);
+  }
 }
 
-:host(.sidebar-collapsed) .main-area {
-  margin-left: var(--sidebar-collapsed);
-}
-
-:host(.mobile) .main-area {
-  margin-left: 0;
+@media (max-width: 767px) {
+  .main-area {
+    margin-left: 0;
+  }
 }
 
 .content {
@@ -51,12 +57,15 @@
   view-transition-name: main-content;
 }
 
-:host(.mobile) .content {
-  padding: var(--space-4);
-  padding-bottom: calc(var(--nav-pill-height) + var(--space-4) + var(--space-12));
+@media (max-width: 767px) {
+  .content {
+    padding: var(--space-4);
+    padding-bottom: calc(var(--nav-pill-height) + var(--space-4) + var(--space-12));
+  }
 }
 
 .mobile-theme-toggle {
+  display: none;
   position: fixed;
   top: var(--space-4);
   right: var(--space-4);
@@ -69,7 +78,6 @@
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   color: var(--text-secondary);
-  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -79,6 +87,12 @@
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
   box-shadow: var(--shadow-glass);
+}
+
+@media (max-width: 767px) {
+  .mobile-theme-toggle {
+    display: flex;
+  }
 }
 
 .mobile-theme-toggle:hover {

@@ -23,23 +23,36 @@ describe('IconComponent', () => {
     expect(svg.getAttribute('height')).toBe('24');
   });
 
-  it('injects path content for known icon names on the browser via effect', async () => {
+  it('renders the icon shapes inline (no innerHTML mutation, SSR-friendly)', () => {
     const fixture = TestBed.createComponent(IconComponent);
     fixture.componentRef.setInput('name', 'home');
     fixture.detectChanges();
-    await fixture.whenStable();
 
     const svg = fixture.nativeElement.querySelector('svg') as SVGElement;
-    expect(svg.innerHTML).toContain('<path');
+    // `home` is composed of a <path> + a <polyline>.
+    expect(svg.querySelectorAll('path').length).toBe(1);
+    expect(svg.querySelectorAll('polyline').length).toBe(1);
   });
 
-  it('keeps the svg empty for unknown icon names', async () => {
+  it('renders nothing inside the svg for unknown icon names', () => {
     const fixture = TestBed.createComponent(IconComponent);
     fixture.componentRef.setInput('name', 'does-not-exist');
     fixture.detectChanges();
-    await fixture.whenStable();
 
     const svg = fixture.nativeElement.querySelector('svg') as SVGElement;
-    expect(svg.innerHTML.trim()).toBe('');
+    expect(svg.children.length).toBe(0);
+  });
+
+  it('switches shapes when the name input changes', () => {
+    const fixture = TestBed.createComponent(IconComponent);
+    fixture.componentRef.setInput('name', 'home');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('polyline').length).toBe(1);
+
+    fixture.componentRef.setInput('name', 'menu');
+    fixture.detectChanges();
+    // `menu` is three <line> elements, no polylines.
+    expect(fixture.nativeElement.querySelectorAll('line').length).toBe(3);
+    expect(fixture.nativeElement.querySelectorAll('polyline').length).toBe(0);
   });
 });

@@ -23,7 +23,7 @@
                 [attr.aria-invalid]="
                   contactForm.get('name')?.invalid && contactForm.get('name')?.touched
                 "
-                aria-describedby="name-error"
+                [attr.aria-describedby]="errorIdFor('name')"
               />
               @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
                 <span id="name-error" class="form-error" role="alert">Name is required</span>
@@ -42,7 +42,7 @@
                 [attr.aria-invalid]="
                   contactForm.get('email')?.invalid && contactForm.get('email')?.touched
                 "
-                aria-describedby="email-error"
+                [attr.aria-describedby]="errorIdFor('email')"
               />
               @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
                 <span id="email-error" class="form-error" role="alert">
@@ -77,7 +77,7 @@
                 [attr.aria-invalid]="
                   contactForm.get('message')?.invalid && contactForm.get('message')?.touched
                 "
-                aria-describedby="message-error"
+                [attr.aria-describedby]="errorIdFor('message')"
               ></textarea>
               @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
                 <span id="message-error" class="form-error" role="alert">Message is required</span>

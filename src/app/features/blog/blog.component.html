@@ -32,5 +32,18 @@
         </a>
       }
     </div>
+  } @else if (blog.loading()) {
+    <div class="blog-status" role="status" aria-live="polite">
+      <span class="loading-cursor">Loading posts...</span>
+    </div>
+  } @else if (blog.error()) {
+    <div class="blog-status blog-status--error" role="alert">
+      <ui-icon name="alert-triangle" [size]="20" />
+      <p>{{ blog.error() }}</p>
+    </div>
+  } @else {
+    <div class="blog-status">
+      <p>No posts published yet. Check back soon.</p>
+    </div>
   }
 </div>

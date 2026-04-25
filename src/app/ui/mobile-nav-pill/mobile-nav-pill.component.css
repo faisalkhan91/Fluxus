@@ -9,6 +9,13 @@
   pointer-events: none;
 }
 
+/* Phone-only chrome — sidebar + tab strip take over above 767px. */
+@media (min-width: 768px) {
+  :host {
+    display: none;
+  }
+}
+
 .pill,
 .menu-overlay,
 .menu-panel {

@@ -1,11 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
-import { BehaviorSubject, of, throwError } from 'rxjs';
-import { convertToParamMap } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { BehaviorSubject } from 'rxjs';
 import { BlogPostComponent } from './blog-post.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPost } from '../../../shared/models/blog-post.model';
@@ -43,24 +44,47 @@ describe('BlogPostComponent', () => {
   let el: HTMLElement;
   let paramMapSubject: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   let mockBlog: {
-    getPostContent: ReturnType<typeof vi.fn>;
     getAdjacentPosts: ReturnType<typeof vi.fn>;
     posts: ReturnType<typeof signal<BlogPost[]>>;
+    loading: ReturnType<typeof signal<boolean>>;
     error: ReturnType<typeof signal<string | null>>;
   };
   let titleService: Title;
   let metaService: Meta;
+  let httpTesting: HttpTestingController;
+
+  async function flushMarkdown(slug: string, body: string): Promise<void> {
+    TestBed.tick();
+    httpTesting.expectOne(`assets/blog/posts/${slug}.md`).flush(body);
+    await TestBed.inject(ApplicationRef).whenStable();
+    fixture.detectChanges();
+  }
+
+  async function failMarkdown(slug: string, status = 500): Promise<void> {
+    TestBed.tick();
+    httpTesting
+      .expectOne(`assets/blog/posts/${slug}.md`)
+      .error(new ProgressEvent('error'), { status });
+    await TestBed.inject(ApplicationRef).whenStable();
+    fixture.detectChanges();
+  }
 
   beforeEach(async () => {
     paramMapSubject = new BehaviorSubject(convertToParamMap({ slug: 'second-post' }));
 
     mockBlog = {
-      getPostContent: vi.fn().mockReturnValue(of('<p>Post content</p>')),
-      getAdjacentPosts: vi.fn().mockReturnValue({
-        prev: MOCK_POSTS[0],
-        next: MOCK_POSTS[2],
+      // Default behavior mirrors the real BlogService walking the date-sorted
+      // posts list. Tests can call mockReturnValue() to override per-case.
+      getAdjacentPosts: vi.fn((slug: string) => {
+        const idx = MOCK_POSTS.findIndex((p) => p.slug === slug);
+        if (idx === -1) return {};
+        return {
+          prev: idx > 0 ? MOCK_POSTS[idx - 1] : undefined,
+          next: idx < MOCK_POSTS.length - 1 ? MOCK_POSTS[idx + 1] : undefined,
+        };
       }),
       posts: signal(MOCK_POSTS),
+      loading: signal(false),
       error: signal<string | null>(null),
     };
 
@@ -68,14 +92,19 @@ describe('BlogPostComponent', () => {
       imports: [BlogPostComponent],
       providers: [
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: ActivatedRoute, useValue: { paramMap: paramMapSubject.asObservable() } },
         { provide: BlogService, useValue: mockBlog },
+        // Keep test output free of synthetic resource error logs.
+        { provide: ErrorHandler, useValue: { handleError: () => undefined } },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     titleService = TestBed.inject(Title);
     metaService = TestBed.inject(Meta);
+    httpTesting = TestBed.inject(HttpTestingController);
     vi.spyOn(titleService, 'setTitle');
     vi.spyOn(metaService, 'updateTag');
 
@@ -85,32 +114,39 @@ describe('BlogPostComponent', () => {
     el = fixture.nativeElement;
   });
 
-  it('should be created', () => {
+  afterEach(() => {
+    fixture?.destroy();
+    httpTesting.verify();
+  });
+
+  it('issues a GET for the slug markdown', async () => {
+    await flushMarkdown('second-post', 'Post content');
     expect(component).toBeTruthy();
   });
 
-  it('should load post content for the slug', () => {
-    expect(mockBlog.getPostContent).toHaveBeenCalledWith('second-post');
+  it('renders the markdown body once the request resolves', async () => {
+    await flushMarkdown('second-post', 'Post content');
+    expect(component.content()).toContain('<p>Post content</p>');
   });
 
-  it('should set content signal after loading', () => {
-    expect(component.content()).toBe('<p>Post content</p>');
-  });
-
-  it('should set meta signal with the matching post', () => {
+  it('sets meta with the matching post', async () => {
+    await flushMarkdown('second-post', 'Post content');
     expect(component.meta()?.slug).toBe('second-post');
     expect(component.meta()?.title).toBe('Second Post');
   });
 
-  it('should clear loading after content loads', () => {
+  it('clears loading after content loads', async () => {
+    await flushMarkdown('second-post', 'Post content');
     expect(component.loading()).toBe(false);
   });
 
-  it('should update page title via Title service', () => {
+  it('updates page title via Title service', async () => {
+    await flushMarkdown('second-post', 'Post content');
     expect(titleService.setTitle).toHaveBeenCalledWith(expect.stringContaining('Second Post'));
   });
 
-  it('should update OG meta tags', () => {
+  it('updates OG meta tags', async () => {
+    await flushMarkdown('second-post', 'Post content');
     expect(metaService.updateTag).toHaveBeenCalledWith(
       expect.objectContaining({ property: 'og:title' }),
     );
@@ -119,43 +155,86 @@ describe('BlogPostComponent', () => {
     );
   });
 
-  it('should set error for missing slug', () => {
-    mockBlog.getPostContent.mockClear();
+  it('reports "Post not found" for an unknown slug (404)', async () => {
+    await flushMarkdown('second-post', 'Post content');
     paramMapSubject.next(convertToParamMap({ slug: 'nonexistent' }));
     fixture.detectChanges();
+    await failMarkdown('nonexistent', 404);
 
-    expect(component.error()).toBe('Post not found');
-    expect(mockBlog.getPostContent).not.toHaveBeenCalled();
-  });
-
-  it('should set error on content fetch failure', () => {
-    mockBlog.getPostContent.mockReturnValue(throwError(() => new Error('fail')));
-    paramMapSubject.next(convertToParamMap({ slug: 'second-post' }));
-
+    expect(component.meta()).toBeUndefined();
     expect(component.error()).toBeTruthy();
   });
 
-  it('should compute adjacent posts', () => {
+  it('sets error on content fetch failure (500)', async () => {
+    await failMarkdown('second-post', 500);
+    expect(component.error()).toBe('Failed to load blog post');
+  });
+
+  it('clears the rendered body when the slug changes (no stale flash)', async () => {
+    await flushMarkdown('second-post', 'First body');
+    expect(component.content()).toContain('First body');
+
+    paramMapSubject.next(convertToParamMap({ slug: 'first-post' }));
+    fixture.detectChanges();
+    // Before the new request resolves, the resource value resets to its
+    // default ('') so the content signal is empty — no stale flash.
+    expect(component.content()).toBe('');
+
+    await flushMarkdown('first-post', 'Second body');
+    expect(component.content()).toContain('Second body');
+  });
+
+  it('computes adjacent posts', async () => {
+    await flushMarkdown('second-post', 'Post content');
     const adj = component.adjacentPosts();
     expect(adj.prev?.slug).toBe('first-post');
     expect(adj.next?.slug).toBe('third-post');
+    expect(component.hasAdjacent()).toBe(true);
   });
 
-  it('should render back link to /blog', () => {
+  it('hasAdjacent is false when there is no prev/next (single-post list)', async () => {
+    // Drain the initial second-post request so the cancellation is silent.
+    await flushMarkdown('second-post', 'Initial');
+    mockBlog.getAdjacentPosts.mockReturnValue({ prev: undefined, next: undefined });
+    // Switching slug forces `meta()` (and thus `adjacentPosts`) to re-evaluate.
+    paramMapSubject.next(convertToParamMap({ slug: 'first-post' }));
+    fixture.detectChanges();
+    await flushMarkdown('first-post', 'Post content');
+    expect(component.hasAdjacent()).toBe(false);
+  });
+
+  it('renders back link to /blog', async () => {
+    await flushMarkdown('second-post', 'Post content');
     const backLink = el.querySelector('.back-link');
     expect(backLink).toBeTruthy();
     expect(backLink?.textContent).toContain('All Posts');
   });
 
-  it('should render post header when meta is set', () => {
+  it('renders post header when meta is set', async () => {
+    await flushMarkdown('second-post', 'Post content');
     const header = el.querySelector('.post-header');
     expect(header).toBeTruthy();
   });
 
-  it('should render error state when error is set', () => {
+  it('renders error state when error is set', async () => {
     paramMapSubject.next(convertToParamMap({ slug: 'nonexistent' }));
     fixture.detectChanges();
+    TestBed.tick();
+    // Drain the cancelled in-flight request from the original slug without
+    // flushing it (httpResource cancelled it when the URL changed).
+    httpTesting.match((req) => req.url === 'assets/blog/posts/second-post.md');
+    await failMarkdown('nonexistent', 404);
+
     const errorBlock = el.querySelector('.post-error');
     expect(errorBlock).toBeTruthy();
+  });
+
+  it('omits the footer nav landmark when both prev and next are absent', async () => {
+    await flushMarkdown('second-post', 'Initial');
+    mockBlog.getAdjacentPosts.mockReturnValue({ prev: undefined, next: undefined });
+    paramMapSubject.next(convertToParamMap({ slug: 'first-post' }));
+    fixture.detectChanges();
+    await flushMarkdown('first-post', 'Post content');
+    expect(el.querySelector('.post-footer-nav')).toBeNull();
   });
 });

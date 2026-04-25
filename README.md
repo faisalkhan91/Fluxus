@@ -218,6 +218,15 @@ Posts are Markdown files in `src/assets/blog/posts/`. Metadata lives in `src/ass
 
 The post-build script `scripts/inject-meta.mjs` injects per-route and post-specific OG/Twitter meta into each prerendered HTML file.
 
+Image assets dropped into `src/assets/images/blog/<post>/` can be optimized in-place to WebP via:
+
+```bash
+npm run optimize:images           # write .webp siblings, keep originals
+npm run optimize:images -- --replace   # replace .jpg/.png originals with .webp
+```
+
+The script is idempotent — re-running skips already-optimized files. Remember to update markdown image extensions to `.webp` after using `--replace`.
+
 </details>
 
 ---

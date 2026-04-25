@@ -32,6 +32,16 @@ describe('TabService', () => {
             component: DummyComponent,
             data: { tab: { label: 'Contact', ext: '.sh', color: '#f97316' } },
           },
+          {
+            path: 'blog',
+            component: DummyComponent,
+            data: { tab: { label: 'Blog', ext: '.rss', color: '#f78c40' } },
+          },
+          {
+            path: 'blog/:slug',
+            component: DummyComponent,
+            data: { tab: { label: 'Blog', ext: '.rss', color: '#f78c40' } },
+          },
         ]),
       ],
     });
@@ -106,5 +116,53 @@ describe('TabService', () => {
     };
     service.selectTab(tab);
     expect(navigateSpy).toHaveBeenCalledWith(['/about']);
+  });
+
+  it('preserves the slug in the tab.route for /blog/:slug', async () => {
+    await router.navigate(['/blog', 'first-post']);
+
+    const blogTab = service.openTabs().find((t) => t.id === 'blog');
+    expect(blogTab?.route).toBe('/blog/first-post');
+  });
+
+  it('updates the existing blog tab when navigating between blog URLs', async () => {
+    await router.navigate(['/blog']);
+    let blogTabs = service.openTabs().filter((t) => t.id === 'blog');
+    expect(blogTabs).toHaveLength(1);
+    expect(blogTabs[0].route).toBe('/blog');
+
+    await router.navigate(['/blog', 'first-post']);
+    blogTabs = service.openTabs().filter((t) => t.id === 'blog');
+    expect(blogTabs).toHaveLength(1);
+    expect(blogTabs[0].route).toBe('/blog/first-post');
+  });
+
+  it('inserts the Welcome tab when deep-linking to a non-home route', async () => {
+    // Reset by recreating the service with a deep-link as the first nav.
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([
+          {
+            path: '',
+            component: DummyComponent,
+            pathMatch: 'full',
+            data: { tab: { label: 'Home', ext: '.tsx', color: '#61dafb' } },
+          },
+          {
+            path: 'about',
+            component: DummyComponent,
+            data: { tab: { label: 'About', ext: '.md', color: '#42b883' } },
+          },
+        ]),
+      ],
+    });
+    const r = TestBed.inject(Router);
+    const s = TestBed.inject(TabService);
+    await r.navigate(['/about']);
+
+    const ids = s.openTabs().map((t) => t.id);
+    expect(ids[0]).toBe('hero');
+    expect(ids).toContain('about');
   });
 });

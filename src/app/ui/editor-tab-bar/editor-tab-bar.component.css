@@ -169,3 +169,12 @@
     display: none;
   }
 }
+
+/*
+  Hidden on phones — the mobile nav pill replaces the tab strip there.
+*/
+@media (max-width: 767px) {
+  :host {
+    display: none;
+  }
+}

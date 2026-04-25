@@ -1,44 +1,42 @@
 <a href="#main-content" class="skip-link">Skip to content</a>
 
-@if (media.showSidebar()) {
-  <ui-sidebar
-    [items]="navService.sidebarItems()"
-    [collapsed]="media.sidebarCollapsed()"
-    [isDark]="themeService.isDark()"
-    (resumeClicked)="onResumeDownload()"
-    (themeToggled)="onThemeToggle()"
-  />
-}
+<!--
+  Chrome elements render unconditionally so the prerendered HTML is identical
+  for every viewport. CSS @media queries in shell/sidebar/tab-bar/mobile-pill
+  decide which one is visible, eliminating the hydration layout shift caused
+  by the SSR media-query default.
+-->
+<ui-sidebar
+  [items]="navService.sidebarItems()"
+  [collapsed]="media.sidebarCollapsed()"
+  [isDark]="themeService.isDark()"
+  (resumeClicked)="onResumeDownload()"
+  (themeToggled)="onThemeToggle()"
+/>
 
 <div class="main-area">
-  @if (media.showSidebar()) {
-    <ui-editor-tab-bar
-      [tabs]="tabService.openTabs()"
-      [activeTabId]="tabService.activeTabId()"
-      (tabSelected)="tabService.selectTab($event)"
-      (tabClosed)="tabService.closeTab($event)"
-      (closeAllRequested)="tabService.closeAllTabs()"
-    />
-  }
+  <ui-editor-tab-bar
+    [tabs]="tabService.openTabs()"
+    [activeTabId]="tabService.activeTabId()"
+    (tabSelected)="tabService.selectTab($event)"
+    (tabClosed)="tabService.closeTab($event)"
+    (closeAllRequested)="tabService.closeAllTabs()"
+  />
 
   <main id="main-content" class="content">
     <router-outlet />
   </main>
 </div>
 
-@if (media.isMobile()) {
-  <button
-    class="mobile-theme-toggle"
-    (click)="onThemeToggle()"
-    [attr.aria-label]="themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-  >
-    <ui-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
-  </button>
-}
+<button
+  class="mobile-theme-toggle"
+  (click)="onThemeToggle()"
+  [attr.aria-label]="themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+>
+  <ui-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
+</button>
 
-@if (media.showMobileNav()) {
-  <ui-mobile-nav-pill
-    [items]="navService.mobileNavItems()"
-    [menuItems]="navService.mobileMenuItems()"
-  />
-}
+<ui-mobile-nav-pill
+  [items]="navService.mobileNavItems()"
+  [menuItems]="navService.mobileMenuItems()"
+/>
