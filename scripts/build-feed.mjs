@@ -60,20 +60,49 @@ const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'))
   .filter((p) => !p.draft)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-const updated = posts[0]?.date ? postIsoTimestamp(posts[0].date) : new Date().toISOString();
+/*
+  Feed-level <updated> per Atom RFC 4287 §4.2.15: "the most recent instant
+  in time when an entry or feed was modified in a way the publisher
+  considers significant." Take the max of every entry's `updated ?? date`
+  rather than `posts[0].date` so a backfill edit on an older post still
+  bumps the feed timestamp — without this, reader caches would stay
+  stale even though the post page and JSON-LD `dateModified` already
+  reflect the change. Lex comparison is safe because every value is a
+  fixed-width Z-terminated RFC 3339 string from `postIsoTimestamp`.
+*/
+const updated = posts.length
+  ? posts.reduce((latest, post) => {
+      const candidate = postIsoTimestamp(post.updated ?? post.date);
+      return candidate > latest ? candidate : latest;
+    }, '')
+  : new Date().toISOString();
 
 const entries = posts
   .map((post) => {
     const url = `${SITE_URL}/blog/${post.slug}`;
     const published = postIsoTimestamp(post.date);
+    /*
+      Entry-level <updated> falls back to the publish date when the post
+      has never been edited. Mirrors the post page's "Updated …" label
+      (rendered when `post.updated && post.updated !== post.date`) and
+      the BlogPosting JSON-LD's `dateModified` so all three surfaces
+      agree on revision history.
+    */
+    const entryUpdated = post.updated ? postIsoTimestamp(post.updated) : published;
+    /*
+      `type="text"` reflects the actual payload — excerpts are plain
+      prose with no HTML markup. `type="html"` would tell readers to
+      run an HTML parser over the (escaped) text and risks strict
+      readers stripping curly quotes / apostrophes during sanitisation.
+    */
     return `  <entry>
     <title>${escape(post.title)}</title>
     <link href="${url}"/>
     <id>${url}</id>
-    <updated>${published}</updated>
+    <updated>${entryUpdated}</updated>
     <published>${published}</published>
     <author><name>Faisal Khan</name></author>
-    <summary type="html">${escape(post.excerpt)}</summary>
+    <summary type="text">${escape(post.excerpt)}</summary>
     ${(post.tags || []).map((tag) => `<category term="${escape(tag)}"/>`).join('\n    ')}
   </entry>`;
   })
