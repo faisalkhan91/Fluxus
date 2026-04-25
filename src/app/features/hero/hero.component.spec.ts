@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, DeferBlockBehavior } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
 import { HeroComponent } from './hero.component';
@@ -35,6 +35,8 @@ const mockBlog = {
       readingTime: '3 min',
     },
   ]),
+  loading: signal(false),
+  error: signal<string | null>(null),
 };
 
 describe('HeroComponent', () => {
@@ -53,6 +55,10 @@ describe('HeroComponent', () => {
         { provide: BlogService, useValue: mockBlog },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      // Render the @defer main template inline rather than the placeholder so
+      // the latest-posts assertions still target the real cards. The block is
+      // wrapped in `@defer (hydrate on viewport)` for production, see template.
+      deferBlockBehavior: DeferBlockBehavior.Playthrough,
     }).compileComponents();
 
     router = TestBed.inject(Router);
@@ -86,11 +92,24 @@ describe('HeroComponent', () => {
     expect(latestSection).toBeTruthy();
   });
 
-  it('should hide latest posts section when no posts', () => {
+  it('shows skeleton placeholders while the blog manifest is loading', () => {
     mockBlog.latestPosts.set([]);
+    mockBlog.loading.set(true);
     fixture.detectChanges();
-    const latestSection = el.querySelector('.latest-posts');
-    expect(latestSection).toBeNull();
+    const skeletons = el.querySelectorAll('.latest-post-card--skeleton');
+    expect(skeletons.length).toBe(2);
+    // Reset for subsequent tests in the same suite.
+    mockBlog.loading.set(false);
+  });
+
+  it('always reserves space for the latest-posts block (placeholder or real)', () => {
+    // After the @defer wrap, the latest-posts container is rendered either by
+    // the @placeholder (skeletons) or by the resolved main template — never
+    // missing, which is the point of avoiding pop-in.
+    mockBlog.latestPosts.set([]);
+    mockBlog.loading.set(false);
+    fixture.detectChanges();
+    expect(el.querySelector('.latest-posts')).toBeTruthy();
   });
 
   it('should render social links', () => {

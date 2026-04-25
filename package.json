@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:prod": "ng build --configuration production && node scripts/inject-meta.mjs",
+    "build:prod": "node scripts/build-image-dims.mjs && ng build --configuration production && node scripts/inject-meta.mjs && node scripts/build-sitemap.mjs && node scripts/build-feed.mjs && node scripts/build-og-cards.mjs && node scripts/build-csp.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
@@ -13,8 +13,12 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "audit:prerender": "node scripts/audit-prerender.mjs",
     "optimize:images": "node scripts/optimize-blog-images.mjs",
+    "build:image-dims": "node scripts/build-image-dims.mjs",
+    "analyze": "ng build --configuration production --source-map && npx --yes source-map-explorer 'dist/fluxus/browser/main-*.js' 'dist/fluxus/browser/chunk-*.js' --no-border-checks",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
+    "e2e:visual": "VISUAL_REGRESSION=1 playwright test tests/e2e/visual.spec.ts",
+    "e2e:visual:update": "VISUAL_REGRESSION=1 playwright test tests/e2e/visual.spec.ts --update-snapshots",
     "e2e:install": "playwright install --with-deps chromium"
   },
   "private": true,
@@ -27,13 +31,15 @@
     "@angular/platform-browser": "^21.2.7",
     "@angular/platform-server": "^21.2.7",
     "@angular/router": "^21.2.7",
+    "@angular/service-worker": "^21.2.9",
     "@angular/ssr": "^21.2.6",
     "express": "~5.2.0",
     "highlight.js": "^11.11.1",
     "marked": "^17.0.5",
     "marked-highlight": "^2.2.3",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "web-vitals": "^5.2.0"
   },
   "devDependencies": {
     "@angular/build": "^21.2.6",

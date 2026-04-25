@@ -20,26 +20,43 @@
 .glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
+  /*
+    Smaller blur radius + isolated compositor layer = same visual feel at a
+    fraction of the paint cost. The extra `transform: translateZ(0)` and
+    `will-change: opacity` keep the orb on its own GPU layer so animating its
+    opacity doesn't repaint the hero behind it. The animation itself is
+    suppressed by the global `prefers-reduced-motion` rule in styles.css.
+  */
+  filter: blur(80px);
   opacity: 0.15;
+  transform: translateZ(0);
+  will-change: opacity;
   animation: pulse 8s ease-in-out infinite alternate;
 }
 
 .glow--1 {
-  width: 600px;
-  height: 600px;
+  width: 480px;
+  height: 480px;
   background: var(--accent);
   top: -20%;
   right: -10%;
 }
 
 .glow--2 {
-  width: 400px;
-  height: 400px;
+  width: 320px;
+  height: 320px;
   background: var(--accent-secondary);
   bottom: -15%;
   left: -5%;
   animation-delay: 4s;
+}
+
+/* The blur cost dominates on small phones with a low-end GPU — hide rather
+   than scale. Hero text alone reads fine without the ambient glow. */
+@media (max-width: 480px) {
+  .glow {
+    display: none;
+  }
 }
 
 .grid-overlay {
@@ -196,6 +213,62 @@
 
 .latest-post-card {
   height: 100%;
+}
+
+/* Skeleton placeholder while the blog manifest is loading. Same outer shape
+   as the real card so the layout never shifts when content arrives. */
+.latest-post-card--skeleton {
+  flex: 1;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--glass-bg),
+    var(--glass-bg-hover),
+    var(--glass-bg)
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s linear infinite;
+}
+
+.skeleton-line--meta {
+  width: 40%;
+}
+
+.skeleton-line--title {
+  width: 80%;
+  height: 16px;
+}
+
+.skeleton-line--text {
+  width: 100%;
+}
+
+.skeleton-line--text-short {
+  width: 60%;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line {
+    animation: none;
+  }
 }
 
 .latest-post-meta {

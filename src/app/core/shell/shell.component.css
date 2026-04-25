@@ -23,6 +23,19 @@
   top: var(--space-4);
 }
 
+.skip-link--nav:focus {
+  /* Stack the second skip link below the first when both surface. */
+  top: calc(var(--space-4) + 2.25rem);
+}
+
+@media (max-width: 767px) {
+  /* No persistent sidebar on phones — the bottom pill is reachable in
+     normal tab order, so a skip-to-nav target wouldn't help. */
+  .skip-link--nav {
+    display: none;
+  }
+}
+
 /*
   Layout is driven by viewport @media queries (not by signal-bound host
   classes) so the SSR markup works for every breakpoint with no hydration

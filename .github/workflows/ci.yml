@@ -81,3 +81,31 @@ jobs:
           name: dist
           path: dist/fluxus/browser
           retention-days: 7
+
+  lighthouse:
+    name: Lighthouse CI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: dist
+          path: dist/fluxus/browser
+
+      # `treosh/lighthouse-ci-action` runs against the staticDistDir defined
+      # in lighthouserc.json. Budgets and category thresholds live there.
+      - uses: treosh/lighthouse-ci-action@93fda2ed3f1b56cd8b0caf7d7da6cb83d33a8b30 # v12.1.0
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

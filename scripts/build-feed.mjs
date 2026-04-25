@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+/**
+ * Generates an Atom 1.0 feed at `dist/fluxus/browser/feed.xml` from
+ * `src/assets/blog/posts.json`. Atom over RSS because the spec is stricter
+ * about `updated` timestamps and the IDs are namespaced (cleaner for
+ * crawlers/aggregators).
+ *
+ * Run via `npm run build:prod` (chained after `inject-meta.mjs`).
+ */
+import { readFile, writeFile, stat } from 'node:fs/promises';
+import { join } from 'node:path';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { siteUrl: SITE_URL, siteName: SITE_NAME } = require('../site.config.json');
+
+const FEED_PATH = join(process.cwd(), 'dist/fluxus/browser/feed.xml');
+const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
+
+try {
+  await stat(join(process.cwd(), 'dist/fluxus/browser'));
+} catch {
+  console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
+  process.exit(1);
+}
+
+function escape(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'))
+  .filter((p) => !p.draft)
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+const updated = posts[0]?.date
+  ? new Date(posts[0].date).toISOString()
+  : new Date().toISOString();
+
+const entries = posts
+  .map((post) => {
+    const url = `${SITE_URL}/blog/${post.slug}`;
+    const published = new Date(post.date).toISOString();
+    return `  <entry>
+    <title>${escape(post.title)}</title>
+    <link href="${url}"/>
+    <id>${url}</id>
+    <updated>${published}</updated>
+    <published>${published}</published>
+    <author><name>Faisal Khan</name></author>
+    <summary type="html">${escape(post.excerpt)}</summary>
+    ${(post.tags || []).map((tag) => `<category term="${escape(tag)}"/>`).join('\n    ')}
+  </entry>`;
+  })
+  .join('\n');
+
+const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <title>${escape(SITE_NAME)}</title>
+  <subtitle>Engineering blog</subtitle>
+  <link href="${SITE_URL}/"/>
+  <link rel="self" type="application/atom+xml" href="${SITE_URL}/feed.xml"/>
+  <id>${SITE_URL}/</id>
+  <updated>${updated}</updated>
+  <author><name>Faisal Khan</name></author>
+${entries}
+</feed>
+`;
+
+await writeFile(FEED_PATH, xml, 'utf-8');
+console.log(`Wrote ${FEED_PATH} with ${posts.length} entr${posts.length === 1 ? 'y' : 'ies'}.`);

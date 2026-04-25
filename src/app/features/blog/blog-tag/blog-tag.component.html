@@ -1,0 +1,49 @@
+<div class="tag-layout">
+  <nav aria-label="Breadcrumb" class="tag-breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/blog">Blog</a></li>
+      <li aria-current="page">{{ tagLabel() }}</li>
+    </ol>
+  </nav>
+
+  <ui-section-header
+    [title]="'Posts tagged ' + tagLabel()"
+    decoration="// filtered.rss"
+    [level]="1"
+  />
+
+  @if (blog.loading()) {
+    <div class="tag-status" role="status" aria-live="polite">
+      <span class="loading-cursor">Loading posts...</span>
+    </div>
+  } @else if (matchingPosts().length === 0) {
+    <div class="tag-status">
+      <p>
+        No posts found for <strong>{{ tagLabel() }}</strong
+        >. <a routerLink="/blog">Browse all posts</a>.
+      </p>
+    </div>
+  } @else {
+    <div class="post-grid">
+      @for (post of matchingPosts(); track post.slug) {
+        <a [routerLink]="['/blog', post.slug]" class="post-link">
+          <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
+            <div class="post-meta">
+              <time class="post-date" [attr.datetime]="post.date">
+                <ui-icon name="calendar" [size]="12" />
+                {{ formatDate(post.date) }}
+              </time>
+              <span class="post-reading-time">
+                <ui-icon name="clock" [size]="12" />
+                {{ post.readingTime }}
+              </span>
+            </div>
+            <h2 class="post-title">{{ post.title }}</h2>
+            <p class="post-excerpt">{{ post.excerpt }}</p>
+          </ui-glass-card>
+        </a>
+      }
+    </div>
+  }
+</div>

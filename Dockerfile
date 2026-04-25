@@ -26,7 +26,10 @@ COPY --link --from=build /app/dist/fluxus/browser /usr/share/nginx/html
 # Angular boots client-side and the router renders the glitch NotFoundComponent.
 COPY --link --from=build /app/dist/fluxus/browser/index.csr.html /usr/share/nginx/html/404.html
 COPY --link nginx.conf /etc/nginx/conf.d/default.conf
-COPY --link security-headers.conf /etc/nginx/conf.d/security-headers.conf
+# Prefer the build-time-generated security headers (script-src hashes are
+# computed from every inline <script> the prerender emitted). The file falls
+# back to the hand-maintained source if the build step somehow skipped it.
+COPY --link --from=build /app/dist/fluxus/security-headers.conf /etc/nginx/conf.d/security-headers.conf
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -qO /dev/null http://localhost:8080/healthz || exit 1
 EXPOSE 8080

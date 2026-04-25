@@ -203,11 +203,23 @@ describe('BlogPostComponent', () => {
     expect(component.hasAdjacent()).toBe(false);
   });
 
-  it('renders back link to /blog', async () => {
+  it('renders the breadcrumb (Home / Blog / Title)', async () => {
     await flushMarkdown('second-post', 'Post content');
-    const backLink = el.querySelector('.back-link');
-    expect(backLink).toBeTruthy();
-    expect(backLink?.textContent).toContain('All Posts');
+    const items = el.querySelectorAll('.post-breadcrumb li');
+    expect(items.length).toBe(3);
+    expect(items[0].textContent?.trim()).toBe('Home');
+    expect(items[1].textContent?.trim()).toBe('Blog');
+    expect(items[2].textContent?.trim()).toBe('Second Post');
+    expect(items[2].getAttribute('aria-current')).toBe('page');
+  });
+
+  it('renders the slim attribution byline', async () => {
+    await flushMarkdown('second-post', 'Post content');
+    const byline = el.querySelector('.post-byline');
+    expect(byline).toBeTruthy();
+    expect(byline?.textContent).toContain('Faisal Khan');
+    expect(el.querySelector('.edit-link')).toBeNull();
+    expect(el.querySelector('.author-bio')).toBeNull();
   });
 
   it('renders post header when meta is set', async () => {
