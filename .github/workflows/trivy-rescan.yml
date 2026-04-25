@@ -1,0 +1,69 @@
+name: Trivy re-scan
+
+on:
+  schedule:
+    # Sunday 06:23 UTC — surfaces new CVEs against the published `latest`
+    # image while ignoring our `.trivyignore` suppressions, so stale
+    # entries become visible in the Security tab and a job-summary diff.
+    - cron: '23 6 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  rescan:
+    name: Re-scan latest image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Resolve image
+        id: img
+        run: |
+          IMAGE_NAME_LOWER="$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
+          echo "ref=${REGISTRY}/${IMAGE_NAME_LOWER}:latest" >> "$GITHUB_OUTPUT"
+
+      # No `trivyignores:` here — that is the entire point of this workflow.
+      # Findings are uploaded to the Security tab under a separate category
+      # so they don't collide with the gating scan from docker-publish.yml.
+      - name: Trivy scan WITHOUT ignore file
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: ${{ steps.img.outputs.ref }}
+          format: sarif
+          output: trivy-results-rescan.sarif
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: true
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
+        with:
+          sarif_file: trivy-results-rescan.sarif
+          category: trivy-image-rescan
+
+      - name: Render summary table
+        if: always()
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: ${{ steps.img.outputs.ref }}
+          format: table
+          severity: CRITICAL,HIGH,MEDIUM
+          ignore-unfixed: true
+          # Don't fail the job — this is informational; the gate lives in
+          # docker-publish.yml. Re-scan is a drift detector, not a blocker.
+          exit-code: '0'

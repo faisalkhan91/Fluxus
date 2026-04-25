@@ -8,19 +8,39 @@ permissions:
   contents: write
   pull-requests: write
 
+# Two rapid pushes to main shouldn't race against each other to author the
+# release PR. Don't cancel in-progress runs — release-please is idempotent
+# but cancelling mid-run risks a partial release tag.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release-please:
+    name: Open release PR
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    timeout-minutes: 10
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
       version: ${{ steps.release.outputs.version }}
     steps:
-      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
+      # Prefer a GitHub App token (least-privilege, short-lived, attributed
+      # to the bot) and fall back to the existing PAT if the App isn't set
+      # up yet. The App needs `contents: write` and `pull_requests: write`
+      # on this repository.
+      - name: Mint GitHub App token
+        id: app-token
+        if: ${{ vars.RELEASE_BOT_APP_ID != '' }}
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ vars.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Run release-please
+        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
         id: release
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-          token: ${{ secrets.RELEASE_TOKEN }}
+          token: ${{ steps.app-token.outputs.token || secrets.RELEASE_TOKEN }}

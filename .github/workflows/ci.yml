@@ -1,33 +1,32 @@
-name: CI Quality Gate
+name: CI
 
 on:
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 
 permissions:
   contents: read
 
+# Cancel superseded PR runs (a force-push to a PR head branch should kill the
+# old run), but never cancel main: we want every merge commit to produce a
+# definitive green/red signal that downstream release-please can trust.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
-  cancel-in-progress: true
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint:
-    name: Lint & Format
+    name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 24
-          cache: npm
+          persist-credentials: false
+      - uses: ./.github/actions/setup
 
-      - run: npm ci
       - run: npx ng lint
       - run: npx prettier --check .
 
@@ -37,13 +36,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 24
-          cache: npm
+          persist-credentials: false
+      - uses: ./.github/actions/setup
 
-      - run: npm ci
       - run: npx tsc --noEmit -p tsconfig.app.json
 
   test:
@@ -52,14 +48,41 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 24
-          cache: npm
+          persist-credentials: false
+      - uses: ./.github/actions/setup
 
-      - run: npm ci
-      - run: npx ng test --watch=false
+      # Coverage thresholds + reporters are declared in angular.json under
+      # the `coverage` configuration. Vitest fails the job if statements/
+      # branches/functions/lines drop below the configured floors.
+      - run: npm run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+          if-no-files-found: warn
+
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      # Production deps fail on HIGH+; dev deps only fail on CRITICAL so a
+      # noisy build-tool advisory doesn't block PRs while still catching
+      # anything that could land in the shipped bundle.
+      - name: Audit production dependencies (high+)
+        run: npm audit --audit-level=high --omit=dev
+      - name: Audit all dependencies (critical only)
+        run: npm audit --audit-level=critical
 
   build:
     name: Production Build
@@ -67,13 +90,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 24
-          cache: npm
+          persist-credentials: false
+      - uses: ./.github/actions/setup
 
-      - run: npm ci
       - run: npm run build:prod
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -82,6 +102,58 @@ jobs:
           path: dist/fluxus/browser
           retention-days: 7
 
+  e2e:
+    name: Playwright E2E
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: dist
+          path: dist/fluxus/browser
+
+      # Cache the Playwright browser binaries keyed by the resolved version
+      # so we only pay the ~150MB Chromium download when @playwright/test
+      # itself changes.
+      - name: Get Playwright version
+        id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps (cache hit)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # The default suite skips visual.spec.ts (the snapshots are macOS-only
+      # baselines and would always diff on Linux). Visual regression is
+      # opt-in via VISUAL_REGRESSION=1 — see playwright.config.ts.
+      - run: npx playwright test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
   lighthouse:
     name: Lighthouse CI
     needs: build
@@ -89,13 +161,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: 24
-          cache: npm
-
-      - run: npm ci
+          persist-credentials: false
+      - uses: ./.github/actions/setup
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
@@ -104,8 +172,24 @@ jobs:
 
       # `treosh/lighthouse-ci-action` runs against the staticDistDir defined
       # in lighthouserc.json. Budgets and category thresholds live there.
+      # Reports are uploaded as a workflow artifact only — we deliberately
+      # do not push to LHCI temporary public storage so unreleased blog
+      # drafts in the prerendered output never leak to a public URL.
       - uses: treosh/lighthouse-ci-action@93fda2ed3f1b56cd8b0caf7d7da6cb83d33a8b30 # v12.1.0
         with:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
-          temporaryPublicStorage: true
+
+  # Single fan-in check for branch protection. Requiring `CI / CI success`
+  # instead of every individual job means adding/removing a parallel CI job
+  # never requires editing branch protection rules.
+  ci-success:
+    name: CI success
+    if: always()
+    needs: [lint, typecheck, test, audit, build, e2e, lighthouse]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Verify all required jobs succeeded
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1

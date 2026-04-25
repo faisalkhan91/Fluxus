@@ -1,4 +1,4 @@
-name: Build and Push to GHCR
+name: Publish image
 
 on:
   push:
@@ -12,22 +12,44 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-and-push:
+    name: Build and push image
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
       contents: read
       packages: write
-      id-token: write
-    env:
-      HAS_HOMELAB_TOKEN: ${{ secrets.HOMELAB_PERSONAL_ACCESS_TOKEN != '' }}
+      # Required for SARIF upload to the GitHub Security tab below.
+      # `id-token: write` is intentionally omitted: provenance/sbom from
+      # docker/build-push-action are derived from build context, not OIDC.
+      security-events: write
+
+    outputs:
+      image: ${{ steps.image-ref.outputs.ref }}
+      version: ${{ steps.image-ref.outputs.version }}
+      has_homelab_creds: ${{ steps.gate.outputs.has_homelab_creds }}
 
     steps:
+      - name: Resolve credential gate
+        id: gate
+        env:
+          HOMELAB_PAT: ${{ secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
+          HOMELAB_APP_ID: ${{ vars.HOMELAB_BOT_APP_ID }}
+        run: |
+          # secrets are not available in downstream job-level `if:` so we
+          # surface the gate decision as a build-job output instead.
+          if [ -n "${HOMELAB_PAT:-}" ] || [ -n "${HOMELAB_APP_ID:-}" ]; then
+            echo "has_homelab_creds=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_homelab_creds=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
@@ -53,6 +75,7 @@ jobs:
             type=raw,value=latest
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
           context: .
@@ -60,41 +83,127 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=fluxus
+          cache-to: type=gha,mode=max,scope=fluxus
           sbom: true
           provenance: mode=max
 
-      - name: Scan image for vulnerabilities
+      # Pull a stable image reference + version string out of the metadata
+      # so downstream steps (Trivy, GitOps) all agree on what we shipped.
+      - name: Resolve image reference
+        id: image-ref
+        run: |
+          set -euo pipefail
+          REF=$(printf '%s\n' "${{ steps.meta.outputs.tags }}" | head -n1)
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "ref=${REF}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      # Single-pass Trivy: writes SARIF AND gates on HIGH/CRITICAL in one
+      # invocation. `limit-severities-for-sarif: true` is what makes the
+      # severity filter actually apply to the exit code (see
+      # aquasecurity/trivy-action#309). Trivy writes the SARIF before exiting,
+      # so `if: always()` on the upload step guarantees findings reach the
+      # Security tab even when the gate trips.
+      - name: Trivy scan
         uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
         with:
-          image-ref: ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          format: table
-          exit-code: '1'
+          image-ref: ${{ steps.image-ref.outputs.ref }}
+          format: sarif
+          output: trivy-results.sarif
           severity: CRITICAL,HIGH
+          limit-severities-for-sarif: true
+          exit-code: '1'
           ignore-unfixed: true
           trivyignores: .trivyignore
 
-      - name: Checkout Homelab Monorepo
-        if: ${{ env.HAS_HOMELAB_TOKEN == 'true' }}
+      - name: Upload Trivy SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-image-scan
+
+  gitops-bump:
+    name: Open Homelab GitOps PR
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    # Skip cleanly on forks / first-time runs without the Homelab credentials
+    # configured. Either app credentials (preferred) or a PAT works; the
+    # gate is computed in build-and-push because `secrets` is not available
+    # in job-level `if:` expressions.
+    if: needs.build-and-push.outputs.has_homelab_creds == 'true'
+
+    steps:
+      # Prefer a GitHub App token (least-privilege, short-lived) and fall
+      # back to the existing fine-scoped PAT if the App isn't set up yet.
+      - name: Mint GitHub App token
+        id: app-token
+        if: ${{ vars.HOMELAB_BOT_APP_ID != '' }}
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ vars.HOMELAB_BOT_APP_ID }}
+          private-key: ${{ secrets.HOMELAB_BOT_PRIVATE_KEY }}
+          owner: faisalkhan91
+          repositories: Homelab
+
+      - name: Checkout Homelab monorepo
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           repository: faisalkhan91/Homelab
-          token: ${{ secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
+          token: ${{ steps.app-token.outputs.token || secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
           path: Homelab
+          # peter-evans/create-pull-request authenticates with its own
+          # `token:` input rather than the in-tree git config, so we don't
+          # need to persist credentials in the working tree.
+          persist-credentials: false
 
-      - name: Update Kubernetes Manifest in Monorepo
-        if: ${{ env.HAS_HOMELAB_TOKEN == 'true' }}
+      - name: Bump fluxus image tag
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.version }}
         run: |
+          set -euo pipefail
           cd Homelab/kubernetes/apps/fluxus/base
 
-          IMAGE_TAG="${GITHUB_REF_NAME#v}"
-          IMAGE_NAME="$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')"
-          sed -i "s|image: ${{ env.REGISTRY }}/${IMAGE_NAME}:.*|image: ${{ env.REGISTRY }}/${IMAGE_NAME}:${IMAGE_TAG}|g" fluxus.yaml
+          IMAGE_NAME_LOWER="$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
+          IMAGE_PREFIX="${REGISTRY}/${IMAGE_NAME_LOWER}"
+          NEW_IMAGE="${IMAGE_PREFIX}:${IMAGE_TAG}"
 
-          git config --global user.name "GitOps Bot"
-          git config --global user.email "actions@github.com"
+          # Structurally-agnostic replace: anchor the prefix so we never
+          # accidentally rewrite an unrelated `image:` entry, and only touch
+          # lines whose existing tag matches our registry/image.
+          sed -i -E "s|image: ${IMAGE_PREFIX}:[A-Za-z0-9._-]+|image: ${NEW_IMAGE}|g" fluxus.yaml
 
-          git add fluxus.yaml
-          git commit -m "chore(fluxus): release ${GITHUB_REF_NAME} [skip ci]"
-          git push origin main
+          # Belt-and-suspenders: assert the file is still valid YAML and
+          # actually contains the new image string we tried to write.
+          yq e '.' fluxus.yaml > /dev/null
+          grep -qF "image: ${NEW_IMAGE}" fluxus.yaml
+
+      - name: Open release PR in Homelab
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          path: Homelab
+          token: ${{ steps.app-token.outputs.token || secrets.HOMELAB_PERSONAL_ACCESS_TOKEN }}
+          branch: gitops/fluxus-${{ needs.build-and-push.outputs.version }}
+          base: main
+          commit-message: |
+            chore(fluxus): release v${{ needs.build-and-push.outputs.version }}
+          title: 'chore(fluxus): release v${{ needs.build-and-push.outputs.version }}'
+          body: |
+            Automated bump from [Fluxus tag v${{ needs.build-and-push.outputs.version }}](https://github.com/${{ github.repository }}/releases/tag/v${{ needs.build-and-push.outputs.version }}).
+
+            - Image: `${{ needs.build-and-push.outputs.image }}`
+            - Triggered by: ${{ github.actor }}
+            - Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Merge to let Argo / Flux roll the new image. Close the PR to abort the release.
+          delete-branch: true
+          sign-commits: true
+          labels: |
+            gitops
+            fluxus
