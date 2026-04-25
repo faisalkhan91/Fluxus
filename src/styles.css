@@ -986,17 +986,17 @@ p {
    so the two never fight for the same property. */
 @supports (animation-timeline: scroll()) {
   app-blog-post .reading-progress {
-    width: 0;
+    transform: scaleX(0);
     animation: reading-grow linear both;
     animation-timeline: scroll(root);
     transition: none;
   }
   @keyframes reading-grow {
     from {
-      width: 0;
+      transform: scaleX(0);
     }
     to {
-      width: 100%;
+      transform: scaleX(1);
     }
   }
 }
