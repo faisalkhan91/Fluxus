@@ -8,11 +8,11 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { SectionHeaderComponent } from '../../ui/section-header/section-header.component';
-import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
-import { GlowButtonComponent } from '../../ui/glow-button/glow-button.component';
-import { IconComponent } from '../../ui/icon/icon.component';
-import { ProfileDataService } from '../../core/services/profile-data.service';
+import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
+import { GlowButtonComponent } from '@ui/glow-button/glow-button.component';
+import { IconComponent } from '@ui/icon/icon.component';
+import { ProfileDataService } from '@core/services/profile-data.service';
 
 type SubmitStage = 'editing' | 'awaiting-confirmation' | 'sent';
 

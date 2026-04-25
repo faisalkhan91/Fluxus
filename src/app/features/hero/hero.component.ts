@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { GlowButtonComponent } from '../../ui/glow-button/glow-button.component';
-import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
-import { IconComponent } from '../../ui/icon/icon.component';
-import { ProfileDataService } from '../../core/services/profile-data.service';
-import { BlogService } from '../../core/services/blog.service';
-import { formatPostDate } from '../../shared/utils/blog.utils';
+import { GlowButtonComponent } from '@ui/glow-button/glow-button.component';
+import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
+import { IconComponent } from '@ui/icon/icon.component';
+import { ProfileDataService } from '@core/services/profile-data.service';
+import { BlogService } from '@core/services/blog.service';
+import { formatPostDate } from '@shared/utils/blog.utils';
 
 @Component({
   selector: 'app-hero',

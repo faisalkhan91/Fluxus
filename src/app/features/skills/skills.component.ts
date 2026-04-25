@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { SectionHeaderComponent } from '../../ui/section-header/section-header.component';
-import { SkillBadgeComponent } from '../../ui/skill-badge/skill-badge.component';
-import { SkillsDataService } from '../../core/services/skills-data.service';
-import { MediaQueryService } from '../../core/services/media-query.service';
-import { SkillCategory, Skill } from '../../shared/models/skill.model';
-import { slugify } from '../../shared/utils/string.utils';
+import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { SkillBadgeComponent } from '@ui/skill-badge/skill-badge.component';
+import { SkillsDataService } from '@core/services/skills-data.service';
+import { MediaQueryService } from '@core/services/media-query.service';
+import { SkillCategory, Skill } from '@shared/models/skill.model';
+import { slugify } from '@shared/utils/string.utils';
 
 @Component({
   selector: 'app-skills',

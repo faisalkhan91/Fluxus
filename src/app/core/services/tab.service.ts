@@ -2,7 +2,7 @@ import { Injectable, signal, computed, inject, DestroyRef } from '@angular/core'
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EditorTab } from '../../ui/editor-tab-bar/editor-tab-bar.component';
+import { EditorTab } from '@ui/editor-tab-bar/editor-tab-bar.component';
 
 interface TabData {
   label: string;

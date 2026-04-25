@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Certification, CourseProvider, Award } from '../../shared/models/certification.model';
+import { Certification, CourseProvider, Award } from '@shared/models/certification.model';
 
 @Injectable({ providedIn: 'root' })
 export class CertificationsDataService {

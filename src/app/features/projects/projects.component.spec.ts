@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ProjectsComponent } from './projects.component';
-import { ProjectsDataService } from '../../core/services/projects-data.service';
+import { ProjectsDataService } from '@core/services/projects-data.service';
 
 const MOCK_PROJECTS = [
   {

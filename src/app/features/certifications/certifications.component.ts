@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { SectionHeaderComponent } from '../../ui/section-header/section-header.component';
-import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
-import { IconComponent } from '../../ui/icon/icon.component';
-import { CertificationsDataService } from '../../core/services/certifications-data.service';
-import { slugify } from '../../shared/utils/string.utils';
+import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
+import { IconComponent } from '@ui/icon/icon.component';
+import { CertificationsDataService } from '@core/services/certifications-data.service';
+import { slugify } from '@shared/utils/string.utils';
 
 @Component({
   selector: 'app-certifications',

@@ -1,6 +1,6 @@
 import { Injectable, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { BlogPost } from '../../shared/models/blog-post.model';
+import { BlogPost } from '@shared/models/blog-post.model';
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {

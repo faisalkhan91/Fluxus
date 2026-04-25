@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
 import { TabService } from './tab.service';
-import { EditorTab } from '../../ui/editor-tab-bar/editor-tab-bar.component';
+import { EditorTab } from '@ui/editor-tab-bar/editor-tab-bar.component';
 
 @Component({ template: '' })
 class DummyComponent {}

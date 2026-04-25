@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Project } from '../../shared/models/project.model';
+import { Project } from '@shared/models/project.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectsDataService {

@@ -11,7 +11,7 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import { IMAGE_DIMS } from './image-dims.generated';
-import { slugify } from '../../shared/utils/string.utils';
+import { slugify } from '@shared/utils/string.utils';
 
 hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('javascript', javascript);

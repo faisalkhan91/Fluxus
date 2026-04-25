@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { ErrorToastService } from '../../core/services/error-toast.service';
+import { ErrorToastService } from '@core/services/error-toast.service';
 
 @Component({
   selector: 'ui-toast-region',

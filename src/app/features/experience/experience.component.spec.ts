@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ExperienceComponent } from './experience.component';
-import { ExperienceDataService } from '../../core/services/experience-data.service';
-import { TimelineItem } from '../../shared/models/experience.model';
+import { ExperienceDataService } from '@core/services/experience-data.service';
+import { TimelineItem } from '@shared/models/experience.model';
 
 const MOCK_ITEMS: TimelineItem[] = [
   { type: 'period', title: 'Acme Corp' },

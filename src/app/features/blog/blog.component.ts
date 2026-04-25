@@ -1,13 +1,13 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { GlassCardComponent } from '../../ui/glass-card/glass-card.component';
-import { IconComponent } from '../../ui/icon/icon.component';
-import { SectionHeaderComponent } from '../../ui/section-header/section-header.component';
-import { BlogService } from '../../core/services/blog.service';
-import { IMAGE_DIMS } from '../../core/services/image-dims.generated';
-import { BlogPost } from '../../shared/models/blog-post.model';
-import { slugify } from '../../shared/utils/string.utils';
-import { formatPostDate } from '../../shared/utils/blog.utils';
+import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
+import { IconComponent } from '@ui/icon/icon.component';
+import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { BlogService } from '@core/services/blog.service';
+import { IMAGE_DIMS } from '@core/services/image-dims.generated';
+import { BlogPost } from '@shared/models/blog-post.model';
+import { slugify } from '@shared/utils/string.utils';
+import { formatPostDate } from '@shared/utils/blog.utils';
 
 /** Fallback cover dimensions match the build-og-cards.mjs output (1200x630). */
 const OG_FALLBACK_DIMS = { w: 1200, h: 630 } as const;

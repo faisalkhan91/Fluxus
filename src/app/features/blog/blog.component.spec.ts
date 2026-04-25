@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { BlogComponent } from './blog.component';
-import { BlogService } from '../../core/services/blog.service';
+import { BlogService } from '@core/services/blog.service';
 
 const MOCK_POSTS = [
   {
