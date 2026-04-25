@@ -3,10 +3,22 @@ import { join, relative, sep, posix } from 'node:path';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { siteUrl: SITE_URL, siteName: SITE_NAME } = require('../site.config.json');
+const config = require('../site.config.json');
+const { siteUrl: SITE_URL, siteName: SITE_NAME } = config;
+const TWITTER_HANDLE = (config.twitterHandle ?? '').trim();
 
 const DIST = join(process.cwd(), 'dist/fluxus/browser');
-const OG_IMAGE = `${SITE_URL}/assets/images/og-image.png`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/assets/images/og-image.png`;
+
+function resolveCover(post) {
+  // Author-supplied cover wins.
+  if (post.cover) {
+    if (post.cover.startsWith('http')) return post.cover;
+    return `${SITE_URL}${post.cover.startsWith('/') ? '' : '/'}${post.cover}`;
+  }
+  // Otherwise rely on the auto-generated card from scripts/build-og-cards.mjs.
+  return `${SITE_URL}/og/${post.slug}.png`;
+}
 
 const blogManifest = JSON.parse(
   await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8'),
@@ -57,6 +69,48 @@ function setMetaDescription(html, description) {
     : html.replace('</head>', `    ${tag}\n  </head>`);
 }
 
+/**
+ * Strip any previously-injected per-route JSON-LD blocks (matched by id) and
+ * append fresh ones. The site-wide JSON-LD authored in src/index.html is
+ * untouched — it has no id attribute on its <script>.
+ */
+function setBlogJsonLd(html, post, url) {
+  const cover = resolveCover(post);
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: url },
+    ],
+  };
+  const blogPosting = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    headline: post.title,
+    description: post.excerpt,
+    image: cover,
+    url,
+    keywords: (post.tags || []).join(', '),
+    datePublished: post.date,
+    dateModified: post.date,
+    author: { '@id': `${SITE_URL}/#person` },
+    publisher: { '@id': `${SITE_URL}/#person` },
+    inLanguage: 'en',
+  };
+  const block =
+    `    <script type="application/ld+json" data-blog-jsonld="${escapeAttr(post.slug)}">${JSON.stringify(blogPosting)}</script>\n` +
+    `    <script type="application/ld+json" data-breadcrumb-jsonld="${escapeAttr(post.slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+  // Remove any prior injected blocks from a previous run (idempotency).
+  const stripped = html.replace(
+    /\s*<script\s+type="application\/ld\+json"\s+data-(?:blog|breadcrumb)-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
+    '',
+  );
+  return stripped.replace('</head>', `${block}  </head>`);
+}
+
 function escapeAttr(value) {
   return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
@@ -75,6 +129,7 @@ for await (const htmlPath of walk(DIST)) {
   const blogMatch = route.match(/^\/blog\/([^/]+)$/);
   if (blogMatch && blogBySlug.has(blogMatch[1])) {
     const post = blogBySlug.get(blogMatch[1]);
+    const cover = resolveCover(post);
     const title = `${post.title} — ${SITE_NAME}`;
     html = setTitle(html, title);
     html = setMetaDescription(html, post.excerpt);
@@ -82,22 +137,30 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:description', post.excerpt);
     html = setMetaProperty(html, 'og:type', 'article');
     html = setMetaProperty(html, 'og:url', url);
-    html = setMetaProperty(html, 'og:image', OG_IMAGE);
+    html = setMetaProperty(html, 'og:image', cover);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', post.excerpt);
-    html = setMetaProperty(html, 'twitter:image', OG_IMAGE);
+    html = setMetaProperty(html, 'twitter:image', cover);
+    if (TWITTER_HANDLE) {
+      html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
+      html = setMetaProperty(html, 'twitter:creator', TWITTER_HANDLE);
+    }
     html = setLinkCanonical(html, url);
+    html = setBlogJsonLd(html, post, url);
     blogProcessed++;
     console.log(`  BLOG ${post.slug} → "${post.title}"`);
   } else {
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:type', 'website');
-    html = setMetaProperty(html, 'og:image', OG_IMAGE);
+    html = setMetaProperty(html, 'og:image', DEFAULT_OG_IMAGE);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
-    html = setMetaProperty(html, 'twitter:image', OG_IMAGE);
+    html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    if (TWITTER_HANDLE) {
+      html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
+    }
     html = setLinkCanonical(html, url);
     routesProcessed++;
     console.log(`  ROUTE ${route}`);

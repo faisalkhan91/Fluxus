@@ -16,6 +16,10 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  // Skip visual.spec from the default suite — it owns its own snapshot
+  // baselines under tests/e2e/__screenshots__/ and is opt-in via
+  // `npm run e2e:visual`. Keeps the day-to-day suite hermetic.
+  testIgnore: process.env['VISUAL_REGRESSION'] === '1' ? [] : ['**/visual.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
   retries: process.env['CI'] ? 1 : 0,
@@ -24,6 +28,14 @@ export default defineConfig({
     baseURL: 'http://localhost:4300',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+  },
+  expect: {
+    toHaveScreenshot: {
+      // Allow ~2% difference per pixel — covers font hinting / GPU jitter
+      // without missing real layout regressions.
+      maxDiffPixelRatio: 0.02,
+      animations: 'disabled',
+    },
   },
   projects: [
     {

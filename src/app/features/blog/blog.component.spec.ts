@@ -69,10 +69,19 @@ describe('BlogComponent', () => {
   });
 
   it('should render tags for each post', () => {
-    const tags = el.querySelectorAll('.tag');
+    // Tags inside post cards only (the bottom hint also renders `.tag--link`s
+    // for every unique tag across all posts).
+    const tags = el.querySelectorAll('.post-card .tag');
     expect(tags.length).toBe(2);
     expect(tags[0].textContent?.trim()).toBe('angular');
     expect(tags[1].textContent?.trim()).toBe('go');
+  });
+
+  it('should render a tag-browse hint with one entry per unique tag', () => {
+    const hintLinks = el.querySelectorAll('.post-grid-hint .tag--link');
+    expect(hintLinks.length).toBe(2);
+    expect(hintLinks[0].getAttribute('href')).toBe('/blog/tag/angular');
+    expect(hintLinks[1].getAttribute('href')).toBe('/blog/tag/go');
   });
 
   it('should not render grid when posts are empty', () => {

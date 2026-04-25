@@ -109,6 +109,15 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'blog/tag/:tag',
+        loadComponent: () =>
+          import('./features/blog/blog-tag/blog-tag.component').then((m) => m.BlogTagComponent),
+        data: {
+          tab: { label: 'Blog', ext: '.rss', color: '#f78c40' },
+          seo: { dynamicMeta: true },
+        },
+      },
+      {
         path: 'blog/:slug',
         loadComponent: () =>
           import('./features/blog/blog-post/blog-post.component').then((m) => m.BlogPostComponent),

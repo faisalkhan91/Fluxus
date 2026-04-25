@@ -1,10 +1,16 @@
 <div class="blog-layout">
-  <ui-section-header
-    title="Blog"
-    subtitle="Thoughts on engineering, cloud, and craft"
-    decoration="// posts.rss"
-    [level]="1"
-  />
+  <header class="blog-header">
+    <ui-section-header
+      title="Blog"
+      subtitle="Thoughts on engineering, cloud, and craft"
+      decoration="// posts.rss"
+      [level]="1"
+    />
+    <a class="subscribe-link" href="/feed.xml" rel="alternate" type="application/atom+xml">
+      <ui-icon name="rss" [size]="14" />
+      <span>Subscribe</span>
+    </a>
+  </header>
 
   @if (blog.posts().length) {
     <div class="post-grid">
@@ -32,6 +38,12 @@
         </a>
       }
     </div>
+    <p class="post-grid-hint">
+      Browse by tag:
+      @for (tag of allTags(); track tag) {
+        <a [routerLink]="['/blog/tag', tagSlug(tag)]" class="tag tag--link">{{ tag }}</a>
+      }
+    </p>
   } @else if (blog.loading()) {
     <div class="blog-status" role="status" aria-live="polite">
       <span class="loading-cursor">Loading posts...</span>

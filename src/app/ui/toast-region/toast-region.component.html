@@ -1,0 +1,25 @@
+@for (toast of toasts.toasts(); track toast.id) {
+  <div class="toast" role="alert">
+    <div class="toast-body">
+      <p class="toast-title">{{ toast.title }}</p>
+      @if (toast.detail) {
+        <p class="toast-detail">{{ toast.detail }}</p>
+      }
+    </div>
+    <div class="toast-actions">
+      @if (toast.actionLabel && toast.action) {
+        <button type="button" class="toast-action" (click)="toast.action(); toasts.dismiss(toast.id)">
+          {{ toast.actionLabel }}
+        </button>
+      }
+      <button
+        type="button"
+        class="toast-dismiss"
+        (click)="toasts.dismiss(toast.id)"
+        aria-label="Dismiss notification"
+      >
+        &times;
+      </button>
+    </div>
+  </div>
+}

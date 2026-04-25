@@ -34,10 +34,6 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'rect', width: '20', height: '14', x: '2', y: '7', rx: '2', ry: '2' },
     { tag: 'path', d: 'M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16' },
   ],
-  code: [
-    { tag: 'polyline', points: '16 18 22 12 16 6' },
-    { tag: 'polyline', points: '8 6 2 12 8 18' },
-  ],
   layers: [
     { tag: 'polygon', points: '12 2 2 7 12 12 22 7 12 2' },
     { tag: 'polyline', points: '2 17 12 22 22 17' },
@@ -58,10 +54,6 @@ export const ICONS: Record<string, IconShape[]> = {
   mail: [
     { tag: 'rect', width: '20', height: '16', x: '2', y: '4', rx: '2' },
     { tag: 'path', d: 'm22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7' },
-  ],
-  terminal: [
-    { tag: 'polyline', points: '4 17 10 11 4 5' },
-    { tag: 'line', x1: '12', y1: '19', x2: '20', y2: '19' },
   ],
   download: [
     { tag: 'path', d: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' },
@@ -105,11 +97,6 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'line', x1: '4', y1: '12', x2: '20', y2: '12' },
     { tag: 'line', x1: '4', y1: '6', x2: '20', y2: '6' },
     { tag: 'line', x1: '4', y1: '18', x2: '20', y2: '18' },
-  ],
-  globe: [
-    { tag: 'circle', cx: '12', cy: '12', r: '10' },
-    { tag: 'path', d: 'M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20' },
-    { tag: 'path', d: 'M2 12h20' },
   ],
   'file-text': [
     { tag: 'path', d: 'M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z' },

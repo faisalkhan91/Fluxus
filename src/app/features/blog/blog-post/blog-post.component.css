@@ -44,6 +44,42 @@
   background: var(--glass-bg);
 }
 
+.post-breadcrumb {
+  margin-bottom: var(--space-6);
+}
+
+.post-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.post-breadcrumb li:not(:last-child)::after {
+  content: '/';
+  margin-left: var(--space-2);
+  color: var(--text-muted);
+}
+
+.post-breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.post-breadcrumb a:hover {
+  color: var(--accent-hover);
+}
+
+.post-breadcrumb [aria-current='page'] {
+  color: var(--text-primary);
+}
+
 .post-header {
   margin-bottom: var(--space-6);
 }
@@ -80,6 +116,16 @@
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);
   letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.tag--link:hover,
+.tag--link:focus-visible {
+  background: var(--accent);
+  color: #fff;
 }
 
 .post-content {
@@ -106,6 +152,80 @@
   50% {
     border-color: transparent;
   }
+}
+
+.post-footer {
+  margin-top: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.post-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.share-label {
+  margin-right: var(--space-1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.share-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.share-link:hover,
+.share-link:focus-visible {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+  border-color: var(--accent);
+}
+
+.share-text {
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+/* Single-line attribution under the share row. Intentionally chrome-free —
+   no card, no avatar — to keep the post footer light. */
+.post-byline {
+  margin: 0;
+  padding: var(--space-3) var(--space-2) 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.post-byline strong {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .post-footer-nav {

@@ -29,12 +29,20 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 
 - **Glass Workspace UI** — Glassmorphism design system with `backdrop-filter`, custom design tokens, dark/light mode
 - **Static Site Generation** — All routes prerendered at build time for instant load and SEO
-- **Blog Engine** — Markdown posts with syntax highlighting, reading progress bar, prev/next navigation
+- **Blog Engine** — Markdown posts with anchor IDs, copy-button code blocks, reading progress bar, prev/next + breadcrumb navigation, share row, "Edit on GitHub" deep link, and a `/blog/tag/:tag` archive
+- **Auto-generated assets** — Per-post Open Graph card PNGs, Atom feed (`/feed.xml`), sitemap (`/sitemap.xml`), and image dimensions for CLS-safe markdown images
+- **Structured data** — Site-wide `Person` + `WebSite` JSON-LD; per-post `BlogPosting` + `BreadcrumbList`
 - **Adaptive Favicon** — SVG favicon with dark/light mode support, multi-size ICO, apple-touch-icon, PWA manifest icons
-- **Full SEO** — Per-route `<title>`, `og:*`, `twitter:*` meta tags, canonical URLs, `sitemap.xml`, `robots.txt`
-- **Accessibility** — Skip-to-content link, WCAG AA focus styles, ARIA attributes on all interactive elements
-- **Security Headers** — CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-- **Comprehensive Test Suite** — Component and service tests with Vitest, run in CI on every PR
+- **Full SEO** — Per-route `<title>`, `og:*`, `twitter:*` meta tags, canonical URLs
+- **Accessibility** — Skip-to-content + skip-to-nav links, WCAG AA focus styles, ARIA attributes on all interactive elements, focus trap on the mobile menu
+- **Cmd+K command palette** — Site-wide search over routes + blog posts, no third-party deps
+- **Incremental hydration** — Below-fold blocks (hero "latest posts") deferred via `@defer (hydrate on viewport)` to slim TBT
+- **Service Worker** — `@angular/service-worker` precaches the app shell and lazy-caches blog posts + images for offline reading
+- **Web Vitals telemetry** — `web-vitals` lib, lazy-loaded; logs CLS / INP / LCP / FCP / TTFB to console in dev and beacons to a self-hosted endpoint in prod when configured
+- **Modern CSS** — OKLCH accent palette, container queries on the content shell, scroll-driven reading-progress animation (zero-JS where supported)
+- **Print stylesheet** — Resume / blog post print-friendly view (chrome hidden, black-on-white, prose expanded)
+- **Security Headers** — CSP (script-src hashed at build time, no `'unsafe-inline'` for scripts), HSTS preload, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- **Comprehensive Test Suite** — 250+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
 - **Automated CI/CD** — GitHub Actions quality gate, Release Please versioning, multi-arch Docker publish, Trivy scanning
 
 ---
@@ -61,15 +69,23 @@ Open `http://localhost:4300/` in your browser.
 
 ## Build
 
-### Production (SSG + blog meta injection)
+### Production (SSG + asset generation)
 
 ```bash
 npm run build:prod
 ```
 
-This runs `ng build --configuration production` followed by `node scripts/inject-meta.mjs`, which rewrites per-route `<title>`, `<meta name="description">`, canonical, and Open Graph / Twitter tags in every prerendered HTML file.
+This runs the full build pipeline in order:
 
-Build output goes to `dist/fluxus/browser/` — 12 prerendered static routes as directories with `index.html` inside each.
+1. `node scripts/build-image-dims.mjs` — sweeps `src/assets/images/` with `sharp` and writes intrinsic width/height for every image into `src/app/core/services/image-dims.generated.ts`. The MarkdownService renderer reads this map so blog `<img>` tags ship with `width` / `height` / `loading="lazy"` / `decoding="async"` (no CLS).
+2. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included.
+3. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts also get JSON-LD `BlogPosting` + `BreadcrumbList`.
+4. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list (no manual sitemap maintenance).
+5. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
+6. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
+7. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
+
+Build output goes to `dist/fluxus/browser/` — 18 prerendered static routes (8 top-level + 4 blog posts + every unique `/blog/tag/:tag`) as directories with `index.html` inside each, plus `feed.xml`, `sitemap.xml`, `og/<slug>.png`, and the SW manifests.
 
 ## Docker
 
@@ -108,14 +124,16 @@ npm test -- --watch=false  # single run (CI)
 
 ## Quality gates
 
-Four layered checks guard the build. The CI workflow runs the first two on every PR; the prerender audit and the Playwright pass run locally before a release tag.
+Six layered checks guard the build. The CI workflow runs lint, typecheck, unit tests, build, and Lighthouse on every PR; the prerender audit and the Playwright pass run locally before a release tag.
 
-| Gate                       | Command                                                  | What it catches                                                                                  |
-| -------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Unit tests                 | `npm test -- --watch=false`                              | 230+ Vitest specs across components and services                                                 |
-| Static analysis            | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`         | ESLint, Angular template rules, strict TypeScript                                                |
-| Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`) | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script |
-| Live visual / a11y pass    | `npm run e2e` (after `npm run build:prod`)               | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`           |
+| Gate                         | Command                                                          | What it catches                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Unit tests                   | `npm test -- --watch=false`                                      | 250+ Vitest specs (components, services, blog content + nav-routes contract tests)                              |
+| Static analysis              | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`                 | ESLint, Angular template rules, strict TypeScript                                                              |
+| Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`)           | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script             |
+| Live a11y / behaviour        | `npm run e2e` (after `npm run build:prod`)                       | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`                         |
+| Visual regression (opt-in)   | `npm run e2e:visual` (after `npm run build:prod`)                | Per-route × theme × viewport screenshot baselines under `tests/e2e/visual.spec.ts-snapshots/`                  |
+| Lighthouse CI                | `lighthouserc.json` runs in GitHub Actions on every PR           | Performance / a11y / best-practices / SEO category thresholds + LCP / CLS / TBT budgets                        |
 
 The `e2e` pass uses [Playwright](https://playwright.dev/) + [`@axe-core/playwright`](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright). On a fresh checkout, install the chromium browser binary once:
 
@@ -127,11 +145,23 @@ Then build the site and run the pass:
 
 ```bash
 npm run build:prod
-npm run e2e          # headless
-npm run e2e:ui       # interactive UI mode for debugging
+npm run e2e                # headless behaviour suite (default)
+npm run e2e:ui             # interactive UI mode for debugging
+npm run e2e:visual         # opt-in visual regression run
+npm run e2e:visual:update  # refresh visual baselines after intended changes
 ```
 
 Tests live in `tests/e2e/` and run against the prerendered output served via `http-server` on `:4300`.
+
+### Bundle analyzer
+
+Spot-check what's in the JS chunks (mostly used to catch regressions like a heavy lib leaking into the home route):
+
+```bash
+npm run analyze
+```
+
+That builds with source maps and opens [`source-map-explorer`](https://github.com/danvk/source-map-explorer) on the main + chunk bundles in your default browser.
 
 ---
 

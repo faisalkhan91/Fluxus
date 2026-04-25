@@ -247,6 +247,11 @@ p {
   color: var(--text-secondary);
 }
 
+.prose :is(h1, h2, h3, h4) {
+  /* Offset hash navigation so anchored headings don't tuck under sticky chrome. */
+  scroll-margin-top: var(--space-8);
+}
+
 .prose h1 {
   font-family: var(--font-display);
   font-size: 2rem;
@@ -362,6 +367,7 @@ p {
 }
 
 .prose pre {
+  position: relative;
   margin: var(--space-6) 0;
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border);
@@ -376,6 +382,44 @@ p {
   line-height: 1.7;
   color: var(--text-primary);
   border-radius: var(--radius-md);
+}
+
+/* Copy button injected by MarkdownService.code renderer. Hidden until the
+   pre is hovered/focused so it doesn't compete with the code visually. */
+.prose .copy-btn {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.prose pre:hover .copy-btn,
+.prose pre:focus-within .copy-btn,
+.prose .copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.prose .copy-btn:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.prose .copy-btn--copied {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+  opacity: 1;
 }
 
 .prose table {
@@ -412,6 +456,13 @@ p {
 
 .prose img {
   max-width: 100%;
+  /*
+    Honour the build-time width/height attributes as an *aspect ratio* rather
+    than absolute display dimensions. Without this, `max-width: 100%` shrinks
+    the rendered width while the `height="…"` attribute keeps the literal
+    intrinsic height, squishing tall images.
+  */
+  height: auto;
   border-radius: var(--radius-md);
   margin: var(--space-6) 0;
 }
@@ -589,5 +640,137 @@ p {
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
+  }
+}
+
+/* === Print stylesheet ===
+   Hides all chrome (sidebar, tab bar, mobile nav pill, theme FAB, toast
+   region, hero ambient layers, footer nav, copy buttons), expands the main
+   content to full width, and switches to high-contrast black-on-white so
+   the About page or a blog post can be saved or printed cleanly. */
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  ui-sidebar,
+  ui-editor-tab-bar,
+  ui-mobile-nav-pill,
+  ui-toast-region,
+  .skip-link,
+  .mobile-theme-toggle,
+  .reading-progress,
+  .post-footer-nav,
+  .post-breadcrumb,
+  .post-grid-hint,
+  .copy-btn,
+  .anchor,
+  .glow,
+  .hero-bg,
+  .hero-actions,
+  .latest-posts {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  app-shell,
+  .main-area,
+  .content {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .content {
+    padding: 0 !important;
+  }
+
+  .glass-card,
+  ui-glass-card,
+  ui-glass-panel {
+    background: transparent !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: underline;
+  }
+
+  /* Print absolute URLs after external links so the page is useful on paper. */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #555;
+  }
+
+  .prose :is(h1, h2, h3, h4) {
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+
+  .prose pre,
+  .prose blockquote,
+  .prose img {
+    page-break-inside: avoid;
+  }
+}
+
+/* === Modern CSS layer ===
+   Progressive enhancements that newer browsers pick up; everything stays
+   functional in older engines via the existing fallbacks above. */
+
+/* Re-derive the accent palette from one OKLCH base so hover/subtle stay
+   perceptually uniform without hand-tuning hex variants. */
+@supports (color: oklch(54% 0.2 25)) {
+  :root {
+    --accent: oklch(54% 0.2 25);
+    --accent-hover: oklch(60% 0.22 25);
+    --accent-glow: oklch(54% 0.2 25 / 0.35);
+    --accent-subtle: oklch(54% 0.2 25 / 0.08);
+  }
+}
+
+/* Scroll-driven reading progress bar — runs on the compositor with zero JS
+   wherever supported. The matching JS scroll listener in BlogPostComponent
+   short-circuits when CSS.supports('animation-timeline: scroll()') is true,
+   so the two never fight for the same property. */
+@supports (animation-timeline: scroll()) {
+  app-blog-post .reading-progress {
+    width: 0;
+    animation: reading-grow linear both;
+    animation-timeline: scroll(root);
+    transition: none;
+  }
+  @keyframes reading-grow {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+}
+
+/* Container queries for card grids — the cards now react to their container's
+   width instead of the viewport, so a sidebar collapse / desktop-tablet
+   transition no longer has to be hand-coded as a media-query breakpoint. */
+@supports (container-type: inline-size) {
+  .content {
+    container-type: inline-size;
   }
 }

@@ -1,11 +1,14 @@
 <div class="post-layout">
   <div class="reading-progress" [style.width.%]="scrollProgress()"></div>
 
-  <nav class="post-nav">
-    <a routerLink="/blog" class="back-link">
-      <ui-icon name="arrow-left" [size]="16" />
-      <span>All Posts</span>
-    </a>
+  <nav aria-label="Breadcrumb" class="post-breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/blog">Blog</a></li>
+      @if (meta(); as post) {
+        <li aria-current="page">{{ post.title }}</li>
+      }
+    </ol>
   </nav>
 
   @if (meta(); as post) {
@@ -13,16 +16,21 @@
       <div class="post-meta">
         <time class="post-date" [attr.datetime]="post.date">
           <ui-icon name="calendar" [size]="14" />
-          {{ post.date }}
+          {{ formattedDate() }}
         </time>
         <span class="post-reading-time">
           <ui-icon name="clock" [size]="14" />
-          {{ post.readingTime }}
+          {{ readingTime() }}
         </span>
       </div>
       <div class="post-tags">
         @for (tag of post.tags; track tag) {
-          <span class="tag">{{ tag }}</span>
+          <a
+            [routerLink]="['/blog/tag', tagSlug(tag)]"
+            class="tag tag--link"
+            [attr.aria-label]="'Browse posts tagged ' + tag"
+            >{{ tag }}</a
+          >
         }
       </div>
     </header>
@@ -43,6 +51,56 @@
       <article class="prose" [innerHTML]="content() | trustedHtml"></article>
     }
   </ui-glass-panel>
+
+  @if (meta(); as post) {
+    <footer class="post-footer">
+      <div class="post-share" aria-label="Share this post">
+        <span class="share-label">Share:</span>
+        <a
+          [href]="shareUrls().twitter"
+          target="_blank"
+          rel="noopener"
+          class="share-link"
+          aria-label="Share on X (Twitter)"
+        >
+          <ui-icon name="x" [size]="14" />
+          <span>X</span>
+        </a>
+        <a
+          [href]="shareUrls().linkedin"
+          target="_blank"
+          rel="noopener"
+          class="share-link"
+          aria-label="Share on LinkedIn"
+        >
+          <ui-icon name="linkedin" [size]="14" />
+          <span>LinkedIn</span>
+        </a>
+        <a
+          [href]="shareUrls().hackerNews"
+          target="_blank"
+          rel="noopener"
+          class="share-link"
+          aria-label="Submit to Hacker News"
+        >
+          <span class="share-text">HN</span>
+        </a>
+        <a [href]="shareUrls().email" class="share-link" aria-label="Share via email">
+          <ui-icon name="mail" [size]="14" />
+          <span>Email</span>
+        </a>
+        <button type="button" class="share-link" (click)="copyShareLink()">
+          <ui-icon [name]="linkCopied() ? 'sparkles' : 'send'" [size]="14" />
+          <span>{{ linkCopied() ? 'Copied!' : 'Copy link' }}</span>
+        </button>
+      </div>
+
+      <p class="post-byline">
+        Written by <strong>{{ profile.personalInfo().name }}</strong>,
+        {{ profile.personalInfo().title }}
+      </p>
+    </footer>
+  }
 
   @if (hasAdjacent()) {
     @let nav = adjacentPosts();

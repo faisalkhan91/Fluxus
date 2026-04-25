@@ -14,6 +14,12 @@
     <meta name="theme-color" content="#07070b" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f0f0f3" media="(prefers-color-scheme: light)" />
     <link rel="canonical" href="https://faisalkhan.dpdns.org/" />
+    <link
+      rel="alternate"
+      type="application/atom+xml"
+      title="Faisal Khan — engineering blog"
+      href="/feed.xml"
+    />
 
     <!-- Open Graph -->
     <meta property="og:title" content="Faisal Khan | Senior Software Engineer" />
@@ -34,6 +40,43 @@
       content="Senior Software Engineer with over a decade of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps."
     />
     <meta name="twitter:image" content="https://faisalkhan.dpdns.org/assets/images/og-image.png" />
+
+    <!-- Structured data: Person + WebSite (site-wide) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://faisalkhan.dpdns.org/#person",
+            "name": "Faisal Khan",
+            "url": "https://faisalkhan.dpdns.org/",
+            "image": "https://faisalkhan.dpdns.org/assets/images/profile/profile_picture.jpg",
+            "jobTitle": "Senior Software Engineer",
+            "sameAs": [
+              "https://github.com/faisalkhan91",
+              "https://www.linkedin.com/in/faisalkhan91/",
+              "https://www.credly.com/users/faisalkhan91"
+            ],
+            "alumniOf": [
+              {
+                "@type": "EducationalOrganization",
+                "name": "University of New Haven"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://faisalkhan.dpdns.org/#website",
+            "url": "https://faisalkhan.dpdns.org/",
+            "name": "Faisal Khan | Senior Software Engineer",
+            "description": "Personal portfolio and engineering blog of Faisal Khan.",
+            "inLanguage": "en",
+            "publisher": { "@id": "https://faisalkhan.dpdns.org/#person" }
+          }
+        ]
+      }
+    </script>
 
     <!-- Favicon suite -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
