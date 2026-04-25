@@ -6,7 +6,7 @@
     aria-valuemin="0"
     aria-valuemax="100"
     [attr.aria-valuenow]="readingProgressLabel()"
-    [style.width.%]="scrollProgress()"
+    [style.transform]="'scaleX(' + scrollProgress() / 100 + ')'"
   ></div>
 
   <!--

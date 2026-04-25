@@ -119,17 +119,45 @@
   font-size: 0.72rem;
 }
 
+/*
+  Anchored from the right edge of the (fixed-position) sidebar to the right
+  edge of the viewport so the visible portion isn't clipped by the sidebar's
+  root-level stacking context. The bar lives inside `.content`, which has
+  `view-transition-name: main-content` and is therefore its own stacking
+  context — its `z-index: 9999` is scoped *within* `.main-area`'s substack,
+  which sits below the sidebar's z-index: 100 in the root stack. Animating
+  `transform: scaleX()` from a `transform-origin: left` rather than `width`
+  keeps the bar GPU-composited and lets `left + right` define the track
+  width (a `width: %` would otherwise be a percentage of the viewport).
+*/
 .reading-progress {
   position: fixed;
   top: 0;
-  left: 0;
+  left: var(--sidebar-width);
+  right: 0;
   height: 3px;
   background: var(--accent);
   border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
   box-shadow: var(--shadow-accent-glow);
   z-index: 9999;
-  transition: width 80ms linear;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 80ms linear;
   pointer-events: none;
+}
+
+/* Mirror the sidebar's own breakpoints in sidebar.component.css so the
+   bar always starts where the content column starts. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .reading-progress {
+    left: var(--sidebar-collapsed);
+  }
+}
+
+@media (max-width: 767px) {
+  .reading-progress {
+    left: 0;
+  }
 }
 
 .post-nav {
