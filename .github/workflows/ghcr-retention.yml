@@ -1,0 +1,68 @@
+name: GHCR retention
+
+on:
+  schedule:
+    # Mondays 05:37 UTC, well off cron-peak. Runs weekly so a flurry of
+    # blog edits doesn't have to wait long for cleanup.
+    - cron: '37 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  prune:
+    name: Prune content-* image tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OWNER: ${{ github.repository_owner }}
+      PACKAGE: fluxus
+      KEEP: '10'
+      DRY_RUN: 'false'
+    steps:
+      - name: Prune
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com"
+          # Pull a single page of up to 100 versions, newest first. We only
+          # ever care about the trailing tail of content-* tags here.
+          versions=$(curl -sf -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${api}/users/${OWNER}/packages/container/${PACKAGE}/versions?per_page=100")
+
+          # Versions tagged content-*, sorted oldest-first, drop the newest KEEP.
+          to_delete=$(echo "$versions" | jq -r --argjson keep "${KEEP}" '
+            [ .[] | select(any(.metadata.container.tags[]?; startswith("content-"))) ]
+            | sort_by(.created_at)
+            | .[0:(length - $keep)]
+            | .[].id
+          ')
+
+          # Untagged dangling layers (created by overwriting `latest`, etc).
+          # Safe to drop — referenced manifests keep their own layers alive.
+          dangling=$(echo "$versions" | jq -r '
+            [ .[] | select((.metadata.container.tags // []) | length == 0) ]
+            | .[].id
+          ')
+
+          for id in ${to_delete} ${dangling}; do
+            if [ "${DRY_RUN}" = "true" ]; then
+              echo "[dry-run] would delete version ${id}"
+            else
+              echo "Deleting version ${id}"
+              curl -sf -X DELETE \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                "${api}/users/${OWNER}/packages/container/${PACKAGE}/versions/${id}"
+            fi
+          done
+
+          echo "Done."

@@ -18,7 +18,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 | Layer      | Technology                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------ |
 | Framework  | Angular 21.2.7 (standalone components, signals, zoneless, `OnPush`)                              |
-| Rendering  | SSG via `@angular/ssr` — 12 static routes prerendered at build time                              |
+| Rendering  | SSG via `@angular/ssr` — the entire route tree is prerendered at build time                      |
 | Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                   |
 | Blog       | Markdown files rendered via `marked` + `highlight.js`                                            |
 | Container  | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.27-alpine` runtime |
@@ -43,7 +43,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 - **Print stylesheet** — Resume / blog post print-friendly view (chrome hidden, black-on-white, prose expanded)
 - **Security Headers** — CSP (script-src hashed at build time, no `'unsafe-inline'` for scripts), HSTS preload, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 - **Comprehensive Test Suite** — 250+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
-- **Automated CI/CD** — GitHub Actions quality gate, Release Please versioning, multi-arch Docker publish, Trivy scanning
+- **Automated CI/CD** — single-check CI gate, CodeQL SAST, Release Please semver, multi-arch Docker publish, GitOps PR to Homelab, Trivy gate plus weekly drift re-scan, scheduled smoke probe, weekly GHCR retention
 
 ---
 
@@ -124,16 +124,16 @@ npm test -- --watch=false  # single run (CI)
 
 ## Quality gates
 
-Six layered checks guard the build. The CI workflow runs lint, typecheck, unit tests, build, and Lighthouse on every PR; the prerender audit and the Playwright pass run locally before a release tag.
+Six layered checks guard the build. The CI workflow runs lint, typecheck, audit, unit tests, build, Playwright, and Lighthouse on every PR; the prerender audit runs locally before a release tag.
 
-| Gate                         | Command                                                          | What it catches                                                                                                |
-| ---------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Unit tests                   | `npm test -- --watch=false`                                      | 250+ Vitest specs (components, services, blog content + nav-routes contract tests)                              |
-| Static analysis              | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`                 | ESLint, Angular template rules, strict TypeScript                                                              |
-| Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`)           | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script             |
-| Live a11y / behaviour        | `npm run e2e` (after `npm run build:prod`)                       | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`                         |
-| Visual regression (opt-in)   | `npm run e2e:visual` (after `npm run build:prod`)                | Per-route × theme × viewport screenshot baselines under `tests/e2e/visual.spec.ts-snapshots/`                  |
-| Lighthouse CI                | `lighthouserc.json` runs in GitHub Actions on every PR           | Performance / a11y / best-practices / SEO category thresholds + LCP / CLS / TBT budgets                        |
+| Gate                         | Command                                                | What it catches                                                                                    |
+| ---------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Unit tests                   | `npm test -- --watch=false`                            | 250+ Vitest specs (components, services, blog content + nav-routes contract tests)                 |
+| Static analysis              | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`       | ESLint, Angular template rules, strict TypeScript                                                  |
+| Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`) | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script |
+| Live a11y / behaviour        | `npm run e2e` (after `npm run build:prod`)             | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`             |
+| Visual regression (opt-in)   | `npm run e2e:visual` (after `npm run build:prod`)      | Per-route × theme × viewport screenshot baselines under `tests/e2e/visual.spec.ts-snapshots/`      |
+| Lighthouse CI                | `lighthouserc.json` runs in GitHub Actions on every PR | Performance / a11y / best-practices / SEO category thresholds + LCP / CLS / TBT budgets            |
 
 The `e2e` pass uses [Playwright](https://playwright.dev/) + [`@axe-core/playwright`](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright). On a fresh checkout, install the chromium browser binary once:
 
@@ -167,11 +167,28 @@ That builds with source maps and opens [`source-map-explorer`](https://github.co
 
 ## CI/CD
 
-| Workflow            | Trigger                              | What it does                                                  |
-| ------------------- | ------------------------------------ | ------------------------------------------------------------- |
-| **CI Quality Gate** | PR to `main`                         | Lint, format check, type check, unit tests, production build  |
-| **Release Please**  | Push to `main`                       | Creates/updates a release PR with changelog and version bump  |
-| **Docker Publish**  | `v*` tag (from Release Please merge) | Multi-arch Docker build, GHCR push, Trivy scan, GitOps deploy |
+| Workflow           | Trigger                                                  | What it does                                                                                                                                                             |
+| ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **CI**             | PR + push to `main`                                      | Lint, typecheck, audit, unit tests + coverage, production build, Playwright, Lighthouse, plus a `CI success` fan-in check                                                |
+| **CodeQL**         | PR + push to `main`, weekly schedule                     | SAST on app code (`javascript-typescript`) and workflow YAML (`actions`)                                                                                                 |
+| **Release Please** | Push to `main`                                           | Opens / updates a release PR; only `feat:` / `fix:` / breaking changes bump the version                                                                                  |
+| **Publish image**  | Tag `v*` OR push to `main` touching `src/assets/blog/**` | Multi-arch Docker build, single-pass Trivy gate, GitOps PR to Homelab. Tag pushes ship versioned releases; blog pushes ship `content-<sha>` images without a SemVer bump |
+| **Trivy re-scan**  | Weekly schedule                                          | Scans the published `latest` image without `.trivyignore` to surface CVE drift                                                                                           |
+| **Smoke**          | Manual + daily schedule                                  | Polls `/healthz` on the deployed site                                                                                                                                    |
+| **GHCR retention** | Weekly schedule + manual                                 | Prunes old `content-<sha>` images (keeps the 10 most recent) and untagged orphan layers; release tags (`vX.Y.Z`, `X.Y`, `latest`) are kept forever                       |
+
+### Release conventions
+
+| Commit type              | Release Please          | Publish image                               | Result                                                  |
+| ------------------------ | ----------------------- | ------------------------------------------- | ------------------------------------------------------- |
+| `feat: ...` / `fix: ...` | Opens release PR        | Runs on the `vX.Y.Z` tag after merge        | New SemVer release, GitOps PR labelled `release`        |
+| `docs(blog): ...`        | Silent                  | Runs on the main push if blog files changed | New `content-<sha>` image, GitOps PR labelled `content` |
+| `chore:` / `refactor:`   | Silent (changelog only) | No                                          | No deploy until the next `feat:` / `fix:`               |
+
+Image tags in GHCR:
+
+- `vX.Y.Z`, `X.Y`, `latest` — produced by release publishes (kept forever)
+- `content-<short-sha>` — produced by blog content publishes (auto-pruned by the GHCR retention workflow)
 
 **Dependabot** is configured for weekly updates across npm, Docker, and GitHub Actions dependencies, with grouping for Angular and ESLint packages.
 
