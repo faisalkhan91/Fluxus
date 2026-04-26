@@ -129,6 +129,16 @@ export class BlogPostComponent {
    * usage (rare, but legal) is preserved.
    */
   private readonly rendered = computed(() => {
+    /*
+      `httpResource.value()` *throws* when the resource is in an error
+      state — the API surfaces failures imperatively rather than via a
+      sentinel value. Reading `.error()` first means a 404/500 collapses
+      to an empty render here (the dedicated `error()` computed below
+      drives the user-visible error UI) instead of bubbling an
+      uncaught exception out of every effect that depends on
+      `content()` / `rendered()`.
+    */
+    if (this.postBody.error()) return { html: '', toc: [] };
     const raw = this.postBody.value();
     if (!raw) return { html: '', toc: [] };
     return this.md.renderWithToc(stripLeadingH1(raw));
