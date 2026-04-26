@@ -100,12 +100,19 @@ function checkRoute(route) {
   if (!canonical) {
     pushIssue(route.path, 'missing <link rel="canonical">');
   } else if (canonicalHref !== expectedCanonical) {
-    pushIssue(route.path, `canonical mismatch: got "${canonicalHref}", expected "${expectedCanonical}"`);
+    pushIssue(
+      route.path,
+      `canonical mismatch: got "${canonicalHref}", expected "${expectedCanonical}"`,
+    );
   }
 
   // og:url / og:type / og:image / twitter:card
   for (const [selector, label, expectedRegex] of [
-    [`meta[property="og:url"]`, 'og:url', new RegExp(`^${expectedCanonical.replace(/[/]/g, '\\/')}$`)],
+    [
+      `meta[property="og:url"]`,
+      'og:url',
+      new RegExp(`^${expectedCanonical.replace(/[/]/g, '\\/')}$`),
+    ],
     [`meta[property="og:type"]`, 'og:type', /^website$/],
     [`meta[property="og:image"]`, 'og:image', new RegExp(`^${SITE_URL}/`)],
     [`meta[name="twitter:card"]`, 'twitter:card', /^summary_large_image$/],
@@ -124,13 +131,21 @@ function checkRoute(route) {
   // reliably, so we scan the markup directly for <h1>...</h1> with text)
   const h1Matches = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) ?? [];
   const h1Texts = h1Matches
-    .map((m) => m.replace(/<[^>]+>/g, '').replace(/&nbsp;|&#?\w+;/g, ' ').trim())
+    .map((m) =>
+      m
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;|&#?\w+;/g, ' ')
+        .trim(),
+    )
     .filter((t) => t.length > 0);
   if (route.h1Required) {
     if (h1Texts.length === 0) {
       pushIssue(route.path, 'no <h1> with rendered text on route');
     } else if (h1Texts.length > 1) {
-      pushIssue(route.path, `multiple non-empty <h1> elements (${h1Texts.length}): ${h1Texts.join(', ')}`);
+      pushIssue(
+        route.path,
+        `multiple non-empty <h1> elements (${h1Texts.length}): ${h1Texts.join(', ')}`,
+      );
     } else {
       pushWin(route.path, `<h1> OK ("${h1Texts[0].slice(0, 40)}")`);
     }
@@ -170,13 +185,17 @@ function checkRoute(route) {
       if (!ti || (ti[1] !== '0' && ti[1] !== '-1')) badTabindex += 1;
     }
     if (badTabindex > 0) {
-      pushIssue(route.path, `${badTabindex}/${tabButtonOpens.length} tab buttons have invalid tabindex`);
+      pushIssue(
+        route.path,
+        `${badTabindex}/${tabButtonOpens.length} tab buttons have invalid tabindex`,
+      );
     } else {
       pushWin(route.path, `${tabButtonOpens.length} <button role="tab"> with valid tabindex`);
     }
   }
   // Direct-child nesting check: each tab button's body must not contain another <button>
-  for (const fullMatch of html.match(/<button\b[^>]*role="tab"[^>]*>([\s\S]*?)<\/button>/gi) ?? []) {
+  for (const fullMatch of html.match(/<button\b[^>]*role="tab"[^>]*>([\s\S]*?)<\/button>/gi) ??
+    []) {
     const body = fullMatch.replace(/^<button\b[^>]*>/, '').replace(/<\/button>$/, '');
     if (/<button\b/i.test(body)) {
       pushIssue(route.path, 'nested <button> inside a tab button');
@@ -228,7 +247,12 @@ function checkBlogPost(slug) {
   // SSR markdown render path silently returned empty content.
   const h1Matches = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) ?? [];
   const h1Texts = h1Matches
-    .map((m) => m.replace(/<[^>]+>/g, '').replace(/&nbsp;|&#?\w+;/g, ' ').trim())
+    .map((m) =>
+      m
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;|&#?\w+;/g, ' ')
+        .trim(),
+    )
     .filter((t) => t.length > 0);
   if (h1Texts.length === 0) {
     pushIssue(route, 'no <h1> with rendered text on blog post (check markdown body)');

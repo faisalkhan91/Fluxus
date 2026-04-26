@@ -51,8 +51,7 @@ export default defineConfig({
     // `-s` = silent. `--proxy http://localhost:4300?` makes deep links like
     // `/about` fall back to `about/index.html`, which is exactly how the
     // prerendered routes are laid out on disk.
-    command:
-      'npx http-server dist/fluxus/browser -p 4300 -s --proxy http://localhost:4300?',
+    command: 'npx http-server dist/fluxus/browser -p 4300 -s --proxy http://localhost:4300?',
     url: 'http://localhost:4300/',
     reuseExistingServer: !process.env['CI'],
     timeout: 60_000,

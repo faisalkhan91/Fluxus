@@ -4,7 +4,7 @@
 **Date:** 2026-04-25
 **Status:** Implemented in full on 2026-04-25 — see [§ 1.1 Implementation status](#11-implementation-status).
 **Scope:** Originally a read-only audit of every animation, transition, and micro-interaction
-in the Angular 21 SSR app. Goal is a UX deliverable, not a perf one: does the app *feel*
+in the Angular 21 SSR app. Goal is a UX deliverable, not a perf one: does the app _feel_
 inviting and elegant? Does every state change feel intentional? After the audit was
 accepted, all 25 findings were implemented in a single follow-up pass; the
 [Implementation status](#11-implementation-status) section below tracks landing details.
@@ -28,11 +28,11 @@ handful of **cohesion gaps** — three different blink mechanisms, an undefined
 `--transition-medium` token, hardcoded `200ms` / `0.25s` durations that bypass the
 token system, and an active-tab indicator that re-paints rather than slides.
 
-| Severity | Count | What it means                                                                  |
-| -------- | ----- | ------------------------------------------------------------------------------ |
-| **P0**   | 0     | Correctness bug (broken animation that hangs DOM, runaway CPU, etc.).          |
-| **P1**   | 7     | User-visible elegance gap on common paths; "snaps" where the design implies a transition. |
-| **P2**   | 9     | Cohesion / consistency. Inconsistent durations, missing tactile feedback, untokened values. |
+| Severity | Count | What it means                                                                                 |
+| -------- | ----- | --------------------------------------------------------------------------------------------- |
+| **P0**   | 0     | Correctness bug (broken animation that hangs DOM, runaway CPU, etc.).                         |
+| **P1**   | 7     | User-visible elegance gap on common paths; "snaps" where the design implies a transition.     |
+| **P2**   | 9     | Cohesion / consistency. Inconsistent durations, missing tactile feedback, untokened values.   |
 | **P3**   | 9     | Polish opportunities. Sliding active indicators, scroll-reveal stagger, copy-success delight. |
 
 ### 1.1 Implementation status
@@ -138,7 +138,7 @@ snapshot` should be read as historical context, not current state.
   and easing specs; web.dev's compositor-only-properties guidance; MDN on
   `view-transition-name`, `@starting-style`, and `transition-behavior: allow-discrete`;
   Angular 21's `withViewTransitions` and `animate.enter` / `animate.leave` directives;
-  WCAG 2.3.3 *Animation from Interactions*; Nielsen Norman Group on micro-interaction
+  WCAG 2.3.3 _Animation from Interactions_; Nielsen Norman Group on micro-interaction
   timing. Each P1 / P2 finding cites either a code location or one of these sources.
 - **What was NOT verified at runtime:** Real-device 60 fps capture during scroll,
   INP measurements during interaction-heavy paths (open palette, type, navigate,
@@ -172,28 +172,28 @@ These are the "we already passed" numbers — recorded so the next motion audit 
 detect drift without re-walking the same files. The `Pre-impl` column is the
 2026-04-25 audit baseline; `Post-impl` is the state after Phase 9 landed.
 
-| Metric                                                          | Pre-impl              | Post-impl             | Notes                                                       |
-| --------------------------------------------------------------- | --------------------- | --------------------- | ----------------------------------------------------------- |
-| Stylesheets declaring `@keyframes`                              | 8                     | 9                     | Net change is small: `styles.css` absorbed the unified blink + the new `enter-fade-up` / `simple-fade-in` / `simple-fade-out` / `route-fade-*` rules; per-component `blink` / `tag-blink` / `blog-blink` were removed. |
-| Distinct `@keyframes` rules                                     | 11                    | 14                    | Removed: `blink`, `tag-blink`, `blog-blink`. Added: `cursor-blink`, `cursor-blink-border`, `enter-fade-up`, `simple-fade-in`, `simple-fade-out`, `route-fade-in`, `route-fade-out`, `form-error-in`, `form-error-out`, `toast-out`, `overlay-fade-out`, `menu-panel-out`. |
-| Components honoring `prefers-reduced-motion` locally            | 2                     | 6                     | Added: command-palette, mobile-nav-pill, toast (`.toast-out`), skill-badge, plus the global `enter-fade-up` / `fade-in` / `fade-out` utilities respect the `*` rule for free. |
-| `view-transition-name` declarations                             | 3                     | 3                     | `main-content`, `sidebar`, `tab-bar`. Tab-bar still uses the auto-named transition from the router. |
-| Custom `::view-transition-old(name)` / `::view-transition-new(name)` rules | 0          | 2                     | Custom decelerate / accelerate keyframes for `main-content`. The reduced-motion neutralizer is unchanged. |
-| Motion duration tokens defined                                  | 3                     | 6 (+ 5 composed)      | Six core (`--duration-fast/base/slow`, `--ease-standard/decelerate/accelerate`) + composed `--transition-fast/base/slow/-enter-base/-exit-base`. |
-| Distinct easing curves used                                     | 1 (+ keyword fallbacks) | 3 (+ keyword fallbacks) | `--ease-standard` (existing curve), `--ease-decelerate` (entrance), `--ease-accelerate` (exit). |
-| Hardcoded transition / animation durations bypassing tokens     | 5                     | 1                     | Only the reading-progress bar's intentional `80ms` rAF cap remains. |
-| Components with at least one `:active` rule                     | 1                     | ~12                   | glow-button (secondary + ghost), glass-card, sidebar (nav / theme / resume), mobile-nav-pill (item / link / close), editor-tab-bar (tab / close / close-all), toast (action / dismiss), command-palette item, timeline dot. |
-| Components with at least one `:focus-visible` rule              | 5                     | 6                     | Added: command-palette input. |
-| `-webkit-tap-highlight-color` declarations                      | 0                     | 1                     | Set on `html` to `transparent`. |
-| `transition: all` declarations                                  | 0                     | 0                     | Still all property-scoped. |
-| `will-change` declarations                                      | 1                     | 2                     | Hero `.glow` widened to `transform, opacity`; sidebar host gets `transform`. |
-| `@starting-style` / `transition-behavior: allow-discrete` usage | 0                     | 1                     | Command palette dialog (body + backdrop) now uses both. |
-| `IntersectionObserver` instances                                | 0                     | 0                     | Still zero — entrance choreography is template-driven. |
-| `animation-timeline` declarations                               | 1                     | 1                     | Unchanged; comment fix only (D1). |
-| `@angular/animations` imports                                   | 0                     | 0                     | Deprecated package still unused. |
-| `animate.enter` / `animate.leave` template usages               | 0                     | 25+                   | Spans about, projects, skills, experience, certifications, contact, blog list, blog post, blog tag, hero (latest posts), toast region, mobile-nav-pill. |
-| `document.startViewTransition()` call sites                     | 0                     | 1                     | Theme toggle (gated on support + reduced-motion). |
-| Sliding active indicators                                       | 0                     | 2                     | Editor-tab-bar (X-axis) and sidebar nav (Y-axis), both driven by host CSS custom properties. |
+| Metric                                                                     | Pre-impl                | Post-impl               | Notes                                                                                                                                                                                                                                                                     |
+| -------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stylesheets declaring `@keyframes`                                         | 8                       | 9                       | Net change is small: `styles.css` absorbed the unified blink + the new `enter-fade-up` / `simple-fade-in` / `simple-fade-out` / `route-fade-*` rules; per-component `blink` / `tag-blink` / `blog-blink` were removed.                                                    |
+| Distinct `@keyframes` rules                                                | 11                      | 14                      | Removed: `blink`, `tag-blink`, `blog-blink`. Added: `cursor-blink`, `cursor-blink-border`, `enter-fade-up`, `simple-fade-in`, `simple-fade-out`, `route-fade-in`, `route-fade-out`, `form-error-in`, `form-error-out`, `toast-out`, `overlay-fade-out`, `menu-panel-out`. |
+| Components honoring `prefers-reduced-motion` locally                       | 2                       | 6                       | Added: command-palette, mobile-nav-pill, toast (`.toast-out`), skill-badge, plus the global `enter-fade-up` / `fade-in` / `fade-out` utilities respect the `*` rule for free.                                                                                             |
+| `view-transition-name` declarations                                        | 3                       | 3                       | `main-content`, `sidebar`, `tab-bar`. Tab-bar still uses the auto-named transition from the router.                                                                                                                                                                       |
+| Custom `::view-transition-old(name)` / `::view-transition-new(name)` rules | 0                       | 2                       | Custom decelerate / accelerate keyframes for `main-content`. The reduced-motion neutralizer is unchanged.                                                                                                                                                                 |
+| Motion duration tokens defined                                             | 3                       | 6 (+ 5 composed)        | Six core (`--duration-fast/base/slow`, `--ease-standard/decelerate/accelerate`) + composed `--transition-fast/base/slow/-enter-base/-exit-base`.                                                                                                                          |
+| Distinct easing curves used                                                | 1 (+ keyword fallbacks) | 3 (+ keyword fallbacks) | `--ease-standard` (existing curve), `--ease-decelerate` (entrance), `--ease-accelerate` (exit).                                                                                                                                                                           |
+| Hardcoded transition / animation durations bypassing tokens                | 5                       | 1                       | Only the reading-progress bar's intentional `80ms` rAF cap remains.                                                                                                                                                                                                       |
+| Components with at least one `:active` rule                                | 1                       | ~12                     | glow-button (secondary + ghost), glass-card, sidebar (nav / theme / resume), mobile-nav-pill (item / link / close), editor-tab-bar (tab / close / close-all), toast (action / dismiss), command-palette item, timeline dot.                                               |
+| Components with at least one `:focus-visible` rule                         | 5                       | 6                       | Added: command-palette input.                                                                                                                                                                                                                                             |
+| `-webkit-tap-highlight-color` declarations                                 | 0                       | 1                       | Set on `html` to `transparent`.                                                                                                                                                                                                                                           |
+| `transition: all` declarations                                             | 0                       | 0                       | Still all property-scoped.                                                                                                                                                                                                                                                |
+| `will-change` declarations                                                 | 1                       | 2                       | Hero `.glow` widened to `transform, opacity`; sidebar host gets `transform`.                                                                                                                                                                                              |
+| `@starting-style` / `transition-behavior: allow-discrete` usage            | 0                       | 1                       | Command palette dialog (body + backdrop) now uses both.                                                                                                                                                                                                                   |
+| `IntersectionObserver` instances                                           | 0                       | 0                       | Still zero — entrance choreography is template-driven.                                                                                                                                                                                                                    |
+| `animation-timeline` declarations                                          | 1                       | 1                       | Unchanged; comment fix only (D1).                                                                                                                                                                                                                                         |
+| `@angular/animations` imports                                              | 0                       | 0                       | Deprecated package still unused.                                                                                                                                                                                                                                          |
+| `animate.enter` / `animate.leave` template usages                          | 0                       | 25+                     | Spans about, projects, skills, experience, certifications, contact, blog list, blog post, blog tag, hero (latest posts), toast region, mobile-nav-pill.                                                                                                                   |
+| `document.startViewTransition()` call sites                                | 0                       | 1                       | Theme toggle (gated on support + reduced-motion).                                                                                                                                                                                                                         |
+| Sliding active indicators                                                  | 0                       | 2                       | Editor-tab-bar (X-axis) and sidebar nav (Y-axis), both driven by host CSS custom properties.                                                                                                                                                                              |
 
 ---
 
@@ -275,12 +275,12 @@ slowed-down enter.
 **Recommendation:** Introduce a 6-token system before adding exit motion:
 
 ```css
---ease-standard:        cubic-bezier(0.2, 0, 0,    1);     /* state changes */
---ease-decelerate:      cubic-bezier(0.05, 0.7, 0.1, 1);   /* entering */
---ease-accelerate:      cubic-bezier(0.3, 0, 0.8, 0.15);   /* leaving */
---duration-fast:    150ms;
---duration-base:    250ms;
---duration-slow:    400ms;
+--ease-standard: cubic-bezier(0.2, 0, 0, 1); /* state changes */
+--ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1); /* entering */
+--ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15); /* leaving */
+--duration-fast: 150ms;
+--duration-base: 250ms;
+--duration-slow: 400ms;
 ```
 
 Then keep `--transition-fast: var(--duration-fast) var(--ease-standard)` etc. as
@@ -299,7 +299,7 @@ enter/leave choreography.
   — `animation: toast-in 200ms ease-out;`
 - [src/app/ui/mobile-nav-pill/mobile-nav-pill.component.css:90](../../src/app/ui/mobile-nav-pill/mobile-nav-pill.component.css)
   — `animation: slideUp 0.25s ease-out forwards;` (`0.25s` ≠ `--transition-base`'s
-  `250ms` *value*, but the inline form drifts independently of the token).
+  `250ms` _value_, but the inline form drifts independently of the token).
 - [src/app/ui/skill-badge/skill-badge.component.css:77](../../src/app/ui/skill-badge/skill-badge.component.css)
   — `transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);` (re-states the token's curve verbatim).
 - [src/app/features/blog/blog-post/blog-post.component.css:164](../../src/app/features/blog/blog-post/blog-post.component.css)
@@ -462,7 +462,7 @@ custom properties set from the active item's offset. Pseudo-code:
   --tab-indicator-width: 0;
 }
 .tabs-scroll::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -475,7 +475,9 @@ custom properties set from the active item's offset. Pseudo-code:
     transform var(--transition-base) var(--ease-decelerate),
     width var(--transition-base) var(--ease-decelerate);
 }
-.tab.active::after { content: none; }   /* drop the per-tab underline */
+.tab.active::after {
+  content: none;
+} /* drop the per-tab underline */
 ```
 
 Sidebar follows the same shape with a left-edge bar. The TS side of
@@ -532,7 +534,7 @@ animations to avoid where `transform` would do
 should adapt during the animation:
 
 - **Cheaper:** Keep the sidebar at full width but `transform: translateX(calc(-1 *
-  (var(--sidebar-width) - var(--sidebar-collapsed))))`-shift it leftward, keeping
+(var(--sidebar-width) - var(--sidebar-collapsed))))`-shift it leftward, keeping
   only icons visible via `mask-image`. Content area's `margin-left` becomes
   `var(--sidebar-collapsed)` always, no transition needed. This is composited
   the entire way.
@@ -581,9 +583,9 @@ is the track, `.badge-fill` is the fill — the change is one swap:
 ```css
 .badge-fill {
   height: 100%;
-  width: 100%;                                /* fill the track */
+  width: 100%; /* fill the track */
   transform-origin: left center;
-  transform: scaleX(var(--level));            /* var bound from TS instead of width: % */
+  transform: scaleX(var(--level)); /* var bound from TS instead of width: % */
   transition: transform 0.6s var(--ease-decelerate);
 }
 ```
@@ -675,10 +677,16 @@ keep it directionless). Minimal opening move:
   animation: 250ms var(--ease-decelerate) both fade-in-down;
 }
 @keyframes fade-out-up {
-  to   { opacity: 0; transform: translateY(-12px); }
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
 }
 @keyframes fade-in-down {
-  from { opacity: 0; transform: translateY(12px); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
 }
 ```
 
@@ -748,14 +756,14 @@ fade or translate. Once R1 lands, the route container itself eases via
 View Transitions — but the cards inside still snap.
 
 **Why it matters:** "Inviting and elegant" is doing most of its work in the
-*entrance* of new content. Right now, a user clicking from `/blog` into a post
+_entrance_ of new content. Right now, a user clicking from `/blog` into a post
 sees the blog list disappear (default crossfade) and the post body suddenly
 exist. Material 3's choreography spec, Apple HIG, and NN/G all converge on a
 short staggered fade-up for content blocks: 200-300 ms duration, 50-80 ms
 stagger between siblings, decelerate easing
 ([Material 3 motion overview](https://m3.material.io/styles/motion/overview/specs)).
 
-**Why now:** The cost of *not* doing this scales with the polish of everything
+**Why now:** The cost of _not_ doing this scales with the polish of everything
 around it. The current static cards used to read as "minimal"; once R1 adds a
 content-column slide, they'll read as "incomplete" because the column eases
 but the content inside doesn't.
@@ -771,9 +779,9 @@ so the class is removed after the animation completes (no CSS-in-the-DOM):
   <ui-section-header ... />
   <div class="card-grid">
     @for (project of projects(); track project.id; let i = $index) {
-      <ui-glass-card animate.enter="enter-fade-up" [style.--enter-delay]="i * 60 + 'ms'">
-        ...
-      </ui-glass-card>
+    <ui-glass-card animate.enter="enter-fade-up" [style.--enter-delay]="i * 60 + 'ms'">
+      ...
+    </ui-glass-card>
     }
   </div>
 </section>
@@ -785,11 +793,19 @@ so the class is removed after the animation completes (no CSS-in-the-DOM):
   animation-delay: var(--enter-delay, 0ms);
 }
 @keyframes enter-fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .enter-fade-up { animation: none; }
+  .enter-fade-up {
+    animation: none;
+  }
 }
 ```
 
@@ -806,7 +822,8 @@ navigation triggers the choreography.
 #### E2 — `[P2]` — Hero skeleton → content swap is a direct DOM swap with no crossfade
 
 **Location:** [src/app/features/hero/hero.component.html](../../src/app/features/hero/hero.component.html)
-+ [src/app/features/hero/hero.component.css:218-272](../../src/app/features/hero/hero.component.css)
+
+- [src/app/features/hero/hero.component.css:218-272](../../src/app/features/hero/hero.component.css)
 
 The skeleton placeholder cards have the same outer dimensions as the real cards
 (comment at line 220 explicitly notes this — "Same outer shape as the real card
@@ -862,7 +879,7 @@ category as enter — both are part of the "feedback" loop and benefit from
 on the toast item:
 
 ```html
-<div class="toast" animate.enter="toast-in" animate.leave="toast-out" ...>
+<div class="toast" animate.enter="toast-in" animate.leave="toast-out" ...></div>
 ```
 
 ```css
@@ -870,10 +887,15 @@ on the toast item:
   animation: toast-out 180ms var(--ease-accelerate) both;
 }
 @keyframes toast-out {
-  to { transform: translateY(8px); opacity: 0; }
+  to {
+    transform: translateY(8px);
+    opacity: 0;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .toast-out { animation: none; }
+  .toast-out {
+    animation: none;
+  }
 }
 ```
 
@@ -892,7 +914,8 @@ here because the dismissal is an `@if` removal, not a `display` flip
 #### X2 — `[P1]` — Mobile menu close is an instant DOM removal
 
 **Location:** [mobile-nav-pill.component.html](../../src/app/ui/mobile-nav-pill/mobile-nav-pill.component.html)
-+ [mobile-nav-pill.component.css:75-91, 194-210](../../src/app/ui/mobile-nav-pill/mobile-nav-pill.component.css)
+
+- [mobile-nav-pill.component.css:75-91, 194-210](../../src/app/ui/mobile-nav-pill/mobile-nav-pill.component.css)
 
 ```75:91:src/app/ui/mobile-nav-pill/mobile-nav-pill.component.css
 .menu-overlay {
@@ -969,13 +992,18 @@ The pattern is now Baseline (since Aug 2024)
 }
 .palette::backdrop {
   opacity: 0;
-  transition: opacity var(--duration-base) var(--ease-decelerate),
-              overlay var(--duration-base) allow-discrete,
-              display var(--duration-base) allow-discrete;
+  transition:
+    opacity var(--duration-base) var(--ease-decelerate),
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
 }
-.palette[open]::backdrop { opacity: 1; }
+.palette[open]::backdrop {
+  opacity: 1;
+}
 @starting-style {
-  .palette[open]::backdrop { opacity: 0; }
+  .palette[open]::backdrop {
+    opacity: 0;
+  }
 }
 ```
 
@@ -1001,7 +1029,7 @@ Reduced-motion contract is already covered by the global rule at
   uses `border-color: transparent` toggle, **600ms**. (Same as blog list — consistent.)
 - `.cursor-blink` in 404 terminal —
   [not-found.component.css:164-173](../../src/app/features/not-found/not-found.component.css)
-  uses **`opacity: 0` toggle, 1s**. Different mechanism *and* different period.
+  uses **`opacity: 0` toggle, 1s**. Different mechanism _and_ different period.
 
 **Why it matters:** The three blog-related cursors are cohesive (border toggle,
 0.6 s). The 404 cursor is the odd one out — slower and uses opacity, which
@@ -1057,17 +1085,13 @@ increases perceived quality.
 **Recommendation:** Use `animate.enter` on each `@switch` branch:
 
 ```html
-@switch (stage()) {
-  @case ('editing') {
-    <form animate.enter="enter-fade-up" ...>...</form>
-  }
-  @case ('awaiting-confirmation') {
-    <div animate.enter="enter-fade-up" class="confirm-state" ...>...</div>
-  }
-  @case ('sent') {
-    <div animate.enter="enter-fade-up" class="success-state" ...>...</div>
-  }
-}
+@switch (stage()) { @case ('editing') {
+<form animate.enter="enter-fade-up" ...>...</form>
+} @case ('awaiting-confirmation') {
+<div animate.enter="enter-fade-up" class="confirm-state" ...>...</div>
+} @case ('sent') {
+<div animate.enter="enter-fade-up" class="success-state" ...>...</div>
+} }
 ```
 
 Reuses the E1 utility class. The aria-live regions
@@ -1123,11 +1147,11 @@ onSubmit(): void {
 **Why it matters:** `window.open(mailto:...)` can hang the click for a
 noticeable beat on slow systems while the OS spins up the mail client. During
 that beat the Send button is still enabled and unchanged. The user might
-double-click. The `awaiting-confirmation` stage already exists *after* the
+double-click. The `awaiting-confirmation` stage already exists _after_ the
 `window.open` call — but until it sets, the user has no feedback that their
 click registered.
 
-**Recommendation:** Set the stage *before* calling `window.open`:
+**Recommendation:** Set the stage _before_ calling `window.open`:
 
 ```ts
 this.stage.set('awaiting-confirmation');
@@ -1137,7 +1161,7 @@ if (this.isBrowser) {
 ```
 
 Combined with F1, the user sees the form fade out and the confirm panel fade
-in *as part of* the click. Optionally add a brief `:active` press state on the
+in _as part of_ the click. Optionally add a brief `:active` press state on the
 Send button per H2.
 
 ---
@@ -1178,7 +1202,7 @@ browser default goes away.
 
 **Why it matters:** The comment misleads future contributors about the actual
 scroller binding. The styles.css comment block at lines 976-986 already
-documents *why* `scroll(root)` was chosen over `scroll(nearest)`; the TS
+documents _why_ `scroll(root)` was chosen over `scroll(nearest)`; the TS
 comment apparently predates that decision.
 
 **Recommendation:** One-word fix: change `nearest` to `root` in the comment.
@@ -1210,33 +1234,33 @@ internal vocabulary.
 
 ## 5. Prioritized backlog
 
-| ID  | Severity | Title                                                                  | Effort | Status |
-| --- | -------- | ---------------------------------------------------------------------- | ------ | ------ |
-| H1  | P1       | Add `:focus-visible` ring to command-palette input                     | XS     | ✅ Landed |
-| G1  | P1       | Replace sidebar `width` collapse with compositor-friendly transform    | M      | ✅ Landed (full `transform: scaleX` + counter-transform on direct children, `--sidebar-scale` host token, `contain: layout style`) |
-| G2  | P1       | Replace skill-bar `width` transition with `transform: scaleX`          | S      | ✅ Landed (component now binds `--badge-fill-scale = level / 100`, fill anchored at `transform-origin: left center`) |
-| E1  | P1       | Add `enter-fade-up` choreography across all routes via `animate.enter` | M      | ✅ Landed (about, projects, skills, experience, certifications, contact, blog, blog-tag, blog-post; per-card stagger via `--enter-delay`) |
-| X1  | P1       | Add toast exit animation via `animate.leave`                           | S      | ✅ Landed |
-| X2  | P1       | Add mobile menu close animation                                        | S      | ✅ Landed (overlay + panel use `animate.leave` reverse-playing the open keyframes) |
-| F1  | P1       | Animate contact form stage transitions                                 | S      | ✅ Landed (`@switch` cases get `animate.enter` / `animate.leave`) |
-| T1  | P2       | Define or remove `--transition-medium` in `blog.component.css`         | XS     | ✅ Landed (replaced with `var(--transition-base)`) |
-| T2  | P2       | Adopt 6-token enter/exit easing system (`--ease-decelerate/accelerate`) | M     | ✅ Landed (six new tokens + composed `--transition-enter-base` / `--transition-exit-base`; legacy aliases preserved) |
-| T3  | P2       | Replace remaining hardcoded durations with tokens                      | S      | ✅ Landed (toast, mobile menu) |
-| H2  | P2       | Add `:active` press states across interactive surfaces                 | S      | ✅ Landed (~12 components) |
-| R1  | P2       | Custom `::view-transition-old/new(main-content)` keyframes             | S      | ✅ Landed |
-| E2  | P2       | Crossfade hero skeleton → real cards instead of direct swap            | XS     | ✅ Landed (real post cards get `animate.enter="fade-in"` with stagger) |
-| X3  | P2       | Animate command-palette open/close via `@starting-style`               | S      | ✅ Landed (covers dialog body, transform, opacity, and backdrop blur) |
-| C1  | P2       | Unify cursor blink mechanism (border vs opacity) across blog + 404     | XS     | ✅ Landed (two shared keyframes — `cursor-blink` for opacity, `cursor-blink-border` for the bordered loading cursors — both with a 1 s period) |
-| F2  | P2       | Animate form validation error reveals                                  | XS     | ✅ Landed |
-| H3  | P3       | Add hover transition to timeline dot                                   | XS     | ✅ Landed |
-| H4  | P3       | Sliding active indicator for tab bar + sidebar                         | M      | ✅ Landed (single positioned bar per parent, driven by host CSS vars from `offsetLeft/Top` + `offsetWidth/Height`) |
-| G3  | P3       | Reconcile hero `.glow` `will-change` with keyframe properties          | XS     | ✅ Landed (`will-change: transform, opacity`) |
-| R2  | P3       | Theme toggle via `document.startViewTransition()`                      | S      | ✅ Landed (gated on support detection + `prefers-reduced-motion`) |
-| C2  | P3       | Document hero `pulse` + 404 `glitch-shift` period intent in comments   | XS     | ✅ Landed |
-| F3  | P3       | Set contact stage before `window.open` so submit feels instant         | XS     | ✅ Landed |
-| M1  | P3       | `-webkit-tap-highlight-color: transparent` globally                    | XS     | ✅ Landed (on `html`, paired with the new `:active` press states) |
-| D1  | P3       | Fix stale `scroll(nearest)` → `scroll(root)` comment                   | XS     | ✅ Landed |
-| D2  | P3       | Rename "theme FAB" → "mobile theme toggle" in print-CSS comment        | XS     | ✅ Landed |
+| ID  | Severity | Title                                                                   | Effort | Status                                                                                                                                         |
+| --- | -------- | ----------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| H1  | P1       | Add `:focus-visible` ring to command-palette input                      | XS     | ✅ Landed                                                                                                                                      |
+| G1  | P1       | Replace sidebar `width` collapse with compositor-friendly transform     | M      | ✅ Landed (full `transform: scaleX` + counter-transform on direct children, `--sidebar-scale` host token, `contain: layout style`)             |
+| G2  | P1       | Replace skill-bar `width` transition with `transform: scaleX`           | S      | ✅ Landed (component now binds `--badge-fill-scale = level / 100`, fill anchored at `transform-origin: left center`)                           |
+| E1  | P1       | Add `enter-fade-up` choreography across all routes via `animate.enter`  | M      | ✅ Landed (about, projects, skills, experience, certifications, contact, blog, blog-tag, blog-post; per-card stagger via `--enter-delay`)      |
+| X1  | P1       | Add toast exit animation via `animate.leave`                            | S      | ✅ Landed                                                                                                                                      |
+| X2  | P1       | Add mobile menu close animation                                         | S      | ✅ Landed (overlay + panel use `animate.leave` reverse-playing the open keyframes)                                                             |
+| F1  | P1       | Animate contact form stage transitions                                  | S      | ✅ Landed (`@switch` cases get `animate.enter` / `animate.leave`)                                                                              |
+| T1  | P2       | Define or remove `--transition-medium` in `blog.component.css`          | XS     | ✅ Landed (replaced with `var(--transition-base)`)                                                                                             |
+| T2  | P2       | Adopt 6-token enter/exit easing system (`--ease-decelerate/accelerate`) | M      | ✅ Landed (six new tokens + composed `--transition-enter-base` / `--transition-exit-base`; legacy aliases preserved)                           |
+| T3  | P2       | Replace remaining hardcoded durations with tokens                       | S      | ✅ Landed (toast, mobile menu)                                                                                                                 |
+| H2  | P2       | Add `:active` press states across interactive surfaces                  | S      | ✅ Landed (~12 components)                                                                                                                     |
+| R1  | P2       | Custom `::view-transition-old/new(main-content)` keyframes              | S      | ✅ Landed                                                                                                                                      |
+| E2  | P2       | Crossfade hero skeleton → real cards instead of direct swap             | XS     | ✅ Landed (real post cards get `animate.enter="fade-in"` with stagger)                                                                         |
+| X3  | P2       | Animate command-palette open/close via `@starting-style`                | S      | ✅ Landed (covers dialog body, transform, opacity, and backdrop blur)                                                                          |
+| C1  | P2       | Unify cursor blink mechanism (border vs opacity) across blog + 404      | XS     | ✅ Landed (two shared keyframes — `cursor-blink` for opacity, `cursor-blink-border` for the bordered loading cursors — both with a 1 s period) |
+| F2  | P2       | Animate form validation error reveals                                   | XS     | ✅ Landed                                                                                                                                      |
+| H3  | P3       | Add hover transition to timeline dot                                    | XS     | ✅ Landed                                                                                                                                      |
+| H4  | P3       | Sliding active indicator for tab bar + sidebar                          | M      | ✅ Landed (single positioned bar per parent, driven by host CSS vars from `offsetLeft/Top` + `offsetWidth/Height`)                             |
+| G3  | P3       | Reconcile hero `.glow` `will-change` with keyframe properties           | XS     | ✅ Landed (`will-change: transform, opacity`)                                                                                                  |
+| R2  | P3       | Theme toggle via `document.startViewTransition()`                       | S      | ✅ Landed (gated on support detection + `prefers-reduced-motion`)                                                                              |
+| C2  | P3       | Document hero `pulse` + 404 `glitch-shift` period intent in comments    | XS     | ✅ Landed                                                                                                                                      |
+| F3  | P3       | Set contact stage before `window.open` so submit feels instant          | XS     | ✅ Landed                                                                                                                                      |
+| M1  | P3       | `-webkit-tap-highlight-color: transparent` globally                     | XS     | ✅ Landed (on `html`, paired with the new `:active` press states)                                                                              |
+| D1  | P3       | Fix stale `scroll(nearest)` → `scroll(root)` comment                    | XS     | ✅ Landed                                                                                                                                      |
+| D2  | P3       | Rename "theme FAB" → "mobile theme toggle" in print-CSS comment         | XS     | ✅ Landed                                                                                                                                      |
 
 Effort key: **XS** ≤ 30 min · **S** ≤ 2 h · **M** ≤ 1 day · **L** > 1 day.
 
@@ -1385,7 +1409,7 @@ source. All URLs were retrieved 2026-04-25.
   technique.
 - **web.dev — Animation and motion (a11y learning module).**
   [https://web.dev/learn/accessibility/motion](https://web.dev/learn/accessibility/motion)
-  Confirms that *interactions* — not just decorative animation — count as
+  Confirms that _interactions_ — not just decorative animation — count as
   motion under SC 2.3.3, which informs why the recommended E1 / X1 / X2
   patterns all explicitly degrade to `animation: none` under reduced-motion.
 
@@ -1438,7 +1462,7 @@ If the seven P1s land (H1, G1, G2, E1, X1, X2, F1), the app crosses the
 - The compositor-friendly fixes (G1, G2) keep the motion budget under
   control on the lowest-end devices the site is likely to encounter.
 
-The P2 layer (T1-T3, R1, X3, C1, F2) is where the design language *cohesion*
+The P2 layer (T1-T3, R1, X3, C1, F2) is where the design language _cohesion_
 lands — same easing across enter/exit, no mystery `--transition-medium`,
 unified blink mechanism, branded route transitions, dialog open/close motion.
 
