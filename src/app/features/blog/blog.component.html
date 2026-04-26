@@ -1,4 +1,12 @@
-<div class="blog-layout" animate.enter="enter-fade-up">
+<!--
+  Parent uses opacity-only `fade-in` (not `enter-fade-up`) so it doesn't
+  compound the staggered translateY of the child cards below: previously
+  both .blog-layout and each .post-link translated 12px on enter, which
+  felt like a double-bounce on the first two cards while the featured
+  cover was still loading. Now the parent only ramps opacity; cards do
+  the rise.
+-->
+<div class="blog-layout" animate.enter="fade-in">
   <header class="blog-header">
     <ui-section-header
       title="Blog"
@@ -47,12 +55,24 @@
           let isFirst = $first;
           let i = $index
         ) {
+          <!--
+            Stagger choreography:
+            - `--enter-delay` ramps from 0ms by 30ms per card (down from
+              50ms) so the wave is tight enough to feel like one entrance
+              instead of a queue.
+            - The featured (first) card is special-cased in CSS
+              (`.post-link--featured.enter-fade-up`) to swap the
+              translateY keyframe for an opacity-only fade. Translating
+              the heavy cover image while it's still loading reads as
+              jank — the rest of the cards are text-only and rise
+              cleanly, so the slide is reserved for them.
+          -->
           <a
             [routerLink]="['/blog', entry.post.slug]"
             class="post-link"
             [class.post-link--featured]="isFirst"
             animate.enter="enter-fade-up"
-            [style.--enter-delay]="i * 50 + 'ms'"
+            [style.--enter-delay]="i * 30 + 'ms'"
           >
             <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
               @if (isFirst) {
