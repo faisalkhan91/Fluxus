@@ -5,6 +5,14 @@
 .blog-layout {
   max-width: 900px;
   margin: 0 auto;
+  /*
+    Entrance ramp lives in the transition + @starting-style block at the
+    bottom of this file. We declare the resting state here so the
+    selector specificity matches what @starting-style overrides on
+    insertion.
+  */
+  opacity: 1;
+  transition: opacity var(--duration-base) var(--ease-decelerate);
 }
 
 .blog-header {
@@ -51,6 +59,17 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  /*
+    Resting state for the entrance transition. The from-state lives in
+    the `@starting-style` block at the bottom of this file; the
+    transition-delay reads the inline `--enter-delay` set per-card in
+    the template (i * 30ms) so the wave staggers without any JS.
+  */
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms),
+    transform var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms);
 }
 
 /* The newest post is rendered as a hero card spanning the full grid width.
@@ -130,16 +149,36 @@
 }
 
 /*
-  The featured card carries `animate.enter="enter-fade-up"` along with
-  the rest of the grid for symmetry and a single class hook, but its
-  cover image is heavy (1600×900 webp, async-decoded) and translating
-  it 12px while it's still resolving reads as jank. Override the
-  `animation-name` on the enter class so the featured card rides the
-  same timing/delay/easing but only ramps opacity. Non-featured cards
-  keep the original rise.
+  Entrance from-state, applied synchronously on element insertion via
+  CSS `@starting-style`. Using @starting-style here (instead of the
+  `animate.enter` directive we use elsewhere) avoids a Firefox-specific
+  flash on client-side route navigation: animate.enter adds its class
+  one frame after insertion, which Chrome's View Transitions snapshot
+  crossfade hides but Firefox (which doesn't yet support the View
+  Transitions API and falls back to plain nav) reveals as a one-frame
+  flash of fully-rendered content snapping to opacity:0 before the
+  rise. The browser applies @starting-style on the same insertion
+  trigger but synchronously, so the first paint is already the
+  from-state and the transition runs cleanly in both browsers.
+
+  Featured card uses opacity-only — translating the heavy cover image
+  while it's still decoding looks jank, so the from-state explicitly
+  pins transform to none.
 */
-.post-link--featured.enter-fade-up {
-  animation-name: simple-fade-in;
+@starting-style {
+  .blog-layout {
+    opacity: 0;
+  }
+
+  .post-link {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .post-link--featured {
+    opacity: 0;
+    transform: none;
+  }
 }
 
 .post-link--featured .post-card-body {
