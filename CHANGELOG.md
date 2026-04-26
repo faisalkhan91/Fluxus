@@ -5,6 +5,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0](https://github.com/faisalkhan91/Fluxus/compare/v2.2.2...v2.3.0) (2026-04-26)
+
+
+### Features
+
+* add path mapping for module imports and update environment references ([dd64f45](https://github.com/faisalkhan91/Fluxus/commit/dd64f450d42f3e4bcb5b1aa839840a4e5f113abe))
+* audit ([29fd9e0](https://github.com/faisalkhan91/Fluxus/commit/29fd9e00565a8a85d3bba6c45cb801fecfbe20ef))
+* audit patch source ([e700cf2](https://github.com/faisalkhan91/Fluxus/commit/e700cf21eef5101a239fe3f72bcd9138804fb8e0))
+* **blog:** polish Subscribe button + add dev spot-check path for feed builder ([16644a5](https://github.com/faisalkhan91/Fluxus/commit/16644a5351d1f1a9632f97f3602cca5c26f6b9fb))
+* **ci:** publish blog content updates without a semver release ([e64138f](https://github.com/faisalkhan91/Fluxus/commit/e64138ff43ada79f2dab96784318c16fd5843444))
+* comprehensive portfolio remediation pass ([c21738d](https://github.com/faisalkhan91/Fluxus/commit/c21738dbe7404f49bc5b59683fccc85a4e6d557a))
+* **hero:** layered boot sequence + pointer parallax + token shimmer ([6af886b](https://github.com/faisalkhan91/Fluxus/commit/6af886b97963dd255f054896d824e02425644b34))
+* **motion:** land motion audit 2026-04 + tab-tightness + cleanup ([6a00746](https://github.com/faisalkhan91/Fluxus/commit/6a007460074f7a3523ef5f8fff5f89f88582a2df))
+* rendering and animations ([1074c6c](https://github.com/faisalkhan91/Fluxus/commit/1074c6c6cdc5a7bab03ff6808e54ca72e218bcad))
+* **rendering:** land rendering audit 2026-04 implementation ([762ad50](https://github.com/faisalkhan91/Fluxus/commit/762ad50470bd993ba399b19e266656f765bdd9e0))
+* round-3 architect upgrades + blog UX polish ([a75eb91](https://github.com/faisalkhan91/Fluxus/commit/a75eb917eea59efffcd8c7b420ad76f5115e867d))
+* update Angular configuration and dependencies, enhance blog features ([b883a9e](https://github.com/faisalkhan91/Fluxus/commit/b883a9e52887c669cc46f79331188a5dbb1ad0dc))
+
+
+### Bug Fixes
+
+* **audit:** escape hostname dots in prerender audit regexes ([b179058](https://github.com/faisalkhan91/Fluxus/commit/b179058fe2254d54111e5da919529901299e2ac0))
+* **blog:** featured cover overflow + tighten list entrance jank ([7afd529](https://github.com/faisalkhan91/Fluxus/commit/7afd529844264b082cc5839528dd1a368139db5c))
+* **blog:** update cover image for motion audit post ([8574bfc](https://github.com/faisalkhan91/Fluxus/commit/8574bfccba8d2c318767c8dd3d9e8661b4f77db3))
+* **blog:** use [@starting-style](https://github.com/starting-style) for entrance to kill Firefox FOUC ([db92105](https://github.com/faisalkhan91/Fluxus/commit/db92105a5c8d5a2fefdbbe181295590f5e704207))
+* **build:** resolve Windows path issues in image-dims script ([86dd060](https://github.com/faisalkhan91/Fluxus/commit/86dd0609d8304fe5ffaff9885bb57f6a276c526e))
+* **ci:** update lighthouse-ci-action to correct SHA for v12.1.0 ([746baaf](https://github.com/faisalkhan91/Fluxus/commit/746baafbe7845acd54a43c4bd894e434fe0fa57d))
+* **ci:** use verified SHA for lighthouse-ci-action v12.1.0 ([b641002](https://github.com/faisalkhan91/Fluxus/commit/b6410026a0bcb3f574eac96828a261165052429e))
+* **feed:** honour post.updated on &lt;updated&gt; + use type=text on summary ([f2409b9](https://github.com/faisalkhan91/Fluxus/commit/f2409b9ee4fb2bdfe5c470c78269924414ec9c37))
+* **image:** upgrade base packages and update trivy-action to v0.36.0 ([6bd1990](https://github.com/faisalkhan91/Fluxus/commit/6bd19906c5a279c72d453d745268b3e3b405dd41))
+* **image:** upgrade base packages and update trivy-action to v0.36.0 ([f201b98](https://github.com/faisalkhan91/Fluxus/commit/f201b987abfc3ddbb3941f596c2eb3c292017443))
+* **test:** resolve Playwright focus-trap collision, a11y, and timing failures ([d7c7199](https://github.com/faisalkhan91/Fluxus/commit/d7c71992b450dd5cca43a73874844b4eab0c17e6))
+
+
+### Miscellaneous
+
+* **build:** clear lingering errors, warnings, and pre-existing test debt ([38d8fe9](https://github.com/faisalkhan91/Fluxus/commit/38d8fe9f1d7d68af881ac2f2230cb8ab0b094f8e))
+* **ci:** document new CI/CD topology and add GHCR retention ([0d388d2](https://github.com/faisalkhan91/Fluxus/commit/0d388d249a812d45d997a30fc3b31aaca398d4fe))
+* **ci:** rebuild GitHub Actions for security, simplicity, and PR-based GitOps ([5248249](https://github.com/faisalkhan91/Fluxus/commit/52482493a98b387cab602c4342525a5d7d0ee9a3))
+* **deps:** tighten dependabot grouping and ignore deferred majors ([b79b988](https://github.com/faisalkhan91/Fluxus/commit/b79b98876a5b56f33151588fb35a6a0b1d4b8733))
+* **format:** apply prettier sweep flushed by broader lint scope ([55b3ac7](https://github.com/faisalkhan91/Fluxus/commit/55b3ac771e27271918d59f4bcd1b4b60a2cbe113))
+* **format:** global prettier sweep to normalize line endings and styles ([205d66b](https://github.com/faisalkhan91/Fluxus/commit/205d66b7000199fb9b9dc4861e565248e544dc6e))
+* **format:** trim trailing spaces in homelab-storage-foundation table ([d1fa758](https://github.com/faisalkhan91/Fluxus/commit/d1fa7585ca3c098a1762dd64a6f36b98a0fa5853))
+* **lint:** fold prettier --check into npm run lint ([4f6c961](https://github.com/faisalkhan91/Fluxus/commit/4f6c961b2dba7fd85406232c297bf59243cbc70a))
+* update .gitignore and package files for Playwright integration ([d7539dc](https://github.com/faisalkhan91/Fluxus/commit/d7539dc27eadc487b59062ca4ee7ae99e9e0f6ef))
+
+
+### Refactoring
+
+* portfolio audit remediation (SEO, a11y, SSR, UX) ([d2cbee5](https://github.com/faisalkhan91/Fluxus/commit/d2cbee5dc346a029b48d90aabb1c05860bdcb4a8))
+* round-2 audit remediation (bundle split, icon SSR, mobile layout) ([ec18f63](https://github.com/faisalkhan91/Fluxus/commit/ec18f6323b7de71cde881480e93e817f986c13aa))
+
+
+### Documentation
+
+* **audit:** rendering audit 2026-04 ([6a120fd](https://github.com/faisalkhan91/Fluxus/commit/6a120fdb31be0d03fc8d37b02fbb9ea273683266))
+
 ## [2.2.1](https://github.com/faisalkhan91/Fluxus/compare/v2.2.0...v2.2.1) (2026-04-22)
 
 
