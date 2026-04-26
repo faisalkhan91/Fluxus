@@ -59,6 +59,10 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 1600,
     h: 1066,
   },
+  'assets/images/blog/motion-audit/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
   'assets/images/og-image.png': {
     w: 1200,
     h: 630,

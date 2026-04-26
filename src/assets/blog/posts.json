@@ -1,5 +1,14 @@
 [
   {
+    "slug": "motion-you-can-feel-2026-04",
+    "title": "Motion you can feel: notes from a 25-finding audit",
+    "date": "2026-04-26",
+    "excerpt": "What I learned auditing every animation, transition, and micro-interaction in my Angular 21 portfolio: a six-token motion ladder, transform: scaleX over width, View Transitions for routes and theme, and a reduced-motion contract you can grade against.",
+    "tags": ["Angular", "TypeScript", "UX", "Architecture"],
+    "readingTime": "7 min",
+    "cover": "assets/images/blog/motion-audit/cover.webp"
+  },
+  {
     "slug": "homelab-storage-foundation",
     "title": "Architecting the Foundation: Decoupling Storage at the Edge",
     "date": "2026-04-12",
