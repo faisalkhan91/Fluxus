@@ -57,9 +57,7 @@ const today = new Date().toISOString().slice(0, 10);
 const livePosts = posts.filter((p) => !p.draft);
 
 // Unique tag slugs across all non-draft posts (matches the prerender list).
-const tagSlugs = Array.from(
-  new Set(livePosts.flatMap((p) => (p.tags ?? []).map(tagSlug))),
-)
+const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(tagSlug))))
   .filter(Boolean)
   .sort();
 
