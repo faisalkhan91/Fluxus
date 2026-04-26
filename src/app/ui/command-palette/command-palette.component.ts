@@ -17,8 +17,15 @@ import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
 
 interface CommandItem {
-  /** Stable id for keyboard selection / track-by. */
+  /** Stable id for keyboard selection / track-by (e.g. `route:/about`). */
   id: string;
+  /**
+   * DOM-safe variant of `id` used as the `id` attribute on the option
+   * `<button>` and as the `aria-activedescendant` target on the input.
+   * `id` itself contains characters (`:` `/`) that survive HTML5 but are
+   * brittle in CSS selectors / getElementById queries; this strips them.
+   */
+  domId: string;
   /** What the user reads in the list. */
   label: string;
   /** Smaller secondary label (e.g. "Blog post", "Page"). */
@@ -27,6 +34,16 @@ interface CommandItem {
   route: string;
   /** Icon name. */
   icon: string;
+}
+
+/**
+ * Map a logical item id (`route:/about`, `post:my-slug`) to an HTML id
+ * suitable for `aria-activedescendant`. Replaces any non-`[A-Za-z0-9_-]`
+ * character with a single dash so the result clears CSS selector rules
+ * and the SR announces an unambiguous reference target.
+ */
+function toDomId(id: string): string {
+  return 'palette-option-' + id.replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 @Component({
@@ -53,10 +70,12 @@ export class CommandPaletteComponent {
   /** Catalog: every nav route + every blog post + every tag landing page. */
   private catalog = computed<CommandItem[]>(() => {
     const items: CommandItem[] = [];
-    for (const item of this.nav.sidebarItems()) {
+    for (const item of this.nav.sidebarItems) {
       if (item.type === 'link') {
+        const id = `route:${item.route}`;
         items.push({
-          id: `route:${item.route}`,
+          id,
+          domId: toDomId(id),
           label: item.label,
           hint: 'Page',
           route: item.route,
@@ -65,8 +84,10 @@ export class CommandPaletteComponent {
       }
     }
     for (const post of this.blog.posts()) {
+      const id = `post:${post.slug}`;
       items.push({
-        id: `post:${post.slug}`,
+        id,
+        domId: toDomId(id),
         label: post.title,
         hint: 'Blog post',
         route: `/blog/${post.slug}`,
@@ -81,9 +102,21 @@ export class CommandPaletteComponent {
     const all = this.catalog();
     if (!q) return all;
     return all.filter(
-      (item) =>
-        item.label.toLowerCase().includes(q) || item.route.toLowerCase().includes(q),
+      (item) => item.label.toLowerCase().includes(q) || item.route.toLowerCase().includes(q),
     );
+  });
+
+  /**
+   * DOM id of the currently-highlighted option, or `null` when the list is
+   * empty. The input element binds this to `aria-activedescendant` so screen
+   * readers announce arrow-key movement inside the listbox even though
+   * keyboard focus stays on the input. WAI-ARIA combobox/listbox pattern.
+   */
+  protected activeDescendantId = computed<string | null>(() => {
+    const list = this.filtered();
+    if (list.length === 0) return null;
+    const item = list[Math.min(this.highlighted(), list.length - 1)];
+    return item?.domId ?? null;
   });
 
   constructor() {

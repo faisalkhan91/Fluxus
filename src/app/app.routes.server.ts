@@ -51,5 +51,13 @@ export const serverRoutes: ServerRoute[] = [
       return posts.map((p) => ({ slug: p.slug }));
     },
   },
-  { path: '**', renderMode: RenderMode.Prerender },
+  /*
+    Catch-all 404. `RenderMode.Prerender` would emit nothing useful here
+    (the prerender pass can't enumerate every possible bad URL), so we use
+    `RenderMode.Server` instead — the SSR pipeline now renders the
+    NotFoundComponent server-side for any unknown URL, returning a real
+    HTTP 404 to crawlers and a fully-painted page to users without waiting
+    for the SPA shell to boot first.
+  */
+  { path: '**', renderMode: RenderMode.Server, status: 404 },
 ];

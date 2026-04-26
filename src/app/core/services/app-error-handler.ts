@@ -11,7 +11,8 @@ import { environment } from '@env/environment';
  */
 function isChunkLoadFailure(err: unknown): boolean {
   if (!err) return false;
-  const message = err instanceof Error ? err.message : String((err as { message?: unknown }).message ?? err);
+  const message =
+    err instanceof Error ? err.message : String((err as { message?: unknown }).message ?? err);
   return /chunk|loading|dynamically imported module|Failed to fetch/i.test(message);
 }
 
@@ -78,6 +79,10 @@ export class AppErrorHandler implements ErrorHandler {
 
     if (isChunkLoadFailure(error)) {
       this.toasts.push({
+        // Chunk-load failure interrupts the user's flow (the route they
+        // navigated to is broken until they reload), so this is the rare
+        // case that genuinely warrants `role="alert"` (assertive).
+        severity: 'error',
         title: 'A part of the app failed to load',
         detail:
           'This usually happens when a fresh deploy lands while you have the page open. Reloading should fix it.',

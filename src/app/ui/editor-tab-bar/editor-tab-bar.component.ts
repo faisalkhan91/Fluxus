@@ -1,10 +1,10 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
   PLATFORM_ID,
+  afterNextRender,
   computed,
   effect,
   inject,
@@ -31,13 +31,13 @@ export interface EditorTab {
   imports: [IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorTabBarComponent implements AfterViewInit {
+export class EditorTabBarComponent {
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  tabs = input<EditorTab[]>([]);
-  activeTabId = input<string>('');
+  tabs = input.required<EditorTab[]>();
+  activeTabId = input.required<string>();
   tabSelected = output<EditorTab>();
   tabClosed = output<EditorTab>();
   closeAllRequested = output<void>();
@@ -60,6 +60,18 @@ export class EditorTabBarComponent implements AfterViewInit {
   protected indicatorWidth = signal(0);
 
   constructor() {
+    /*
+      Single ownership point for fade + indicator recomputation. Both
+      effects react to tab/active-id changes and run via `queueMicrotask`
+      so the DOM layout has settled before we read `scrollLeft` /
+      `offsetLeft`. The reads themselves bail when `scrollContainer()`
+      is undefined (server-side, or before the first render), which is
+      why we no longer need a separate `ngAfterViewInit` to bootstrap
+      the initial computation — `afterNextRender` (below) attaches the
+      scroll/resize listeners *and* triggers a final pass once the
+      view is committed; the constructor effects then own every
+      subsequent recomputation.
+    */
     effect(() => {
       this.tabs();
       if (this.isBrowser) {
@@ -74,29 +86,28 @@ export class EditorTabBarComponent implements AfterViewInit {
         queueMicrotask(() => this.updateIndicator());
       }
     });
-  }
 
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
-    const el = this.scrollContainer()?.nativeElement;
-    if (!el) return;
+    afterNextRender(() => {
+      const el = this.scrollContainer()?.nativeElement;
+      if (!el) return;
 
-    const onScroll = () => {
+      const onScrollOrResize = () => {
+        this.updateFades();
+        this.updateIndicator();
+      };
+      el.addEventListener('scroll', onScrollOrResize, { passive: true });
+      window.addEventListener('resize', onScrollOrResize, { passive: true });
+      this.destroyRef.onDestroy(() => {
+        el.removeEventListener('scroll', onScrollOrResize);
+        window.removeEventListener('resize', onScrollOrResize);
+      });
+
+      // Initial pass once the view has been committed and the scroll
+      // container's geometry is real. Subsequent runs come from the
+      // constructor effects above.
       this.updateFades();
       this.updateIndicator();
-    };
-    el.addEventListener('scroll', onScroll, { passive: true });
-    this.destroyRef.onDestroy(() => el.removeEventListener('scroll', onScroll));
-
-    const onResize = () => {
-      this.updateFades();
-      this.updateIndicator();
-    };
-    window.addEventListener('resize', onResize, { passive: true });
-    this.destroyRef.onDestroy(() => window.removeEventListener('resize', onResize));
-
-    this.updateFades();
-    this.updateIndicator();
+    });
   }
 
   protected updateIndicator(): void {

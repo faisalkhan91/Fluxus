@@ -14,21 +14,21 @@ describe('NavigationService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should provide sidebar items as a signal', () => {
-    const items = service.sidebarItems();
+  it('should provide sidebar items as a static array', () => {
+    const items = service.sidebarItems;
     expect(items.length).toBeGreaterThan(0);
     expect(items[0]).toHaveProperty('label');
   });
 
   it('should provide 4 mobile nav items', () => {
-    const items = service.mobileNavItems();
+    const items = service.mobileNavItems;
     expect(items.length).toBe(4);
     const labels = items.map((i) => i.label);
     expect(labels).toEqual(['Home', 'About', 'Blog', 'Contact']);
   });
 
   it('should provide mobile menu items with links and dividers', () => {
-    const items = service.mobileMenuItems();
+    const items = service.mobileMenuItems;
     const links = items.filter((i) => i.type === 'link');
     const dividers = items.filter((i) => i.type === 'divider');
     expect(links.length).toBe(8);
@@ -36,13 +36,13 @@ describe('NavigationService', () => {
   });
 
   it('should have a labeled Work divider in mobile menu items', () => {
-    const items = service.mobileMenuItems();
+    const items = service.mobileMenuItems;
     const workDivider = items.find((i) => i.type === 'divider' && i.label === 'Work');
     expect(workDivider).toBeTruthy();
   });
 
   it('should include all page labels in mobile menu links', () => {
-    const items = service.mobileMenuItems();
+    const items = service.mobileMenuItems;
     const labels = items.filter((i) => i.type === 'link').map((i) => i.label);
     expect(labels).toContain('Home');
     expect(labels).toContain('Experience');
@@ -54,8 +54,8 @@ describe('NavigationService', () => {
   });
 
   it('should include Contact in both mobile nav and sidebar', () => {
-    const mobileLabels = service.mobileNavItems().map((i) => i.label);
-    const sidebarLabels = service.sidebarItems().map((i) => i.label);
+    const mobileLabels = service.mobileNavItems.map((i) => i.label);
+    const sidebarLabels = service.sidebarItems.map((i) => i.label);
 
     expect(mobileLabels).toContain('Contact');
     expect(sidebarLabels).toContain('Contact');

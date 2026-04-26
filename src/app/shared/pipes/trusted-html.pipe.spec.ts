@@ -16,14 +16,23 @@ describe('TrustedHtmlPipe', () => {
     expect(pipe).toBeTruthy();
   });
 
-  it('should return a SafeHtml value', () => {
-    const result = pipe.transform('<p>Hello</p>');
+  it('returns a SafeHtml when the source is "local-markdown"', () => {
+    const result = pipe.transform('<p>Hello</p>', 'local-markdown');
     expect(result).toBeTruthy();
     expect(typeof result).not.toBe('string');
   });
 
-  it('should handle empty string', () => {
-    const result = pipe.transform('');
+  it('handles empty strings as "local-markdown"', () => {
+    const result = pipe.transform('', 'local-markdown');
     expect(result).toBeTruthy();
+  });
+
+  it('throws for unknown sources to prevent silent reuse', () => {
+    expect(() =>
+      // Cast through `unknown` to exercise the runtime guard the way an
+      // accidental misuse would land — TypeScript would flag this in
+      // production code, but the runtime check is the actual gate.
+      pipe.transform('<p>x</p>', 'remote' as unknown as 'local-markdown'),
+    ).toThrow(/Refusing to bypass sanitisation/);
   });
 });

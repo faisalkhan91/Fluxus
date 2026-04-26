@@ -18,7 +18,7 @@
 </div>
 
 <ul class="nav-list">
-  @for (item of items(); track item) {
+  @for (item of items(); track item.label) {
     @if (item.type === 'divider') {
       @if (item.label) {
         <li class="nav-divider" aria-hidden="true">

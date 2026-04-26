@@ -6,11 +6,22 @@
       decoration="// verified.pem"
       [level]="1"
     />
-    <div class="cert-grid" tabindex="0" role="group" aria-label="Certifications">
+    <!--
+      `role="list"` is the announcement we actually want for this grid —
+      "list of N certifications" lets a SR user know how big the surface
+      is before they tab through it. `tabindex="0"` was previously set on
+      this <div>, but the grid has no inherent action (the per-card link
+      is the interactive target), so a Tab stop on the wrapper was a WCAG
+      2.4.3 (Focus Order) smell — keyboard users landing on a non-actionable
+      element. The label is already provided by the <ui-section-header>'s
+      <h1>, so an explicit aria-label here would duplicate the announcement.
+    -->
+    <div class="cert-grid" role="list">
       @for (cert of certsData.certifications(); track cert.name; let i = $index) {
         <ui-glass-card
           [hover]="true"
           class="cert-card"
+          role="listitem"
           animate.enter="enter-fade-up"
           [style.--enter-delay]="i * 50 + 'ms'"
         >

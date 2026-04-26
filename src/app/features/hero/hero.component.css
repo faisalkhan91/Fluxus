@@ -424,6 +424,30 @@
 }
 
 /*
+  Forced-colors (Windows High Contrast / equivalent) ignores author colours
+  and replaces them with system tokens (`CanvasText`, `Highlight`, etc).
+  `background-clip: text` + `-webkit-text-fill-color: transparent` would
+  otherwise render the hero name and inline highlights as invisible
+  glyphs, because the gradient fill is stripped but the transparent text
+  fill is preserved. Restoring `CanvasText` and dropping the gradient
+  guarantees the name remains visible at the system's enforced contrast.
+*/
+@media (forced-colors: active) {
+  .hero-name,
+  [data-theme='light'] .hero-name,
+  .highlight {
+    background: none;
+    -webkit-text-fill-color: CanvasText;
+    color: CanvasText;
+    animation: none;
+    clip-path: none;
+  }
+  .hero-title-caret {
+    color: Highlight;
+  }
+}
+
+/*
   8 s period is intentional — the hero glow should feel like a slow,
   calm breathing motion, twice as relaxed as the 404 page's `glitch-shift`
   (4 s). Both ambient animations share the `ease-in-out alternate` family
@@ -444,11 +468,21 @@
   margin-top: var(--space-10);
 }
 
+/*
+  Visual treatment for the "latest from the blog" label. The element is
+  semantically an `<h2>` (the heading-outline rationale lives in the
+  template) so we explicitly reset the global heading styles
+  (`font-family`, `font-weight`, `line-height`, `color`) here — otherwise
+  the label would pick up display-font 600-weight typography and stand
+  out far more than the eyebrow it's intended to be.
+*/
 .latest-posts-label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.4;
   color: var(--text-muted);
-  margin-bottom: var(--space-4);
+  margin: 0 0 var(--space-4);
   letter-spacing: 0.04em;
 }
 
@@ -488,12 +522,7 @@
 .skeleton-line {
   height: 12px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(
-    90deg,
-    var(--glass-bg),
-    var(--glass-bg-hover),
-    var(--glass-bg)
-  );
+  background: linear-gradient(90deg, var(--glass-bg), var(--glass-bg-hover), var(--glass-bg));
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s linear infinite;
 }

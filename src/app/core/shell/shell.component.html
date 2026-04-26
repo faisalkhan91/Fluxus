@@ -6,15 +6,25 @@
   for every viewport. CSS @media queries in shell/sidebar/tab-bar/mobile-pill
   decide which one is visible, eliminating the hydration layout shift caused
   by the SSR media-query default.
+
+  The `<header>` wrapper exposes the site banner landmark — `<header>` at
+  the document root is implicitly `role="banner"`, but we set the role
+  explicitly so SR engines that downgrade implicit roles (older Safari +
+  VoiceOver combinations) still report it. The contained `<ui-sidebar>`
+  keeps its own `role="navigation"` — these are independent landmarks
+  ("Site banner" → "Main Navigation"), and ARIA permits navigation to
+  nest inside banner.
 -->
-<ui-sidebar
-  id="main-navigation"
-  [items]="navService.sidebarItems()"
-  [collapsed]="media.sidebarCollapsed()"
-  [isDark]="themeService.isDark()"
-  (resumeClicked)="onResumeDownload()"
-  (themeToggled)="onThemeToggle()"
-/>
+<header role="banner" class="site-banner" aria-label="Site banner">
+  <ui-sidebar
+    id="main-navigation"
+    [items]="navService.sidebarItems"
+    [collapsed]="media.sidebarCollapsed()"
+    [isDark]="themeService.isDark()"
+    (resumeClicked)="onResumeDownload()"
+    (themeToggled)="onThemeToggle()"
+  />
+</header>
 
 <div class="main-area">
   <ui-editor-tab-bar
@@ -38,10 +48,7 @@
   <ui-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
 </button>
 
-<ui-mobile-nav-pill
-  [items]="navService.mobileNavItems()"
-  [menuItems]="navService.mobileMenuItems()"
-/>
+<ui-mobile-nav-pill [items]="navService.mobileNavItems" [menuItems]="navService.mobileMenuItems" />
 
 <ui-toast-region />
 <ui-command-palette />

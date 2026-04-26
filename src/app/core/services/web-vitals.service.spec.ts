@@ -10,8 +10,7 @@ interface Metric {
 }
 type Handler = (metric: Metric) => void;
 
-const registered: Partial<Record<'onCLS' | 'onINP' | 'onLCP' | 'onFCP' | 'onTTFB', Handler>> =
-  {};
+const registered: Partial<Record<'onCLS' | 'onINP' | 'onLCP' | 'onFCP' | 'onTTFB', Handler>> = {};
 
 vi.mock('web-vitals', () => ({
   onCLS: (cb: Handler) => {
@@ -41,9 +40,39 @@ function resetRegistered(): void {
   registered.onTTFB = undefined;
 }
 
+/*
+  The service schedules its dynamic-import registration via
+  `requestIdleCallback` (so the work doesn't compete with the LCP frame
+  in production). For tests we need that callback to fire synchronously,
+  otherwise we'd be polling jsdom for ~50ms between calling `start()`
+  and seeing handlers registered. We patch the global before importing
+  the service module loads it, and we await a microtask after
+  `start()` returns to flush the dynamic import promise that runs
+  inside the (now synchronous) idle callback.
+*/
+async function flushStart(starter: () => void): Promise<void> {
+  starter();
+  // The service schedules via the patched-synchronous
+  // `requestIdleCallback`, which immediately invokes `register()` —
+  // and that `await import('web-vitals')` chain resolves through
+  // several microtask ticks even with `vi.mock`. `dynamicImportSettled`
+  // is Vitest's first-class hook for "wait for every in-flight dynamic
+  // import to resolve" and is purpose-built for exactly this case.
+  await vi.dynamicImportSettled();
+}
+
 describe('WebVitalsService', () => {
   beforeEach(() => {
     resetRegistered();
+    // Run idle callbacks immediately so tests stay synchronous-ish.
+    Object.defineProperty(window, 'requestIdleCallback', {
+      configurable: true,
+      writable: true,
+      value: (cb: IdleRequestCallback): number => {
+        cb({ didTimeout: false, timeRemaining: () => 50 } as IdleDeadline);
+        return 0;
+      },
+    });
   });
 
   afterEach(() => {
@@ -61,7 +90,7 @@ describe('WebVitalsService', () => {
     });
 
     it('registers a handler for every Core Web Vital on start()', async () => {
-      await service.start();
+      await flushStart(() => service.start());
       expect(registered.onCLS).toBeTypeOf('function');
       expect(registered.onINP).toBeTypeOf('function');
       expect(registered.onLCP).toBeTypeOf('function');
@@ -70,18 +99,18 @@ describe('WebVitalsService', () => {
     });
 
     it('is idempotent — a second start() does not re-register handlers', async () => {
-      await service.start();
+      await flushStart(() => service.start());
       const firstCls = registered.onCLS;
       resetRegistered();
 
-      await service.start();
+      await flushStart(() => service.start());
       expect(registered.onCLS).toBeUndefined();
       expect(firstCls).toBeTypeOf('function');
     });
 
     it('logs metrics to the console in development', async () => {
       const info = vi.spyOn(console, 'info').mockImplementation(() => undefined);
-      await service.start();
+      await flushStart(() => service.start());
 
       registered.onLCP?.({ name: 'LCP', value: 1234.56, id: 'v3-1', rating: 'good' });
 
@@ -94,7 +123,7 @@ describe('WebVitalsService', () => {
       Object.defineProperty(navigator, 'sendBeacon', { value: beacon, configurable: true });
       vi.spyOn(console, 'info').mockImplementation(() => undefined);
 
-      await service.start();
+      await flushStart(() => service.start());
       registered.onCLS?.({ name: 'CLS', value: 0.01, id: 'v3-2' });
 
       expect(beacon).not.toHaveBeenCalled();
@@ -105,7 +134,7 @@ describe('WebVitalsService', () => {
       Object.defineProperty(navigator, 'sendBeacon', { value: beacon, configurable: true });
       vi.spyOn(console, 'info').mockImplementation(() => undefined);
 
-      await service.start({ endpoint: '/beacon' });
+      await flushStart(() => service.start({ endpoint: '/beacon' }));
       registered.onINP?.({ name: 'INP', value: 42, id: 'v3-3', rating: 'good' });
 
       expect(beacon).toHaveBeenCalledTimes(1);
@@ -124,11 +153,9 @@ describe('WebVitalsService', () => {
       Object.defineProperty(navigator, 'sendBeacon', { value: beacon, configurable: true });
       vi.spyOn(console, 'info').mockImplementation(() => undefined);
 
-      await service.start({ endpoint: '/beacon' });
+      await flushStart(() => service.start({ endpoint: '/beacon' }));
 
-      expect(() =>
-        registered.onCLS?.({ name: 'CLS', value: 0.02, id: 'v3-4' }),
-      ).not.toThrow();
+      expect(() => registered.onCLS?.({ name: 'CLS', value: 0.02, id: 'v3-4' })).not.toThrow();
     });
   });
 
@@ -139,7 +166,7 @@ describe('WebVitalsService', () => {
       });
       const service = TestBed.inject(WebVitalsService);
 
-      await service.start();
+      await flushStart(() => service.start());
 
       expect(registered.onCLS).toBeUndefined();
       expect(registered.onLCP).toBeUndefined();

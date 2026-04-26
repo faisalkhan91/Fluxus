@@ -39,7 +39,7 @@ export class SidebarComponent implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  items = input<SidebarItem[]>([]);
+  items = input.required<SidebarItem[]>();
   collapsed = input(false);
   isDark = input(true);
   resumeClicked = output<void>();
