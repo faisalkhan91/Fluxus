@@ -47,12 +47,31 @@ export class EditorTabBarComponent implements AfterViewInit {
   protected showRightFade = signal(false);
   protected closableCount = computed(() => this.tabs().filter((t) => t.id !== 'hero').length);
 
+  /*
+    H4 — single sliding indicator.
+
+    Instead of painting an underline onto each `.tab.active`, a single bar
+    lives at the bottom of `.tabs-scroll` and animates between positions via
+    CSS custom properties on the host. `--tab-indicator-x` and
+    `--tab-indicator-width` are recomputed whenever the active tab or the
+    rendered tab geometry changes; the CSS handles the easing.
+  */
+  protected indicatorX = signal(0);
+  protected indicatorWidth = signal(0);
+
   constructor() {
     effect(() => {
-      // Re-evaluate fades whenever tabs change (deferred until after render).
       this.tabs();
       if (this.isBrowser) {
         queueMicrotask(() => this.updateFades());
+      }
+    });
+
+    effect(() => {
+      this.tabs();
+      this.activeTabId();
+      if (this.isBrowser) {
+        queueMicrotask(() => this.updateIndicator());
       }
     });
   }
@@ -62,15 +81,34 @@ export class EditorTabBarComponent implements AfterViewInit {
     const el = this.scrollContainer()?.nativeElement;
     if (!el) return;
 
-    const onScroll = () => this.updateFades();
+    const onScroll = () => {
+      this.updateFades();
+      this.updateIndicator();
+    };
     el.addEventListener('scroll', onScroll, { passive: true });
     this.destroyRef.onDestroy(() => el.removeEventListener('scroll', onScroll));
 
-    const onResize = () => this.updateFades();
+    const onResize = () => {
+      this.updateFades();
+      this.updateIndicator();
+    };
     window.addEventListener('resize', onResize, { passive: true });
     this.destroyRef.onDestroy(() => window.removeEventListener('resize', onResize));
 
     this.updateFades();
+    this.updateIndicator();
+  }
+
+  protected updateIndicator(): void {
+    const scroller = this.scrollContainer()?.nativeElement;
+    if (!scroller) return;
+    const active = scroller.querySelector<HTMLElement>('.tab.active');
+    if (!active) {
+      this.indicatorWidth.set(0);
+      return;
+    }
+    this.indicatorX.set(active.offsetLeft);
+    this.indicatorWidth.set(active.offsetWidth);
   }
 
   protected updateFades(): void {

@@ -365,7 +365,7 @@ export class BlogPostComponent {
 
       // Skip the JS scroll listener entirely on browsers that support
       // CSS scroll-driven animations — the `.reading-progress` bar is then
-      // animated via `animation-timeline: scroll(nearest)` on the compositor
+      // animated via `animation-timeline: scroll(root)` on the compositor
       // (see styles.css), which is cheaper and always smooth.
       const cssScrollDriven =
         typeof CSS !== 'undefined' &&

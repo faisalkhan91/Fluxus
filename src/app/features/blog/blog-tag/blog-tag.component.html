@@ -1,4 +1,4 @@
-<div class="tag-layout">
+<div class="tag-layout" animate.enter="enter-fade-up">
   <nav aria-label="Breadcrumb" class="tag-breadcrumb">
     <ol>
       <li><a routerLink="/">Home</a></li>
@@ -26,8 +26,13 @@
     </div>
   } @else {
     <div class="post-grid">
-      @for (post of matchingPosts(); track post.slug) {
-        <a [routerLink]="['/blog', post.slug]" class="post-link">
+      @for (post of matchingPosts(); track post.slug; let i = $index) {
+        <a
+          [routerLink]="['/blog', post.slug]"
+          class="post-link"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="i * 50 + 'ms'"
+        >
           <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
             <div class="post-meta">
               <time class="post-date" [attr.datetime]="post.date">

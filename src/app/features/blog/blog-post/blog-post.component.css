@@ -366,15 +366,9 @@
   font-family: var(--font-mono);
   font-size: 0.9rem;
   color: var(--text-muted);
-  animation: blink 600ms step-end infinite;
+  animation: cursor-blink-border 1s step-end infinite;
   border-right: 2px solid var(--accent);
   padding-right: var(--space-1);
-}
-
-@keyframes blink {
-  50% {
-    border-color: transparent;
-  }
 }
 
 .post-footer {

@@ -40,6 +40,13 @@
   overflow: hidden;
 }
 
+/*
+  4 s period is intentional and twice as fast as the hero's `.glow` pulse
+  (8 s). The 404 page is meant to feel slightly agitated — like a broken
+  CRT — while the hero's ambient orb pulse should feel calm and slow.
+  Keeping the easing family (`ease-in-out alternate`) consistent gives
+  both ambient motions a kindred rhythm despite the different cadence.
+*/
 .glitch::before {
   color: var(--accent);
   animation: glitch-shift 4s ease-in-out infinite alternate;
@@ -162,14 +169,8 @@
 }
 
 .cursor-blink {
-  animation: blink 1s step-end infinite;
+  animation: cursor-blink 1s step-end infinite;
   color: var(--text-primary);
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
 }
 
 /* === Suggestions === */

@@ -17,14 +17,43 @@
 }
 
 .tabs-scroll {
+  --tab-indicator-x: 0;
+  --tab-indicator-width: 0;
+
   display: flex;
   overflow-x: auto;
   scrollbar-width: none;
   height: 100%;
+  position: relative;
 }
 
 .tabs-scroll::-webkit-scrollbar {
   display: none;
+}
+
+/*
+  H4 — single sliding active indicator. A 2 px bar that translates and
+  resizes between positions instead of being painted on each `.tab.active`.
+  The component sets `--tab-indicator-x` / `--tab-indicator-width` from the
+  active tab's `offsetLeft` / `offsetWidth`; CSS does the rest. When no tab
+  is active (initial render before the effect fires), `width: 0` keeps it
+  hidden. Reduced-motion users get the global override which collapses the
+  transition to ~0ms — the indicator simply teleports.
+*/
+.tabs-scroll::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: var(--tab-indicator-width);
+  transform: translateX(var(--tab-indicator-x));
+  background: var(--accent);
+  box-shadow: var(--shadow-accent-glow);
+  pointer-events: none;
+  transition:
+    transform var(--transition-tab),
+    width var(--transition-tab);
 }
 
 .scroll-fade {
@@ -76,20 +105,13 @@
   color: var(--text-primary);
 }
 
+.tab:active {
+  background: var(--glass-bg-hover);
+}
+
 .tab.active {
   background: var(--surface-raised);
   color: var(--text-primary);
-}
-
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent);
-  box-shadow: var(--shadow-accent-glow);
 }
 
 .tab-dot {
@@ -136,6 +158,11 @@
   color: var(--text-primary);
 }
 
+.tab-close:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+}
+
 .close-all {
   display: flex;
   align-items: center;
@@ -158,6 +185,10 @@
 .close-all:hover {
   background: var(--glass-bg);
   color: var(--text-primary);
+}
+
+.close-all:active {
+  background: var(--glass-bg-hover);
 }
 
 .close-all-label {

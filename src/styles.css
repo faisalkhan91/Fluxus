@@ -81,10 +81,51 @@
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-accent-glow: 0 0 24px var(--accent-glow);
 
-  /* === Transitions === */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  /*
+    Motion durations.
+
+    Three-step ladder (`fast` / `base` / `slow`) used by every transition and
+    animation in the app, matching Material 3's short3 / medium1 / medium4
+    tokens. `--duration-tab` is a tighter, editor-style override for the
+    active-tab indicator and the cross-route main-content fade so navigation
+    between tabs feels closer to a code editor than a marketing site
+    (no float-in, no translateY drift). Adjust here to retune the entire
+    system.
+  */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  --duration-tab: 120ms;
+
+  /*
+    Motion easing curves.
+
+    --ease-standard      Symmetric curve for in-place state changes (hover,
+                         focus, colour swaps). Material 1's "standard" curve.
+    --ease-decelerate    Slow-out curve for entering elements; lands gently.
+                         Sourced from Material 3 emphasized-decelerate spec.
+    --ease-accelerate    Fast-out curve for leaving elements; drops out
+                         cleanly. Material 3 emphasized-accelerate.
+  */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  /*
+    Composed transition shorthands.
+
+    --transition-fast / base / slow keep the historical names so existing call
+    sites don't have to change. --transition-enter-base / -exit-base power the
+    `animate.enter` / `animate.leave` choreography (see `enter-fade-up`
+    keyframe and component-level usages). --transition-tab is the editor-style
+    override used by the tab indicator and the main-content view transition.
+  */
+  --transition-fast: var(--duration-fast) var(--ease-standard);
+  --transition-base: var(--duration-base) var(--ease-standard);
+  --transition-slow: var(--duration-slow) var(--ease-standard);
+  --transition-enter-base: var(--duration-base) var(--ease-decelerate);
+  --transition-exit-base: var(--duration-base) var(--ease-accelerate);
+  --transition-tab: var(--duration-tab) var(--ease-standard);
 
   /* === Z-Index === */
   --z-sidebar: 100;
@@ -145,6 +186,12 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /*
+    Suppress the default mobile tap flash. The app provides its own tactile
+    feedback via :active states (background-fill on nav surfaces, translateY
+    flip on lift buttons, opacity dim on text links).
+  */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -838,6 +885,106 @@ p {
   text-decoration: underline;
 }
 
+/*
+  Shared cursor blink keyframes.
+
+  Two kindred shapes, identical 1 s period:
+    - `cursor-blink` (opacity step) — standalone glyph cursors (e.g. 404 `_`).
+      Opacity reads as a softer toggle.
+    - `cursor-blink-border` (border-colour step) — text-with-trailing-cursor
+      indicators (e.g. "Loading posts..." + border-right bar). Toggling the
+      border keeps the text fully legible while only the bar blinks.
+
+  Both pre-blog-list inconsistencies (0.6 s period, per-component keyframe
+  names) collapse into this shared pair.
+*/
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes cursor-blink-border {
+  50% {
+    border-color: transparent;
+  }
+}
+
+/*
+  Shared entrance utilities.
+
+  `enter-fade-up` is the workhorse for `animate.enter` directives across
+  routes — a 12-pixel rise + opacity ramp using the decelerate curve so
+  content lands gently. Components stagger by binding `--enter-delay`
+  inline; the keyframe `both` fill mode keeps the from-state visible
+  during the delay so children don't pop briefly to their final state
+  before the animation starts.
+*/
+.enter-fade-up {
+  animation: enter-fade-up var(--duration-base) var(--ease-decelerate) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+.fade-in {
+  animation: simple-fade-in var(--duration-base) var(--ease-decelerate) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+.fade-out {
+  animation: simple-fade-out var(--duration-fast) var(--ease-accelerate) both;
+}
+
+@keyframes enter-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes simple-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes simple-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/*
+  Route transitions (View Transitions API).
+
+  Angular's `withViewTransitions()` runs the navigation diff inside a snapshot
+  pair: the old route's `view-transition-name: main-content` element fades out
+  while the new one fades in. We reuse the shared `simple-fade-*` keyframes
+  defined above and drive timing via `--transition-tab` so navigation between
+  editor-style tabs feels like a code editor — instant swap, no vertical
+  drift. The sidebar and tab bar are exempt (they have their own
+  `view-transition-name`s and morph in place via the browser's auto-handling).
+
+  Reduced-motion users skip all of this — the cascading rule below
+  short-circuits these animations entirely.
+*/
+::view-transition-old(main-content) {
+  animation: simple-fade-out var(--transition-tab) both;
+}
+
+::view-transition-new(main-content) {
+  animation: simple-fade-in var(--transition-tab) both;
+}
+
 /* WCAG 2.3.3 — honor user's reduced-motion preference. Collapses every
    animation, transition, and View Transitions pseudo-element animation to a
    near-zero duration so the UI remains static during motion-sensitive use. */
@@ -872,10 +1019,10 @@ p {
 }
 
 /* === Print stylesheet ===
-   Hides all chrome (sidebar, tab bar, mobile nav pill, theme FAB, toast
-   region, hero ambient layers, footer nav, copy buttons), expands the main
-   content to full width, and switches to high-contrast black-on-white so
-   the About page or a blog post can be saved or printed cleanly. */
+   Hides all chrome (sidebar, tab bar, mobile nav pill, mobile theme toggle,
+   toast region, hero ambient layers, footer nav, copy buttons), expands the
+   main content to full width, and switches to high-contrast black-on-white
+   so the About page or a blog post can be saved or printed cleanly. */
 @media print {
   :root {
     color-scheme: light;

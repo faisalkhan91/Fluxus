@@ -1,4 +1,21 @@
+/*
+  G1 — compositor-only collapse.
+
+  Old layout animated `width` from 260 → 60 px; that triggered layout/paint
+  every frame across the whole sidebar subtree. The new approach keeps the
+  host at a fixed pixel width (`--sidebar-width`) and shrinks the visible rail
+  via a `transform: scaleX` from the left edge. Direct children counter-scale
+  so their content retains its true width — the centred avatar stays centred
+  in the visible area because both parent and child use a `left` origin and
+  the child's own origin keeps the avatar's mid-line aligned with the rail's.
+
+  `--sidebar-scale` carries the ratio so child counter-transforms can derive
+  their inverse without recomputing the math; `contain: layout style` walls
+  the subtree off so any residual reflow stays inside the sidebar.
+*/
 :host {
+  --sidebar-scale: 1;
+
   display: flex;
   flex-direction: column;
   width: var(--sidebar-width);
@@ -11,12 +28,39 @@
   view-transition-name: sidebar;
   left: 0;
   z-index: var(--z-sidebar);
-  transition: width var(--transition-base);
   overflow: hidden;
+  transform-origin: left center;
+  transform: scaleX(var(--sidebar-scale));
+  transition: transform var(--transition-base);
+  will-change: transform;
+  contain: layout style;
 }
 
 :host(.collapsed) {
-  width: var(--sidebar-collapsed);
+  --sidebar-scale: calc(var(--sidebar-collapsed) / var(--sidebar-width));
+}
+
+/*
+  Counter-transform: every direct child layer that has visible chrome must
+  cancel the parent's horizontal squish. Without this, the avatar would
+  shrink to 14 px wide. Children whose `transform-origin` is `center` keep
+  centred elements aligned with the visible rail's mid-line; the nav list
+  and footer use `left` because their interactive surfaces are left-anchored.
+*/
+.sidebar-header,
+.nav-list,
+.sidebar-footer {
+  transform: scaleX(calc(1 / var(--sidebar-scale)));
+  transition: transform var(--transition-base);
+}
+
+.sidebar-header {
+  transform-origin: center center;
+}
+
+.nav-list,
+.sidebar-footer {
+  transform-origin: left center;
 }
 
 .sidebar-header {
@@ -86,6 +130,32 @@
   flex: 1;
   padding: var(--space-4) var(--space-2);
   overflow-y: auto;
+  position: relative;
+}
+
+/*
+  H4 — single sliding active indicator on the sidebar nav.
+  A 3 px vertical bar pinned to the left edge of `.nav-list` translates and
+  resizes between nav items as the route changes. The component recomputes
+  `--nav-indicator-y` / `--nav-indicator-height` from the active item's
+  `offsetTop` / `offsetHeight` whenever NavigationEnd fires.
+  When no item is active (initial render before the effect fires),
+  `height: 0` keeps it hidden.
+*/
+.nav-list::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: var(--nav-indicator-height, 0);
+  transform: translateY(var(--nav-indicator-y, 0));
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+  transition:
+    transform var(--transition-base) var(--ease-decelerate),
+    height var(--transition-base) var(--ease-decelerate);
 }
 
 .nav-list li {
@@ -114,9 +184,44 @@
   padding: var(--space-3);
 }
 
+/*
+  Collapsed-state hide rules. Labels, identity, and the footer button text
+  spans stay in the DOM at every viewport — when the sidebar collapses they
+  drop out of layout via `display: none`. This keeps the template
+  branchless and lets the host's `transform: scaleX` collapse stay
+  compositor-only (no DOM mutation in the same frame).
+*/
+:host(.collapsed) .identity,
+:host(.collapsed) .nav-label,
+:host(.collapsed) .nav-ext,
+:host(.collapsed) .divider-label,
+:host(.collapsed) .theme-toggle > span,
+:host(.collapsed) .resume-btn > span {
+  display: none;
+}
+
+:host(.collapsed) .nav-divider {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+:host(.collapsed) .theme-toggle,
+:host(.collapsed) .resume-btn {
+  padding: var(--space-3);
+}
+
+:host(.collapsed) .theme-toggle {
+  margin-bottom: var(--space-2);
+}
+
 .nav-item:hover {
   background: var(--glass-bg-hover);
   color: var(--text-primary);
+}
+
+.nav-item:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
 }
 
 .nav-item.active {
@@ -191,9 +296,10 @@
   border-color: var(--glass-border-hover);
 }
 
-.theme-toggle--icon {
-  padding: var(--space-3);
-  margin-bottom: var(--space-2);
+.theme-toggle:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+  border-color: var(--accent);
 }
 
 .resume-btn {
@@ -222,8 +328,10 @@
   box-shadow: var(--shadow-accent-glow);
 }
 
-.resume-btn--icon {
-  padding: var(--space-3);
+.resume-btn:active {
+  background: var(--accent);
+  box-shadow: none;
+  transform: translateY(1px);
 }
 
 /*
@@ -231,10 +339,14 @@
   markup is identical for every viewport. The [collapsed] input keeps applying
   the .collapsed host class for runtime reactivity; these @media queries
   handle the SSR/initial-paint window before signals settle on the client.
+
+  Tablet width forces collapsed mode by setting --sidebar-scale, which keeps
+  the compositor-only contract intact regardless of which path triggers the
+  collapsed state.
 */
 @media (min-width: 768px) and (max-width: 1023px) {
   :host {
-    width: var(--sidebar-collapsed);
+    --sidebar-scale: calc(var(--sidebar-collapsed) / var(--sidebar-width));
   }
 
   .avatar-wrapper {

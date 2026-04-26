@@ -44,6 +44,14 @@
   box-shadow: 0 0 8px var(--accent-glow);
   flex-shrink: 0;
   z-index: 1;
+  /*
+    Glow + colour swap on hover used to snap; ease the change so the dot reads
+    as "lighting up" rather than blinking. Pointer events on the parent
+    `.timeline-entry` drive the hover state, so the transition lives here.
+  */
+  transition:
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .timeline-entry:hover .timeline-dot {

@@ -28,7 +28,12 @@
 </div>
 
 @if (menuOpen()) {
-  <div class="menu-overlay" (click)="closeMenu()" aria-hidden="true"></div>
+  <div
+    class="menu-overlay"
+    (click)="closeMenu()"
+    aria-hidden="true"
+    animate.leave="overlay-fade-out"
+  ></div>
   <div
     #menuPanel
     class="menu-panel"
@@ -38,6 +43,7 @@
     tabindex="-1"
     (keydown.escape)="closeMenu()"
     (keydown)="trapFocus($event)"
+    animate.leave="menu-panel-out"
   >
     <div class="menu-header">
       <span class="menu-title">Navigate</span>
