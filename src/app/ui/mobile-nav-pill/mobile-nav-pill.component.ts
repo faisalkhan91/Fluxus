@@ -35,8 +35,8 @@ export type MobileMenuItem =
 export class MobileNavPillComponent {
   private router = inject(Router);
 
-  items = input<MobileNavItem[]>([]);
-  menuItems = input<MobileMenuItem[]>([]);
+  items = input.required<MobileNavItem[]>();
+  menuItems = input.required<MobileMenuItem[]>();
 
   menuOpen = signal(false);
 

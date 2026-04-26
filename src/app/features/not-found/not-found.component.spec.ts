@@ -48,6 +48,20 @@ describe('NotFoundComponent', () => {
   });
 
   it('renders the requested path in the terminal output', () => {
+    /*
+      The path text is wired off the post-hydration `liveUrl` signal
+      (populated by `afterNextRender` from `window.location`) and the
+      `NavigationEnd` stream — `router.url` itself is intentionally not
+      read synchronously, since under SSR/prerender it would bake the
+      wrong path into the static HTML. Replay the mocked URL through
+      a `NavigationEnd` to mirror the post-hydration ordering the
+      production pipeline produces.
+    */
+    routerEvents$.next(
+      new NavigationEnd(0, '/this-route-does-not-exist', '/this-route-does-not-exist'),
+    );
+    fixture.detectChanges();
+
     const body = el.querySelector('.terminal-body')?.textContent ?? '';
     expect(body).toContain('this-route-does-not-exist');
   });
@@ -57,9 +71,7 @@ describe('NotFoundComponent', () => {
       configurable: true,
       get: () => '/different/path',
     });
-    routerEvents$.next(
-      new NavigationEnd(1, '/different/path', '/different/path'),
-    );
+    routerEvents$.next(new NavigationEnd(1, '/different/path', '/different/path'));
     fixture.detectChanges();
 
     expect(component['path']()).toBe('different/path');

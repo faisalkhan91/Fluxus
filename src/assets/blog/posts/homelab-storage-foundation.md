@@ -121,13 +121,13 @@ The path above is what makes "decoupled storage" more than a buzzword. The VM ne
 
 ## Hardware Specification Manifest
 
-| Component        | Model                       | Role                  | Key Specification                           |
-| ---------------- | --------------------------- | --------------------- | ------------------------------------------- |
-| Chassis / CPU    | UGREEN NASync DXP4800 Plus  | Storage controller    | Intel Pentium Gold 8505, AES-NI, 8 GB DDR5  |
-| Capacity disks   | 3× WD Red Plus 8 TB         | RAID-Z1 bulk pool     | CMR, 5,640 RPM, SATA 6 Gb/s, NASware        |
-| Performance SSDs | 2× Samsung 990 EVO Plus 1TB | Mirrored hot tier     | NVMe Gen 4 ×4, 7,150 MB/s read, ~1 M IOPS   |
-| Network          | Onboard 2.5 GbE             | Storage fabric uplink | Single-port, jumbo-frame capable            |
-| Power protection | UGREEN 120 W DC UPS         | Inline battery backup | 0 ms transfer, DC-to-DC, NUT-compatible     |
+| Component        | Model                       | Role                  | Key Specification                          |
+| ---------------- | --------------------------- | --------------------- | ------------------------------------------ |
+| Chassis / CPU    | UGREEN NASync DXP4800 Plus  | Storage controller    | Intel Pentium Gold 8505, AES-NI, 8 GB DDR5 |
+| Capacity disks   | 3× WD Red Plus 8 TB         | RAID-Z1 bulk pool     | CMR, 5,640 RPM, SATA 6 Gb/s, NASware       |
+| Performance SSDs | 2× Samsung 990 EVO Plus 1TB | Mirrored hot tier     | NVMe Gen 4 ×4, 7,150 MB/s read, ~1 M IOPS  |
+| Network          | Onboard 2.5 GbE             | Storage fabric uplink | Single-port, jumbo-frame capable           |
+| Power protection | UGREEN 120 W DC UPS         | Inline battery backup | 0 ms transfer, DC-to-DC, NUT-compatible    |
 
 ## Moving Up the Stack
 

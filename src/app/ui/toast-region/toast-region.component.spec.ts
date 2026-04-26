@@ -26,17 +26,28 @@ describe('ToastRegionComponent', () => {
     expect(host.querySelector('.toast')).toBeNull();
   });
 
-  it('renders one alert per toast, with title and optional detail', () => {
+  it('renders one toast per item with title and optional detail', () => {
     toasts.push({ title: 'Headline A', detail: 'Some detail' });
     toasts.push({ title: 'Headline B' });
     fixture.detectChanges();
 
     const rendered = host.querySelectorAll('.toast');
     expect(rendered.length).toBe(2);
-    expect(rendered[0].getAttribute('role')).toBe('alert');
     expect(rendered[0].querySelector('.toast-title')?.textContent?.trim()).toBe('Headline A');
     expect(rendered[0].querySelector('.toast-detail')?.textContent?.trim()).toBe('Some detail');
     expect(rendered[1].querySelector('.toast-detail')).toBeNull();
+  });
+
+  it('renders info toasts as polite status, error toasts as assertive alerts', () => {
+    toasts.push({ title: 'Section link copied' });
+    toasts.push({ severity: 'error', title: 'Chunk failed' });
+    fixture.detectChanges();
+
+    const [info, error] = host.querySelectorAll('.toast');
+    expect(info.getAttribute('role')).toBe('status');
+    expect(info.getAttribute('aria-live')).toBe('polite');
+    expect(error.getAttribute('role')).toBe('alert');
+    expect(error.getAttribute('aria-live')).toBeNull();
   });
 
   it('renders an action button only when both actionLabel and action are set', () => {

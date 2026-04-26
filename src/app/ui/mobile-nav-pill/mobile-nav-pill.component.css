@@ -58,6 +58,11 @@
   color: var(--text-secondary);
 }
 
+.pill-item:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+}
+
 .pill-item.active {
   color: var(--accent-hover);
   background: var(--accent-subtle);
@@ -77,7 +82,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   z-index: calc(var(--z-nav-pill) + 10);
-  animation: fadeIn var(--transition-base) forwards;
+  animation: fadeIn var(--transition-enter-base) forwards;
 }
 
 .menu-panel {
@@ -87,7 +92,7 @@
   z-index: calc(var(--z-nav-pill) + 11);
   display: flex;
   flex-direction: column;
-  animation: slideUp 0.25s ease-out forwards;
+  animation: slideUp var(--transition-enter-base) forwards;
 }
 
 .menu-header {
@@ -127,6 +132,11 @@
   color: var(--text-primary);
 }
 
+.menu-close:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
+}
+
 .menu-list {
   flex: 1;
   overflow-y: auto;
@@ -161,6 +171,11 @@
 .menu-link:hover {
   background: var(--glass-bg-hover);
   color: var(--text-primary);
+}
+
+.menu-link:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
 }
 
 .menu-link--active {
@@ -206,5 +221,27 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/*
+  Exit choreography for `animate.leave`. The overlay simply fades out;
+  the panel slides back down with the accelerate curve so it feels like
+  it's being put away rather than gently set down.
+*/
+.overlay-fade-out {
+  animation: fadeIn var(--transition-exit-base) reverse forwards;
+}
+
+.menu-panel-out {
+  animation: slideUp var(--transition-exit-base) reverse forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-overlay,
+  .menu-panel,
+  .overlay-fade-out,
+  .menu-panel-out {
+    animation: none;
   }
 }

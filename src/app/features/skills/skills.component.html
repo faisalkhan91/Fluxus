@@ -1,4 +1,4 @@
-<div class="skills-layout">
+<div class="skills-layout" animate.enter="enter-fade-up">
   <ui-section-header
     title="Skills"
     headingId="skills-title"
@@ -14,8 +14,13 @@
       />
 
       <div class="badge-grid" [id]="'skill-grid-' + slugify(category.title)">
-        @for (skill of visibleSkills(category); track skill.name) {
-          <ui-skill-badge [name]="skill.name" [iconSrc]="skill.iconSrc" />
+        @for (skill of visibleSkills(category); track skill.name; let i = $index) {
+          <ui-skill-badge
+            [name]="skill.name"
+            [iconSrc]="skill.iconSrc"
+            animate.enter="enter-fade-up"
+            [style.--enter-delay]="i * 40 + 'ms'"
+          />
         }
       </div>
 

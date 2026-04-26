@@ -5,6 +5,14 @@
 .blog-layout {
   max-width: 900px;
   margin: 0 auto;
+  /*
+    Entrance ramp lives in the transition + @starting-style block at the
+    bottom of this file. We declare the resting state here so the
+    selector specificity matches what @starting-style overrides on
+    insertion.
+  */
+  opacity: 1;
+  transition: opacity var(--duration-base) var(--ease-decelerate);
 }
 
 .blog-header {
@@ -51,6 +59,17 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  /*
+    Resting state for the entrance transition. The from-state lives in
+    the `@starting-style` block at the bottom of this file; the
+    transition-delay reads the inline `--enter-delay` set per-card in
+    the template (i * 30ms) so the wave staggers without any JS.
+  */
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms),
+    transform var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms);
 }
 
 /* The newest post is rendered as a hero card spanning the full grid width.
@@ -79,17 +98,31 @@
   margin: 0;
   background: var(--surface-base);
   overflow: hidden;
+  /*
+    Grid items default to `min-width: auto` / `min-height: auto`, which
+    means the column's content can inflate the track past its declared
+    `minmax(0, 320px)` cap. The figure has both an aspect-ratio-derived
+    intrinsic width and an intrinsic image (1600×900) inside it; without
+    these floors at zero, the cover spills into column 2 and the body
+    text renders behind the image. Pin both dimensions so the grid track
+    constraint wins unconditionally.
+  */
+  min-width: 0;
+  min-height: 0;
 }
 
 .post-link--featured .post-card-cover {
   /*
-    Capped 4:3 thumbnail keeps the hero from dominating the fold while
-    still giving the cover enough presence to anchor the card. `height:
-    100%` lets the figure stretch to match the body column when the body
-    grows taller than the thumbnail's intrinsic height; `max-height` then
-    clamps the upper bound on extra-wide viewports.
+    The grid column already caps the figure's width at 320px and
+    `align-items: stretch` matches its height to the body cell; the
+    `max-height` then puts an upper bound on tall bodies so the image
+    never dominates the fold. We deliberately do *not* set
+    `aspect-ratio` here — pairing aspect-ratio with `height: 100%` in a
+    `minmax(0, 320px)` track is what caused the figure to overflow into
+    column 2 (the implied width = stretched-height × 4/3 fights the
+    track cap). `object-fit: cover` on the inner img handles the visual
+    crop so we don't need a hard ratio on the figure itself.
   */
-  aspect-ratio: 4 / 3;
   height: 100%;
   max-height: 280px;
 }
@@ -99,8 +132,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /*
+    Defensive `min-width: 0`: the img has explicit `width`/`height`
+    attributes from NgOptimizedImage (1600×900 here). Without this, its
+    intrinsic min-content width can fight `width: 100%` in some grid
+    contexts.
+  */
+  min-width: 0;
   /* Subtle zoom on hover mirrors the GlassCard hover lift. */
-  transition: transform var(--transition-medium, 200ms ease-out);
+  transition: transform var(--transition-base);
 }
 
 .post-link--featured:hover .post-card-cover img,
@@ -108,10 +148,50 @@
   transform: scale(1.02);
 }
 
+/*
+  Entrance from-state, applied synchronously on element insertion via
+  CSS `@starting-style`. Using @starting-style here (instead of the
+  `animate.enter` directive we use elsewhere) avoids a Firefox-specific
+  flash on client-side route navigation: animate.enter adds its class
+  one frame after insertion, which Chrome's View Transitions snapshot
+  crossfade hides but Firefox (which doesn't yet support the View
+  Transitions API and falls back to plain nav) reveals as a one-frame
+  flash of fully-rendered content snapping to opacity:0 before the
+  rise. The browser applies @starting-style on the same insertion
+  trigger but synchronously, so the first paint is already the
+  from-state and the transition runs cleanly in both browsers.
+
+  Featured card uses opacity-only — translating the heavy cover image
+  while it's still decoding looks jank, so the from-state explicitly
+  pins transform to none.
+*/
+@starting-style {
+  .blog-layout {
+    opacity: 0;
+  }
+
+  .post-link {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .post-link--featured {
+    opacity: 0;
+    transform: none;
+  }
+}
+
 .post-link--featured .post-card-body {
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
+  /*
+    Same reasoning as the cover: `min-width: 0` lets the body shrink
+    inside `minmax(0, 1fr)` even when the longest tag or excerpt has a
+    wider intrinsic min-content size. Without it, long titles can push
+    column 2 past `1fr`, indirectly squeezing column 1.
+  */
+  min-width: 0;
 }
 
 .post-link--featured .post-title {
@@ -223,15 +303,9 @@
   font-family: var(--font-mono);
   font-size: 0.9rem;
   color: var(--text-muted);
-  animation: blog-blink 0.6s step-end infinite;
+  animation: cursor-blink-border 1s step-end infinite;
   border-right: 2px solid var(--accent);
   padding-right: var(--space-1);
-}
-
-@keyframes blog-blink {
-  50% {
-    border-color: transparent;
-  }
 }
 
 @media (max-width: 768px) {

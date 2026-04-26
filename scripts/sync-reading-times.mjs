@@ -76,6 +76,10 @@ if (serialized !== before) {
 }
 
 if (skipped.length > 0) {
-  console.warn(`sync-reading-times: skipped ${skipped.length} entrie(s) without a matching .md: ${skipped.join(', ')}`);
+  console.warn(
+    `sync-reading-times: skipped ${skipped.length} entrie(s) without a matching .md: ${skipped.join(', ')}`,
+  );
 }
-console.log(`sync-reading-times: ${changed} updated, ${manifest.length - changed - skipped.length} unchanged.`);
+console.log(
+  `sync-reading-times: ${changed} updated, ${manifest.length - changed - skipped.length} unchanged.`,
+);

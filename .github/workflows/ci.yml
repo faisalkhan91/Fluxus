@@ -175,7 +175,7 @@ jobs:
       # Reports are uploaded as a workflow artifact only — we deliberately
       # do not push to LHCI temporary public storage so unreleased blog
       # drafts in the prerendered output never leak to a public URL.
-      - uses: treosh/lighthouse-ci-action@93fda2ed3f1b56cd8b0caf7d7da6cb83d33a8b30 # v12.1.0
+      - uses: treosh/lighthouse-ci-action@2f8dda6cf4de7d73b29853c3f29e73a01e297bd8 # v12.1.0
         with:
           configPath: ./lighthouserc.json
           uploadArtifacts: true

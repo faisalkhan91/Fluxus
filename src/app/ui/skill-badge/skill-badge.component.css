@@ -32,23 +32,23 @@
 
 /* Mono / dark-fill brand icons that vanish on dark mode -- invert them so
    the foreground stays visible against the dark glass surface. */
-.badge-icon[src*="cursor-original"],
-.badge-icon[src*="githubcopilot-original"],
-.badge-icon[src*="amazonwebservices-original-wordmark"] {
+.badge-icon[src*='cursor-original'],
+.badge-icon[src*='githubcopilot-original'],
+.badge-icon[src*='amazonwebservices-original-wordmark'] {
   filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
 }
 
-[data-theme='light'] .badge-icon[src*="cursor-original"],
-[data-theme='light'] .badge-icon[src*="githubcopilot-original"],
-[data-theme='light'] .badge-icon[src*="amazonwebservices-original-wordmark"] {
+[data-theme='light'] .badge-icon[src*='cursor-original'],
+[data-theme='light'] .badge-icon[src*='githubcopilot-original'],
+[data-theme='light'] .badge-icon[src*='amazonwebservices-original-wordmark'] {
   filter: var(--icon-drop-shadow);
 }
 
 /* White / very-light-fill brand icons that vanish on light mode -- darken
    their alpha layer so the white inner shapes pick up edges. */
-[data-theme='light'] .badge-icon[src*="typescript-original"],
-[data-theme='light'] .badge-icon[src*="icons8-ansible"],
-[data-theme='light'] .badge-icon[src*="anthropic-original"] {
+[data-theme='light'] .badge-icon[src*='typescript-original'],
+[data-theme='light'] .badge-icon[src*='icons8-ansible'],
+[data-theme='light'] .badge-icon[src*='anthropic-original'] {
   filter: var(--icon-drop-shadow) drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
 }
 
@@ -70,9 +70,26 @@
   margin-top: var(--space-1);
 }
 
+/*
+  The fill bar always occupies 100% of the rail; its visible length is set by
+  scaling along the X axis from the left edge. Animating `transform` instead
+  of `width` keeps the bar on the compositor (no layout / paint) and lets
+  it use `--ease-decelerate` for a "settling-in" feel. The level percentage
+  arrives from the host as `--badge-fill-scale` (0 to 1), so we don't need
+  any per-element JS to translate it.
+*/
 .badge-fill {
   height: 100%;
+  width: 100%;
   background: linear-gradient(90deg, var(--accent), var(--accent-hover));
   border-radius: var(--radius-pill);
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left center;
+  transform: scaleX(var(--badge-fill-scale, 0));
+  transition: transform var(--duration-slow) var(--ease-decelerate);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge-fill {
+    transition: none;
+  }
 }

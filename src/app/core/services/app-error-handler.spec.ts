@@ -59,11 +59,7 @@ describe('AppErrorHandler', () => {
       ],
       ['Generic TypeError', new TypeError("can't read prop"), false],
       ['Null input', null, false],
-      [
-        'Non-Error with chunk-ish message',
-        { message: 'loading bar failed' } as unknown,
-        true,
-      ],
+      ['Non-Error with chunk-ish message', { message: 'loading bar failed' } as unknown, true],
       ['Primitive string with chunk keyword', 'Loading chunk meta', true],
     ];
 
@@ -101,6 +97,9 @@ describe('AppErrorHandler', () => {
       expect(toast.detail).toBeTruthy();
       expect(toast.actionLabel).toBe('Reload');
       expect(toast.action).toBeTypeOf('function');
+      // Chunk-load is the rare blocking failure that should announce
+      // assertively (role="alert") via the severity-aware toast region.
+      expect(toast.severity).toBe('error');
 
       toast.action?.();
       expect(reload).toHaveBeenCalledTimes(1);

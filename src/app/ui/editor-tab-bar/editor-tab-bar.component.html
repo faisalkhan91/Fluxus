@@ -1,5 +1,12 @@
 <div class="tabs-viewport">
-  <div #scrollContainer class="tabs-scroll" role="tablist" aria-label="Open pages">
+  <div
+    #scrollContainer
+    class="tabs-scroll"
+    role="tablist"
+    aria-label="Open pages"
+    [style.--tab-indicator-x.px]="indicatorX()"
+    [style.--tab-indicator-width.px]="indicatorWidth()"
+  >
     @for (tab of tabs(); track tab.id; let i = $index) {
       <button
         type="button"

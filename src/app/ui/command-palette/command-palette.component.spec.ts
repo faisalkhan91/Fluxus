@@ -8,7 +8,7 @@ import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
 import { BlogPost } from '@shared/models/blog-post.model';
 
-const SIDEBAR = signal([
+const SIDEBAR = [
   {
     type: 'link' as const,
     label: 'About',
@@ -23,7 +23,7 @@ const SIDEBAR = signal([
     route: '/projects',
     icon: 'folder',
   },
-]);
+];
 
 const POSTS = signal<BlogPost[]>([
   {
@@ -129,7 +129,7 @@ describe('CommandPaletteComponent', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
       fixture.detectChanges();
       const items = host.querySelectorAll('.palette-item');
-      expect(items.length).toBe(SIDEBAR().length + POSTS().length);
+      expect(items.length).toBe(SIDEBAR.length + POSTS().length);
     });
 
     it('filters by label, case-insensitive', () => {
@@ -175,7 +175,7 @@ describe('CommandPaletteComponent', () => {
     });
 
     it('ArrowDown advances the highlighted item up to the last index', () => {
-      const total = SIDEBAR().length + POSTS().length;
+      const total = SIDEBAR.length + POSTS().length;
       for (let i = 0; i < total + 2; i++) {
         inner().onKey(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
       }

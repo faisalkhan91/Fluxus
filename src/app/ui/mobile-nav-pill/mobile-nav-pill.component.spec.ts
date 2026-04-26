@@ -154,9 +154,7 @@ describe('MobileNavPillComponent', () => {
     await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     const focusables = Array.from(
-      el.querySelectorAll<HTMLElement>(
-        '.menu-panel a[href], .menu-panel button:not([disabled])',
-      ),
+      el.querySelectorAll<HTMLElement>('.menu-panel a[href], .menu-panel button:not([disabled])'),
     );
     expect(focusables.length).toBeGreaterThan(1);
 
@@ -176,9 +174,7 @@ describe('MobileNavPillComponent', () => {
     await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     const focusables = Array.from(
-      el.querySelectorAll<HTMLElement>(
-        '.menu-panel a[href], .menu-panel button:not([disabled])',
-      ),
+      el.querySelectorAll<HTMLElement>('.menu-panel a[href], .menu-panel button:not([disabled])'),
     );
     const last = focusables[focusables.length - 1];
     focusables[0].focus();

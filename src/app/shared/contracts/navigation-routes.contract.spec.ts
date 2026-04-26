@@ -31,13 +31,16 @@ describe('navigation routes contract', () => {
 
     const declared = new Set(collectPaths(routes));
     const advertised = new Set<string>([
-      ...nav.sidebarItems().filter((i) => i.type === 'link').map((i) => i.route),
-      ...nav.mobileNavItems().map((i) => i.route),
-      ...nav.mobileMenuItems().filter((i) => i.type === 'link').map((i) => i.route),
+      ...nav.sidebarItems.filter((i) => i.type === 'link').map((i) => i.route),
+      ...nav.mobileNavItems.map((i) => i.route),
+      ...nav.mobileMenuItems.filter((i) => i.type === 'link').map((i) => i.route),
     ]);
 
     for (const route of advertised) {
-      expect(declared, `route "${route}" advertised by NavigationService is missing from app.routes`).toContain(route);
+      expect(
+        declared,
+        `route "${route}" advertised by NavigationService is missing from app.routes`,
+      ).toContain(route);
     }
   });
 });

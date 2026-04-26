@@ -103,10 +103,7 @@ describe('BlogComponent', () => {
   });
 
   it('falls back to the build-time OG card when the featured post has no cover', () => {
-    mockBlog.posts.set([
-      { ...MOCK_POSTS[0], cover: undefined },
-      MOCK_POSTS[1],
-    ]);
+    mockBlog.posts.set([{ ...MOCK_POSTS[0], cover: undefined }, MOCK_POSTS[1]]);
     fixture.detectChanges();
     const cover = el.querySelector('.post-link--featured .post-card-cover img');
     expect(cover?.getAttribute('src')).toBe('/og/post-one.png');
