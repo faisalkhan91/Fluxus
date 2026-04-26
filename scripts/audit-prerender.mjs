@@ -75,6 +75,10 @@ function attr(el, name) {
   return el?.getAttribute?.(name) ?? null;
 }
 
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function checkRoute(route) {
   const { dom, html } = loadDoc(route.file);
   const doc = dom.window.document;
@@ -108,15 +112,11 @@ function checkRoute(route) {
 
   // og:url / og:type / og:image / twitter:card
   for (const [selector, label, expectedRegex] of [
-    [
-      `meta[property="og:url"]`,
-      'og:url',
-      new RegExp(`^${expectedCanonical.replace(/[/]/g, '\\/')}$`),
-    ],
+    [`meta[property="og:url"]`, 'og:url', new RegExp(`^${escapeRegExp(expectedCanonical)}$`)],
     [`meta[property="og:type"]`, 'og:type', /^website$/],
-    [`meta[property="og:image"]`, 'og:image', new RegExp(`^${SITE_URL}/`)],
+    [`meta[property="og:image"]`, 'og:image', new RegExp(`^${escapeRegExp(SITE_URL)}/`)],
     [`meta[name="twitter:card"]`, 'twitter:card', /^summary_large_image$/],
-    [`meta[name="twitter:image"]`, 'twitter:image', new RegExp(`^${SITE_URL}/`)],
+    [`meta[name="twitter:image"]`, 'twitter:image', new RegExp(`^${escapeRegExp(SITE_URL)}/`)],
   ]) {
     const m = doc.querySelector(selector);
     const v = attr(m, 'content');
