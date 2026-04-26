@@ -18,7 +18,19 @@ export class ThemeService {
   private destroyRef = inject(DestroyRef);
   private document = inject(DOCUMENT);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private mediaQuery = this.isBrowser ? window.matchMedia('(prefers-color-scheme: light)') : null;
+  /*
+    `window.matchMedia` is missing in vitest's jsdom environment by
+    default — guard before calling so the service doesn't crash during
+    unit-test bootstrap. The runtime gate is correctness, not a hack:
+    a fallback environment without `matchMedia` (very old WebViews,
+    contrived test setups) should still construct the service cleanly
+    with `mediaQuery` left as null. The downstream consumers already
+    null-check via `this.mediaQuery?.…`.
+  */
+  private mediaQuery =
+    this.isBrowser && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-color-scheme: light)')
+      : null;
 
   readonly theme = signal<Theme>(this.resolveInitial());
   readonly isDark = computed(() => this.theme() === 'dark');
@@ -64,7 +76,9 @@ export class ThemeService {
       typeof (this.document as Document & { startViewTransition?: unknown }).startViewTransition ===
         'function';
     const prefersReducedMotion =
-      this.isBrowser && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      this.isBrowser &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (supportsViewTransition && !prefersReducedMotion) {
       (

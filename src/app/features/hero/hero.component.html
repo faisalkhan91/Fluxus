@@ -74,22 +74,21 @@
     -->
     @defer (on viewport; hydrate on viewport) {
       <div class="latest-posts">
-        <p class="latest-posts-label">
+        <!--
+          "latest from the blog" promoted from <p> to <h2> so the heading
+          outline goes <h1 hero-name> -> <h2 latest-posts-label> -> <h3 post titles>,
+          matching the WCAG 2.4.10 (Section Headings) recommendation for
+          screen-reader users navigating via the heading-level hotkey.
+          Visual styling is unchanged; the .latest-posts-label CSS rule
+          targets the class regardless of the underlying tag.
+        -->
+        <h2 class="latest-posts-label">
           <span class="label-decoration">//</span> latest from the blog
-        </p>
+        </h2>
         <div class="latest-posts-row">
           @if (blog.loading() && !blog.latestPosts().length) {
-            @for (i of [0, 1]; track i) {
-              <ui-glass-card
-                [elevation]="1"
-                class="latest-post-card latest-post-card--skeleton"
-                aria-hidden="true"
-              >
-                <div class="skeleton-line skeleton-line--meta"></div>
-                <div class="skeleton-line skeleton-line--title"></div>
-                <div class="skeleton-line skeleton-line--text"></div>
-                <div class="skeleton-line skeleton-line--text skeleton-line--text-short"></div>
-              </ui-glass-card>
+            @for (i of skeletonSlots; track i) {
+              <ng-container *ngTemplateOutlet="blogSkeleton" />
             }
           } @else if (blog.latestPosts().length) {
             @for (post of blog.latestPosts(); track post.slug; let i = $index) {
@@ -120,24 +119,33 @@
       </div>
     } @placeholder {
       <div class="latest-posts">
-        <p class="latest-posts-label">
+        <h2 class="latest-posts-label">
           <span class="label-decoration">//</span> latest from the blog
-        </p>
+        </h2>
         <div class="latest-posts-row">
-          @for (i of [0, 1]; track i) {
-            <ui-glass-card
-              [elevation]="1"
-              class="latest-post-card latest-post-card--skeleton"
-              aria-hidden="true"
-            >
-              <div class="skeleton-line skeleton-line--meta"></div>
-              <div class="skeleton-line skeleton-line--title"></div>
-              <div class="skeleton-line skeleton-line--text"></div>
-              <div class="skeleton-line skeleton-line--text skeleton-line--text-short"></div>
-            </ui-glass-card>
+          @for (i of skeletonSlots; track i) {
+            <ng-container *ngTemplateOutlet="blogSkeleton" />
           }
         </div>
       </div>
     }
   </div>
+
+  <!--
+    Skeleton card used by both the @defer main block (during loading) and
+    the @placeholder. Pulled into a single <ng-template> so future tweaks
+    only have to land in one place.
+  -->
+  <ng-template #blogSkeleton>
+    <ui-glass-card
+      [elevation]="1"
+      class="latest-post-card latest-post-card--skeleton"
+      aria-hidden="true"
+    >
+      <div class="skeleton-line skeleton-line--meta"></div>
+      <div class="skeleton-line skeleton-line--title"></div>
+      <div class="skeleton-line skeleton-line--text"></div>
+      <div class="skeleton-line skeleton-line--text skeleton-line--text-short"></div>
+    </ui-glass-card>
+  </ng-template>
 </section>

@@ -4,6 +4,21 @@
   background: var(--surface-void);
 }
 
+/*
+  `.site-banner` is the new banner landmark wrapping `<ui-sidebar>`. The
+  sidebar itself is `position: fixed`, so the wrapper contributes nothing
+  to layout flow — but we declare `display: contents` so the wrapper's
+  box is omitted from the flex container too (otherwise the empty
+  `<header>` would be a zero-width flex item next to `.main-area`,
+  technically harmless but conceptually wrong). `display: contents`
+  preserves the AT landmark exposure on every modern engine — the
+  historical role-stripping bug was fixed in Chrome 89 / Safari 16 /
+  Firefox 86, all well below our floor.
+*/
+.site-banner {
+  display: contents;
+}
+
 .skip-link {
   position: absolute;
   top: -100%;

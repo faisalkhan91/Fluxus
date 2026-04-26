@@ -1,5 +1,18 @@
 @for (toast of toasts.toasts(); track toast.id) {
-  <div class="toast" role="alert" animate.leave="toast-out">
+  <!--
+    Severity-aware role: `'error'` toasts get `role="alert"` (assertive,
+    interrupts the SR queue) and the rest get `role="status"` (polite,
+    queued behind the current utterance). The default in
+    `ErrorToastService` is `'info'`, so a confirmation toast like
+    "Section link copied" no longer talks over whatever the user is
+    reading. WAI-ARIA Authoring Practices: live-region severity guidance.
+  -->
+  <div
+    class="toast"
+    [attr.role]="toast.severity === 'error' ? 'alert' : 'status'"
+    [attr.aria-live]="toast.severity === 'error' ? null : 'polite'"
+    animate.leave="toast-out"
+  >
     <div class="toast-body">
       <p class="toast-title">{{ toast.title }}</p>
       @if (toast.detail) {
@@ -8,7 +21,11 @@
     </div>
     <div class="toast-actions">
       @if (toast.actionLabel && toast.action) {
-        <button type="button" class="toast-action" (click)="toast.action(); toasts.dismiss(toast.id)">
+        <button
+          type="button"
+          class="toast-action"
+          (click)="toast.action(); toasts.dismiss(toast.id)"
+        >
           {{ toast.actionLabel }}
         </button>
       }

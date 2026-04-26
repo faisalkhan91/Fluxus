@@ -32,23 +32,23 @@
 
 /* Mono / dark-fill brand icons that vanish on dark mode -- invert them so
    the foreground stays visible against the dark glass surface. */
-.badge-icon[src*="cursor-original"],
-.badge-icon[src*="githubcopilot-original"],
-.badge-icon[src*="amazonwebservices-original-wordmark"] {
+.badge-icon[src*='cursor-original'],
+.badge-icon[src*='githubcopilot-original'],
+.badge-icon[src*='amazonwebservices-original-wordmark'] {
   filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
 }
 
-[data-theme='light'] .badge-icon[src*="cursor-original"],
-[data-theme='light'] .badge-icon[src*="githubcopilot-original"],
-[data-theme='light'] .badge-icon[src*="amazonwebservices-original-wordmark"] {
+[data-theme='light'] .badge-icon[src*='cursor-original'],
+[data-theme='light'] .badge-icon[src*='githubcopilot-original'],
+[data-theme='light'] .badge-icon[src*='amazonwebservices-original-wordmark'] {
   filter: var(--icon-drop-shadow);
 }
 
 /* White / very-light-fill brand icons that vanish on light mode -- darken
    their alpha layer so the white inner shapes pick up edges. */
-[data-theme='light'] .badge-icon[src*="typescript-original"],
-[data-theme='light'] .badge-icon[src*="icons8-ansible"],
-[data-theme='light'] .badge-icon[src*="anthropic-original"] {
+[data-theme='light'] .badge-icon[src*='typescript-original'],
+[data-theme='light'] .badge-icon[src*='icons8-ansible'],
+[data-theme='light'] .badge-icon[src*='anthropic-original'] {
   filter: var(--icon-drop-shadow) drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
 }
 

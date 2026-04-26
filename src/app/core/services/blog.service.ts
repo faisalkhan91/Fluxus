@@ -33,7 +33,9 @@ export class BlogService {
 
   readonly latestPosts = computed(() => this.posts().slice(0, 2));
   readonly loading = computed(() => this.postsResource.isLoading());
-  readonly error = computed(() => (this.postsResource.error() ? 'Failed to load blog posts' : null));
+  readonly error = computed(() =>
+    this.postsResource.error() ? 'Failed to load blog posts' : null,
+  );
 
   /**
    * Walks the public (non-draft) posts list so adjacent navigation stays in

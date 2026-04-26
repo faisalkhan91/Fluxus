@@ -351,7 +351,9 @@ p {
   color: var(--text-muted);
   text-decoration: none;
   opacity: 0;
-  transition: opacity var(--transition-fast), color var(--transition-fast);
+  transition:
+    opacity var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .prose .anchor svg {
@@ -1148,11 +1150,17 @@ p {
   }
 }
 
-/* Container queries for card grids — the cards now react to their container's
-   width instead of the viewport, so a sidebar collapse / desktop-tablet
-   transition no longer has to be hand-coded as a media-query breakpoint. */
-@supports (container-type: inline-size) {
-  .content {
-    container-type: inline-size;
-  }
-}
+/*
+  Container-query opt-in for the main content shell.
+
+  Previously this block set `container-type: inline-size` on `.content`
+  unconditionally, but `rg "@container"` showed *no* rule actually
+  queried against it. An idle `container-type` declaration isn't free —
+  it can disable auto-sizing of the element's intrinsic block size in
+  Chrome/Safari (chromium#1416994), and we were paying that cost for
+  zero benefit. We're keeping the documented intent here so future grids
+  (e.g. `.skill-grid` reacting to a sidebar collapse) can opt in via a
+  single class without re-deriving the architecture. When you add the
+  first `@container` rule, flip the matching class onto `.content` and
+  re-introduce the `container-type` declaration scoped to that class.
+*/

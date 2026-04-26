@@ -7,7 +7,7 @@ import {
   afterNextRender,
   inject,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { GlowButtonComponent } from '@ui/glow-button/glow-button.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
@@ -20,7 +20,7 @@ import { formatPostDate } from '@shared/utils/blog.utils';
   selector: 'app-hero',
   templateUrl: './hero.component.html',
   styleUrl: './hero.component.css',
-  imports: [RouterLink, GlowButtonComponent, GlassCardComponent, IconComponent],
+  imports: [RouterLink, NgTemplateOutlet, GlowButtonComponent, GlassCardComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroComponent {
@@ -30,6 +30,15 @@ export class HeroComponent {
   private readonly destroyRef = inject(DestroyRef);
   protected profile = inject(ProfileDataService);
   protected blog = inject(BlogService);
+
+  /**
+   * Slot count for the latest-posts skeleton row. Lifted out of the
+   * template so the array literal isn't reallocated on every CD pass —
+   * `@for (i of [0, 1])` allocates a fresh `[0, 1]` every time the
+   * template body re-evaluates, which compounds across the @placeholder
+   * + main-block copies of the skeleton.
+   */
+  protected readonly skeletonSlots = [0, 1] as const;
 
   constructor() {
     /*

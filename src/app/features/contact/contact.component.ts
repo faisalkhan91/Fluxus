@@ -13,6 +13,7 @@ import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { GlowButtonComponent } from '@ui/glow-button/glow-button.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { ProfileDataService } from '@core/services/profile-data.service';
+import { copyToClipboard } from '@shared/utils/clipboard.utils';
 
 type SubmitStage = 'editing' | 'awaiting-confirmation' | 'sent';
 
@@ -87,26 +88,20 @@ export class ContactComponent {
   }
 
   async copyEmail(): Promise<void> {
-    const email = this.profile.personalInfo().email;
     if (!this.isBrowser) return;
-
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(email);
-      } else {
-        const fallback = document.createElement('textarea');
-        fallback.value = email;
-        fallback.setAttribute('readonly', '');
-        fallback.style.position = 'absolute';
-        fallback.style.left = '-9999px';
-        document.body.appendChild(fallback);
-        fallback.select();
-        document.execCommand('copy');
-        document.body.removeChild(fallback);
-      }
+    const email = this.profile.personalInfo().email;
+    const ok = await copyToClipboard(email);
+    /*
+      `emailCopied` flips the button affordance to "Copied!" for 2 s.
+      We only show the success state when the clipboard write actually
+      succeeded — silent failures previously masqueraded as success
+      because the legacy fallback path inside this method swallowed
+      `execCommand` failures.
+    */
+    if (ok) {
       this.emailCopied.set(true);
       setTimeout(() => this.emailCopied.set(false), 2000);
-    } catch {
+    } else {
       this.emailCopied.set(false);
     }
   }

@@ -540,8 +540,25 @@
   }
 }
 
-/* Mermaid diagrams. The placeholder is shown until the lazy mermaid lib
-   replaces it with a `<figure class="mermaid">` containing rendered SVG. */
+/*
+  Mermaid diagrams. The placeholder is shown until the lazy mermaid lib
+  replaces it with a `<figure class="mermaid">` containing rendered SVG.
+
+  CLS guard: the placeholder reserves a 16/9 box (matches the median
+  diagram aspect for the kinds of charts the blog typically embeds —
+  flowcharts, sequence diagrams, simple state machines). Without this,
+  the placeholder height is whatever the wrapped source text produces,
+  and the rendered SVG height is whatever the diagram's intrinsic ratio
+  produces — two unrelated values, so the swap shoves everything below
+  the diagram up or down (Lighthouse-flagged CLS hotspot called out in
+  the rendering audit, finding C1).
+
+  `min-height: 200px` ensures even tiny placeholders take perceptible
+  space so the user doesn't see the box collapse-then-expand. The source
+  text is preserved (`white-space: pre-wrap`) and overflows scroll inside
+  the box (`overflow: auto`) for posts that ship without a build-time
+  dimensions map.
+*/
 .mermaid-source {
   margin: var(--space-6) 0;
   padding: var(--space-4);
@@ -552,8 +569,18 @@
   font-size: 0.78rem;
   white-space: pre-wrap;
   color: var(--text-muted);
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+  overflow: auto;
 }
 
+/*
+  Once mermaid has rendered, we want the figure to take the diagram's
+  intrinsic aspect ratio rather than locking to 16/9 — but we still want
+  to bound the height so a giant flowchart doesn't push the rest of the
+  post off-screen. `max-height: 80vh` gives the reader the whole diagram
+  without jumping past the next paragraph.
+*/
 .mermaid {
   margin: var(--space-6) 0;
   text-align: center;
@@ -561,6 +588,7 @@
 
 .mermaid svg {
   max-width: 100%;
+  max-height: 80vh;
   height: auto;
 }
 
@@ -653,6 +681,27 @@
   color: var(--text-muted);
   flex-shrink: 0;
   min-width: 1.5em;
+}
+
+/*
+  Placeholder stubs for the deferred related-posts and footer-nav
+  sections. Both are below the fold on first load, so we defer their
+  rendering on viewport intersection. The stubs reserve the same outer
+  block height as the rendered content so when the deferred chunk
+  swaps in, the page below it doesn't jump. The exact heights are
+  approximations of the rendered content (related list with 3 items,
+  prev/next nav row) — being a few pixels off is fine; what matters
+  is that the stub isn't 0 px tall, which would cause a CLS spike on
+  scroll-in. `aria-hidden` keeps the stubs out of the AT tree.
+*/
+.post-related-placeholder,
+.post-footer-nav-placeholder {
+  margin-top: var(--space-10);
+  min-height: 220px;
+}
+
+.post-footer-nav-placeholder {
+  min-height: 96px;
 }
 
 /* "You might also like" — picks up to 3 posts that share tags with the
