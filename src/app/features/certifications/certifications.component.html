@@ -16,7 +16,7 @@
       element. The label is already provided by the <ui-section-header>'s
       <h1>, so an explicit aria-label here would duplicate the announcement.
     -->
-    <div class="cert-grid" role="list">
+    <div class="cert-grid" role="list" tabindex="0" aria-label="Certifications grid">
       @for (cert of certsData.certifications(); track cert.name; let i = $index) {
         <ui-glass-card
           [hover]="true"
