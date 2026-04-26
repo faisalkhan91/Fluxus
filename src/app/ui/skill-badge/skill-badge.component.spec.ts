@@ -63,12 +63,27 @@ describe('SkillBadgeComponent', () => {
     expect(bar?.getAttribute('aria-valuemax')).toBe('100');
   });
 
-  it('sets the fill width to match the level percentage', () => {
+  it('sets --badge-fill-scale to match the level percentage', () => {
     fixture.componentRef.setInput('name', 'Docker');
     fixture.componentRef.setInput('level', 100);
     fixture.detectChanges();
 
     const fill = el.querySelector('.badge-fill') as HTMLElement | null;
-    expect(fill?.style.width).toBe('100%');
+    expect(fill).not.toBeNull();
+    /*
+      The fill rail is always 100% wide; its visible length is driven by
+      `transform: scaleX(var(--badge-fill-scale))`. Assert the custom
+      property the component sets, which is what the CSS reads.
+    */
+    expect(fill?.style.getPropertyValue('--badge-fill-scale')).toBe('1');
+  });
+
+  it('scales --badge-fill-scale proportionally below 100%', () => {
+    fixture.componentRef.setInput('name', 'Docker');
+    fixture.componentRef.setInput('level', 75);
+    fixture.detectChanges();
+
+    const fill = el.querySelector('.badge-fill') as HTMLElement | null;
+    expect(fill?.style.getPropertyValue('--badge-fill-scale')).toBe('0.75');
   });
 });

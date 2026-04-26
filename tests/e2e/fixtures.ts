@@ -41,18 +41,21 @@ export async function trackViewTransitions(page: Page): Promise<void> {
     const w = window as Window & VTWindow;
     w.__vtCalled = false;
 
-    const original = (
-      document as Document & {
-        startViewTransition?: (cb: () => void) => unknown;
-      }
-    ).startViewTransition;
+    /*
+      Cast through `unknown` to escape the lib.dom intersection on
+      `Document.startViewTransition` (which is overloaded to return
+      `ViewTransition`). We don't need that strictness here -- we just
+      need a hookable function slot, so a fresh structural type does
+      the job without TS complaining about the return-type mismatch.
+    */
+    type StartViewTransition = (cb: () => void) => unknown;
+    const docVT = document as unknown as {
+      startViewTransition?: StartViewTransition;
+    };
+    const original = docVT.startViewTransition;
 
     if (typeof original === 'function') {
-      (
-        document as Document & {
-          startViewTransition?: (cb: () => void) => unknown;
-        }
-      ).startViewTransition = function (this: Document, cb: () => void) {
+      docVT.startViewTransition = function (this: Document, cb: () => void) {
         w.__vtCalled = true;
         return original.call(this, cb);
       };
@@ -61,9 +64,7 @@ export async function trackViewTransitions(page: Page): Promise<void> {
 }
 
 export async function readViewTransitionFlag(page: Page): Promise<boolean> {
-  return page.evaluate(
-    () => (window as Window & { __vtCalled?: boolean }).__vtCalled === true,
-  );
+  return page.evaluate(() => (window as Window & { __vtCalled?: boolean }).__vtCalled === true);
 }
 
 /**

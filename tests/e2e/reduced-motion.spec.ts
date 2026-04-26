@@ -40,7 +40,11 @@ test.describe('prefers-reduced-motion: reduce', () => {
         const aDur = parseDur(style.animationDuration);
         if (tDur > threshold || aDur > threshold) {
           offenders.push({
-            selector: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ').filter(Boolean).slice(0, 2).join('.') : ''),
+            selector:
+              el.tagName.toLowerCase() +
+              (el.className
+                ? '.' + String(el.className).split(' ').filter(Boolean).slice(0, 2).join('.')
+                : ''),
             transition: style.transitionDuration,
             animation: style.animationDuration,
           });

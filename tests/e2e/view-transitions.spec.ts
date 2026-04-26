@@ -22,9 +22,8 @@ test.describe('View Transitions API integration', () => {
 
     const supported = await page.evaluate(
       () =>
-        typeof (
-          document as Document & { startViewTransition?: unknown }
-        ).startViewTransition === 'function',
+        typeof (document as Document & { startViewTransition?: unknown }).startViewTransition ===
+        'function',
     );
     expect(supported, 'browser must expose document.startViewTransition').toBe(true);
 
