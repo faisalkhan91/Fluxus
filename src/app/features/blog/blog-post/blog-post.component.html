@@ -1,11 +1,27 @@
-<div class="post-layout">
+<!--
+  The post layout uses `animate.enter="fade-in"` (opacity-only) rather than
+  the `enter-fade-up` translateY shared with other routes. Two reasons:
+    1. The router's `withViewTransitions()` already handles cross-route
+       motion via the `main-content` named region — pairing it with a
+       250 ms translateY on the post-layout's outer wrapper double-stacks
+       and reads as jank, especially on long posts.
+    2. The post body loads asynchronously (httpResource for the markdown,
+       lazy mermaid render), so a translateY animation finishes before the
+       content fully resolves. A pure opacity fade keeps the entrance
+       calm while the content settles.
+-->
+<div class="post-layout" animate.enter="fade-in">
+  <!--
+    Reading-progress bar is purely decorative motion; assistive tech already
+    tracks scroll percentage natively. Earlier the bar carried a
+    `role="progressbar"` + live `aria-valuenow` that broadcast every scroll
+    tick to AT (chatty 1%-by-1% announcements on some configurations); now
+    the bar is `aria-hidden` so it's invisible to screen readers while the
+    visual treatment stays unchanged.
+  -->
   <div
     class="reading-progress"
-    role="progressbar"
-    aria-label="Reading progress"
-    aria-valuemin="0"
-    aria-valuemax="100"
-    [attr.aria-valuenow]="readingProgressLabel()"
+    aria-hidden="true"
     [style.transform]="'scaleX(' + scrollProgress() / 100 + ')'"
   ></div>
 
@@ -89,7 +105,9 @@
       <aside class="post-series" aria-label="Post series">
         <p class="post-series-meta">
           <strong>{{ info.series }}</strong>
-          <span class="post-series-position">Part {{ info.index + 1 }} of {{ info.posts.length }}</span>
+          <span class="post-series-position"
+            >Part {{ info.index + 1 }} of {{ info.posts.length }}</span
+          >
         </p>
         <ol class="post-series-list">
           @for (entry of info.posts; track entry.slug; let i = $index) {
@@ -113,15 +131,21 @@
   }
 
   @if (meta()?.cover; as cover) {
+    <!--
+      Cover hero is the LCP candidate on every individual post page, so it
+      uses `NgOptimizedImage` with `priority` so Angular emits the correct
+      `loading="eager" / decoding="async" / fetchpriority="high"` triple
+      and warns at build time if the dims are missing. Intrinsic dimensions
+      come from the build-time IMAGE_DIMS map (see coverDims()), so the
+      layout doesn't shift while the image loads.
+    -->
     <figure class="post-cover">
       <img
-        [src]="cover"
+        [ngSrc]="cover"
         [alt]="meta()?.title ?? ''"
         [width]="coverDims().w"
         [height]="coverDims().h"
-        loading="eager"
-        decoding="async"
-        fetchpriority="high"
+        priority
       />
     </figure>
   }
@@ -149,19 +173,44 @@
     </aside>
   }
 
+  <!--
+    Each branch carries `animate.enter="fade-in"` so the swap from
+    "Loading post..." to the rendered prose (and from any state into the
+    error panel) cross-fades instead of popping. The fade is opacity-only
+    (no translateY) so the reader's eye doesn't have to track motion at
+    the same moment they're trying to start reading. Source order matches
+    the `loading -> error -> ready` state machine.
+  -->
   <ui-glass-panel class="post-content">
-    @if (loading()) {
-      <div class="post-loading">
-        <span class="loading-cursor">Loading post...</span>
-      </div>
-    } @else if (error()) {
-      <div class="post-error" role="alert">
-        <ui-icon name="alert-triangle" [size]="24" />
-        <p>{{ error() }}</p>
-        <a routerLink="/blog" class="back-link">Return to blog</a>
-      </div>
-    } @else {
-      <article class="prose" [innerHTML]="content() | trustedHtml"></article>
+    <!--
+      Single discriminant `viewState()` drives the body — `'loading' |
+      'error' | 'ready'`. Reads as a state machine instead of a chain of
+      mutually-exclusive `@if`s, which is exactly what this surface is
+      conceptually. The branches keep `animate.enter="fade-in"` so the
+      swap from skeleton to prose (and any state into the error panel)
+      cross-fades; opacity-only so the reader's eye isn't tracking
+      motion at the same moment they're starting to read.
+    -->
+    @switch (viewState()) {
+      @case ('loading') {
+        <div class="post-loading" animate.enter="fade-in">
+          <span class="loading-cursor">Loading post...</span>
+        </div>
+      }
+      @case ('error') {
+        <div class="post-error" role="alert" animate.enter="fade-in">
+          <ui-icon name="alert-triangle" [size]="24" />
+          <p>{{ error() }}</p>
+          <a routerLink="/blog" class="back-link">Return to blog</a>
+        </div>
+      }
+      @case ('ready') {
+        <article
+          class="prose"
+          animate.enter="fade-in"
+          [innerHTML]="content() | trustedHtml: 'local-markdown'"
+        ></article>
+      }
     }
   </ui-glass-panel>
 
@@ -175,7 +224,7 @@
           first thing a touch user sees. Falling back to the per-network
           links keeps desktop and unsupported browsers fully functional.
         -->
-        @if (canWebShare()) {
+        @if (canWebShare) {
           <button
             type="button"
             class="share-link share-link--native"
@@ -233,7 +282,11 @@
 
       @let author = profile.personalInfo();
       <ui-glass-card class="post-author">
-        <a routerLink="/about" class="post-author-avatar-link" [attr.aria-label]="'Read more about ' + author.name">
+        <a
+          routerLink="/about"
+          class="post-author-avatar-link"
+          [attr.aria-label]="'Read more about ' + author.name"
+        >
           <img
             [ngSrc]="author.avatar"
             width="64"
@@ -258,46 +311,69 @@
   }
 
   @if (relatedPosts().length) {
-    <section class="post-related" aria-labelledby="post-related-heading">
-      <h2 id="post-related-heading" class="post-related-title">You might also like</h2>
-      <ul class="post-related-list">
-        @for (related of relatedPosts(); track related.slug) {
-          <li>
-            <a [routerLink]="['/blog', related.slug]" class="post-related-link">
-              <span class="post-related-headline">{{ related.title }}</span>
-              <span class="post-related-meta">
-                <time [attr.datetime]="related.date">{{ formatDate(related.date) }}</time>
-                <span aria-hidden="true">·</span>
-                <span>{{ related.readingTime }}</span>
-              </span>
-            </a>
-          </li>
-        }
-      </ul>
-    </section>
+    <!--
+      Related-posts section is below every prose body (post + footer +
+      author card) — well past the LCP candidate. Defer until the user
+      scrolls toward it so the initial CD pass after hydration doesn't
+      walk this list. The placeholder reserves a fixed block height so
+      the scroll target / footer-nav below doesn't jump when the
+      deferred chunk swaps in. `prefetch on idle` warms the chunk after
+      LCP so by the time the user scrolls, the swap is instant.
+    -->
+    @defer (on viewport; prefetch on idle) {
+      <section class="post-related" aria-labelledby="post-related-heading">
+        <h2 id="post-related-heading" class="post-related-title">You might also like</h2>
+        <ul class="post-related-list">
+          @for (related of relatedPosts(); track related.slug) {
+            <li>
+              <a [routerLink]="['/blog', related.slug]" class="post-related-link">
+                <span class="post-related-headline">{{ related.title }}</span>
+                <span class="post-related-meta">
+                  <time [attr.datetime]="related.date">{{ formatDate(related.date) }}</time>
+                  <span aria-hidden="true">·</span>
+                  <span>{{ related.readingTime }}</span>
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    } @placeholder (minimum 200ms) {
+      <div class="post-related-placeholder" aria-hidden="true"></div>
+    }
   }
 
   @if (hasAdjacent()) {
     @let nav = adjacentPosts();
-    <nav class="post-footer-nav" aria-label="Post navigation">
-      @if (nav.prev) {
-        <a [routerLink]="['/blog', nav.prev.slug]" class="footer-nav-link footer-nav-prev">
-          <span class="footer-nav-direction">
-            <ui-icon name="arrow-left" [size]="14" />
-            Previous
-          </span>
-          <span class="footer-nav-title">{{ nav.prev.title }}</span>
-        </a>
-      }
-      @if (nav.next) {
-        <a [routerLink]="['/blog', nav.next.slug]" class="footer-nav-link footer-nav-next">
-          <span class="footer-nav-direction">
-            Next
-            <ui-icon name="arrow-right" [size]="14" />
-          </span>
-          <span class="footer-nav-title">{{ nav.next.title }}</span>
-        </a>
-      }
-    </nav>
+    <!--
+      Adjacent (prev/next) post nav also lives below the fold for any
+      reader who lands at the top — defer until viewport intersection.
+      The placeholder is the same minimal-height stub so layout stays
+      stable while the chunk is in flight.
+    -->
+    @defer (on viewport; prefetch on idle) {
+      <nav class="post-footer-nav" aria-label="Post navigation">
+        @if (nav.prev) {
+          <a [routerLink]="['/blog', nav.prev.slug]" class="footer-nav-link footer-nav-prev">
+            <span class="footer-nav-direction">
+              <ui-icon name="arrow-left" [size]="14" />
+              Previous
+            </span>
+            <span class="footer-nav-title">{{ nav.prev.title }}</span>
+          </a>
+        }
+        @if (nav.next) {
+          <a [routerLink]="['/blog', nav.next.slug]" class="footer-nav-link footer-nav-next">
+            <span class="footer-nav-direction">
+              Next
+              <ui-icon name="arrow-right" [size]="14" />
+            </span>
+            <span class="footer-nav-title">{{ nav.next.title }}</span>
+          </a>
+        }
+      </nav>
+    } @placeholder (minimum 200ms) {
+      <div class="post-footer-nav-placeholder" aria-hidden="true"></div>
+    }
   }
 </div>

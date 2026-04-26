@@ -10,19 +10,17 @@
         class="avatar"
       />
     </div>
-    @if (!collapsed()) {
-      <div class="identity">
-        <h2 class="name">Faisal Khan</h2>
-        <p class="role">Software Engineer</p>
-      </div>
-    }
+    <div class="identity">
+      <h2 class="name">Faisal Khan</h2>
+      <p class="role">Software Engineer</p>
+    </div>
   </a>
 </div>
 
 <ul class="nav-list">
-  @for (item of items(); track item) {
+  @for (item of items(); track item.label) {
     @if (item.type === 'divider') {
-      @if (item.label && !collapsed()) {
+      @if (item.label) {
         <li class="nav-divider" aria-hidden="true">
           <span class="divider-label">{{ item.label }}</span>
         </li>
@@ -38,10 +36,8 @@
           [attr.aria-label]="collapsed() ? item.label : null"
         >
           <ui-icon [name]="item.icon" [size]="18" />
-          @if (!collapsed()) {
-            <span class="nav-label">{{ item.label }}</span>
-            <span class="nav-ext">{{ item.ext }}</span>
-          }
+          <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-ext">{{ item.ext }}</span>
         </a>
       </li>
     }
@@ -49,33 +45,16 @@
 </ul>
 
 <div class="sidebar-footer">
-  @if (!collapsed()) {
-    <button
-      class="theme-toggle"
-      (click)="themeToggled.emit()"
-      [attr.aria-label]="isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-    >
-      <ui-icon [name]="isDark() ? 'sun' : 'moon'" [size]="16" />
-      <span>{{ isDark() ? 'Light Mode' : 'Dark Mode' }}</span>
-    </button>
-    <button class="resume-btn" (click)="resumeClicked.emit()" aria-label="Download Resume">
-      <ui-icon name="download" [size]="16" />
-      <span>Download Resume</span>
-    </button>
-  } @else {
-    <button
-      class="theme-toggle theme-toggle--icon"
-      (click)="themeToggled.emit()"
-      [attr.aria-label]="isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-    >
-      <ui-icon [name]="isDark() ? 'sun' : 'moon'" [size]="18" />
-    </button>
-    <button
-      class="resume-btn resume-btn--icon"
-      (click)="resumeClicked.emit()"
-      aria-label="Download Resume"
-    >
-      <ui-icon name="download" [size]="18" />
-    </button>
-  }
+  <button
+    class="theme-toggle"
+    (click)="themeToggled.emit()"
+    [attr.aria-label]="isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+  >
+    <ui-icon [name]="isDark() ? 'sun' : 'moon'" [size]="16" />
+    <span>{{ isDark() ? 'Light Mode' : 'Dark Mode' }}</span>
+  </button>
+  <button class="resume-btn" (click)="resumeClicked.emit()" aria-label="Download Resume">
+    <ui-icon name="download" [size]="16" />
+    <span>Download Resume</span>
+  </button>
 </div>

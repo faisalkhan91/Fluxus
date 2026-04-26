@@ -49,8 +49,9 @@ describe('ExperienceComponent', () => {
   });
 
   it('maps period entries to type "period" and jobs to type "item"', () => {
-    const entries = (component as unknown as { timelineEntries: () => { type: string }[] })
-      .timelineEntries();
+    const entries = (
+      component as unknown as { timelineEntries: () => { type: string }[] }
+    ).timelineEntries();
     expect(entries[0].type).toBe('period');
     expect(entries[1].type).toBe('item');
     expect(entries[2].type).toBe('item');

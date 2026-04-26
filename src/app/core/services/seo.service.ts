@@ -37,7 +37,9 @@ export class SeoService {
           ? `${seo['title']} - ${environment.siteName}`
           : environment.siteName;
         const description = seo?.['description'] ?? DEFAULT_DESCRIPTION;
-        const url = `${environment.siteUrl}${event.urlAfterRedirects}`.replace(/\/$/, '') || environment.siteUrl;
+        const url =
+          `${environment.siteUrl}${event.urlAfterRedirects}`.replace(/\/$/, '') ||
+          environment.siteUrl;
 
         this.title.setTitle(pageTitle);
         this.meta.updateTag({ name: 'description', content: description });

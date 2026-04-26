@@ -20,9 +20,8 @@ test.describe('mobile menu focus trap', () => {
     const trigger = page.locator('button[aria-label="Menu"][aria-haspopup="dialog"]');
     await trigger.click();
 
-    const dialog = page.locator('[role="dialog"][aria-modal="true"]');
+    const dialog = page.locator('div[role="dialog"][aria-label="Navigation menu"]');
     await expect(dialog).toBeVisible();
-    await expect(dialog).toHaveAttribute('aria-label', 'Navigation menu');
 
     // Collect every focusable inside the menu so we can assert wrap behavior.
     const focusableHandles = await dialog
@@ -82,7 +81,7 @@ test.describe('mobile menu focus trap', () => {
     await trigger.focus();
     await trigger.click();
 
-    const dialog = page.locator('[role="dialog"][aria-modal="true"]');
+    const dialog = page.locator('div[role="dialog"][aria-label="Navigation menu"]');
     await expect(dialog).toBeVisible();
 
     await page.keyboard.press('Escape');

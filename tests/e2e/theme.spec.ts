@@ -33,9 +33,8 @@ test.describe('theme pre-paint (no FOUC)', () => {
     page,
   }) => {
     await page.goto('/');
-    const inlineScripts = await page.$$eval(
-      'head script:not([src])',
-      (els) => els.map((el) => el.textContent ?? ''),
+    const inlineScripts = await page.$$eval('head script:not([src])', (els) =>
+      els.map((el) => el.textContent ?? ''),
     );
     const prePaint = inlineScripts.find(
       (src) => src.includes("localStorage.getItem('theme')") || src.includes('data-theme'),

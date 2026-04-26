@@ -17,7 +17,7 @@ import { NgOptimizedImage } from '@angular/common';
           aria-valuemin="0"
           aria-valuemax="100"
         >
-          <div class="badge-fill" [style.width.%]="level()"></div>
+          <div class="badge-fill" [style.--badge-fill-scale]="level()! / 100"></div>
         </div>
       }
     </div>

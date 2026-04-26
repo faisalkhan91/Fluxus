@@ -1,7 +1,6 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  Injector,
   inject,
   signal,
   computed,
@@ -25,10 +24,12 @@ import { BlogService } from '@core/services/blog.service';
 import { MarkdownService } from '@core/services/markdown.service';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import { ErrorToastService } from '@core/services/error-toast.service';
+import { ThemeService } from '@core/services/theme.service';
 import { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
+import { copyToClipboard } from '@shared/utils/clipboard.utils';
 import { IMAGE_DIMS } from '@core/services/image-dims.generated';
 
 /**
@@ -76,18 +77,27 @@ export class BlogPostComponent {
   private md = inject(MarkdownService);
   protected profile = inject(ProfileDataService);
   private toasts = inject(ErrorToastService);
+  private theme = inject(ThemeService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
-  // Captured so the afterNextRender effect can register an effect of its own.
-  private injector = inject(Injector);
   private metaService = inject(Meta);
   private titleService = inject(Title);
   private document = inject(DOCUMENT);
 
-  protected slug = toSignal(
-    this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')),
-    { initialValue: '' },
-  );
+  /**
+   * Reference to the `.post-layout` wrapper, populated by the first
+   * `afterNextRender` callback. The two side-effect handlers below
+   * (anchor href rewrite + mermaid render) read this signal so they can
+   * be declared at construction time as plain `effect()`s rather than
+   * being nested inside the render callback. Hoisting the effects keeps
+   * reactivity declarations co-located with the component's state and
+   * makes the dependency graph easier to reason about.
+   */
+  private postLayout = signal<HTMLElement | null>(null);
+
+  protected slug = toSignal(this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')), {
+    initialValue: '',
+  });
 
   // Reactive markdown body. Re-fires automatically when slug() changes and
   // resets to the empty default while loading — fixing the stale-content
@@ -119,6 +129,16 @@ export class BlogPostComponent {
    * usage (rare, but legal) is preserved.
    */
   private readonly rendered = computed(() => {
+    /*
+      `httpResource.value()` *throws* when the resource is in an error
+      state — the API surfaces failures imperatively rather than via a
+      sentinel value. Reading `.error()` first means a 404/500 collapses
+      to an empty render here (the dedicated `error()` computed below
+      drives the user-visible error UI) instead of bubbling an
+      uncaught exception out of every effect that depends on
+      `content()` / `rendered()`.
+    */
+    if (this.postBody.error()) return { html: '', toc: [] };
     const raw = this.postBody.value();
     if (!raw) return { html: '', toc: [] };
     return this.md.renderWithToc(stripLeadingH1(raw));
@@ -146,6 +166,24 @@ export class BlogPostComponent {
       return 'Post not found';
     }
     return null;
+  });
+
+  /**
+   * Three-state machine for the post body — the template renders one branch
+   * per state via `@switch (viewState())`. Driving the template from a single
+   * discriminant (instead of nested `@if (loading()) @else if (error()) @else`)
+   * makes the state transitions visible at a glance, and the Angular compiler
+   * emits a flatter sequence of equality checks instead of nested conditionals
+   * (small but free win).
+   *
+   * The `error()` signal already flips back to null while loading, so checking
+   * `loading` first never masks a stale-error frame. Order: `loading -> error
+   * -> ready` matches the visual progression in the rendered DOM.
+   */
+  readonly viewState = computed<'loading' | 'error' | 'ready'>(() => {
+    if (this.loading()) return 'loading';
+    if (this.error()) return 'error';
+    return 'ready';
   });
 
   readonly adjacentPosts = computed(() => {
@@ -220,17 +258,16 @@ export class BlogPostComponent {
 
   /**
    * Mirrors `'share' in navigator` so the template can render the native
-   * Share button only on platforms that support the Web Share API. Reads
-   * the value lazily on the browser only — `navigator` is undefined under
-   * SSR, so the button is omitted from the prerendered HTML and Angular
-   * hydrates it on first paint without a layout shift (the share row is
-   * a flex container with `flex-wrap`, so adding a button at the start
-   * doesn't affect siblings).
+   * Share button only on platforms that support the Web Share API. Read
+   * once at construction (the value never changes for the lifetime of the
+   * tab) — wrapping it in `computed()` adds signal-graph overhead for a
+   * static environment check. `navigator` is undefined under SSR, so the
+   * button is omitted from the prerendered HTML and Angular hydrates it
+   * on first paint without a layout shift (the share row is a flex
+   * container with `flex-wrap`, so adding a button at the start doesn't
+   * affect siblings).
    */
-  readonly canWebShare = computed(() => {
-    if (typeof navigator === 'undefined') return false;
-    return typeof navigator.share === 'function';
-  });
+  readonly canWebShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
   /**
    * Invokes the native Share sheet (iOS/Android, Edge/Chrome on Windows,
@@ -264,7 +301,7 @@ export class BlogPostComponent {
     if (!slug) return;
     const url = `${environment.siteUrl}/blog/${slug}`;
 
-    if (await this.copyToClipboard(url)) {
+    if (await copyToClipboard(url)) {
       this.linkCopied.set(true);
       setTimeout(() => this.linkCopied.set(false), 1500);
     } else {
@@ -272,38 +309,6 @@ export class BlogPostComponent {
         title: 'Could not copy the link',
         detail: 'Your browser blocked clipboard access — try copying the URL from the address bar.',
       });
-    }
-  }
-
-  /**
-   * Copies `text` to the clipboard, returning `true` on success.
-   * Falls back to the legacy `<textarea>` + `document.execCommand('copy')`
-   * pattern on insecure contexts / older browsers where
-   * `navigator.clipboard.writeText` rejects or is missing.
-   */
-  private async copyToClipboard(text: string): Promise<boolean> {
-    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
-      try {
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch {
-        // Permissions / insecure context — try the fallback.
-      }
-    }
-    if (typeof document === 'undefined') return false;
-    try {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.setAttribute('readonly', '');
-      textarea.style.position = 'absolute';
-      textarea.style.left = '-9999px';
-      document.body.appendChild(textarea);
-      textarea.select();
-      const ok = document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return ok;
-    } catch {
-      return false;
     }
   }
 
@@ -336,6 +341,49 @@ export class BlogPostComponent {
       untracked(() => this.updateSeriesLinkRels(slug, series));
     });
 
+    // Re-apply post-render side effects (anchor href rewrite, lazy mermaid
+    // diagrams) every time the rendered content swaps in. The effects only
+    // do work once `postLayout()` has been written by the
+    // `afterNextRender` callback below — that ordering is the reason
+    // these are declared at construction time but read both signals.
+    effect(() => {
+      const layout = this.postLayout();
+      this.content();
+      if (!layout) return;
+      untracked(() => this.rewriteAnchorHrefs(layout));
+    });
+
+    effect(() => {
+      const layout = this.postLayout();
+      this.content();
+      if (!layout) return;
+      untracked(() => this.scheduleMermaidRender(layout));
+    });
+
+    /*
+      Mermaid is initialised with the *current* `data-theme` attribute,
+      which means already-rendered SVGs keep their original palette after
+      a theme toggle. Watch the `ThemeService.theme` signal and re-render
+      the diagrams in place when the user flips themes — `revertMermaid`
+      restores the original source placeholders (we stash the source as
+      `data-mermaid-source` on the rendered figure for exactly this
+      reason) and `scheduleMermaidRender` then re-runs the lazy import +
+      render path with the new theme baked in.
+    */
+    effect(() => {
+      const themeName = this.theme.theme();
+      const layout = this.postLayout();
+      if (!layout) return;
+      untracked(() => {
+        if (this.revertMermaidIfRendered(layout)) {
+          this.scheduleMermaidRender(layout);
+        }
+        // Reference `themeName` so the linter and future readers see why
+        // this effect exists. The signal subscription is what wires it.
+        void themeName;
+      });
+    });
+
     this.destroyRef.onDestroy(() => {
       this.removeLinkRel('prev');
       this.removeLinkRel('next');
@@ -345,6 +393,9 @@ export class BlogPostComponent {
       const root = this.elRef.nativeElement as HTMLElement;
       const postLayout = root.querySelector('.post-layout') as HTMLElement | null;
       if (!postLayout) return;
+      // Publishing the layout reference triggers the two `effect()`s
+      // declared above, which run their initial side-effect pass.
+      this.postLayout.set(postLayout);
 
       // Pick the element that is _actually_ scrolling. The shell gives
       // `<main class="content">` `overflow-y: auto`, but the column-flex
@@ -359,13 +410,11 @@ export class BlogPostComponent {
       const docScroller =
         (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
       const scroller =
-        contentEl && contentEl.scrollHeight - contentEl.clientHeight > 1
-          ? contentEl
-          : docScroller;
+        contentEl && contentEl.scrollHeight - contentEl.clientHeight > 1 ? contentEl : docScroller;
 
       // Skip the JS scroll listener entirely on browsers that support
       // CSS scroll-driven animations — the `.reading-progress` bar is then
-      // animated via `animation-timeline: scroll(nearest)` on the compositor
+      // animated via `animation-timeline: scroll(root)` on the compositor
       // (see styles.css), which is cheaper and always smooth.
       const cssScrollDriven =
         typeof CSS !== 'undefined' &&
@@ -432,7 +481,7 @@ export class BlogPostComponent {
         const button = target.closest('.copy-btn') as HTMLButtonElement | null;
         if (!button) return;
         const code = button.parentElement?.querySelector('code')?.textContent ?? '';
-        const ok = await this.copyToClipboard(code);
+        const ok = await copyToClipboard(code);
         if (!ok) {
           this.toasts.push({
             title: 'Could not copy the snippet',
@@ -453,34 +502,6 @@ export class BlogPostComponent {
       };
       postLayout.addEventListener('click', onClick);
       this.destroyRef.onDestroy(() => postLayout.removeEventListener('click', onClick));
-
-      // Rewrite every permalink anchor's href to the post's absolute URL
-      // so right-click "Copy link" yields a useful shareable URL. Re-runs
-      // on every content swap so navigated-to posts get fresh hrefs.
-      this.rewriteAnchorHrefs(postLayout);
-      effect(
-        () => {
-          this.content();
-          untracked(() => this.rewriteAnchorHrefs(postLayout));
-        },
-        { injector: this.injector },
-      );
-
-      // Lazy-render any ```mermaid fences. The mermaid lib is heavy (~500
-      // KB) so it's dynamically imported only when a post actually contains
-      // a diagram — non-mermaid posts pay nothing. A small effect re-runs
-      // the scan whenever content() changes (slug navigation). The render
-      // itself is deferred via requestIdleCallback so the LCP frame and
-      // first INP-eligible interactions aren't delayed by mermaid parsing.
-      this.scheduleMermaidRender(postLayout);
-      effect(
-        () => {
-          this.content();
-          untracked(() => this.scheduleMermaidRender(postLayout));
-        },
-        { injector: this.injector },
-      );
-
     });
   }
 
@@ -531,7 +552,7 @@ export class BlogPostComponent {
         target.focus({ preventScroll: true });
       }
     }
-    if (await this.copyToClipboard(`${environment.siteUrl}${path}`)) {
+    if (await copyToClipboard(`${environment.siteUrl}${path}`)) {
       this.toasts.push({
         title: 'Section link copied',
         detail: 'A link to this section is now on your clipboard.',
@@ -562,7 +583,10 @@ export class BlogPostComponent {
   /**
    * Finds every `.mermaid-source` placeholder emitted by MarkdownService
    * and replaces it with rendered SVG via the mermaid lib. Lazy import +
-   * one initialisation per page; no-ops on the server.
+   * one initialisation per page; no-ops on the server. The original
+   * source is stashed on the rendered `<figure>` as
+   * `data-mermaid-source` so a subsequent theme toggle can revert and
+   * re-render with the new palette (see `revertMermaidIfRendered`).
    */
   private async renderMermaidIfNeeded(root: HTMLElement): Promise<void> {
     if (typeof window === 'undefined') return;
@@ -585,6 +609,8 @@ export class BlogPostComponent {
           const wrapper = document.createElement('figure');
           wrapper.className = 'mermaid';
           wrapper.innerHTML = svg;
+          // Preserve the source so theme toggles can re-render in place.
+          wrapper.setAttribute('data-mermaid-source', source);
           node.replaceWith(wrapper);
         } catch {
           // On failure, leave the source visible so the reader can still see
@@ -595,6 +621,31 @@ export class BlogPostComponent {
     } catch {
       // mermaid lib failed to load — leave placeholders intact.
     }
+  }
+
+  /**
+   * Inverse of `renderMermaidIfNeeded`: walks every `<figure class="mermaid"
+   * data-mermaid-source>` already in the DOM and rewrites it back to the
+   * `<div class="mermaid-source">…source…</div>` placeholder shape that
+   * `renderMermaidIfNeeded` knows how to consume. Returns `true` when
+   * any nodes were reverted (so the caller knows whether to schedule a
+   * re-render).
+   */
+  private revertMermaidIfRendered(root: HTMLElement): boolean {
+    if (typeof document === 'undefined') return false;
+    const rendered = Array.from(
+      root.querySelectorAll<HTMLElement>('figure.mermaid[data-mermaid-source]'),
+    );
+    if (rendered.length === 0) return false;
+    for (const figure of rendered) {
+      const source = figure.getAttribute('data-mermaid-source') ?? '';
+      const placeholder = document.createElement('div');
+      placeholder.className = 'mermaid-source';
+      placeholder.setAttribute('data-mermaid-source', '');
+      placeholder.textContent = source;
+      figure.replaceWith(placeholder);
+    }
+    return true;
   }
 
   /**

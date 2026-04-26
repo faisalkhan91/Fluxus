@@ -1,3 +1,16 @@
+<!--
+  Entrance choreography is driven by CSS `@starting-style` instead of
+  the `animate.enter` directive. animate.enter adds its class one frame
+  after the element is inserted, which is fine in Chrome (the
+  `withViewTransitions()` snapshot crossfade hides that one-frame gap)
+  but visibly flashes in Firefox, which doesn't support the View
+  Transitions API and falls back to plain navigation — the user sees
+  the new content fully rendered, snap to opacity:0, and only then
+  fade up. `@starting-style` is applied synchronously by the browser
+  on element insertion, so the first paint is already the from-state
+  with no JS round-trip. SSR initial paint is unaffected (those
+  elements are in the DOM from frame zero with no insertion event).
+-->
 <div class="blog-layout">
   <header class="blog-header">
     <ui-section-header
@@ -30,94 +43,127 @@
     </a>
   </header>
 
-  @if (blog.posts().length) {
-    <div class="post-grid">
-      @for (post of blog.posts(); track post.slug; let isFirst = $first) {
-        <a
-          [routerLink]="['/blog', post.slug]"
-          class="post-link"
-          [class.post-link--featured]="isFirst"
-        >
-          <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
-            @if (isFirst) {
-              <!--
+  <!--
+    Discriminant-driven state machine: `'ready' | 'loading' | 'error' |
+    'empty'`. Keeping the four surfaces inside a single `@switch` makes
+    the transitions auditable in one place — every render mode is named
+    rather than chained behind `@else if`. The order of the `@case`s
+    follows the rendered DOM (success first, status surfaces after) so
+    the visible state matches reading order in source.
+  -->
+  @switch (viewState()) {
+    @case ('ready') {
+      <div class="post-grid">
+        @for (
+          entry of decoratedPosts();
+          track entry.post.slug;
+          let isFirst = $first;
+          let i = $index
+        ) {
+          <!--
+            Stagger choreography:
+            - `--enter-delay` ramps from 0ms by 30ms per card so the
+              wave reads as one entrance instead of a queue. It feeds
+              the `transition-delay` declared on `.post-link` in the
+              stylesheet.
+            - The featured (first) card is special-cased in CSS to
+              skip the translateY rise (opacity-only fade). Sliding
+              the heavy cover image while it's still decoding reads
+              as jank; the remaining text-only cards keep the rise.
+          -->
+          <a
+            [routerLink]="['/blog', entry.post.slug]"
+            class="post-link"
+            [class.post-link--featured]="isFirst"
+            [style.--enter-delay]="i * 30 + 'ms'"
+          >
+            <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
+              @if (isFirst) {
+                <!--
                 Featured (newest) post: side-thumbnail layout. Cover sits in
                 the left grid column (~320px wide on desktop) and the body
                 (`.post-card-body`) takes the right column. Below 768px the
                 grid collapses and the cover stacks on top with a clamped
                 aspect ratio so the image stays compact on phones.
+
+                The cover uses `NgOptimizedImage` with `priority` so Angular
+                emits the right `loading` / `decoding` / `fetchpriority`
+                hints (and warns if dims are missing) — keeps the LCP
+                surface aligned with the rest of the codebase.
               -->
-              <figure class="post-card-cover">
-                <img
-                  [src]="featuredCover(post)"
-                  [alt]="post.title"
-                  [width]="featuredCoverDims(post).w"
-                  [height]="featuredCoverDims(post).h"
-                  loading="eager"
-                  decoding="async"
-                  fetchpriority="high"
-                />
-              </figure>
-              <div class="post-card-body">
+                <figure class="post-card-cover">
+                  <img
+                    [ngSrc]="entry.cover"
+                    [alt]="entry.post.title"
+                    [width]="entry.coverDims.w"
+                    [height]="entry.coverDims.h"
+                    priority
+                  />
+                </figure>
+                <div class="post-card-body">
+                  <div class="post-meta">
+                    <time class="post-date" [attr.datetime]="entry.post.date">
+                      <ui-icon name="calendar" [size]="12" />
+                      {{ formatDate(entry.post.date) }}
+                    </time>
+                    <span class="post-reading-time">
+                      <ui-icon name="clock" [size]="12" />
+                      {{ entry.post.readingTime }}
+                    </span>
+                  </div>
+                  <h2 class="post-title">{{ entry.post.title }}</h2>
+                  <p class="post-excerpt">{{ entry.post.excerpt }}</p>
+                  <div class="post-tags">
+                    @for (tag of entry.post.tags; track tag) {
+                      <span class="tag">{{ tag }}</span>
+                    }
+                  </div>
+                </div>
+              } @else {
                 <div class="post-meta">
-                  <time class="post-date" [attr.datetime]="post.date">
+                  <time class="post-date" [attr.datetime]="entry.post.date">
                     <ui-icon name="calendar" [size]="12" />
-                    {{ formatDate(post.date) }}
+                    {{ formatDate(entry.post.date) }}
                   </time>
                   <span class="post-reading-time">
                     <ui-icon name="clock" [size]="12" />
-                    {{ post.readingTime }}
+                    {{ entry.post.readingTime }}
                   </span>
                 </div>
-                <h2 class="post-title">{{ post.title }}</h2>
-                <p class="post-excerpt">{{ post.excerpt }}</p>
+                <h2 class="post-title">{{ entry.post.title }}</h2>
+                <p class="post-excerpt">{{ entry.post.excerpt }}</p>
                 <div class="post-tags">
-                  @for (tag of post.tags; track tag) {
+                  @for (tag of entry.post.tags; track tag) {
                     <span class="tag">{{ tag }}</span>
                   }
                 </div>
-              </div>
-            } @else {
-              <div class="post-meta">
-                <time class="post-date" [attr.datetime]="post.date">
-                  <ui-icon name="calendar" [size]="12" />
-                  {{ formatDate(post.date) }}
-                </time>
-                <span class="post-reading-time">
-                  <ui-icon name="clock" [size]="12" />
-                  {{ post.readingTime }}
-                </span>
-              </div>
-              <h2 class="post-title">{{ post.title }}</h2>
-              <p class="post-excerpt">{{ post.excerpt }}</p>
-              <div class="post-tags">
-                @for (tag of post.tags; track tag) {
-                  <span class="tag">{{ tag }}</span>
-                }
-              </div>
-            }
-          </ui-glass-card>
-        </a>
-      }
-    </div>
-    <p class="post-grid-hint">
-      Browse by tag:
-      @for (tag of allTags(); track tag) {
-        <a [routerLink]="['/blog/tag', tagSlug(tag)]" class="tag tag--link">{{ tag }}</a>
-      }
-    </p>
-  } @else if (blog.loading()) {
-    <div class="blog-status" role="status" aria-live="polite">
-      <span class="loading-cursor">Loading posts...</span>
-    </div>
-  } @else if (blog.error()) {
-    <div class="blog-status blog-status--error" role="alert">
-      <ui-icon name="alert-triangle" [size]="20" />
-      <p>{{ blog.error() }}</p>
-    </div>
-  } @else {
-    <div class="blog-status">
-      <p>No posts published yet. Check back soon.</p>
-    </div>
+              }
+            </ui-glass-card>
+          </a>
+        }
+      </div>
+      <p class="post-grid-hint">
+        Browse by tag:
+        @for (tag of allTags(); track tag) {
+          <a [routerLink]="['/blog/tag', tagSlug(tag)]" class="tag tag--link">{{ tag }}</a>
+        }
+      </p>
+    }
+    @case ('loading') {
+      <div class="blog-status" role="status" aria-live="polite">
+        <span class="loading-cursor">Loading posts...</span>
+      </div>
+    }
+    @case ('error') {
+      <div class="blog-status blog-status--error" role="alert">
+        <ui-icon name="alert-triangle" [size]="20" />
+        <p>{{ blog.error() }}</p>
+      </div>
+    }
+    @case ('empty') {
+      <div class="blog-status">
+        <p>No posts published yet. Check back soon.</p>
+      </div>
+    }
   }
 </div>

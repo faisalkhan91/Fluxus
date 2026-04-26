@@ -3,14 +3,28 @@
   insist on keyboard mirrors — the palette is fully keyboard-accessible
   (cmd+k toggles, Esc closes via the dialog's built-in `close` event).
   Backdrop dismiss is handled by the explicit overlay <div> inside.
+
+  `aria-modal="true"` is set explicitly even though modern Chromium / Safari /
+  Firefox apply it implicitly when `showModal()` is called. Older Safari
+  builds (< 16) don't, and the cost of the extra attribute is zero on the
+  modern path. Matches WAI-ARIA dialog pattern.
 -->
 <dialog
   #dialog
   class="palette"
+  role="dialog"
+  aria-modal="true"
   aria-label="Command palette"
   (close)="open.set(false)"
 >
   <div class="palette-frame">
+    <!--
+      Combobox + listbox pattern (WAI-ARIA APG, "Editable Combobox With
+      List Autocomplete"). The input keeps real keyboard focus while
+      `aria-activedescendant` points at whichever option the arrow keys
+      have currently highlighted, so screen readers announce the active
+      option without focus actually moving away from the search box.
+    -->
     <div class="palette-input-row">
       <ui-icon name="send" [size]="16" />
       <input
@@ -18,6 +32,11 @@
         type="text"
         class="palette-input"
         placeholder="Search pages and posts..."
+        role="combobox"
+        aria-controls="palette-listbox"
+        aria-autocomplete="list"
+        aria-expanded="true"
+        [attr.aria-activedescendant]="activeDescendantId()"
         [value]="query()"
         (input)="onInput($any($event.target).value)"
         (keydown)="onKey($event)"
@@ -28,9 +47,9 @@
     </div>
 
     @if (filtered().length === 0) {
-      <p class="palette-empty">No matches.</p>
+      <p class="palette-empty" id="palette-listbox" role="status">No matches.</p>
     } @else {
-      <ul class="palette-list" role="listbox">
+      <ul class="palette-list" id="palette-listbox" role="listbox">
         @for (item of filtered(); track item.id; let i = $index) {
           <li>
             <button
@@ -38,6 +57,7 @@
               class="palette-item"
               [class.palette-item--active]="i === highlighted()"
               role="option"
+              [id]="item.domId"
               [attr.aria-selected]="i === highlighted()"
               (mouseenter)="highlighted.set(i)"
               (click)="select(item)"

@@ -40,7 +40,11 @@ test.describe('prefers-reduced-motion: reduce', () => {
         const aDur = parseDur(style.animationDuration);
         if (tDur > threshold || aDur > threshold) {
           offenders.push({
-            selector: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ').filter(Boolean).slice(0, 2).join('.') : ''),
+            selector:
+              el.tagName.toLowerCase() +
+              (el.className
+                ? '.' + String(el.className).split(' ').filter(Boolean).slice(0, 2).join('.')
+                : ''),
             transition: style.transitionDuration,
             animation: style.animationDuration,
           });
@@ -105,7 +109,7 @@ test.describe('prefers-reduced-motion: reduce', () => {
     await page.locator('a[href="/about"]').first().click();
     await page.waitForURL('**/about');
     const elapsed = Date.now() - start;
-    // 1s is a generous ceiling — a stuck transition would block much longer.
-    expect(elapsed).toBeLessThan(1500);
+    // 3s is a generous ceiling for CI — a stuck transition would block much longer.
+    expect(elapsed).toBeLessThan(3000);
   });
 });

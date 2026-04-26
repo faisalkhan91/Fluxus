@@ -8,12 +8,72 @@
   width: min(560px, 100vw - 2 * var(--space-4));
   max-height: 70vh;
   color: var(--text-primary);
+  /*
+    Open / close animation. `<dialog>` toggles `display: block` <-> `none`,
+    which is normally a discrete change that can't be transitioned. Using
+    `transition-behavior: allow-discrete` plus `@starting-style` lets the
+    browser animate from the starting (closed) state to the open state on
+    insertion, and back the other way on close. References:
+      - MDN — `@starting-style`
+      - MDN — `transition-behavior: allow-discrete`
+  */
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base),
+    overlay var(--transition-base) allow-discrete,
+    display var(--transition-base) allow-discrete;
+}
+
+.palette[open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.palette:not([open]) {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@starting-style {
+  .palette[open] {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
 
 .palette::backdrop {
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  transition:
+    background var(--transition-base),
+    backdrop-filter var(--transition-base),
+    -webkit-backdrop-filter var(--transition-base),
+    overlay var(--transition-base) allow-discrete,
+    display var(--transition-base) allow-discrete;
+}
+
+.palette[open]::backdrop {
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+@starting-style {
+  .palette[open]::backdrop {
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palette,
+  .palette::backdrop {
+    transition: none;
+  }
 }
 
 .palette-frame {
@@ -40,11 +100,22 @@
   flex: 1;
   background: transparent;
   border: none;
+  /*
+    Suppress the user-agent default (typically a thin black inset) but only
+    when the user isn't keyboard-navigating; :focus-visible below restores
+    the standard accent ring used everywhere else in the app.
+  */
   outline: none;
   color: var(--text-primary);
   font: inherit;
   font-size: 0.95rem;
   padding: 0;
+  border-radius: var(--radius-sm);
+}
+
+.palette-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .palette-input::placeholder {
@@ -93,6 +164,10 @@
 .palette-item:focus-visible {
   background: var(--accent-subtle);
   color: var(--text-primary);
+}
+
+.palette-item:active {
+  background: var(--glass-bg-hover);
 }
 
 .palette-label {

@@ -9,92 +9,98 @@ export interface ImageDim {
 }
 
 export const IMAGE_DIMS: Record<string, ImageDim> = {
-  "assets/images/achievements/certifications/aws-certified-cloud-practitioner.png": {
-    "w": 600,
-    "h": 600
+  'assets/images/achievements/certifications/aws-certified-cloud-practitioner.png': {
+    w: 600,
+    h: 600,
   },
-  "assets/images/achievements/certifications/CRLACertifiedL1.png": {
-    "w": 400,
-    "h": 400
+  'assets/images/achievements/certifications/CRLACertifiedL1.png': {
+    w: 400,
+    h: 400,
   },
-  "assets/images/achievements/certifications/microsoft-certified-azure-ai-engineer-associate.webp": {
-    "w": 600,
-    "h": 600
+  'assets/images/achievements/certifications/microsoft-certified-azure-ai-engineer-associate.webp':
+    {
+      w: 600,
+      h: 600,
+    },
+  'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png': {
+    w: 600,
+    h: 600,
   },
-  "assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png": {
-    "w": 600,
-    "h": 600
+  'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png': {
+    w: 600,
+    h: 600,
   },
-  "assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png": {
-    "w": 600,
-    "h": 600
+  'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png': {
+    w: 600,
+    h: 600,
   },
-  "assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png": {
-    "w": 600,
-    "h": 600
+  'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png':
+    {
+      w: 600,
+      h: 600,
+    },
+  'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png': {
+    w: 600,
+    h: 600,
   },
-  "assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png": {
-    "w": 600,
-    "h": 600
+  'assets/images/blog/homelab-storage/hardware-stack.webp': {
+    w: 1600,
+    h: 1200,
   },
-  "assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png": {
-    "w": 600,
-    "h": 600
+  'assets/images/blog/homelab-storage/nvme-collage.webp': {
+    w: 1600,
+    h: 1066,
   },
-  "assets/images/blog/homelab-storage/hardware-stack.webp": {
-    "w": 1600,
-    "h": 1200
+  'assets/images/blog/homelab-storage/ugreen-ups.webp': {
+    w: 1600,
+    h: 1200,
   },
-  "assets/images/blog/homelab-storage/nvme-collage.webp": {
-    "w": 1600,
-    "h": 1066
+  'assets/images/blog/homelab-storage/wd-red-collage.webp': {
+    w: 1600,
+    h: 1066,
   },
-  "assets/images/blog/homelab-storage/ugreen-ups.webp": {
-    "w": 1600,
-    "h": 1200
+  'assets/images/blog/motion-audit/cover.webp': {
+    w: 1600,
+    h: 900,
   },
-  "assets/images/blog/homelab-storage/wd-red-collage.webp": {
-    "w": 1600,
-    "h": 1066
+  'assets/images/og-image.png': {
+    w: 1200,
+    h: 630,
   },
-  "assets/images/og-image.png": {
-    "w": 1200,
-    "h": 630
+  'assets/images/portfolio/BacktrackingSearch.PNG': {
+    w: 558,
+    h: 247,
   },
-  "assets/images/portfolio/BacktrackingSearch.PNG": {
-    "w": 558,
-    "h": 247
+  'assets/images/portfolio/BookStore.png': {
+    w: 1519,
+    h: 1324,
   },
-  "assets/images/portfolio/BookStore.png": {
-    "w": 1519,
-    "h": 1324
+  'assets/images/portfolio/DictionaryApp.PNG': {
+    w: 720,
+    h: 622,
   },
-  "assets/images/portfolio/DictionaryApp.PNG": {
-    "w": 720,
-    "h": 622
+  'assets/images/portfolio/InsecureFileExtraction.PNG': {
+    w: 1920,
+    h: 1223,
   },
-  "assets/images/portfolio/InsecureFileExtraction.PNG": {
-    "w": 1920,
-    "h": 1223
+  'assets/images/portfolio/JenkinsCICD.PNG': {
+    w: 945,
+    h: 243,
   },
-  "assets/images/portfolio/JenkinsCICD.PNG": {
-    "w": 945,
-    "h": 243
+  'assets/images/portfolio/LetterFrequencyAnalysis.PNG': {
+    w: 966,
+    h: 901,
   },
-  "assets/images/portfolio/LetterFrequencyAnalysis.PNG": {
-    "w": 966,
-    "h": 901
+  'assets/images/portfolio/StormEvents.gif': {
+    w: 853,
+    h: 480,
   },
-  "assets/images/portfolio/StormEvents.gif": {
-    "w": 853,
-    "h": 480
+  'assets/images/profile/profile_picture_original.jpg': {
+    w: 2356,
+    h: 2355,
   },
-  "assets/images/profile/profile_picture_original.jpg": {
-    "w": 2356,
-    "h": 2355
+  'assets/images/profile/profile_picture.jpg': {
+    w: 512,
+    h: 512,
   },
-  "assets/images/profile/profile_picture.jpg": {
-    "w": 512,
-    "h": 512
-  }
 };

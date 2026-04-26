@@ -11,10 +11,13 @@
  */
 import { readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, sep, posix } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-const ROOT = new URL('../src/assets/images', import.meta.url).pathname;
-const OUT = new URL('../src/app/core/services/image-dims.generated.ts', import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL('../src/assets/images', import.meta.url));
+const OUT = fileURLToPath(
+  new URL('../src/app/core/services/image-dims.generated.ts', import.meta.url),
+);
 
 const SUPPORTED = new Set(['.webp', '.png', '.jpg', '.jpeg', '.gif', '.avif', '.svg']);
 
@@ -32,7 +35,7 @@ function* walk(dir) {
 function toPosixAssetPath(absolute) {
   // We want keys like `assets/images/blog/foo.webp`, identical to what the
   // markdown source authors as `![](assets/images/blog/foo.webp)`.
-  const rel = relative(new URL('../src', import.meta.url).pathname, absolute);
+  const rel = relative(fileURLToPath(new URL('../src', import.meta.url)), absolute);
   return rel.split(sep).join(posix.sep);
 }
 

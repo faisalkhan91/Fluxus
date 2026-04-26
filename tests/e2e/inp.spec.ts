@@ -88,6 +88,8 @@ test.describe('INP — blog post', () => {
     }
 
     const worst = Math.max(...durations);
-    expect.soft(worst, `worst event duration was ${worst.toFixed(1)} ms`).toBeLessThan(INP_BUDGET_MS);
+    expect
+      .soft(worst, `worst event duration was ${worst.toFixed(1)} ms`)
+      .toBeLessThan(INP_BUDGET_MS);
   });
 });

@@ -1,20 +1,44 @@
 <section class="hero" aria-labelledby="hero-heading">
   <div class="hero-bg">
-    <div class="glow glow--1"></div>
-    <div class="glow glow--2"></div>
+    <!--
+      The two ambient orbs are wrapped in `.glow-wrapper` elements so that the
+      pointer-driven parallax (translate, set on the wrapper) and the existing
+      `pulse` animation (scale, set on the inner `.glow`) live on independent
+      transforms and never fight for the same property.
+    -->
+    <div class="glow-wrapper glow-wrapper--1">
+      <div class="glow glow--1"></div>
+    </div>
+    <div class="glow-wrapper glow-wrapper--2">
+      <div class="glow glow--2"></div>
+    </div>
     <div class="grid-overlay"></div>
+    <!--
+      Pointer-tracked spotlight. Stays at zero opacity until the host gets
+      `data-pointer-active="true"` after the first pointermove (set in TS).
+      That keeps SSR / coarse-pointer / reduced-motion users from seeing a
+      pinned center glow they can't influence.
+    -->
+    <div class="hero-spotlight" aria-hidden="true"></div>
   </div>
 
   <div class="hero-content">
-    <p class="hero-greeting"><span class="greeting-decoration">&gt;_</span> Hello, I'm</p>
+    <p class="hero-greeting">
+      <span class="greeting-decoration" aria-hidden="true">&gt;_</span>
+      <span class="hero-greeting-text" aria-label="Hello, I'm">Hello, I'm</span>
+    </p>
     <h1 id="hero-heading" class="hero-name">
       {{ profile.personalInfo().name }}
     </h1>
-    <p class="hero-title">{{ profile.personalInfo().title }}</p>
+    <p class="hero-title">
+      <span class="hero-title-text">{{ profile.personalInfo().title }}</span>
+      <span class="hero-title-caret" aria-hidden="true">&#9613;</span>
+    </p>
     <p class="hero-summary">
       Building robust systems at the intersection of
-      <span class="highlight">Full-Stack Development</span>,
-      <span class="highlight">Cloud Architecture</span>, and <span class="highlight">DevOps</span>.
+      <span class="highlight" style="--shimmer-delay: 0ms">Full-Stack Development</span>,
+      <span class="highlight" style="--shimmer-delay: 150ms">Cloud Architecture</span>, and
+      <span class="highlight" style="--shimmer-delay: 300ms">DevOps</span>.
     </p>
     <div class="hero-actions">
       <ui-glow-button variant="primary" (clicked)="navigateTo('/about')">
@@ -50,34 +74,38 @@
     -->
     @defer (on viewport; hydrate on viewport) {
       <div class="latest-posts">
-        <p class="latest-posts-label">
+        <!--
+          "latest from the blog" promoted from <p> to <h2> so the heading
+          outline goes <h1 hero-name> -> <h2 latest-posts-label> -> <h3 post titles>,
+          matching the WCAG 2.4.10 (Section Headings) recommendation for
+          screen-reader users navigating via the heading-level hotkey.
+          Visual styling is unchanged; the .latest-posts-label CSS rule
+          targets the class regardless of the underlying tag.
+        -->
+        <h2 class="latest-posts-label">
           <span class="label-decoration">//</span> latest from the blog
-        </p>
+        </h2>
         <div class="latest-posts-row">
           @if (blog.loading() && !blog.latestPosts().length) {
-            @for (i of [0, 1]; track i) {
-              <ui-glass-card
-                [elevation]="1"
-                class="latest-post-card latest-post-card--skeleton"
-                aria-hidden="true"
-              >
-                <div class="skeleton-line skeleton-line--meta"></div>
-                <div class="skeleton-line skeleton-line--title"></div>
-                <div class="skeleton-line skeleton-line--text"></div>
-                <div class="skeleton-line skeleton-line--text skeleton-line--text-short"></div>
-              </ui-glass-card>
+            @for (i of skeletonSlots; track i) {
+              <ng-container *ngTemplateOutlet="blogSkeleton" />
             }
           } @else if (blog.latestPosts().length) {
-            @for (post of blog.latestPosts(); track post.slug) {
-              <a [routerLink]="['/blog', post.slug]" class="latest-post-link">
+            @for (post of blog.latestPosts(); track post.slug; let i = $index) {
+              <a
+                [routerLink]="['/blog', post.slug]"
+                class="latest-post-link"
+                animate.enter="fade-in"
+                [style.--enter-delay]="i * 80 + 'ms'"
+              >
                 <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
-                <div class="latest-post-meta">
-                  <ui-icon name="calendar" [size]="12" />
-                  <time [attr.datetime]="post.date">{{ formatDate(post.date) }}</time>
-                  <span class="meta-separator">&middot;</span>
-                  <ui-icon name="clock" [size]="12" />
-                  <span>{{ post.readingTime }}</span>
-                </div>
+                  <div class="latest-post-meta">
+                    <ui-icon name="calendar" [size]="12" />
+                    <time [attr.datetime]="post.date">{{ formatDate(post.date) }}</time>
+                    <span class="meta-separator">&middot;</span>
+                    <ui-icon name="clock" [size]="12" />
+                    <span>{{ post.readingTime }}</span>
+                  </div>
                   <h3 class="latest-post-title">{{ post.title }}</h3>
                   <p class="latest-post-excerpt">{{ post.excerpt }}</p>
                 </ui-glass-card>
@@ -91,24 +119,33 @@
       </div>
     } @placeholder {
       <div class="latest-posts">
-        <p class="latest-posts-label">
+        <h2 class="latest-posts-label">
           <span class="label-decoration">//</span> latest from the blog
-        </p>
+        </h2>
         <div class="latest-posts-row">
-          @for (i of [0, 1]; track i) {
-            <ui-glass-card
-              [elevation]="1"
-              class="latest-post-card latest-post-card--skeleton"
-              aria-hidden="true"
-            >
-              <div class="skeleton-line skeleton-line--meta"></div>
-              <div class="skeleton-line skeleton-line--title"></div>
-              <div class="skeleton-line skeleton-line--text"></div>
-              <div class="skeleton-line skeleton-line--text skeleton-line--text-short"></div>
-            </ui-glass-card>
+          @for (i of skeletonSlots; track i) {
+            <ng-container *ngTemplateOutlet="blogSkeleton" />
           }
         </div>
       </div>
     }
   </div>
+
+  <!--
+    Skeleton card used by both the @defer main block (during loading) and
+    the @placeholder. Pulled into a single <ng-template> so future tweaks
+    only have to land in one place.
+  -->
+  <ng-template #blogSkeleton>
+    <ui-glass-card
+      [elevation]="1"
+      class="latest-post-card latest-post-card--skeleton"
+      aria-hidden="true"
+    >
+      <div class="skeleton-line skeleton-line--meta"></div>
+      <div class="skeleton-line skeleton-line--title"></div>
+      <div class="skeleton-line skeleton-line--text"></div>
+      <div class="skeleton-line skeleton-line--text skeleton-line--text-short"></div>
+    </ui-glass-card>
+  </ng-template>
 </section>

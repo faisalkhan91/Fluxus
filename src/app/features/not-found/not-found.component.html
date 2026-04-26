@@ -11,12 +11,31 @@
       <span class="terminal-dot green"></span>
       <span class="terminal-title">zsh — diagnostics</span>
     </div>
+    <!--
+      The path-bearing lines wait for `hasPath()` so the prerendered HTML
+      doesn't bake an empty `curl -I /` (an SSR snapshot of a not-yet-known
+      path); the lines hydrate once `afterNextRender` has read
+      `window.location.pathname`. Source order is preserved so the line
+      heights are reserved by the always-rendered echo + cursor lines below.
+    -->
     <div class="terminal-body">
-      <p class="line"><span class="prompt">$</span> curl -I /{{ path() }}</p>
+      @if (hasPath()) {
+        <p class="line"><span class="prompt">$</span> curl -I /{{ path() }}</p>
+      } @else {
+        <p class="line"><span class="prompt">$</span> curl -I /…</p>
+      }
       <p class="line output">HTTP/1.1 <span class="status-code">404</span> Not Found</p>
       <p class="line output">server: nginx/fluxus</p>
       <p class="line blank"></p>
-      <p class="line"><span class="prompt">$</span> grep -r "{{ path() }}" ./src/app/app.routes.ts</p>
+      @if (hasPath()) {
+        <p class="line">
+          <span class="prompt">$</span> grep -r "{{ path() }}" ./src/app/app.routes.ts
+        </p>
+      } @else {
+        <p class="line">
+          <span class="prompt">$</span> grep -r "&lt;requested path&gt;" ./src/app/app.routes.ts
+        </p>
+      }
       <p class="line output error-msg">No matches found.</p>
       <p class="line blank"></p>
       <p class="line">

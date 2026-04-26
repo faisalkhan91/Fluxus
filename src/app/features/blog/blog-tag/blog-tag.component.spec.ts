@@ -36,7 +36,11 @@ describe('BlogTagComponent', () => {
   let metaService: Meta;
   let document: Document;
   let paramMapSubject: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
-  let mockBlog: { posts: ReturnType<typeof signal<BlogPost[]>>; loading: ReturnType<typeof signal<boolean>>; error: ReturnType<typeof signal<string | null>>; };
+  let mockBlog: {
+    posts: ReturnType<typeof signal<BlogPost[]>>;
+    loading: ReturnType<typeof signal<boolean>>;
+    error: ReturnType<typeof signal<string | null>>;
+  };
 
   beforeEach(async () => {
     paramMapSubject = new BehaviorSubject(convertToParamMap({ tag: 'angular' }));
@@ -84,8 +88,7 @@ describe('BlogTagComponent', () => {
     expectTag((t) => t['name'] === 'description' && t['content'].includes('Angular'));
     expectTag(
       (t) =>
-        t['property'] === 'og:url' &&
-        t['content'] === `${environment.siteUrl}/blog/tag/angular`,
+        t['property'] === 'og:url' && t['content'] === `${environment.siteUrl}/blog/tag/angular`,
     );
     expectTag((t) => t['property'] === 'og:type' && t['content'] === 'website');
   });
