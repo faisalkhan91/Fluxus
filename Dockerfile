@@ -20,9 +20,9 @@ LABEL org.opencontainers.image.title="Fluxus" \
       org.opencontainers.image.source="https://github.com/faisalkhan91/Fluxus" \
       org.opencontainers.image.authors="Faisal Khan"
 
-# Update musl and zlib to fix high-severity vulnerabilities
+# Update packages to fix high-severity vulnerabilities
 USER root
-RUN apk add --no-cache --upgrade musl musl-utils zlib
+RUN apk add --no-cache --upgrade musl musl-utils zlib && apk upgrade --no-cache
 USER 101
 
 COPY --link --from=build /app/dist/fluxus/browser /usr/share/nginx/html
