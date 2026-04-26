@@ -1,4 +1,4 @@
-<div class="blog-layout">
+<div class="blog-layout" animate.enter="enter-fade-up">
   <header class="blog-header">
     <ui-section-header
       title="Blog"
@@ -32,11 +32,13 @@
 
   @if (blog.posts().length) {
     <div class="post-grid">
-      @for (post of blog.posts(); track post.slug; let isFirst = $first) {
+      @for (post of blog.posts(); track post.slug; let isFirst = $first; let i = $index) {
         <a
           [routerLink]="['/blog', post.slug]"
           class="post-link"
           [class.post-link--featured]="isFirst"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="i * 50 + 'ms'"
         >
           <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
             @if (isFirst) {

@@ -68,8 +68,13 @@
               </ui-glass-card>
             }
           } @else if (blog.latestPosts().length) {
-            @for (post of blog.latestPosts(); track post.slug) {
-              <a [routerLink]="['/blog', post.slug]" class="latest-post-link">
+            @for (post of blog.latestPosts(); track post.slug; let i = $index) {
+              <a
+                [routerLink]="['/blog', post.slug]"
+                class="latest-post-link"
+                animate.enter="fade-in"
+                [style.--enter-delay]="i * 80 + 'ms'"
+              >
                 <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
                 <div class="latest-post-meta">
                   <ui-icon name="calendar" [size]="12" />

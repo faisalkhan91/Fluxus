@@ -35,6 +35,16 @@
   box-shadow: var(--shadow-glass);
 }
 
+/*
+  Press feedback for cards that are themselves interactive (carry a [routerLink]
+  or are wrapped in a button). Brings the card back to baseline so a tap reads
+  as "lifted on press, settled on release", matching the glow-button contract.
+*/
+:host(.hoverable:active) {
+  transform: translateY(0);
+  transition-duration: var(--duration-fast);
+}
+
 :host(.glow:hover) {
   border-color: var(--accent);
   box-shadow: var(--shadow-accent-glow);

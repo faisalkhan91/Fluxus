@@ -21,7 +21,7 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-glass);
   pointer-events: auto;
-  animation: toast-in 200ms ease-out;
+  animation: toast-in var(--transition-enter-base);
 }
 
 @keyframes toast-in {
@@ -32,6 +32,27 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/*
+  Exit animation paired with Angular 21's `animate.leave="toast-out"`.
+  The directive keeps the toast in the DOM for the animation duration
+  before removal, mirroring NN/G's "feedback should fade as gracefully
+  as it arrived" guidance for status surfaces.
+*/
+.toast-out {
+  animation: toast-out var(--duration-fast) var(--ease-accelerate) both;
+}
+
+@keyframes toast-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(8px);
+    opacity: 0;
   }
 }
 
@@ -81,6 +102,10 @@
   color: #fff;
 }
 
+.toast-action:active {
+  background: var(--accent-hover);
+}
+
 .toast-dismiss {
   background: transparent;
   color: var(--text-muted);
@@ -96,8 +121,13 @@
   color: var(--text-primary);
 }
 
+.toast-dismiss:active {
+  color: var(--accent-hover);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .toast {
+  .toast,
+  .toast-out {
     animation: none;
   }
 }

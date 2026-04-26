@@ -66,6 +66,41 @@
   color: var(--error, #ef4444);
 }
 
+/*
+  F2 — animate the validation error reveal so it doesn't slam into view.
+  A short 4 px slide + opacity fade reads as "the field flagged itself"
+  rather than "a new line of text just appeared".
+*/
+.form-error-in {
+  animation: form-error-in var(--duration-fast) var(--ease-decelerate) both;
+}
+
+.form-error-out {
+  animation: form-error-out var(--duration-fast) var(--ease-accelerate) both;
+}
+
+@keyframes form-error-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes form-error-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
 .form-textarea {
   resize: vertical;
   min-height: 120px;

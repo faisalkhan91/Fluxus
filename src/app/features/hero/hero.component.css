@@ -22,15 +22,16 @@
   border-radius: 50%;
   /*
     Smaller blur radius + isolated compositor layer = same visual feel at a
-    fraction of the paint cost. The extra `transform: translateZ(0)` and
-    `will-change: opacity` keep the orb on its own GPU layer so animating its
-    opacity doesn't repaint the hero behind it. The animation itself is
+    fraction of the paint cost. The orb pulses with both `transform` (scale)
+    and `opacity` so we hint both to the compositor; `will-change` is scoped
+    to the two properties we actually animate, per web.dev's guidance to
+    avoid blanket "will-change: transform" promotion. The animation itself is
     suppressed by the global `prefers-reduced-motion` rule in styles.css.
   */
   filter: blur(80px);
   opacity: 0.15;
   transform: translateZ(0);
-  will-change: opacity;
+  will-change: transform, opacity;
   animation: pulse 8s ease-in-out infinite alternate;
 }
 
@@ -170,6 +171,12 @@
   border-color: var(--accent);
 }
 
+/*
+  8 s period is intentional — the hero glow should feel like a slow,
+  calm breathing motion, twice as relaxed as the 404 page's `glitch-shift`
+  (4 s). Both ambient animations share the `ease-in-out alternate` family
+  so the rhythm reads as kindred even when the cadences differ.
+*/
 @keyframes pulse {
   from {
     transform: scale(1);

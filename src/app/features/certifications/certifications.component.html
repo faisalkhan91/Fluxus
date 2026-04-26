@@ -1,4 +1,4 @@
-<div class="certs-layout">
+<div class="certs-layout" animate.enter="enter-fade-up">
   <section aria-labelledby="certs-title">
     <ui-section-header
       title="Certifications"
@@ -7,8 +7,13 @@
       [level]="1"
     />
     <div class="cert-grid" tabindex="0" role="group" aria-label="Certifications">
-      @for (cert of certsData.certifications(); track cert.name) {
-        <ui-glass-card [hover]="true" class="cert-card">
+      @for (cert of certsData.certifications(); track cert.name; let i = $index) {
+        <ui-glass-card
+          [hover]="true"
+          class="cert-card"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="i * 50 + 'ms'"
+        >
           <div class="cert-badge">
             <img [ngSrc]="cert.image" [alt]="cert.name" width="80" height="80" class="cert-img" />
           </div>

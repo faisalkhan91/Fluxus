@@ -52,6 +52,10 @@
   transform: translateY(-1px);
 }
 
+.btn--secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 .btn--ghost {
   background: transparent;
   color: var(--text-secondary);
@@ -61,4 +65,8 @@
 .btn--ghost:hover:not(:disabled) {
   color: var(--text-primary);
   background: var(--glass-bg);
+}
+
+.btn--ghost:active:not(:disabled) {
+  background: var(--glass-bg-hover);
 }

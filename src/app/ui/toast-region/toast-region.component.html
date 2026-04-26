@@ -1,5 +1,5 @@
 @for (toast of toasts.toasts(); track toast.id) {
-  <div class="toast" role="alert">
+  <div class="toast" role="alert" animate.leave="toast-out">
     <div class="toast-body">
       <p class="toast-title">{{ toast.title }}</p>
       @if (toast.detail) {

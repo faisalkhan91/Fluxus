@@ -53,39 +53,36 @@ describe('SidebarComponent', () => {
     expect(labels[0].textContent?.trim()).toBe('About');
   });
 
-  it('should hide labels and divider labels when collapsed', () => {
+  it('should keep labels and identity in the DOM regardless of collapsed state', () => {
+    // After the G1 cleanup the sidebar no longer mutates DOM on collapse —
+    // the host's `transform: scaleX` collapses the rail and `:host(.collapsed)`
+    // CSS rules hide labels via `display: none`. The DOM stays stable so
+    // hydration is consistent and the compositor-only collapse contract is
+    // preserved.
     fixture.componentRef.setInput('collapsed', true);
     fixture.detectChanges();
-    const labels = el.querySelectorAll('.nav-label');
-    expect(labels.length).toBe(0);
-    const dividerLabels = el.querySelectorAll('.divider-label');
-    expect(dividerLabels.length).toBe(0);
+    expect(el.classList.contains('collapsed')).toBe(true);
+    expect(el.querySelector('.identity')).toBeTruthy();
+    expect(el.querySelectorAll('.nav-label').length).toBe(3);
+    expect(el.querySelector('.divider-label')).toBeTruthy();
   });
 
   it('should show identity block when expanded', () => {
     expect(el.querySelector('.identity')).toBeTruthy();
+    expect(el.classList.contains('collapsed')).toBe(false);
   });
 
-  it('should hide identity block when collapsed', () => {
+  it('should expose a single theme-toggle and resume-btn at every collapsed state', () => {
+    const assertSingle = () => {
+      expect(el.querySelectorAll('.theme-toggle').length).toBe(1);
+      expect(el.querySelectorAll('.resume-btn').length).toBe(1);
+      expect(el.querySelector('.theme-toggle--icon')).toBeNull();
+      expect(el.querySelector('.resume-btn--icon')).toBeNull();
+    };
+    assertSingle();
     fixture.componentRef.setInput('collapsed', true);
     fixture.detectChanges();
-    expect(el.querySelector('.identity')).toBeNull();
-  });
-
-  it('should show full footer buttons when expanded', () => {
-    const themeBtn = el.querySelector('.theme-toggle:not(.theme-toggle--icon)');
-    const resumeBtn = el.querySelector('.resume-btn:not(.resume-btn--icon)');
-    expect(themeBtn).toBeTruthy();
-    expect(resumeBtn).toBeTruthy();
-  });
-
-  it('should show icon-only footer when collapsed', () => {
-    fixture.componentRef.setInput('collapsed', true);
-    fixture.detectChanges();
-    const iconTheme = el.querySelector('.theme-toggle--icon');
-    const iconResume = el.querySelector('.resume-btn--icon');
-    expect(iconTheme).toBeTruthy();
-    expect(iconResume).toBeTruthy();
+    assertSingle();
   });
 
   it('should reflect isDark in theme toggle label', () => {

@@ -63,10 +63,18 @@ export class ContactComponent {
       subject,
     )}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
 
+    /*
+      F3 — flip the stage before opening the mail client. `window.open()`
+      synchronously hands control to the browser/OS to launch the mailto:
+      handler, which on some platforms takes 100-300 ms. Setting the stage
+      first means the form fade-out + confirmation fade-in start during
+      that gap, so the click reads as instantaneous instead of "snap to
+      new panel after the email window appears".
+    */
+    this.stage.set('awaiting-confirmation');
     if (this.isBrowser) {
       window.open(mailto, '_blank');
     }
-    this.stage.set('awaiting-confirmation');
   }
 
   confirmSent(): void {

@@ -50,7 +50,30 @@ export class ThemeService {
 
   toggle(): void {
     const next: Theme = this.isDark() ? 'light' : 'dark';
-    this.theme.set(next);
+    /*
+      Use the View Transitions API when available so the colour-token swap
+      cross-fades the entire viewport instead of snapping. We bypass it for
+      users who opted into reduced motion (cross-fading the whole page is
+      exactly the kind of large-area motion that flag is meant to suppress)
+      and on browsers that don't ship the API yet (Firefox at time of
+      writing). The fallback path is the original signal write.
+    */
+    const supportsViewTransition =
+      this.isBrowser &&
+      'startViewTransition' in this.document &&
+      typeof (this.document as Document & { startViewTransition?: unknown }).startViewTransition ===
+        'function';
+    const prefersReducedMotion =
+      this.isBrowser && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (supportsViewTransition && !prefersReducedMotion) {
+      (
+        this.document as Document & { startViewTransition: (cb: () => void) => unknown }
+      ).startViewTransition(() => this.theme.set(next));
+    } else {
+      this.theme.set(next);
+    }
+
     if (this.isBrowser) {
       localStorage.setItem(STORAGE_KEY, next);
     }

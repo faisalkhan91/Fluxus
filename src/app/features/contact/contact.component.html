@@ -1,4 +1,4 @@
-<div class="contact-layout">
+<div class="contact-layout" animate.enter="enter-fade-up">
   <ui-section-header
     title="Contact"
     headingId="contact-title"
@@ -10,7 +10,13 @@
     <ui-glass-card [elevation]="2" class="form-card">
       @switch (stage()) {
         @case ('editing') {
-          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+          <form
+            [formGroup]="contactForm"
+            (ngSubmit)="onSubmit()"
+            class="contact-form"
+            animate.enter="fade-in"
+            animate.leave="fade-out"
+          >
             <div class="form-group">
               <label for="name" class="form-label">Name</label>
               <input
@@ -26,7 +32,14 @@
                 [attr.aria-describedby]="errorIdFor('name')"
               />
               @if (contactForm.get('name')?.invalid && contactForm.get('name')?.touched) {
-                <span id="name-error" class="form-error" role="alert">Name is required</span>
+                <span
+                  id="name-error"
+                  class="form-error"
+                  role="alert"
+                  animate.enter="form-error-in"
+                  animate.leave="form-error-out"
+                  >Name is required</span
+                >
               }
             </div>
 
@@ -45,7 +58,13 @@
                 [attr.aria-describedby]="errorIdFor('email')"
               />
               @if (contactForm.get('email')?.invalid && contactForm.get('email')?.touched) {
-                <span id="email-error" class="form-error" role="alert">
+                <span
+                  id="email-error"
+                  class="form-error"
+                  role="alert"
+                  animate.enter="form-error-in"
+                  animate.leave="form-error-out"
+                >
                   @if (contactForm.get('email')?.hasError('required')) {
                     Email is required
                   } @else {
@@ -80,7 +99,14 @@
                 [attr.aria-describedby]="errorIdFor('message')"
               ></textarea>
               @if (contactForm.get('message')?.invalid && contactForm.get('message')?.touched) {
-                <span id="message-error" class="form-error" role="alert">Message is required</span>
+                <span
+                  id="message-error"
+                  class="form-error"
+                  role="alert"
+                  animate.enter="form-error-in"
+                  animate.leave="form-error-out"
+                  >Message is required</span
+                >
               }
             </div>
 
@@ -107,7 +133,13 @@
           </form>
         }
         @case ('awaiting-confirmation') {
-          <div class="confirm-state" role="status" aria-live="polite">
+          <div
+            class="confirm-state"
+            role="status"
+            aria-live="polite"
+            animate.enter="enter-fade-up"
+            animate.leave="fade-out"
+          >
             <ui-icon name="mail" [size]="40" />
             <h3>Did your email client open?</h3>
             <p>
@@ -131,7 +163,12 @@
           </div>
         }
         @case ('sent') {
-          <div class="success-state" role="status" aria-live="polite">
+          <div
+            class="success-state"
+            role="status"
+            aria-live="polite"
+            animate.enter="enter-fade-up"
+          >
             <ui-icon name="sparkles" [size]="40" />
             <h3>Message Sent!</h3>
             <p>Thanks for reaching out. I'll respond as soon as possible.</p>
