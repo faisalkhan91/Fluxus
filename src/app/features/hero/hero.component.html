@@ -1,20 +1,44 @@
 <section class="hero" aria-labelledby="hero-heading">
   <div class="hero-bg">
-    <div class="glow glow--1"></div>
-    <div class="glow glow--2"></div>
+    <!--
+      The two ambient orbs are wrapped in `.glow-wrapper` elements so that the
+      pointer-driven parallax (translate, set on the wrapper) and the existing
+      `pulse` animation (scale, set on the inner `.glow`) live on independent
+      transforms and never fight for the same property.
+    -->
+    <div class="glow-wrapper glow-wrapper--1">
+      <div class="glow glow--1"></div>
+    </div>
+    <div class="glow-wrapper glow-wrapper--2">
+      <div class="glow glow--2"></div>
+    </div>
     <div class="grid-overlay"></div>
+    <!--
+      Pointer-tracked spotlight. Stays at zero opacity until the host gets
+      `data-pointer-active="true"` after the first pointermove (set in TS).
+      That keeps SSR / coarse-pointer / reduced-motion users from seeing a
+      pinned center glow they can't influence.
+    -->
+    <div class="hero-spotlight" aria-hidden="true"></div>
   </div>
 
   <div class="hero-content">
-    <p class="hero-greeting"><span class="greeting-decoration">&gt;_</span> Hello, I'm</p>
+    <p class="hero-greeting">
+      <span class="greeting-decoration" aria-hidden="true">&gt;_</span>
+      <span class="hero-greeting-text" aria-label="Hello, I'm">Hello, I'm</span>
+    </p>
     <h1 id="hero-heading" class="hero-name">
       {{ profile.personalInfo().name }}
     </h1>
-    <p class="hero-title">{{ profile.personalInfo().title }}</p>
+    <p class="hero-title">
+      <span class="hero-title-text">{{ profile.personalInfo().title }}</span>
+      <span class="hero-title-caret" aria-hidden="true">&#9613;</span>
+    </p>
     <p class="hero-summary">
       Building robust systems at the intersection of
-      <span class="highlight">Full-Stack Development</span>,
-      <span class="highlight">Cloud Architecture</span>, and <span class="highlight">DevOps</span>.
+      <span class="highlight" style="--shimmer-delay: 0ms">Full-Stack Development</span>,
+      <span class="highlight" style="--shimmer-delay: 150ms">Cloud Architecture</span>, and
+      <span class="highlight" style="--shimmer-delay: 300ms">DevOps</span>.
     </p>
     <div class="hero-actions">
       <ui-glow-button variant="primary" (clicked)="navigateTo('/about')">
@@ -76,13 +100,13 @@
                 [style.--enter-delay]="i * 80 + 'ms'"
               >
                 <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
-                <div class="latest-post-meta">
-                  <ui-icon name="calendar" [size]="12" />
-                  <time [attr.datetime]="post.date">{{ formatDate(post.date) }}</time>
-                  <span class="meta-separator">&middot;</span>
-                  <ui-icon name="clock" [size]="12" />
-                  <span>{{ post.readingTime }}</span>
-                </div>
+                  <div class="latest-post-meta">
+                    <ui-icon name="calendar" [size]="12" />
+                    <time [attr.datetime]="post.date">{{ formatDate(post.date) }}</time>
+                    <span class="meta-separator">&middot;</span>
+                    <ui-icon name="clock" [size]="12" />
+                    <span>{{ post.readingTime }}</span>
+                  </div>
                   <h3 class="latest-post-title">{{ post.title }}</h3>
                   <p class="latest-post-excerpt">{{ post.excerpt }}</p>
                 </ui-glass-card>
