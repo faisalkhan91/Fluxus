@@ -15,7 +15,9 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const ROOT = fileURLToPath(new URL('../src/assets/images', import.meta.url));
-const OUT = fileURLToPath(new URL('../src/app/core/services/image-dims.generated.ts', import.meta.url));
+const OUT = fileURLToPath(
+  new URL('../src/app/core/services/image-dims.generated.ts', import.meta.url),
+);
 
 const SUPPORTED = new Set(['.webp', '.png', '.jpg', '.jpeg', '.gif', '.avif', '.svg']);
 
