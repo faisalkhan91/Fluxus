@@ -375,34 +375,35 @@ p {
 
 @media (max-width: 900px) {
   /*
-    Below ~900 px the negative-left positioning would clip outside the
-    reading column, so the anchor flips to inline flow at the start of
-    the heading and only appears on hover/focus.
+    Hide the heading permalink anchor on mobile/tablet. There's no
+    gutter to host the icon to the left of the heading (the desktop
+    approach), and rendering it inline at the start of the heading
+    shifts the heading text rightward whenever it's revealed on
+    hover/focus — visibly different from the desktop behaviour where
+    the heading text stays anchored to the column edge regardless of
+    icon visibility.
 
-    Two important resets here:
+    Every realistic alternative trades one usability problem for
+    another: a smaller negative-left clips outside the viewport on
+    narrow phones; absolute positioning at right: 0 strands the icon
+    far from the heading text it's meant to permalink; an
+    overlay-at-left approach paints the icon on top of the leading
+    letters; permanent left-indenting every heading misaligns mobile
+    typography from desktop.
 
-    - `height: auto` overrides the desktop `height: 1lh`. On desktop, 1lh
-      gives the absolutely-positioned anchor a full-line-height-tall flex
-      box so `align-items: center` lands the icon on the line's vertical
-      midline. In static flow that same trick backfires: the inline-flex
-      anchor has no text content, so its baseline collapses to its bottom
-      edge, which the browser aligns with the heading text's baseline. A
-      40 px tall (h2: 1.4rem * 1.8) anchor box with its bottom on the
-      baseline ends up reaching ~14 px above the line-box top, and the
-      centred 16 px icon paints visibly above the heading text. Letting
-      the inline-flex size to its content (16 px SVG) avoids that.
+    The pattern this design is following (GitHub, MDN, Stripe Docs,
+    Tailwind Docs, Vercel Docs, the Docusaurus and Astro Starlight
+    defaults) all converge on the same answer: the heading-anchor
+    reveal is a desktop-only affordance, and on mobile users copy
+    the section URL from the address bar plus native share sheet.
 
-    - `vertical-align: middle` aligns the (now icon-sized) anchor's
-      vertical centre with the parent text's optical middle (≈ half the
-      x-height above baseline), so the chain icon sits on the same line
-      as the heading text instead of hanging above it.
+    The functional half of the permalink is unaffected: every
+    heading still emits `id="..."` from MarkdownService.heading,
+    so `/post#section` deep links continue to scroll-anchor on every
+    viewport.
   */
   .prose .anchor {
-    position: static;
-    margin-left: var(--space-2);
-    padding: 0 4px;
-    height: auto;
-    vertical-align: middle;
+    display: none;
   }
 }
 
