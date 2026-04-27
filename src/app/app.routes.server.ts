@@ -17,11 +17,16 @@ export const serverRoutes: ServerRoute[] = [
       const { readFile } = await import('node:fs/promises');
       const { join } = await import('node:path');
       const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
-      const posts: { tags: string[]; draft?: boolean }[] = JSON.parse(raw);
+      const posts: { tags: string[]; draft?: boolean; date: string }[] = JSON.parse(raw);
       const tags = new Set<string>();
-      // Drafts are excluded so we don't prerender (or sitemap) tag pages
-      // whose only contributing post isn't publicly listed.
-      for (const p of posts.filter((p) => !p.draft)) {
+      // Drafts and future-dated (scheduled) posts are excluded so we don't
+      // prerender (or sitemap) a tag page whose only contributing post isn't
+      // publicly listed yet. The catch-all `**` server route below answers
+      // 404 for any tag URL that isn't prerendered, so a visitor who guesses
+      // a future tag URL pre-publish gets a real 404 instead of an empty
+      // shell with mismatched metadata.
+      const today = new Date().toISOString().slice(0, 10);
+      for (const p of posts.filter((p) => !p.draft && p.date <= today)) {
         for (const tag of p.tags ?? []) {
           const slug = tag
             .toLowerCase()

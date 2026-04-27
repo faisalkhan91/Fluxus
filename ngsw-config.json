@@ -50,6 +50,16 @@
   ],
   "dataGroups": [
     {
+      "name": "version-stamp",
+      "urls": ["/version.json"],
+      "cacheConfig": {
+        "maxSize": 1,
+        "maxAge": "1d",
+        "timeout": "1s",
+        "strategy": "freshness"
+      }
+    },
+    {
       "name": "google-fonts",
       "urls": ["https://fonts.googleapis.com/**", "https://fonts.gstatic.com/**"],
       "cacheConfig": {

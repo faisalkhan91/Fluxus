@@ -375,15 +375,35 @@ p {
 
 @media (max-width: 900px) {
   /*
-    Below ~900px the negative-left positioning would clip outside the
-    reading column, so the anchor flips to inline-after the heading and
-    only appears on hover/focus. The SVG sizing inherits from the base
-    rule above.
+    Hide the heading permalink anchor on mobile/tablet. There's no
+    gutter to host the icon to the left of the heading (the desktop
+    approach), and rendering it inline at the start of the heading
+    shifts the heading text rightward whenever it's revealed on
+    hover/focus — visibly different from the desktop behaviour where
+    the heading text stays anchored to the column edge regardless of
+    icon visibility.
+
+    Every realistic alternative trades one usability problem for
+    another: a smaller negative-left clips outside the viewport on
+    narrow phones; absolute positioning at right: 0 strands the icon
+    far from the heading text it's meant to permalink; an
+    overlay-at-left approach paints the icon on top of the leading
+    letters; permanent left-indenting every heading misaligns mobile
+    typography from desktop.
+
+    The pattern this design is following (GitHub, MDN, Stripe Docs,
+    Tailwind Docs, Vercel Docs, the Docusaurus and Astro Starlight
+    defaults) all converge on the same answer: the heading-anchor
+    reveal is a desktop-only affordance, and on mobile users copy
+    the section URL from the address bar plus native share sheet.
+
+    The functional half of the permalink is unaffected: every
+    heading still emits `id="..."` from MarkdownService.heading,
+    so `/post#section` deep links continue to scroll-anchor on every
+    viewport.
   */
   .prose .anchor {
-    position: static;
-    margin-left: var(--space-2);
-    padding: 0 4px;
+    display: none;
   }
 }
 

@@ -1,5 +1,14 @@
 [
   {
+    "slug": "shipping-fresh-css-after-deploy-2026-04",
+    "title": "Shipping fresh CSS after deploy: lessons from a stale-client debugging session",
+    "date": "2026-04-30",
+    "excerpt": "Chasing a broken-layout bug across an Angular 21 SSG + service-worker stack and the four lessons that fell out: why content-hashed assets aren't enough, the SwUpdate plus build-stamp belt-and-braces guard, sidebar collapse geometry, and why heading permalinks are a desktop-only affordance.",
+    "tags": ["Angular", "SSG", "Service Worker", "CSS", "UX"],
+    "readingTime": "8 min",
+    "cover": "assets/images/blog/fresh-css-deploy/cover.webp"
+  },
+  {
     "slug": "motion-you-can-feel-2026-04",
     "title": "Motion you can feel: notes from a 25-finding audit",
     "date": "2026-04-26",
@@ -10,11 +19,11 @@
   },
   {
     "slug": "homelab-storage-foundation",
-    "title": "Architecting the Foundation: Decoupling Storage at the Edge",
+    "title": "Storage on Purpose: Building the NAS Tier of My Homelab",
     "date": "2026-04-12",
-    "excerpt": "Phase 1 of my homelab overhaul: Engineering a dedicated, decoupled storage tier with CMR mechanical disks, NVMe flash pools, and localized DC power resiliency.",
-    "tags": ["Homelab", "Storage", "Architecture", "GitOps"],
-    "readingTime": "7 min",
+    "excerpt": "Part 1 of the homelab series: a storage-first design for the stateful layer. A UGREEN DXP4800 Plus on UGOS Pro, a RAID 5 bulk pool over WD Red Plus WD80EFPX CMR disks, two local Samsung 990 EVO Plus V8 NVMe pools for Immich and app data, and a US3000 DC UPS. The point is not a faster box; it is a durable boundary between permanent data and disposable compute.",
+    "tags": ["Homelab", "Storage", "Architecture", "NAS"],
+    "readingTime": "13 min",
     "cover": "assets/images/blog/homelab-storage/hardware-stack.webp",
     "series": "Homelab Architecture",
     "seriesOrder": 1
