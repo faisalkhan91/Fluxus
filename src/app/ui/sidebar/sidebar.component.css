@@ -337,12 +337,17 @@
 /*
   CSS-driven responsive layout (instead of signal-bound classes) so the SSR
   markup is identical for every viewport. The [collapsed] input keeps applying
-  the .collapsed host class for runtime reactivity; these @media queries
-  handle the SSR/initial-paint window before signals settle on the client.
+  the .collapsed host class for runtime reactivity; this @media query handles
+  the SSR / initial-paint window before signals settle on the client.
 
-  Tablet width forces collapsed mode by setting --sidebar-scale, which keeps
-  the compositor-only contract intact regardless of which path triggers the
-  collapsed state.
+  Tablet width forces collapsed mode by setting --sidebar-scale AND mirroring
+  every visual `:host(.collapsed)` rule. The label-hide rules below are the
+  important half: with `--sidebar-scale` alone, the rail squishes to 60 px
+  but `.nav-item` (a flex with gap-separated icon + label + ext) still
+  contains the full 150-ish px of children, and `justify-content: center`
+  centres that whole group inside the un-scaled 244 px row — pushing the
+  icon's left edge to ~58 px of original coords, i.e. just past the visible
+  rail's right edge. Hiding the labels here re-centres the icon alone.
 */
 @media (min-width: 768px) and (max-width: 1023px) {
   :host {
@@ -357,6 +362,29 @@
   .nav-item {
     justify-content: center;
     padding: var(--space-3);
+  }
+
+  .identity,
+  .nav-label,
+  .nav-ext,
+  .divider-label,
+  .theme-toggle > span,
+  .resume-btn > span {
+    display: none;
+  }
+
+  .nav-divider {
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .theme-toggle,
+  .resume-btn {
+    padding: var(--space-3);
+  }
+
+  .theme-toggle {
+    margin-bottom: var(--space-2);
   }
 }
 
