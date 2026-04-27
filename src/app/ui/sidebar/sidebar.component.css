@@ -227,15 +227,27 @@
 }
 
 /*
-  Override the baseline `justify-content: center` (which works fine in the
-  un-collapsed 228 px button row) so the icon — now the only visible flex
-  child — stays inside the 60 px rail. Same reasoning as the .nav-item
-  rule above: list-local x = viewport x, so anything centred in a
-  full-width row lands past x=60.
+  Two separate concerns in collapsed mode:
+
+  1. Icon position — `justify-content: flex-start` overrides the baseline
+     `center` so the icon, now the only visible flex child, anchors to
+     padding-left instead of being centred inside a full-width row. Same
+     reasoning as the .nav-item rule above: list-local x = viewport x, so
+     a centred icon in a full-width row lands past x=60.
+
+  2. Button chrome — unlike .nav-item (chrome-less by default), .theme-toggle
+     carries a permanent 1 px --glass-border and .resume-btn a permanent
+     solid --accent fill. With baseline `width: 100%` the button stretches
+     across the full 212 px footer interior (16..228), so its visible chrome
+     extends 168 px past the rail's right edge — the "cutoff button" look.
+     `width: auto` shrinks the button to its intrinsic content size:
+     12 (padding-left) + 16 (icon) + 12 (padding-right) = 40 px, sitting
+     at viewport x in 16..56 — fully inside the 60 px rail.
 */
 :host(.collapsed) .theme-toggle,
 :host(.collapsed) .resume-btn {
   justify-content: flex-start;
+  width: auto;
   padding: var(--space-3);
 }
 
@@ -408,6 +420,7 @@
   .theme-toggle,
   .resume-btn {
     justify-content: flex-start;
+    width: auto;
     padding: var(--space-3);
   }
 
