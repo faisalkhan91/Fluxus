@@ -26,7 +26,8 @@
               "src/assets",
               "src/robots.txt",
               "src/sitemap.xml",
-              "src/site.webmanifest"
+              "src/site.webmanifest",
+              "src/version.json"
             ],
             "styles": ["src/styles.css"],
             "scripts": [],
