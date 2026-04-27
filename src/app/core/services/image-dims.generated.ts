@@ -43,6 +43,10 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 600,
     h: 600,
   },
+  'assets/images/blog/fresh-css-deploy/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
   'assets/images/blog/homelab-storage/hardware-stack.webp': {
     w: 1600,
     h: 1200,

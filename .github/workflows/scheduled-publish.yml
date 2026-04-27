@@ -1,0 +1,137 @@
+name: Scheduled blog publish
+
+# A blog post in `src/assets/blog/posts.json` can carry a future-dated `date`
+# field. The runtime BlogService gates listings on `post.date <= today_utc`,
+# but the prerendered HTML / sitemap / Atom feed / OG meta are baked at build
+# time — so a future-dated post needs a fresh build at midnight UTC of its
+# publish day before the public surfaces flip.
+#
+# This workflow runs daily at 00:15 UTC, scans posts.json for any post whose
+# `date` matches today UTC, and dispatches docker-publish.yml with
+# `reason=scheduled` when a publish is due. The dispatched run produces a
+# `scheduled-<yyyymmdd>` image tag (instead of `content-<sha>`) so the
+# downstream GitOps PR is a clear "scheduled rebuild, not a code commit".
+#
+# GitHub Actions cron is best-effort and may drift up to ~30 mins; the 00:15
+# UTC slot leaves cushion past the date boundary. If a run is missed entirely
+# (rare), use the `workflow_dispatch` trigger below with an explicit `date`
+# input as a manual catch-up.
+#
+# Ref: src/app/core/services/blog.service.ts (`isPublished` predicate),
+#      src/app/app.routes.server.ts (prerender filter for tag archives),
+#      scripts/build-{sitemap,feed}.mjs, scripts/inject-meta.mjs.
+
+on:
+  schedule:
+    # 00:15 UTC daily; cron drift is OK — the date-equality check below is
+    # what actually decides whether to dispatch, so an early or late run is
+    # equally correct.
+    - cron: '15 0 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'YYYY-MM-DD to evaluate against posts.json (defaults to today UTC)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  # Required for `gh workflow run` to dispatch docker-publish.yml from this
+  # workflow. The default GITHUB_TOKEN is sufficient — no PAT needed.
+  actions: write
+
+# Two scheduled runs at the same calendar boundary should never overlap; if
+# the previous one is still running, queue rather than abort so we don't
+# drop a publish.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  evaluate-and-dispatch:
+    name: Check posts.json and dispatch publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Find posts due today
+        id: check
+        env:
+          # Empty string when triggered by `schedule:` (workflow_dispatch
+          # inputs aren't populated in that case). The bash check below
+          # falls back to `date -u` when the override is empty.
+          OVERRIDE_DATE: ${{ inputs.date }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${OVERRIDE_DATE:-}" ]; then
+            target_date="${OVERRIDE_DATE}"
+            echo "Using explicit date override: ${target_date}"
+          else
+            target_date="$(date -u +%Y-%m-%d)"
+            echo "Using today (UTC): ${target_date}"
+          fi
+
+          # We deliberately match `date === target_date` rather than the
+          # broader `date <= target_date`. The schedule runs daily, so a
+          # single-day match is enough for the canonical case; the workflow
+          # runner's timezone discipline (UTC) lines up with the runtime
+          # gate's `new Date().toISOString().slice(0,10)`. Backfilling a
+          # missed run is the maintainer's job via `workflow_dispatch` with
+          # an explicit `date:` input.
+          due_slugs="$(node -e '
+            const fs = require("fs");
+            const target = process.argv[1];
+            const posts = JSON.parse(fs.readFileSync("src/assets/blog/posts.json", "utf-8"));
+            const due = posts.filter((p) => !p.draft && p.date === target).map((p) => p.slug);
+            console.log(due.join(","));
+          ' "${target_date}")"
+
+          if [ -z "${due_slugs}" ]; then
+            echo "No posts due on ${target_date}; skipping publish dispatch."
+            echo "due=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Posts due on ${target_date}: ${due_slugs}"
+            echo "due=true" >> "$GITHUB_OUTPUT"
+            echo "slugs=${due_slugs}" >> "$GITHUB_OUTPUT"
+            echo "target_date=${target_date}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dispatch docker-publish.yml
+        if: steps.check.outputs.due == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DUE_SLUGS: ${{ steps.check.outputs.slugs }}
+          TARGET_DATE: ${{ steps.check.outputs.target_date }}
+        run: |
+          set -euo pipefail
+          echo "Dispatching docker-publish.yml for scheduled release on ${TARGET_DATE}: ${DUE_SLUGS}"
+          gh workflow run docker-publish.yml \
+            --ref main \
+            -f reason=scheduled
+
+      - name: Summarise outcome
+        if: always()
+        env:
+          DUE: ${{ steps.check.outputs.due }}
+          SLUGS: ${{ steps.check.outputs.slugs }}
+          TARGET_DATE: ${{ steps.check.outputs.target_date }}
+        run: |
+          {
+            echo "## Scheduled blog publish"
+            echo
+            if [ "${DUE:-false}" = "true" ]; then
+              echo "- Target date: \`${TARGET_DATE}\`"
+              echo "- Due posts: \`${SLUGS}\`"
+              echo "- Action: dispatched \`docker-publish.yml\` with \`reason=scheduled\`"
+            else
+              echo "- Target date: \`$(date -u +%Y-%m-%d)\`"
+              echo "- Due posts: none"
+              echo "- Action: no-op"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

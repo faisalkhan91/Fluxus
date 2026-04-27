@@ -12,6 +12,21 @@ on:
     branches: [main]
     paths:
       - 'src/assets/blog/**'
+  # Manual / scheduled publish handle. Two callers:
+  #   1. scheduled-publish.yml dispatches us with reason=scheduled when a post
+  #      in posts.json crosses its publish date overnight (the `paths:` filter
+  #      above can't fire from a date boundary; only a content commit can).
+  #   2. Maintainer-driven catch-up runs (e.g. after a missed schedule, or a
+  #      forced re-publish following a downstream incident).
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Why this manual publish is running'
+        type: choice
+        options:
+          - content
+          - scheduled
+        default: content
 
 # Don't cancel an in-progress publish: it's already minting an image and
 # opening a Homelab GitOps PR. A second push should queue, not abort.
@@ -59,26 +74,36 @@ jobs:
             echo "has_homelab_creds=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Single decision point: tag pushes -> release-shaped publish (semver),
-      # branch pushes -> content-shaped publish (content-<sha>). Every
-      # downstream step (metadata-action, image-ref, gitops-bump) reads
+      # Single decision point. Three publish shapes:
+      #   tag push                        -> release  (image-tag = bare semver)
+      #   workflow_dispatch (scheduled)   -> scheduled (image-tag = scheduled-<yyyymmdd>)
+      #   branch push / workflow_dispatch -> content   (image-tag = content-<sha>)
+      # Every downstream step (metadata-action, image-ref, gitops-bump) reads
       # from these outputs so the rest of the workflow stays linear.
       - name: Compute publish context
         id: ctx
+        env:
+          DISPATCH_REASON: ${{ inputs.reason }}
         run: |
           set -euo pipefail
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             VERSION="${GITHUB_REF_NAME#v}"
-            echo "kind=release"                                       >> "$GITHUB_OUTPUT"
-            echo "image-tag=${VERSION}"                               >> "$GITHUB_OUTPUT"
-            echo "gitops-branch=gitops/fluxus-${VERSION}"             >> "$GITHUB_OUTPUT"
-            echo "gitops-title=chore(fluxus): release v${VERSION}"    >> "$GITHUB_OUTPUT"
+            echo "kind=release"                                              >> "$GITHUB_OUTPUT"
+            echo "image-tag=${VERSION}"                                      >> "$GITHUB_OUTPUT"
+            echo "gitops-branch=gitops/fluxus-${VERSION}"                    >> "$GITHUB_OUTPUT"
+            echo "gitops-title=chore(fluxus): release v${VERSION}"           >> "$GITHUB_OUTPUT"
+          elif [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] && [ "${DISPATCH_REASON}" = "scheduled" ]; then
+            DATE="$(date -u +%Y%m%d)"
+            echo "kind=scheduled"                                            >> "$GITHUB_OUTPUT"
+            echo "image-tag=scheduled-${DATE}"                               >> "$GITHUB_OUTPUT"
+            echo "gitops-branch=gitops/fluxus-scheduled-${DATE}"             >> "$GITHUB_OUTPUT"
+            echo "gitops-title=content(fluxus): scheduled publish ${DATE}"   >> "$GITHUB_OUTPUT"
           else
             SHORT="${GITHUB_SHA:0:7}"
-            echo "kind=content"                                       >> "$GITHUB_OUTPUT"
-            echo "image-tag=content-${SHORT}"                         >> "$GITHUB_OUTPUT"
-            echo "gitops-branch=gitops/fluxus-content-${SHORT}"       >> "$GITHUB_OUTPUT"
-            echo "gitops-title=content(fluxus): blog update ${SHORT}" >> "$GITHUB_OUTPUT"
+            echo "kind=content"                                              >> "$GITHUB_OUTPUT"
+            echo "image-tag=content-${SHORT}"                                >> "$GITHUB_OUTPUT"
+            echo "gitops-branch=gitops/fluxus-content-${SHORT}"              >> "$GITHUB_OUTPUT"
+            echo "gitops-title=content(fluxus): blog update ${SHORT}"        >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout repository
@@ -104,14 +129,21 @@ jobs:
         uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          # `type=semver` only fires on tag refs and `type=sha,enable=...`
-          # only fires on branch refs, so each kind of push gets exactly the
-          # right tag set without explicit branching.
+          # Tag set is keyed off `ctx.kind` (computed above) so each publish
+          # shape emits exactly the tag downstream GitOps expects:
+          #   release   -> semver tags (auto-derived) + latest
+          #   content   -> content-<sha> + latest
+          #   scheduled -> scheduled-<yyyymmdd> + latest
+          # `type=semver` only fires on tag refs natively; the other two are
+          # gated on the explicit kind so workflow_dispatch on main routes to
+          # the right tag (content vs scheduled) without falling back to the
+          # legacy "any branch ref -> content-<sha>" rule.
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest
-            type=sha,prefix=content-,format=short,enable=${{ github.ref_type == 'branch' }}
+            type=sha,prefix=content-,format=short,enable=${{ steps.ctx.outputs.kind == 'content' }}
+            type=raw,value=${{ steps.ctx.outputs.image-tag }},enable=${{ steps.ctx.outputs.kind == 'scheduled' }}
 
       - name: Build and push
         id: build
