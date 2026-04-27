@@ -375,15 +375,34 @@ p {
 
 @media (max-width: 900px) {
   /*
-    Below ~900px the negative-left positioning would clip outside the
-    reading column, so the anchor flips to inline-after the heading and
-    only appears on hover/focus. The SVG sizing inherits from the base
-    rule above.
+    Below ~900 px the negative-left positioning would clip outside the
+    reading column, so the anchor flips to inline flow at the start of
+    the heading and only appears on hover/focus.
+
+    Two important resets here:
+
+    - `height: auto` overrides the desktop `height: 1lh`. On desktop, 1lh
+      gives the absolutely-positioned anchor a full-line-height-tall flex
+      box so `align-items: center` lands the icon on the line's vertical
+      midline. In static flow that same trick backfires: the inline-flex
+      anchor has no text content, so its baseline collapses to its bottom
+      edge, which the browser aligns with the heading text's baseline. A
+      40 px tall (h2: 1.4rem * 1.8) anchor box with its bottom on the
+      baseline ends up reaching ~14 px above the line-box top, and the
+      centred 16 px icon paints visibly above the heading text. Letting
+      the inline-flex size to its content (16 px SVG) avoids that.
+
+    - `vertical-align: middle` aligns the (now icon-sized) anchor's
+      vertical centre with the parent text's optical middle (≈ half the
+      x-height above baseline), so the chain icon sits on the same line
+      as the heading text instead of hanging above it.
   */
   .prose .anchor {
     position: static;
     margin-left: var(--space-2);
     padding: 0 4px;
+    height: auto;
+    vertical-align: middle;
   }
 }
 
