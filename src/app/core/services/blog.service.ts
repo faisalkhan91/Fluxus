@@ -2,6 +2,35 @@ import { Injectable, computed } from '@angular/core';
 import { httpResource } from '@angular/common/http';
 import { BlogPost } from '@shared/models/blog-post.model';
 
+/**
+ * `YYYY-MM-DD` for "today" in UTC. The `posts.json` `date` field is also a
+ * `YYYY-MM-DD` literal, so a lex comparison answers "has this post's calendar
+ * day arrived yet?" without having to reason about timezones (matches the
+ * technique already used in scripts/build-feed.mjs and scripts/build-sitemap.mjs).
+ *
+ * Re-evaluated on every `computed()` recomputation, which is whenever the
+ * upstream `httpResource` value changes — fine for SSR (build-time date) and
+ * fine for the live SPA, where the gate flips the moment a fresh evaluation
+ * runs after midnight UTC. There is intentionally no live ticker; a visitor
+ * who has the tab open across the publish boundary picks up the post on the
+ * next route navigation, AppUpdateService reload, or visibility change.
+ */
+function todayYmd(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Single source of truth for "should this post show on public surfaces?".
+ * A post is public when it is not flagged as draft AND its publish date has
+ * already arrived (calendar-day comparison). Used by `posts` directly and by
+ * every consumer that flows through it — blog index, hero latest posts, tag
+ * archive, command palette, related/adjacent/series helpers.
+ */
+function isPublished(post: BlogPost, today: string): boolean {
+  if (post.draft) return false;
+  return post.date <= today;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BlogService {
   // Reactive resource: kicks off eagerly, exposes value/isLoading/error as
@@ -15,18 +44,21 @@ export class BlogService {
 
   /**
    * Public surfaces (blog list, hero "latest", tag archive, post page) only
-   * see non-draft posts. Drafts are still prerendered at their /blog/<slug>
-   * URL so the author can review them, but they're omitted everywhere a
-   * casual visitor might bump into them — matching the way build-feed.mjs
-   * and build-sitemap.mjs already filter them.
+   * see published posts — non-draft AND with a publish date of today or
+   * earlier. Drafts and future-dated (scheduled) posts are still prerendered
+   * at their /blog/<slug> URL so the author can review them, but they're
+   * omitted everywhere a casual visitor might bump into them — matching the
+   * way build-feed.mjs and build-sitemap.mjs already filter.
    */
-  readonly posts = computed(() =>
-    this.postsResource.hasValue()
-      ? this.sortByDateDesc(this.postsResource.value() ?? []).filter((p) => !p.draft)
-      : [],
-  );
+  readonly posts = computed(() => {
+    if (!this.postsResource.hasValue()) return [];
+    const today = todayYmd();
+    return this.sortByDateDesc(this.postsResource.value() ?? []).filter((p) =>
+      isPublished(p, today),
+    );
+  });
 
-  /** Includes drafts. Useful for future blog-post-by-slug lookup paths. */
+  /** Includes drafts and scheduled posts. Useful for author-review tooling. */
   readonly allPosts = computed(() =>
     this.postsResource.hasValue() ? this.sortByDateDesc(this.postsResource.value() ?? []) : [],
   );

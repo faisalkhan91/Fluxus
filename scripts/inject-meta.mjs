@@ -36,10 +36,15 @@ function tagSlug(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-// Map of tag slug -> { label, posts: [] } across non-draft posts.
+// Map of tag slug -> { label, posts: [] } across published posts (non-draft
+// AND publish date today-or-earlier). Future-dated posts are excluded so the
+// CollectionPage JSON-LD and tag-page <head> metadata stay aligned with the
+// prerender list in app.routes.server.ts and the sitemap/feed.
+const todayYmd = new Date().toISOString().slice(0, 10);
 const tagsBySlug = new Map();
 for (const post of blogManifest) {
   if (post.draft) continue;
+  if (post.date > todayYmd) continue;
   for (const tag of post.tags ?? []) {
     const slug = tagSlug(tag);
     if (!slug) continue;

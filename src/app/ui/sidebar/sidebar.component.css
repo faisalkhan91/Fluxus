@@ -43,9 +43,33 @@
 /*
   Counter-transform: every direct child layer that has visible chrome must
   cancel the parent's horizontal squish. Without this, the avatar would
-  shrink to 14 px wide. Children whose `transform-origin` is `center` keep
-  centred elements aligned with the visible rail's mid-line; the nav list
-  and footer use `left` because their interactive surfaces are left-anchored.
+  shrink to 14 px wide. The interesting question is the `transform-origin`
+  on each child — that's what determines where the child's content lands
+  inside the visible 60 px rail in the collapsed state.
+
+  Two groups, two compositions:
+
+  1. `center center` group (.sidebar-header, .sidebar-footer): the host's
+     outer scaleX(--sidebar-scale) at origin x=0 composes with the child's
+     inner scaleX(1/--sidebar-scale) at origin x=130 (--sidebar-width / 2)
+     to produce a translation `viewport x = child-local x − 100`. Anything
+     centred horizontally in the un-scaled 260 px child (e.g. the avatar at
+     header-local x=130, or a footer button placed at footer-local x=130
+     via `align-items: center`) lands at viewport x=30 — dead-centre of the
+     visible rail. The collapse transition slides the centred content from
+     viewport x≈130 (un-collapsed) to x=30 (collapsed); same animation the
+     avatar already performs.
+
+  2. `left center` group (.nav-list only): both transforms share origin
+     x=0, so the composed transform is identity — list-local x equals
+     viewport x. That means the visible 60 px rail shows list-local x in
+     [0, 60]. The list keeps this origin because `.nav-list::before` (the
+     active-item indicator) sits at `left: 0` and needs to stay pinned to
+     the rail's left edge. The trade-off: collapsed-state nav icons cannot
+     rely on `justify-content: center` inside a 260 px row (it lands at
+     list-local x ≈ 121, past the rail) and must be anchored via padding
+     instead. See the `:host(.collapsed) .nav-item` rule below for that
+     geometry.
 */
 .sidebar-header,
 .nav-list,
@@ -54,12 +78,12 @@
   transition: transform var(--transition-base);
 }
 
-.sidebar-header {
+.sidebar-header,
+.sidebar-footer {
   transform-origin: center center;
 }
 
-.nav-list,
-.sidebar-footer {
+.nav-list {
   transform-origin: left center;
 }
 
@@ -179,8 +203,16 @@
   white-space: nowrap;
 }
 
+/*
+  Anchor the icon to padding-left (default flex-start) rather than centring
+  it inside the 244 px row. Because the host's scaleX collapse and the
+  .nav-list counter-scale compose to identity (both share `transform-origin:
+  left center` at x=0), list-local x equals viewport x. With padding-left =
+  var(--space-3) = 12 px and .nav-list padding-left = var(--space-2) = 8 px,
+  an 18 px icon's centre lands at viewport x = 12 + 8 + 9 = 29 — essentially
+  dead-centre of the 60 px visible rail (window centre = 30).
+*/
 :host(.collapsed) .nav-item {
-  justify-content: center;
   padding: var(--space-3);
 }
 
@@ -205,8 +237,33 @@
   border-bottom: 1px solid var(--glass-border);
 }
 
+/*
+  Collapsed footer buttons need two things to render correctly inside the
+  60 px rail. The actual centring on the rail centerline is done by the
+  parent `.sidebar-footer` (display: flex + align-items: center, plus its
+  `transform-origin: center center` — see the counter-transform comment at
+  the top of the file). What this rule still has to do:
+
+  1. Constrain button width — unlike .nav-item (chrome-less by default),
+     .theme-toggle carries a permanent 1 px --glass-border and .resume-btn
+     a permanent solid --accent fill. With baseline `width: 100%` each
+     button would stretch to the full 228 px footer interior, and the
+     footer's `align-items: center` would land its centre at footer-local
+     x=130 — but the chrome would still extend 114 px on either side and
+     spill past the rail edges. `width: auto` shrinks the button to its
+     intrinsic content size (12 padding + 16 icon + 12 padding = 40 px),
+     so the chrome stays inside the rail.
+
+  2. `justify-content: flex-start` is now redundant in terms of icon
+     position (with `width: auto` the button is sized to content, so
+     flex-start and center put the icon in the same place), but it stays
+     as a defensive override of the baseline `center` to document the
+     intent that the icon anchors at padding-left.
+*/
 :host(.collapsed) .theme-toggle,
 :host(.collapsed) .resume-btn {
+  justify-content: flex-start;
+  width: auto;
   padding: var(--space-3);
 }
 
@@ -262,6 +319,9 @@
 }
 
 .sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: var(--space-4);
   border-top: 1px solid var(--glass-border);
   flex-shrink: 0;
@@ -337,12 +397,16 @@
 /*
   CSS-driven responsive layout (instead of signal-bound classes) so the SSR
   markup is identical for every viewport. The [collapsed] input keeps applying
-  the .collapsed host class for runtime reactivity; these @media queries
-  handle the SSR/initial-paint window before signals settle on the client.
+  the .collapsed host class for runtime reactivity; this @media query handles
+  the SSR / initial-paint window before signals settle on the client and must
+  mirror every visual `:host(.collapsed)` rule above.
 
-  Tablet width forces collapsed mode by setting --sidebar-scale, which keeps
-  the compositor-only contract intact regardless of which path triggers the
-  collapsed state.
+  Tablet width forces collapsed mode via --sidebar-scale. Note: hiding labels
+  is necessary but not sufficient — see the `:host(.collapsed) .nav-item`
+  comment for the geometry. Icons must be anchored via padding-left, not
+  centred via `justify-content: center`, because the composed transforms map
+  list-local x straight to viewport x and a centred icon in a full-width row
+  lands past the 60 px visible rail.
 */
 @media (min-width: 768px) and (max-width: 1023px) {
   :host {
@@ -355,8 +419,32 @@
   }
 
   .nav-item {
-    justify-content: center;
     padding: var(--space-3);
+  }
+
+  .identity,
+  .nav-label,
+  .nav-ext,
+  .divider-label,
+  .theme-toggle > span,
+  .resume-btn > span {
+    display: none;
+  }
+
+  .nav-divider {
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .theme-toggle,
+  .resume-btn {
+    justify-content: flex-start;
+    width: auto;
+    padding: var(--space-3);
+  }
+
+  .theme-toggle {
+    margin-bottom: var(--space-2);
   }
 }
 

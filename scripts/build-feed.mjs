@@ -56,8 +56,14 @@ function postIsoTimestamp(date) {
   return new Date(date).toISOString();
 }
 
+// Scheduled posts (date in the future) are excluded alongside drafts so the
+// Atom feed never advertises a post before its publish day — feed-reader
+// caches would otherwise pin the entry at its first appearance and never
+// surface the on-time publish update. The next prod build that crosses the
+// publish boundary picks the entry up.
+const todayYmd = new Date().toISOString().slice(0, 10);
 const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'))
-  .filter((p) => !p.draft)
+  .filter((p) => !p.draft && p.date <= todayYmd)
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 /*

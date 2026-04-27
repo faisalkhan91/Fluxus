@@ -1,12 +1,13 @@
 {
   "name": "fluxus",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:prod": "node scripts/sync-reading-times.mjs && node scripts/build-image-dims.mjs && ng build --configuration production && node scripts/inject-meta.mjs && node scripts/build-sitemap.mjs && node scripts/build-feed.mjs && node scripts/build-og-cards.mjs && node scripts/build-csp.mjs",
+    "build:prod": "node scripts/sync-reading-times.mjs && node scripts/build-image-dims.mjs && node scripts/build-version-stamp.mjs && ng build --configuration production && node scripts/inject-meta.mjs && node scripts/build-sitemap.mjs && node scripts/build-feed.mjs && node scripts/build-og-cards.mjs && node scripts/build-csp.mjs",
     "sync:reading-times": "node scripts/sync-reading-times.mjs",
+    "build:version-stamp": "node scripts/build-version-stamp.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:coverage": "ng test --configuration=coverage",

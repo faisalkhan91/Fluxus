@@ -54,7 +54,11 @@ function tagSlug(value) {
 }
 
 const today = new Date().toISOString().slice(0, 10);
-const livePosts = posts.filter((p) => !p.draft);
+// Scheduled posts (date in the future) are excluded alongside drafts so the
+// sitemap only advertises URLs whose public metadata is also already live.
+// Direct /blog/<slug> URLs for those posts are still prerendered for author
+// review — see app.routes.server.ts — they just don't get search-indexed.
+const livePosts = posts.filter((p) => !p.draft && p.date <= today);
 
 // Unique tag slugs across all non-draft posts (matches the prerender list).
 const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(tagSlug))))
