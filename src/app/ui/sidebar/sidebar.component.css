@@ -45,7 +45,20 @@
   cancel the parent's horizontal squish. Without this, the avatar would
   shrink to 14 px wide. Children whose `transform-origin` is `center` keep
   centred elements aligned with the visible rail's mid-line; the nav list
-  and footer use `left` because their interactive surfaces are left-anchored.
+  and footer use `left` because the active-item indicator (`.nav-list::before`
+  at `left: 0`) needs to stay pinned to the visible rail's left edge.
+
+  Critical implication of `left center` on .nav-list / .sidebar-footer:
+  the host's outer scaleX(--sidebar-scale) and the child's inner counter
+  scaleX(1/--sidebar-scale) share the same x=0 origin, so the composed
+  transform is identity — list-local x equals viewport x. That means the
+  visible 60 px rail in collapsed mode shows list-local x in [0, 60].
+  Anything at list-local x > 60 (e.g. an icon centred via
+  `justify-content: center` inside the un-scaled 244 px .nav-item row, which
+  lands at list-local x ≈ 121) renders past the visible rail's right edge
+  and disappears. Collapsed-state icons therefore must be anchored via
+  padding-left, not centred via justify-content. See the
+  `:host(.collapsed) .nav-item` and footer-button rules below.
 */
 .sidebar-header,
 .nav-list,
@@ -179,8 +192,16 @@
   white-space: nowrap;
 }
 
+/*
+  Anchor the icon to padding-left (default flex-start) rather than centring
+  it inside the 244 px row. Because the host's scaleX collapse and the
+  .nav-list counter-scale compose to identity (both share `transform-origin:
+  left center` at x=0), list-local x equals viewport x. With padding-left =
+  var(--space-3) = 12 px and .nav-list padding-left = var(--space-2) = 8 px,
+  an 18 px icon's centre lands at viewport x = 12 + 8 + 9 = 29 — essentially
+  dead-centre of the 60 px visible rail (window centre = 30).
+*/
 :host(.collapsed) .nav-item {
-  justify-content: center;
   padding: var(--space-3);
 }
 
@@ -205,8 +226,16 @@
   border-bottom: 1px solid var(--glass-border);
 }
 
+/*
+  Override the baseline `justify-content: center` (which works fine in the
+  un-collapsed 228 px button row) so the icon — now the only visible flex
+  child — stays inside the 60 px rail. Same reasoning as the .nav-item
+  rule above: list-local x = viewport x, so anything centred in a
+  full-width row lands past x=60.
+*/
 :host(.collapsed) .theme-toggle,
 :host(.collapsed) .resume-btn {
+  justify-content: flex-start;
   padding: var(--space-3);
 }
 
@@ -338,16 +367,15 @@
   CSS-driven responsive layout (instead of signal-bound classes) so the SSR
   markup is identical for every viewport. The [collapsed] input keeps applying
   the .collapsed host class for runtime reactivity; this @media query handles
-  the SSR / initial-paint window before signals settle on the client.
+  the SSR / initial-paint window before signals settle on the client and must
+  mirror every visual `:host(.collapsed)` rule above.
 
-  Tablet width forces collapsed mode by setting --sidebar-scale AND mirroring
-  every visual `:host(.collapsed)` rule. The label-hide rules below are the
-  important half: with `--sidebar-scale` alone, the rail squishes to 60 px
-  but `.nav-item` (a flex with gap-separated icon + label + ext) still
-  contains the full 150-ish px of children, and `justify-content: center`
-  centres that whole group inside the un-scaled 244 px row — pushing the
-  icon's left edge to ~58 px of original coords, i.e. just past the visible
-  rail's right edge. Hiding the labels here re-centres the icon alone.
+  Tablet width forces collapsed mode via --sidebar-scale. Note: hiding labels
+  is necessary but not sufficient — see the `:host(.collapsed) .nav-item`
+  comment for the geometry. Icons must be anchored via padding-left, not
+  centred via `justify-content: center`, because the composed transforms map
+  list-local x straight to viewport x and a centred icon in a full-width row
+  lands past the 60 px visible rail.
 */
 @media (min-width: 768px) and (max-width: 1023px) {
   :host {
@@ -360,7 +388,6 @@
   }
 
   .nav-item {
-    justify-content: center;
     padding: var(--space-3);
   }
 
@@ -380,6 +407,7 @@
 
   .theme-toggle,
   .resume-btn {
+    justify-content: flex-start;
     padding: var(--space-3);
   }
 
