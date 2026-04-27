@@ -43,22 +43,33 @@
 /*
   Counter-transform: every direct child layer that has visible chrome must
   cancel the parent's horizontal squish. Without this, the avatar would
-  shrink to 14 px wide. Children whose `transform-origin` is `center` keep
-  centred elements aligned with the visible rail's mid-line; the nav list
-  and footer use `left` because the active-item indicator (`.nav-list::before`
-  at `left: 0`) needs to stay pinned to the visible rail's left edge.
+  shrink to 14 px wide. The interesting question is the `transform-origin`
+  on each child — that's what determines where the child's content lands
+  inside the visible 60 px rail in the collapsed state.
 
-  Critical implication of `left center` on .nav-list / .sidebar-footer:
-  the host's outer scaleX(--sidebar-scale) and the child's inner counter
-  scaleX(1/--sidebar-scale) share the same x=0 origin, so the composed
-  transform is identity — list-local x equals viewport x. That means the
-  visible 60 px rail in collapsed mode shows list-local x in [0, 60].
-  Anything at list-local x > 60 (e.g. an icon centred via
-  `justify-content: center` inside the un-scaled 244 px .nav-item row, which
-  lands at list-local x ≈ 121) renders past the visible rail's right edge
-  and disappears. Collapsed-state icons therefore must be anchored via
-  padding-left, not centred via justify-content. See the
-  `:host(.collapsed) .nav-item` and footer-button rules below.
+  Two groups, two compositions:
+
+  1. `center center` group (.sidebar-header, .sidebar-footer): the host's
+     outer scaleX(--sidebar-scale) at origin x=0 composes with the child's
+     inner scaleX(1/--sidebar-scale) at origin x=130 (--sidebar-width / 2)
+     to produce a translation `viewport x = child-local x − 100`. Anything
+     centred horizontally in the un-scaled 260 px child (e.g. the avatar at
+     header-local x=130, or a footer button placed at footer-local x=130
+     via `align-items: center`) lands at viewport x=30 — dead-centre of the
+     visible rail. The collapse transition slides the centred content from
+     viewport x≈130 (un-collapsed) to x=30 (collapsed); same animation the
+     avatar already performs.
+
+  2. `left center` group (.nav-list only): both transforms share origin
+     x=0, so the composed transform is identity — list-local x equals
+     viewport x. That means the visible 60 px rail shows list-local x in
+     [0, 60]. The list keeps this origin because `.nav-list::before` (the
+     active-item indicator) sits at `left: 0` and needs to stay pinned to
+     the rail's left edge. The trade-off: collapsed-state nav icons cannot
+     rely on `justify-content: center` inside a 260 px row (it lands at
+     list-local x ≈ 121, past the rail) and must be anchored via padding
+     instead. See the `:host(.collapsed) .nav-item` rule below for that
+     geometry.
 */
 .sidebar-header,
 .nav-list,
@@ -67,12 +78,12 @@
   transition: transform var(--transition-base);
 }
 
-.sidebar-header {
+.sidebar-header,
+.sidebar-footer {
   transform-origin: center center;
 }
 
-.nav-list,
-.sidebar-footer {
+.nav-list {
   transform-origin: left center;
 }
 
@@ -227,22 +238,27 @@
 }
 
 /*
-  Two separate concerns in collapsed mode:
+  Collapsed footer buttons need two things to render correctly inside the
+  60 px rail. The actual centring on the rail centerline is done by the
+  parent `.sidebar-footer` (display: flex + align-items: center, plus its
+  `transform-origin: center center` — see the counter-transform comment at
+  the top of the file). What this rule still has to do:
 
-  1. Icon position — `justify-content: flex-start` overrides the baseline
-     `center` so the icon, now the only visible flex child, anchors to
-     padding-left instead of being centred inside a full-width row. Same
-     reasoning as the .nav-item rule above: list-local x = viewport x, so
-     a centred icon in a full-width row lands past x=60.
+  1. Constrain button width — unlike .nav-item (chrome-less by default),
+     .theme-toggle carries a permanent 1 px --glass-border and .resume-btn
+     a permanent solid --accent fill. With baseline `width: 100%` each
+     button would stretch to the full 228 px footer interior, and the
+     footer's `align-items: center` would land its centre at footer-local
+     x=130 — but the chrome would still extend 114 px on either side and
+     spill past the rail edges. `width: auto` shrinks the button to its
+     intrinsic content size (12 padding + 16 icon + 12 padding = 40 px),
+     so the chrome stays inside the rail.
 
-  2. Button chrome — unlike .nav-item (chrome-less by default), .theme-toggle
-     carries a permanent 1 px --glass-border and .resume-btn a permanent
-     solid --accent fill. With baseline `width: 100%` the button stretches
-     across the full 212 px footer interior (16..228), so its visible chrome
-     extends 168 px past the rail's right edge — the "cutoff button" look.
-     `width: auto` shrinks the button to its intrinsic content size:
-     12 (padding-left) + 16 (icon) + 12 (padding-right) = 40 px, sitting
-     at viewport x in 16..56 — fully inside the 60 px rail.
+  2. `justify-content: flex-start` is now redundant in terms of icon
+     position (with `width: auto` the button is sized to content, so
+     flex-start and center put the icon in the same place), but it stays
+     as a defensive override of the baseline `center` to document the
+     intent that the icon anchors at padding-left.
 */
 :host(.collapsed) .theme-toggle,
 :host(.collapsed) .resume-btn {
@@ -303,6 +319,9 @@
 }
 
 .sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: var(--space-4);
   border-top: 1px solid var(--glass-border);
   flex-shrink: 0;
