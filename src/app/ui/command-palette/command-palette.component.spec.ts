@@ -9,8 +9,10 @@ import { BlogService } from '@core/services/blog.service';
 import { ThemeService } from '@core/services/theme.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
 import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.service';
+import { ProjectsDataService } from '@core/services/projects-data.service';
 import { THEME_REGISTRY, getThemeDef, type ThemeId } from '@core/services/theme.registry';
 import { BlogPost } from '@shared/models/blog-post.model';
+import { Project } from '@shared/models/project.model';
 import { Skill, SkillCategory } from '@shared/models/skill.model';
 
 const SIDEBAR = [
@@ -122,6 +124,37 @@ const mockSkillsService = {
   categories: signal(SKILL_CATEGORIES),
 };
 
+/**
+ * Projects catalog used by palette tests. Covers:
+ *   - a featured entry (Atlas) so the "Featured" hint fragment is
+ *     exercised,
+ *   - a distinctive description keyword ("sudoku") that lets us
+ *     verify the `keywords` fallback in the filter,
+ *   - a second entry sharing a tag with one of the skill mocks (Rust)
+ *     so we can assert tag-based search hits project rows too.
+ */
+const PROJECTS: Project[] = [
+  {
+    title: 'Atlas',
+    description: 'Rust-based log indexer with a Kafka ingest pipeline.',
+    image: 'a.png',
+    link: 'https://github.com/example/atlas',
+    tags: ['Rust', 'Kafka'],
+    featured: true,
+  },
+  {
+    title: 'Backtracking Search',
+    description: 'Solves a 6x6 sudoku grid using constraint propagation.',
+    image: 'b.png',
+    link: 'https://github.com/example/backtracking',
+    tags: ['Python', 'Algorithms'],
+  },
+];
+
+const mockProjectsService = {
+  projects: signal(PROJECTS),
+};
+
 const mockSkillUsage: Pick<SkillUsageService, 'usageFor' | 'usageBySlug'> = {
   usageFor(skill: Skill): SkillUsage | undefined {
     const slug = skill.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -154,6 +187,7 @@ describe('CommandPaletteComponent', () => {
         { provide: ThemeService, useValue: mockThemeService },
         { provide: SkillsDataService, useValue: mockSkillsService },
         { provide: SkillUsageService, useValue: mockSkillUsage },
+        { provide: ProjectsDataService, useValue: mockProjectsService },
       ],
     }).compileComponents();
 
@@ -222,12 +256,16 @@ describe('CommandPaletteComponent', () => {
   });
 
   describe('filtering', () => {
-    it('starts with the full catalog (routes + posts + themes + skills) when the query is empty', () => {
+    it('starts with the full catalog (routes + posts + themes + skills + projects) when the query is empty', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
       fixture.detectChanges();
       const items = host.querySelectorAll('.palette-item');
       expect(items.length).toBe(
-        SIDEBAR.length + POSTS().length + THEME_REGISTRY.length + PALETTE_SKILL_COUNT,
+        SIDEBAR.length +
+          POSTS().length +
+          THEME_REGISTRY.length +
+          PALETTE_SKILL_COUNT +
+          PROJECTS.length,
       );
     });
 
@@ -279,7 +317,11 @@ describe('CommandPaletteComponent', () => {
 
     it('ArrowDown advances the highlighted item up to the last index', () => {
       const total =
-        SIDEBAR.length + POSTS().length + THEME_REGISTRY.length + PALETTE_SKILL_COUNT;
+        SIDEBAR.length +
+        POSTS().length +
+        THEME_REGISTRY.length +
+        PALETTE_SKILL_COUNT +
+        PROJECTS.length;
       for (let i = 0; i < total + 2; i++) {
         inner().onKey(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
       }
@@ -417,6 +459,52 @@ describe('CommandPaletteComponent', () => {
       );
       // The mock seeds Rust under both "Languages" and "Other".
       expect(labels.filter((l) => l === 'Rust').length).toBe(1);
+    });
+  });
+
+  describe('project entries', () => {
+    function openAndType(query: string) {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+      inner().onInput(query);
+      fixture.detectChanges();
+    }
+
+    it('emits one entry per project with a Project hint', () => {
+      openAndType('');
+      const rows = Array.from(host.querySelectorAll('.palette-item')).map((el) => ({
+        label: el.querySelector('.palette-label')?.textContent?.trim() ?? '',
+        hint: el.querySelector('.palette-hint')?.textContent?.trim() ?? '',
+      }));
+      expect(rows.some((r) => r.label === 'Atlas' && r.hint.startsWith('Project'))).toBe(true);
+      expect(
+        rows.some((r) => r.label === 'Backtracking Search' && r.hint.startsWith('Project')),
+      ).toBe(true);
+    });
+
+    it('marks featured projects with a "Featured" fragment in the hint', () => {
+      openAndType('atlas');
+      const hints = Array.from(host.querySelectorAll('.palette-hint')).map(
+        (el) => el.textContent?.trim() ?? '',
+      );
+      // Atlas is featured and has 2 tags: expect "Project · Featured · 2 tags".
+      expect(hints).toContain('Project · Featured · 2 tags');
+    });
+
+    it('Enter on a project entry navigates to /projects with a #project-<slug> fragment', () => {
+      openAndType('atlas');
+      inner().onKey(new KeyboardEvent('keydown', { key: 'Enter' }));
+      expect(router.navigate).toHaveBeenCalledWith(['/projects'], { fragment: 'project-atlas' });
+    });
+
+    it('surfaces a project via a description keyword that is not in the title', () => {
+      // "sudoku" only appears in the Backtracking Search description, not
+      // its title or tags. The `keywords` field folds description + tags
+      // into the filter so typing "sudoku" still finds the card.
+      openAndType('sudoku');
+      const labels = Array.from(host.querySelectorAll('.palette-label')).map(
+        (el) => el.textContent?.trim() ?? '',
+      );
+      expect(labels).toContain('Backtracking Search');
     });
   });
 });
