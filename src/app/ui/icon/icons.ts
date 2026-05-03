@@ -192,4 +192,32 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'line', x1: '10', y1: '3', x2: '8', y2: '21' },
     { tag: 'line', x1: '16', y1: '3', x2: '14', y2: '21' },
   ],
+  // GitHub-style meta-row icons (star count, fork count, language dot
+  // wraps `code-2`, license via `scale`). `clock` already exists and is
+  // reused for the "Updated Nd ago" pill.
+  star: [
+    {
+      tag: 'polygon',
+      points: '12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2',
+    },
+  ],
+  'git-fork': [
+    { tag: 'circle', cx: '12', cy: '18', r: '3' },
+    { tag: 'circle', cx: '6', cy: '6', r: '3' },
+    { tag: 'circle', cx: '18', cy: '6', r: '3' },
+    { tag: 'path', d: 'M18 9v2a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9' },
+    { tag: 'path', d: 'M12 12v3' },
+  ],
+  scale: [
+    { tag: 'path', d: 'm16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z' },
+    { tag: 'path', d: 'm2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z' },
+    { tag: 'path', d: 'M7 21h10' },
+    { tag: 'path', d: 'M12 3v18' },
+    { tag: 'path', d: 'M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2' },
+  ],
+  'code-2': [
+    { tag: 'path', d: 'm18 16 4-4-4-4' },
+    { tag: 'path', d: 'm6 8-4 4 4 4' },
+    { tag: 'path', d: 'm14.5 4-5 16' },
+  ],
 };

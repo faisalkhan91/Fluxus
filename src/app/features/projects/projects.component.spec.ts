@@ -13,6 +13,18 @@ const MOCK_PROJECTS = [
     link: 'https://github.com/alpha',
     tags: ['Angular', 'TypeScript'],
     featured: true,
+    github: {
+      stars: 1234,
+      forks: 5,
+      primaryLanguage: 'TypeScript',
+      languageColor: '#3178c6',
+      pushedAt: new Date(Date.now() - 3 * 86_400_000).toISOString(),
+      license: 'MIT',
+      topics: ['routing', 'services'],
+      archived: false,
+      openIssues: 2,
+      fetchedAt: '2026-05-03T00:00:00Z',
+    },
   },
   {
     title: 'Project Beta',
@@ -20,6 +32,7 @@ const MOCK_PROJECTS = [
     image: 'assets/beta.png',
     link: 'https://github.com/beta',
     tags: ['Python'],
+    // No `github` block — must render without meta row, stripe, or archived badge.
   },
 ];
 
@@ -124,5 +137,87 @@ describe('ProjectsComponent', () => {
     expect(firstCardTags?.[0].getAttribute('href')).toBe('/projects/tag/angular');
     expect(firstCardTags?.[1].getAttribute('href')).toBe('/projects/tag/typescript');
     expect(firstCardTags?.[0].getAttribute('aria-label')).toBe('View all projects tagged Angular');
+  });
+
+  it('renders a GitHub meta row with language, stars, forks, updated, license only when github data is present', () => {
+    const cards = el.querySelectorAll('.project-card');
+    const alphaMeta = cards[0].querySelector('.project-github-meta');
+    const betaMeta = cards[1].querySelector('.project-github-meta');
+
+    expect(alphaMeta).toBeTruthy();
+    expect(betaMeta).toBeNull();
+
+    const alphaPills = Array.from(alphaMeta!.querySelectorAll('.gh-pill')).map(
+      (el) => el.textContent?.trim().replace(/\s+/g, ' ') ?? '',
+    );
+    // 5 pills: language, stars, forks, updated, license. Stars use the
+    // compactNumber "1.2k" rendering; updated was seeded at 3d ago.
+    expect(alphaPills.length).toBe(5);
+    expect(alphaPills[0]).toContain('TypeScript');
+    expect(alphaPills[1]).toContain('1.2k');
+    expect(alphaPills[2]).toContain('5');
+    expect(alphaPills[3]).toContain('3d ago');
+    expect(alphaPills[4]).toContain('MIT');
+  });
+
+  it('paints a language-color stripe on cards with a githubColor and hides it otherwise', () => {
+    const cards = el.querySelectorAll('.project-card');
+    expect(cards[0].querySelector('.project-language-stripe')).toBeTruthy();
+    expect(cards[1].querySelector('.project-language-stripe')).toBeNull();
+  });
+
+  it('hides the archived badge and .archived class when the repo is live', () => {
+    const cards = el.querySelectorAll('.project-card');
+    expect(cards[0].classList.contains('archived')).toBe(false);
+    expect(cards[0].querySelector('.archived-badge')).toBeNull();
+  });
+
+  describe('compactNumber', () => {
+    it('formats values under 1000 verbatim', () => {
+      expect(component['compactNumber'](42)).toBe('42');
+      expect(component['compactNumber'](999)).toBe('999');
+    });
+
+    it('formats 1000-9999 as "X.Yk"', () => {
+      expect(component['compactNumber'](1200)).toBe('1.2k');
+      expect(component['compactNumber'](9999)).toBe('10.0k');
+    });
+
+    it('formats ≥10000 as rounded "Xk"', () => {
+      expect(component['compactNumber'](12_345)).toBe('12k');
+      expect(component['compactNumber'](1_000_000)).toBe('1000k');
+    });
+
+    it('returns empty string for null / undefined so the pill is hidden', () => {
+      expect(component['compactNumber'](null)).toBe('');
+      expect(component['compactNumber'](undefined)).toBe('');
+    });
+  });
+
+  describe('relativeTime', () => {
+    it('returns "today" for timestamps under 24h', () => {
+      expect(component['relativeTime'](new Date().toISOString())).toBe('today');
+    });
+
+    it('returns "Nd ago" for under-month distances', () => {
+      const iso = new Date(Date.now() - 5 * 86_400_000).toISOString();
+      expect(component['relativeTime'](iso)).toBe('5d ago');
+    });
+
+    it('returns "Nmo ago" for under-year distances', () => {
+      const iso = new Date(Date.now() - 120 * 86_400_000).toISOString();
+      expect(component['relativeTime'](iso)).toBe('4mo ago');
+    });
+
+    it('returns a year string for anything over a year old', () => {
+      const iso = '2020-06-15T00:00:00Z';
+      expect(component['relativeTime'](iso)).toBe('2020');
+    });
+
+    it('returns empty string for missing / unparseable input', () => {
+      expect(component['relativeTime'](null)).toBe('');
+      expect(component['relativeTime'](undefined)).toBe('');
+      expect(component['relativeTime']('not-a-date')).toBe('');
+    });
   });
 });
