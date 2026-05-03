@@ -30,6 +30,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 - **Glass Workspace UI** — Glassmorphism design system with `backdrop-filter`, custom design tokens, dark/light mode
 - **Static Site Generation** — All routes prerendered at build time for instant load and SEO
 - **Blog Engine** — Markdown posts with anchor IDs, copy-button code blocks, reading progress bar, prev/next + breadcrumb navigation, share row, "Edit on GitHub" deep link, and a `/blog/tag/:tag` archive
+- **GitHub-sourced Project Showcase** — `/projects` is driven by a `portfolio` GitHub topic filter + a thin local override manifest. Each card + `/projects/:slug` detail page renders live stars/forks/language/last-push/license pills, a language-distribution bar, optional release tag, a README excerpt, a 52-week commit sparkline, and related blog posts. Adding a new project is a single click on github.com
 - **Auto-generated assets** — Per-post Open Graph card PNGs, Atom feed (`/feed.xml`), sitemap (`/sitemap.xml`), and image dimensions for CLS-safe markdown images
 - **Structured data** — Site-wide `Person` + `WebSite` JSON-LD; per-post `BlogPosting` + `BreadcrumbList`
 - **Adaptive Favicon** — SVG favicon with dark/light mode support, multi-size ICO, apple-touch-icon, PWA manifest icons
@@ -42,7 +43,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 - **Modern CSS** — OKLCH accent palette, container queries on the content shell, scroll-driven reading-progress animation (zero-JS where supported)
 - **Print stylesheet** — Resume / blog post print-friendly view (chrome hidden, black-on-white, prose expanded)
 - **Security Headers** — CSP (script-src hashed at build time, no `'unsafe-inline'` for scripts), HSTS preload, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-- **Comprehensive Test Suite** — 250+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
+- **Comprehensive Test Suite** — 540+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
 - **Automated CI/CD** — single-check CI gate, CodeQL SAST, Release Please semver, multi-arch Docker publish, GitOps PR to Homelab, Trivy gate plus weekly drift re-scan, scheduled smoke probe, weekly GHCR retention
 
 ---
@@ -77,15 +78,19 @@ npm run build:prod
 
 This runs the full build pipeline in order:
 
-1. `node scripts/build-image-dims.mjs` — sweeps `src/assets/images/` with `sharp` and writes intrinsic width/height for every image into `src/app/core/services/image-dims.generated.ts`. The MarkdownService renderer reads this map so blog `<img>` tags ship with `width` / `height` / `loading="lazy"` / `decoding="async"` (no CLS).
-2. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included.
-3. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts also get JSON-LD `BlogPosting` + `BreadcrumbList`.
-4. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list (no manual sitemap maintenance).
-5. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
-6. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
-7. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
+1. `node scripts/fetch-projects-github.mjs` — fetches live GitHub metadata (stars, forks, language, license, topics, README excerpt, weekly commit counts, latest release, homepage) for every repo matching `user:<you> topic:portfolio` _or_ listed in `src/app/core/data/projects.overrides.json`. Writes `projects.generated.{ts,json}` + `scripts/cache/projects-github.json`. Uses `GITHUB_TOKEN` when set (5000 req/hr) and gracefully falls back to the committed cache offline.
+2. `node scripts/sync-reading-times.mjs` — recomputes `readingTime` on every `posts.json` entry from the matching markdown body so manifest and prose never disagree.
+3. `node scripts/build-image-dims.mjs` — sweeps `src/assets/images/` with `sharp` and writes intrinsic width/height for every image into `src/app/core/services/image-dims.generated.ts`. The MarkdownService renderer reads this map so blog `<img>` tags ship with `width` / `height` / `loading="lazy"` / `decoding="async"` (no CLS).
+4. `node scripts/build-version-stamp.mjs` — writes the build's commit SHA + timestamp into `app-version.generated.ts` so the sidebar footer can surface it.
+5. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included. Prerenders every known `/projects/:slug`, `/projects/tag/:tag`, `/blog/:slug`, and `/blog/tag/:tag`.
+6. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts get JSON-LD `BlogPosting` + `BreadcrumbList`; project-tag archives get `CollectionPage` + `BreadcrumbList`; project detail pages get per-project `<head>` tags.
+7. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list + the generated project list (no manual sitemap maintenance).
+8. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
+9. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
+10. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
+11. `node scripts/audit-csp.mjs` — walks the prerendered tree and fails the build if any inline script / event handler lacks a matching CSP hash.
 
-Build output goes to `dist/fluxus/browser/` — 18 prerendered static routes (8 top-level + 4 blog posts + every unique `/blog/tag/:tag`) as directories with `index.html` inside each, plus `feed.xml`, `sitemap.xml`, `og/<slug>.png`, and the SW manifests.
+Build output goes to `dist/fluxus/browser/` — one directory per prerendered route (`index.html` inside each), plus `feed.xml`, `sitemap.xml`, `og/<slug>.png`, and the SW manifests. A representative recent run emitted **99** prerendered routes: 8 top-level + 5 blog posts + 13 blog-tag archives + 65 project-tag archives + 8 project detail pages. The counts move with the repo's topic tags and blog manifest; the pipeline enumerates them automatically.
 
 ## Docker
 
@@ -232,18 +237,21 @@ src/
 <details>
 <summary><strong>Routes</strong></summary>
 
-| Route             | Component               | SSG                        |
-| ----------------- | ----------------------- | -------------------------- |
-| `/`               | HeroComponent           | Prerendered                |
-| `/about`          | AboutComponent          | Prerendered                |
-| `/experience`     | ExperienceComponent     | Prerendered                |
-| `/skills`         | SkillsComponent         | Prerendered                |
-| `/projects`       | ProjectsComponent       | Prerendered                |
-| `/certifications` | CertificationsComponent | Prerendered                |
-| `/contact`        | ContactComponent        | Prerendered                |
-| `/blog`           | BlogComponent           | Prerendered                |
-| `/blog/:slug`     | BlogPostComponent       | Prerendered (dynamic)      |
-| `**`              | NotFoundComponent       | Client-side (CSR fallback) |
+| Route                | Component               | SSG                        |
+| -------------------- | ----------------------- | -------------------------- |
+| `/`                  | HeroComponent           | Prerendered                |
+| `/about`             | AboutComponent          | Prerendered                |
+| `/experience`        | ExperienceComponent     | Prerendered                |
+| `/skills`            | SkillsComponent         | Prerendered                |
+| `/projects`          | ProjectsComponent       | Prerendered                |
+| `/projects/:slug`    | ProjectDetailComponent  | Prerendered (per project)  |
+| `/projects/tag/:tag` | ProjectsTagComponent    | Prerendered (per tag)      |
+| `/certifications`    | CertificationsComponent | Prerendered                |
+| `/contact`           | ContactComponent        | Prerendered                |
+| `/blog`              | BlogComponent           | Prerendered                |
+| `/blog/:slug`        | BlogPostComponent       | Prerendered (dynamic)      |
+| `/blog/tag/:tag`     | BlogTagComponent        | Prerendered (per tag)      |
+| `**`                 | NotFoundComponent       | Client-side (CSR fallback) |
 
 </details>
 
@@ -273,6 +281,43 @@ npm run optimize:images -- --replace   # replace .jpg/.png originals with .webp
 ```
 
 The script is idempotent — re-running skips already-optimized files. Remember to update markdown image extensions to `.webp` after using `--replace`.
+
+</details>
+
+<details>
+<summary><strong>Project Showcase Authoring</strong></summary>
+
+`/projects` is GitHub-driven. To add a project:
+
+**1. Tag the repo on github.com.** Open the repo page, click the ⚙ on the "About" sidebar, and add `portfolio` to the Topics field. That's the one mandatory step — a user-scoped topic search (`user:<you> topic:portfolio fork:false archived:false`) runs at build time via `scripts/fetch-projects-github.mjs`.
+
+**2. (Optional) Override editorial fields locally.** `src/app/core/data/projects.overrides.json` is the curation layer — each `repos[]` entry is keyed by `owner/name` and can override any of:
+
+```json
+{
+  "repo": "faisalkhan91/Bookstore",
+  "title": "Bookstore", // defaults to repo name
+  "description": "Hand-written blurb.", // falls back to README excerpt, then repo.description
+  "image": "assets/images/portfolio/BookStore.png",
+  "tags": ["Angular", "TypeScript"], // merged with repo topics
+  "featured": true, // glow on the card + homepage strip
+  "order": 1 // display order; unset entries sort by pushedAt desc
+}
+```
+
+Drop the screenshot under `src/assets/images/portfolio/`. Overrides are union'd with the topic search — a repo that's both topic-tagged and in `repos[]` gets both the selection AND the overrides.
+
+**3. Refresh the cache.** Run `npm run fetch:projects` locally to hit the GitHub API and write:
+
+- `src/app/core/data/projects.generated.ts` — the full `Project[]` consumed by `ProjectsDataService`.
+- `src/app/core/data/projects.generated.json` — a JSON twin for `.mjs` scripts (sitemap, inject-meta).
+- `scripts/cache/projects-github.json` — normalised raw GitHub payload; commit this so offline / rate-limited builds keep working.
+
+CI runs the fetch automatically inside `build:prod` with `secrets.GITHUB_TOKEN` wired in (5000 req/hr). Locally the script works unauthenticated (60 req/hr) and falls back to the committed cache if the network is unreachable.
+
+**4. Non-GitHub entries.** `projects.overrides.json`'s `manual[]` array accepts fully hand-authored entries (company work, talks, gists). Same rendering path as topic-sourced repos; no `github` block means no meta pills.
+
+**Removing a project:** untag it on github.com and drop its `repos[]` entry (if any). Next build, it's gone — no route prerenders, sitemap drops it, detail page 404s.
 
 </details>
 
