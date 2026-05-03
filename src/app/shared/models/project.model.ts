@@ -24,6 +24,26 @@ export interface GithubMeta {
   /** Open-issues count (PRs included — matches the GH badge semantic). */
   openIssues: number | null;
   /**
+   * User-set homepage URL on the repo (GitHub's "Website" field). When
+   * present, the detail page + card meta row render a "Live demo ↗"
+   * CTA. `null` when the field is blank or not fetched — no CTA shown.
+   */
+  homepage: string | null;
+  /**
+   * GitHub Linguist byte distribution for the repo, ordered by size
+   * descending. The view derives percentages client-side and renders a
+   * stacked horizontal bar. Empty array when the fetch failed or the
+   * repo has no detectable code (docs-only, etc.). Colors come from
+   * the same Linguist palette inlined in the fetch script.
+   */
+  languagesBytes: { name: string; color: string | null; bytes: number }[];
+  /**
+   * Most recent published release, keyed by tag + ISO timestamp. `null`
+   * when the repo has no releases — the "vX.Y.Z · N ago" pill hides
+   * rather than rendering a pointless zero.
+   */
+  latestRelease: { tag: string; publishedAt: string } | null;
+  /**
    * First substantive paragraph of the README, markdown-stripped to
    * plain text, trimmed to ~500 chars. `null` when the README fetch
    * failed or the repo doesn't have one. Stored as plain text rather

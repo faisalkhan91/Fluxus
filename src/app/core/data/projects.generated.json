@@ -1,0 +1,394 @@
+[
+  {
+    "title": "Bookstore",
+    "slug": "bookstore",
+    "description": "An Angular web application for browsing and purchasing books online. Built with Angular CLI, TypeScript, and component-driven architecture with routing, services, and responsive HTML/CSS templates.",
+    "image": "assets/images/portfolio/BookStore.png",
+    "link": "https://github.com/faisalkhan91/Bookstore",
+    "tags": ["Angular", "TypeScript", "HTML", "CSS", "ngform", "routing", "services"],
+    "featured": true,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "TypeScript",
+      "languageColor": "#3178c6",
+      "pushedAt": "2023-03-01T03:53:48Z",
+      "license": "MIT",
+      "topics": ["angular", "ngform", "routing", "services"],
+      "archived": false,
+      "openIssues": 17,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "TypeScript",
+          "color": "#3178c6",
+          "bytes": 16013
+        },
+        {
+          "name": "HTML",
+          "color": "#e34c26",
+          "bytes": 2305
+        },
+        {
+          "name": "JavaScript",
+          "color": "#f1e05a",
+          "bytes": 1829
+        },
+        {
+          "name": "CSS",
+          "color": "#563d7c",
+          "bytes": 80
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This project was generated with Angular CLI version 8.3.20.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T09:08:51.250Z"
+    }
+  },
+  {
+    "title": "Storm Events Analysis",
+    "slug": "storm-events-analysis",
+    "description": "A data analysis project examining NOAA severe weather events from 2012 to 2016. Uses Hadoop MapReduce for large-scale dataset processing and Python for statistical modeling and visualization of storm patterns.",
+    "image": "assets/images/portfolio/StormEvents.gif",
+    "link": "https://github.com/faisalkhan91/Storm-Events",
+    "tags": [
+      "Python",
+      "Hadoop",
+      "Data Science",
+      "big-data",
+      "bigdata",
+      "event",
+      "hadoop-mapreduce",
+      "jar",
+      "mapper",
+      "python-streaming",
+      "python3",
+      "reducer",
+      "statistics",
+      "storms"
+    ],
+    "featured": true,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "pushedAt": "2019-09-18T15:02:50Z",
+      "license": "MIT",
+      "topics": [
+        "big-data",
+        "bigdata",
+        "event",
+        "hadoop",
+        "hadoop-mapreduce",
+        "jar",
+        "mapper",
+        "python",
+        "python-streaming",
+        "python3",
+        "reducer",
+        "statistics",
+        "storms"
+      ],
+      "archived": false,
+      "openIssues": 0,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 8710
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This project focuses on finding storm events for the years 2012 to 2016 using the NOAA dataset and using hadoop to process the information.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T09:08:51.489Z"
+    }
+  },
+  {
+    "title": "Jenkins CI/CD Pipeline",
+    "slug": "jenkins-cicd-pipeline",
+    "description": "An end-to-end CI/CD pipeline built with Jenkins and Ansible. Automates building, testing, and deploying applications using Docker, Nginx, PHP, and MySQL. Includes a Maven-based Java build pipeline with unit testing and artifact management.",
+    "image": "assets/images/portfolio/JenkinsCICD.PNG",
+    "link": "https://github.com/faisalkhan91/Jenkins-CI-CD",
+    "tags": [
+      "Jenkins",
+      "Ansible",
+      "Docker",
+      "CI/CD",
+      "Shell",
+      "amazon-web-services",
+      "ansible-inventory",
+      "ansible-playbook",
+      "aws",
+      "centos7",
+      "docker-compose",
+      "dsl",
+      "javascript",
+      "jenkins-ci-cd",
+      "jenkins-pipeline",
+      "linux",
+      "ngnix",
+      "php",
+      "ubuntu"
+    ],
+    "featured": true,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "JavaScript",
+      "languageColor": "#f1e05a",
+      "pushedAt": "2026-03-27T22:57:51Z",
+      "license": "MIT",
+      "topics": [
+        "amazon-web-services",
+        "ansible",
+        "ansible-inventory",
+        "ansible-playbook",
+        "aws",
+        "centos7",
+        "docker",
+        "docker-compose",
+        "dsl",
+        "javascript",
+        "jenkins",
+        "jenkins-ci-cd",
+        "jenkins-pipeline",
+        "linux",
+        "ngnix",
+        "php",
+        "ubuntu"
+      ],
+      "archived": false,
+      "openIssues": 67,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "JavaScript",
+          "color": "#f1e05a",
+          "bytes": 23914665
+        },
+        {
+          "name": "HTML",
+          "color": "#e34c26",
+          "bytes": 394430
+        },
+        {
+          "name": "CSS",
+          "color": "#563d7c",
+          "bytes": 361998
+        },
+        {
+          "name": "Shell",
+          "color": "#89e051",
+          "bytes": 21147
+        },
+        {
+          "name": "Batchfile",
+          "color": null,
+          "bytes": 8017
+        },
+        {
+          "name": "Groovy",
+          "color": "#4298b8",
+          "bytes": 6803
+        },
+        {
+          "name": "Jinja",
+          "color": null,
+          "bytes": 5994
+        },
+        {
+          "name": "Dockerfile",
+          "color": "#384d54",
+          "bytes": 3130
+        },
+        {
+          "name": "Java",
+          "color": "#b07219",
+          "bytes": 1347
+        },
+        {
+          "name": "PLSQL",
+          "color": null,
+          "bytes": 720
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This is a project to create CI/CD pipelines using Jenkins.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T09:08:51.712Z"
+    }
+  },
+  {
+    "title": "Backtracking Search",
+    "slug": "backtracking-search",
+    "description": "A Python program that solves a 6x6 Sudoku grid using the backtracking search algorithm, systematically exploring possible values and backtracking on constraint violations to produce a solved matrix.",
+    "image": "assets/images/portfolio/BacktrackingSearch.PNG",
+    "link": "https://github.com/faisalkhan91/Backtracking-Search",
+    "tags": [
+      "Python",
+      "Algorithms",
+      "AI",
+      "artificial-intelligence",
+      "backtracking-algorithm",
+      "backtracking-search",
+      "python3",
+      "sudoku",
+      "sudoku-solver"
+    ],
+    "featured": false,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "pushedAt": "2023-02-24T04:12:12Z",
+      "license": "MIT",
+      "topics": [
+        "artificial-intelligence",
+        "backtracking-algorithm",
+        "backtracking-search",
+        "python",
+        "python3",
+        "sudoku",
+        "sudoku-solver"
+      ],
+      "archived": false,
+      "openIssues": 0,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 3344
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This is a program to solve a 6x6 sudoko grid using backtracking search.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T09:08:51.890Z"
+    }
+  },
+  {
+    "title": "Dictionary Application",
+    "slug": "dictionary-application",
+    "description": "A GUI-based dictionary app built with Python and Tkinter, powered by the Oxford Dictionary API. Features word definitions, etymology, phonetic pronunciation, audio playback, synonyms, antonyms, rhymes, and example usage.",
+    "image": "assets/images/portfolio/DictionaryApp.PNG",
+    "link": "https://github.com/faisalkhan91/Dictionary-Application",
+    "tags": [
+      "Python",
+      "Tkinter",
+      "API",
+      "dictionary",
+      "gui",
+      "oxford-dictionary",
+      "python3",
+      "tkinter-gui",
+      "widgets"
+    ],
+    "featured": false,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "pushedAt": "2019-05-02T18:55:10Z",
+      "license": "MIT",
+      "topics": [
+        "dictionary",
+        "gui",
+        "oxford-dictionary",
+        "python",
+        "python3",
+        "tkinter",
+        "tkinter-gui",
+        "widgets"
+      ],
+      "archived": false,
+      "openIssues": 0,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 24961
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This is a GUI based dictionary application that displays information sourced from oxford dictionary API.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T09:08:52.055Z"
+    }
+  },
+  {
+    "title": "Insecure File Extraction",
+    "slug": "insecure-file-extraction",
+    "description": "A security demonstration of path traversal exploitation in a poorly coded file upload function, showing how malicious code can be injected onto a web server through insecure file extraction.",
+    "image": "assets/images/portfolio/InsecureFileExtraction.PNG",
+    "link": "https://github.com/faisalkhan91/Insecure-File-Extraction",
+    "tags": [
+      "Python",
+      "Security",
+      "Web",
+      "flask",
+      "injection",
+      "insecure",
+      "path-traversal",
+      "python3",
+      "vulnerability"
+    ],
+    "featured": false,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "pushedAt": "2022-12-19T01:56:53Z",
+      "license": "MIT",
+      "topics": [
+        "flask",
+        "injection",
+        "insecure",
+        "path-traversal",
+        "python",
+        "python3",
+        "vulnerability"
+      ],
+      "archived": false,
+      "openIssues": 2,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 7616
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This code is the demonstration of using path traversal to exploit a poorly coded upload file fuction for malicious code injection on to a web server.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T09:08:52.273Z"
+    }
+  }
+]

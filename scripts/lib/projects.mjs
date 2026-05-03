@@ -1,27 +1,27 @@
 /**
- * Build-script helpers that read the project catalog without standing up
- * Angular's DI graph. The canonical source of truth is
- * `src/app/core/services/projects-data.service.ts`, but `.mjs` scripts
- * can't import TS modules directly. Rather than maintain a parallel
- * JSON manifest (and risk drift), we regex-extract the few fields each
- * caller needs from the TS source.
+ * Build-script helpers that read the project catalog.
  *
- * The TS file's literal shape is intentionally simple (one `signal<...>`
- * wrapping an array of object literals), so a lenient regex stays
- * stable across edits. If someone introduces dynamic project data, both
- * this module and `app.routes.server.ts` will need to switch to a
- * proper TS import (via `tsx` or pre-compiled JSON).
+ * Source of truth since the GitHub-sourced refactor:
+ *   `src/app/core/data/projects.generated.json` — a JSON mirror of
+ *   `projects.generated.ts`, emitted by `scripts/fetch-projects-github.mjs`
+ *   at build time. Scripts consume the JSON so they don't need a TS
+ *   compiler in the `.mjs` pipeline, and the Angular bundle imports the
+ *   `.ts` file. Both are always re-generated together.
+ *
+ * If the generated JSON is missing (fresh checkout, script never ran),
+ * callers fail loudly rather than silently emitting empty sitemap/
+ * prerender lists — the build-chain is supposed to run `fetch:projects`
+ * before anything else touches this module.
  */
 import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const PROJECTS_TS = join(process.cwd(), 'src/app/core/services/projects-data.service.ts');
+const GENERATED_JSON = join(process.cwd(), 'src/app/core/data/projects.generated.json');
 
 /**
  * Mirrors `slugify()` in `src/app/shared/utils/string.utils.ts`. Kept
- * inline so this module has zero TS deps. The blog scripts duplicate
- * the same regex chain for the same reason — verified consistent by
- * the prerender-route generator in `app.routes.server.ts`.
+ * inline so this module has zero TS deps.
  */
 export function projectTagSlug(value) {
   return String(value)
@@ -33,105 +33,59 @@ export function projectTagSlug(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-const GITHUB_CACHE = join(process.cwd(), 'scripts/cache/projects-github.json');
+async function loadGenerated() {
+  if (!existsSync(GENERATED_JSON)) {
+    throw new Error(
+      `projects.mjs: ${GENERATED_JSON} is missing. Run \`npm run fetch:projects\` before scripts that enumerate projects.`,
+    );
+  }
+  try {
+    const raw = JSON.parse(await readFile(GENERATED_JSON, 'utf-8'));
+    if (!Array.isArray(raw)) {
+      throw new Error(`projects.mjs: ${GENERATED_JSON} is not a JSON array`);
+    }
+    return raw;
+  } catch (err) {
+    throw new Error(`projects.mjs: could not parse ${GENERATED_JSON}: ${err.message}`);
+  }
+}
 
 /**
  * Returns `{ slug, label }[]` — one entry per distinct project tag,
  * sorted alphabetically by slug. The label is whichever capitalisation
  * the catalog uses (matches what the runtime tag archive renders in
- * the heading).
- *
- * Also unions in any topics cached from the GitHub enrichment pass
- * (`scripts/cache/projects-github.json`). Those topics become first-class
- * archive routes once `ProjectsDataService` merges them into `project.tags`
- * at runtime — see the prerender helper in `app.routes.server.ts` which
- * enumerates the same merged surface. Without this union the sitemap and
- * the prerendered files would diverge: Angular would prerender the tag
- * pages, but they'd be absent from sitemap.xml.
+ * the heading). `tags` in the generated file already includes GitHub
+ * topics merged with any hand-curated tags from overrides, so there's
+ * no separate union step here.
  */
 export async function loadProjectTagSlugs() {
-  const src = await readFile(PROJECTS_TS, 'utf-8');
-  const tagBlocks = [...src.matchAll(/tags:\s*\[([^\]]+)\]/g)];
+  const projects = await loadGenerated();
   const bySlug = new Map();
-  for (const block of tagBlocks) {
-    const tags = [...block[1].matchAll(/['"]([^'"]+)['"]/g)].map((m) => m[1]);
-    for (const tag of tags) {
+  for (const project of projects) {
+    for (const tag of project.tags ?? []) {
       const slug = projectTagSlug(tag);
       if (!slug) continue;
       if (!bySlug.has(slug)) bySlug.set(slug, { slug, label: tag });
     }
   }
-  try {
-    const cache = JSON.parse(await readFile(GITHUB_CACHE, 'utf-8'));
-    for (const row of Object.values(cache)) {
-      for (const topic of row?.topics ?? []) {
-        const slug = projectTagSlug(topic);
-        if (!slug) continue;
-        // Hand-curated wins on collision — don't overwrite the label
-        // if a slug-equal tag already exists.
-        if (!bySlug.has(slug)) bySlug.set(slug, { slug, label: topic });
-      }
-    }
-  } catch {
-    // Cache missing or unreadable — stay with hand tags only.
-  }
   return [...bySlug.values()].sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
 /**
- * Returns `{ titleSlug, title, description, image, link, tags[] }[]` — one
- * entry per project in source order. Used by the GitHub enrichment script
- * to locate the repo a link points at, by `inject-meta.mjs` to build the
- * per-project `<head>` tags, and by `build-sitemap.mjs` to enumerate the
- * `/projects/:slug` detail route URLs.
- *
- * The lexer is block-scoped: it matches each `{ ... }` object literal
- * inside the outer array, then regex-pulls `title` and `link` from
- * that block. Object-literal order and the `title`/`link` field names
- * are stable in the catalog today; if either changes, this helper is
- * the single point of repair (and will fail loudly rather than return
- * partial data).
+ * Returns `{ titleSlug, title, description, image, link, tags[] }[]` —
+ * one entry per project in the canonical (post-merge) order. Used by
+ * `scripts/inject-meta.mjs` to build the per-project `<head>` tags and
+ * by `scripts/build-sitemap.mjs` to enumerate the `/projects/:slug`
+ * detail route URLs.
  */
 export async function loadProjectEntries() {
-  const src = await readFile(PROJECTS_TS, 'utf-8');
-  // Match whichever array opener the service uses today. `RawProject` is
-  // the in-service shape without derived fields; `Project` is retained
-  // for defensive support if the service is ever simplified back.
-  const arrayStart = (() => {
-    for (const opener of ['RawProject[] = [', 'Project[]>([', 'Project[] = [']) {
-      const idx = src.indexOf(opener);
-      if (idx !== -1) return idx + opener.length - 1;
-    }
-    return -1;
-  })();
-  if (arrayStart === -1) {
-    throw new Error(
-      `projects.mjs: could not find a known projects array opener in ${PROJECTS_TS}`,
-    );
-  }
-  const body = src.slice(arrayStart);
-  const entries = [];
-  // Match every balanced `{ ... }` block until the first `]` that closes
-  // the outer array. The catalog never nests object literals inside a
-  // project entry (all values are strings / booleans / string arrays),
-  // so a shallow `{ ... }` regex is sufficient.
-  const blockRe = /\{[^{}]*\}/g;
-  const arrayEnd = body.indexOf('])');
-  const scope = arrayEnd === -1 ? body : body.slice(0, arrayEnd);
-  for (const match of scope.matchAll(blockRe)) {
-    const block = match[0];
-    const title = block.match(/title:\s*['"]([^'"]+)['"]/)?.[1];
-    const link = block.match(/link:\s*['"]([^'"]+)['"]/)?.[1];
-    if (!title || !link) continue;
-    // Description can legitimately contain backslash-escaped quotes from
-    // prose. Accept either `"..."` with no nested quotes, or `'...'`.
-    const description = block.match(/description:\s*'([^']+)'/)?.[1]
-      ?? block.match(/description:\s*"([^"]+)"/)?.[1]
-      ?? '';
-    const image = block.match(/image:\s*['"]([^'"]+)['"]/)?.[1] ?? '';
-    const tagsBlock = block.match(/tags:\s*\[([^\]]+)\]/)?.[1] ?? '';
-    const tags = [...tagsBlock.matchAll(/['"]([^'"]+)['"]/g)].map((m) => m[1]);
-    entries.push({ titleSlug: projectTagSlug(title), title, description, image, link, tags });
-  }
-  return entries;
+  const projects = await loadGenerated();
+  return projects.map((p) => ({
+    titleSlug: p.slug || projectTagSlug(p.title),
+    title: p.title,
+    description: p.description ?? '',
+    image: p.image ?? '',
+    link: p.link ?? '',
+    tags: p.tags ?? [],
+  }));
 }

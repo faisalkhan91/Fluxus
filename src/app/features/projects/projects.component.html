@@ -90,6 +90,29 @@
                   {{ gh.primaryLanguage }}
                 </span>
               }
+              @if (gh.latestRelease; as rel) {
+                <span
+                  class="gh-pill"
+                  [attr.aria-label]="
+                    rel.tag + ' released ' + relativeTime(rel.publishedAt)
+                  "
+                >
+                  <ui-icon name="code-2" [size]="12" />
+                  {{ rel.tag }}
+                </span>
+              }
+              @if (gh.homepage) {
+                <a
+                  class="gh-pill gh-pill-link"
+                  [href]="gh.homepage"
+                  target="_blank"
+                  rel="noopener"
+                  [attr.aria-label]="'Live demo: ' + gh.homepage"
+                >
+                  <ui-icon name="external-link" [size]="12" />
+                  Live demo
+                </a>
+              }
               @if (gh.stars != null) {
                 <span class="gh-pill" [attr.aria-label]="gh.stars + ' stars on GitHub'">
                   <ui-icon name="star" [size]="12" />
@@ -115,6 +138,22 @@
                 </span>
               }
             </div>
+            @if (gh.languagesBytes?.length) {
+              <div
+                class="gh-languages-bar"
+                role="img"
+                [attr.aria-label]="'Language distribution: ' + languagesBarLabel(gh.languagesBytes)"
+              >
+                @for (lang of gh.languagesBytes; track lang.name) {
+                  <span
+                    class="gh-languages-segment"
+                    [style.flex]="lang.bytes"
+                    [style.background]="lang.color || 'currentColor'"
+                    [title]="lang.name + ' · ' + languagesPercent(gh.languagesBytes, lang.name)"
+                  ></span>
+                }
+              </div>
+            }
           }
 
           <div class="project-footer">
