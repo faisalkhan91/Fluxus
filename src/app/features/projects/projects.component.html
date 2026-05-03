@@ -5,11 +5,7 @@
     decoration="// git log --oneline"
     [level]="1"
   />
-  <div
-    class="projects-sort-row"
-    role="radiogroup"
-    aria-label="Sort projects"
-  >
+  <div class="projects-sort-row" role="radiogroup" aria-label="Sort projects">
     @for (opt of sortOptions; track opt.key) {
       <button
         type="button"
@@ -93,9 +89,7 @@
               @if (gh.latestRelease; as rel) {
                 <span
                   class="gh-pill"
-                  [attr.aria-label]="
-                    rel.tag + ' released ' + relativeTime(rel.publishedAt)
-                  "
+                  [attr.aria-label]="rel.tag + ' released ' + relativeTime(rel.publishedAt)"
                 >
                   <ui-icon name="code-2" [size]="12" />
                   {{ rel.tag }}
@@ -113,13 +107,13 @@
                   Live demo
                 </a>
               }
-              @if (gh.stars != null) {
+              @if (gh.stars !== null) {
                 <span class="gh-pill" [attr.aria-label]="gh.stars + ' stars on GitHub'">
                   <ui-icon name="star" [size]="12" />
                   {{ compactNumber(gh.stars) }}
                 </span>
               }
-              @if (gh.forks != null && gh.forks > 0) {
+              @if (gh.forks !== null && gh.forks > 0) {
                 <span class="gh-pill" [attr.aria-label]="gh.forks + ' forks on GitHub'">
                   <ui-icon name="git-fork" [size]="12" />
                   {{ compactNumber(gh.forks) }}

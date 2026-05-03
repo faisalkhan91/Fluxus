@@ -145,7 +145,10 @@ describe('ShellComponent', () => {
 
   it('Shift+click on the mobile FAB opens the picker instead of toggling', () => {
     const openWithSpy = vi
-      .spyOn(component as unknown as { onThemePickerRequested: () => void }, 'onThemePickerRequested')
+      .spyOn(
+        component as unknown as { onThemePickerRequested: () => void },
+        'onThemePickerRequested',
+      )
       .mockImplementation(() => {
         // The real path delegates to the palette viewChild; spy just
         // confirms the modifier-aware handler routed correctly.

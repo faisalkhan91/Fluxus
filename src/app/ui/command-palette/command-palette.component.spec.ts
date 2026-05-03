@@ -157,7 +157,10 @@ const mockProjectsService = {
 
 const mockSkillUsage: Pick<SkillUsageService, 'usageFor' | 'usageBySlug'> = {
   usageFor(skill: Skill): SkillUsage | undefined {
-    const slug = skill.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const slug = skill.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
     return usageBySlug[slug];
   },
   usageBySlug: computed(() => usageBySlug),

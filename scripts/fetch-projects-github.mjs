@@ -95,9 +95,7 @@ async function tryFetch(url, { mediaType } = {}) {
     const res = await fetch(url, { headers: ghHeaders(mediaType) });
     if (!res.ok) {
       if (res.status !== 404) {
-        console.warn(
-          `fetch-projects-github: WARN ${url} → ${res.status} ${res.statusText}`,
-        );
+        console.warn(`fetch-projects-github: WARN ${url} → ${res.status} ${res.statusText}`);
       }
       return null;
     }
@@ -132,9 +130,7 @@ async function selectRepos(overrides) {
   const topic = overrides.topic;
   const user = overrides.user;
   if (topic && user) {
-    const q = encodeURIComponent(
-      `user:${user} topic:${topic} fork:false archived:false`,
-    );
+    const q = encodeURIComponent(`user:${user} topic:${topic} fork:false archived:false`);
     const url = `https://api.github.com/search/repositories?q=${q}&per_page=50`;
     const json = await tryFetch(url);
     if (json && Array.isArray(json.items)) {
@@ -237,9 +233,7 @@ async function fetchRepoNormalized(nameWithOwner) {
     nameWithOwner: core.full_name ?? nameWithOwner,
     description: typeof core.description === 'string' ? core.description : null,
     homepage:
-      typeof core.homepage === 'string' && core.homepage.trim().length > 0
-        ? core.homepage
-        : null,
+      typeof core.homepage === 'string' && core.homepage.trim().length > 0 ? core.homepage : null,
     stars: typeof core.stargazers_count === 'number' ? core.stargazers_count : null,
     forks: typeof core.forks_count === 'number' ? core.forks_count : null,
     primaryLanguage,

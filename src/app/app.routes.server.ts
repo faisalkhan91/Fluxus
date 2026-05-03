@@ -77,9 +77,7 @@ export const serverRoutes: ServerRoute[] = [
     async getPrerenderParams() {
       const { ProjectsDataService } = await import('./core/services/projects-data.service');
       const projects = new ProjectsDataService().projects();
-      return projects
-        .filter((p) => !!p.slug)
-        .map((p) => ({ slug: p.slug as string }));
+      return projects.filter((p) => !!p.slug).map((p) => ({ slug: p.slug as string }));
     },
   },
   {

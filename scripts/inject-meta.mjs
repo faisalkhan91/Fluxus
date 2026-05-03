@@ -280,14 +280,13 @@ for await (const htmlPath of walk(DIST)) {
   // match `/projects/<something>`. Detail matches only when the slug
   // corresponds to a known project; tag archives handle the `/tag/<x>`
   // shape via their own regex branch above.
-  if (
-    projectDetailMatch &&
-    !projectTagMatch &&
-    projectsBySlug.has(projectDetailMatch[1])
-  ) {
-    const { title: projectTitle, description, image, readmeExcerpt } = projectsBySlug.get(
-      projectDetailMatch[1],
-    );
+  if (projectDetailMatch && !projectTagMatch && projectsBySlug.has(projectDetailMatch[1])) {
+    const {
+      title: projectTitle,
+      description,
+      image,
+      readmeExcerpt,
+    } = projectsBySlug.get(projectDetailMatch[1]);
     const title = `${projectTitle} — ${SITE_NAME}`;
     // README excerpt (when present) reads like an article abstract; the
     // curated `description` is the backup because nothing rules out a

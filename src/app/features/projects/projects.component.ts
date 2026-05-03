@@ -26,7 +26,13 @@ const ALLOWED_SORTS: readonly ProjectSort[] = ['featured', 'alpha', 'stars', 'up
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
-  imports: [NgOptimizedImage, RouterLink, SectionHeaderComponent, GlassCardComponent, IconComponent],
+  imports: [
+    NgOptimizedImage,
+    RouterLink,
+    SectionHeaderComponent,
+    GlassCardComponent,
+    IconComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsComponent {
@@ -79,7 +85,7 @@ export class ProjectsComponent {
     }
   });
 
-  protected readonly sortOptions: ReadonlyArray<{ key: ProjectSort; label: string }> = [
+  protected readonly sortOptions: readonly { key: ProjectSort; label: string }[] = [
     { key: 'featured', label: 'Featured' },
     { key: 'alpha', label: 'A–Z' },
     { key: 'stars', label: 'Most starred' },
@@ -141,7 +147,7 @@ export class ProjectsComponent {
    * when the total is zero to hide a confusing "0.0%" on edge cases.
    */
   protected languagesPercent(
-    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+    segments: readonly { name: string; bytes: number }[] | undefined,
     name: string,
   ): string {
     if (!segments?.length) return '';
@@ -158,11 +164,9 @@ export class ProjectsComponent {
    * in one pass rather than having to step through every segment.
    */
   protected languagesBarLabel(
-    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+    segments: readonly { name: string; bytes: number }[] | undefined,
   ): string {
     if (!segments?.length) return '';
-    return segments
-      .map((s) => `${s.name} ${this.languagesPercent(segments, s.name)}`)
-      .join(', ');
+    return segments.map((s) => `${s.name} ${this.languagesPercent(segments, s.name)}`).join(', ');
   }
 }
