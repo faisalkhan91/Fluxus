@@ -94,7 +94,18 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
 
+      # `build:prod` chains `scripts/fetch-projects-github.mjs`, which
+      # hits the GitHub API for every project in `projects.overrides.json`
+      # (plus any repo carrying the `portfolio` topic). The default
+      # `secrets.GITHUB_TOKEN` gives the runner 5000 req/hr and scopes
+      # to read-only access on the current repo; unauthenticated would
+      # be 60/hr per runner IP and noisy shared runners can blow that
+      # budget. The fetch script falls back to `scripts/cache/projects-github.json`
+      # if the token is absent or the API is unreachable, so this is a
+      # reliability lift, not a hard dependency.
       - run: npm run build:prod
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
