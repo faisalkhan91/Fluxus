@@ -15,6 +15,10 @@
 
 .project-card {
   overflow: hidden;
+  /* Offset hash-linked scroll (`#project-<slug>` from the command palette
+     or external links) so the card doesn't tuck under sticky chrome.
+     Matches the pattern at src/styles.css:500. */
+  scroll-margin-top: var(--space-8);
 }
 
 .project-card ::ng-deep > * {
