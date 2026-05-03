@@ -23,6 +23,12 @@ const MOCK_PROJECTS = [
       topics: ['routing', 'services'],
       archived: false,
       openIssues: 2,
+      homepage: 'https://example.com/alpha',
+      languagesBytes: [
+        { name: 'TypeScript', color: '#3178c6', bytes: 8000 },
+        { name: 'HTML', color: '#e34c26', bytes: 2000 },
+      ],
+      latestRelease: { tag: 'v1.2.3', publishedAt: '2026-04-01T00:00:00Z' },
       fetchedAt: '2026-05-03T00:00:00Z',
     },
   },
@@ -150,14 +156,50 @@ describe('ProjectsComponent', () => {
     const alphaPills = Array.from(alphaMeta!.querySelectorAll('.gh-pill')).map(
       (el) => el.textContent?.trim().replace(/\s+/g, ' ') ?? '',
     );
-    // 5 pills: language, stars, forks, updated, license. Stars use the
-    // compactNumber "1.2k" rendering; updated was seeded at 3d ago.
-    expect(alphaPills.length).toBe(5);
-    expect(alphaPills[0]).toContain('TypeScript');
-    expect(alphaPills[1]).toContain('1.2k');
-    expect(alphaPills[2]).toContain('5');
-    expect(alphaPills[3]).toContain('3d ago');
-    expect(alphaPills[4]).toContain('MIT');
+    // 7 pills now: language, release tag, live demo, stars, forks,
+    // updated, license. Stars use the compactNumber "1.2k" rendering;
+    // updated was seeded at 3d ago.
+    expect(alphaPills.length).toBe(7);
+    const joined = alphaPills.join(' | ');
+    expect(joined).toContain('TypeScript');
+    expect(joined).toContain('v1.2.3');
+    expect(joined).toContain('Live demo');
+    expect(joined).toContain('1.2k');
+    expect(joined).toContain('5');
+    expect(joined).toContain('3d ago');
+    expect(joined).toContain('MIT');
+  });
+
+  it('renders a Live demo pill linking to the repo homepage when set', () => {
+    const alphaCard = el.querySelectorAll('.project-card')[0];
+    const demoLink = alphaCard.querySelector<HTMLAnchorElement>('a.gh-pill-link');
+    expect(demoLink).toBeTruthy();
+    expect(demoLink?.getAttribute('href')).toBe('https://example.com/alpha');
+    expect(demoLink?.getAttribute('target')).toBe('_blank');
+    expect(demoLink?.textContent).toContain('Live demo');
+  });
+
+  it('renders a release pill with the tag when latestRelease is present', () => {
+    const alphaPills = Array.from(
+      el.querySelectorAll(
+        '.project-card .project-github-meta .gh-pill',
+      ) as NodeListOf<HTMLElement>,
+    ).map((p) => p.textContent?.trim() ?? '');
+    expect(alphaPills.some((t) => t.includes('v1.2.3'))).toBe(true);
+  });
+
+  it('renders a language distribution bar with one segment per languagesBytes entry', () => {
+    const bar = el.querySelector('.project-card .gh-languages-bar');
+    expect(bar).toBeTruthy();
+    const segments = bar?.querySelectorAll('.gh-languages-segment');
+    expect(segments?.length).toBe(2);
+    expect(bar?.getAttribute('aria-label')).toContain('TypeScript 80.0%');
+    expect(bar?.getAttribute('aria-label')).toContain('HTML 20.0%');
+  });
+
+  it('hides the language bar on cards with no languagesBytes', () => {
+    const betaCard = el.querySelectorAll('.project-card')[1];
+    expect(betaCard.querySelector('.gh-languages-bar')).toBeNull();
   });
 
   it('paints a language-color stripe on cards with a githubColor and hides it otherwise', () => {

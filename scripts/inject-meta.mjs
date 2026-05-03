@@ -64,24 +64,31 @@ for (const entry of await loadProjectTagSlugs()) {
 
 // `/projects/:slug` detail pages — shares most of the meta shape with
 // blog posts (title, description, og:article, canonical) but without
-// a generated OG card (we use the project's screenshot directly).
+// a generated OG card (we use the project's screenshot directly). The
+// generated JSON already carries merged GitHub metadata (incl. the
+// README excerpt when present), so we consume it directly rather than
+// re-reading the raw fetch cache.
 const projectsBySlug = new Map();
-const githubCachePath = join(process.cwd(), 'scripts/cache/projects-github.json');
-let githubCache = {};
+const GENERATED_PROJECTS_JSON = join(process.cwd(), 'src/app/core/data/projects.generated.json');
+let generatedProjects = [];
 try {
-  githubCache = JSON.parse(await readFile(githubCachePath, 'utf-8'));
+  const raw = JSON.parse(await readFile(GENERATED_PROJECTS_JSON, 'utf-8'));
+  if (Array.isArray(raw)) generatedProjects = raw;
 } catch {
-  // No cache yet — detail pages get a plain description from the
-  // curated TS source.
+  // File missing — `loadProjectEntries()` below will surface the error.
+}
+const githubBySlug = new Map();
+for (const p of generatedProjects) {
+  if (p?.slug) githubBySlug.set(p.slug, p.github ?? null);
 }
 for (const entry of await loadProjectEntries()) {
-  const meta = githubCache[entry.titleSlug] ?? null;
+  const gh = githubBySlug.get(entry.titleSlug) ?? null;
   projectsBySlug.set(entry.titleSlug, {
     title: entry.title,
     description: entry.description,
     image: entry.image,
     link: entry.link,
-    readmeExcerpt: meta?.readmeExcerpt ?? null,
+    readmeExcerpt: gh?.readmeExcerpt ?? null,
   });
 }
 

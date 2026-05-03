@@ -133,4 +133,36 @@ export class ProjectsComponent {
     if (value < 10_000) return `${(value / 1000).toFixed(1)}k`;
     return `${Math.round(value / 1000)}k`;
   }
+
+  /**
+   * Percent (as a "42.3%" string) for a single language segment in the
+   * distribution bar. Computed against the sum of *visible* segments so
+   * a truncated list still reads correctly. Returns an empty string
+   * when the total is zero to hide a confusing "0.0%" on edge cases.
+   */
+  protected languagesPercent(
+    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+    name: string,
+  ): string {
+    if (!segments?.length) return '';
+    const total = segments.reduce((acc, s) => acc + (s.bytes ?? 0), 0);
+    if (total === 0) return '';
+    const bytes = segments.find((s) => s.name === name)?.bytes ?? 0;
+    const pct = (bytes / total) * 100;
+    return `${pct.toFixed(1)}%`;
+  }
+
+  /**
+   * Flat `TypeScript 72.1%, HTML 18.4%, CSS 9.5%` string used for the
+   * bar's aria-label. Screen readers announce the whole distribution
+   * in one pass rather than having to step through every segment.
+   */
+  protected languagesBarLabel(
+    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+  ): string {
+    if (!segments?.length) return '';
+    return segments
+      .map((s) => `${s.name} ${this.languagesPercent(segments, s.name)}`)
+      .join(', ');
+  }
 }
