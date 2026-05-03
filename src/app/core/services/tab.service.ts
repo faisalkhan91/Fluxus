@@ -36,7 +36,15 @@ export class TabService {
       )
       .subscribe((event) => {
         const url = event.urlAfterRedirects;
-        const segments = url.split('/').filter(Boolean);
+        // Strip query + fragment *before* splitting on `/`. Without this,
+        // `/projects?sort=alpha` gives `segments[0] === 'projects?sort=alpha'`
+        // and `/projects?sort=stars` gives `'projects?sort=stars'`, so two
+        // sort clicks on the projects page were spawning two extra tab
+        // entries keyed by the full (query-including) first segment. The
+        // tab's stored `route` keeps the full URL below, so re-selecting
+        // a tab still returns to the exact last-seen URL.
+        const pathOnly = url.split(/[?#]/)[0];
+        const segments = pathOnly.split('/').filter(Boolean);
         const routePath = segments[0] || 'hero';
 
         const tabData = this.resolveTabData();
