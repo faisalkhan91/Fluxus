@@ -223,6 +223,17 @@ describe('SkillsComponent', () => {
       expect(c.projectsHref(undefined)).toBeUndefined();
       expect(c.postsHref(undefined)).toBeUndefined();
     });
+
+    it('renders per-skill anchor ids so external links can deep-link into the grid', () => {
+      // Every badge should carry id="skill-<slugified-name>" so the command
+      // palette, blog posts, or project detail pages can `#skill-typescript`
+      // their way straight to the right badge.
+      const badges = el.querySelectorAll('ui-skill-badge');
+      const ids = Array.from(badges).map((b) => b.getAttribute('id'));
+      expect(ids).toContain('skill-python');
+      expect(ids).toContain('skill-typescript');
+      expect(ids).toContain('skill-github-actions');
+    });
   });
 
   describe('mobile layout', () => {
