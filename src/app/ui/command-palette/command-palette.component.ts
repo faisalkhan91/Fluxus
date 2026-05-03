@@ -15,6 +15,15 @@ import { Router } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
+import { ThemeService } from '@core/services/theme.service';
+
+/**
+ * Discriminator separates plain navigation from in-place actions
+ * (theme switch, theme cycle, future "copy URL" / "view JSON" entries).
+ * Keeping the kind explicit means `select()` can't accidentally
+ * `router.navigate(undefined)` for an action item.
+ */
+type CommandKind = 'route' | 'action';
 
 interface CommandItem {
   /** Stable id for keyboard selection / track-by (e.g. `route:/about`). */
@@ -28,12 +37,22 @@ interface CommandItem {
   domId: string;
   /** What the user reads in the list. */
   label: string;
-  /** Smaller secondary label (e.g. "Blog post", "Page"). */
+  /** Smaller secondary label (e.g. "Blog post", "Page", "Theme · Dark"). */
   hint: string;
-  /** Click target. */
-  route: string;
   /** Icon name. */
   icon: string;
+  /** Determines which arm of `select()` runs for this item. */
+  kind: CommandKind;
+  /** Click target — only meaningful when `kind === 'route'`. */
+  route?: string;
+  /** Side effect — only meaningful when `kind === 'action'`. */
+  run?: () => void;
+  /**
+   * Optional accent dot rendered ahead of the icon. Used by theme entries
+   * to preview the active accent for each theme without enumerating yet
+   * another icon per theme.
+   */
+  swatch?: string;
 }
 
 /**
@@ -57,6 +76,7 @@ export class CommandPaletteComponent {
   private router = inject(Router);
   private nav = inject(NavigationService);
   private blog = inject(BlogService);
+  private theme = inject(ThemeService);
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -67,7 +87,7 @@ export class CommandPaletteComponent {
   protected query = signal('');
   protected highlighted = signal(0);
 
-  /** Catalog: every nav route + every blog post + every tag landing page. */
+  /** Catalog: every nav route + every blog post + every theme action. */
   private catalog = computed<CommandItem[]>(() => {
     const items: CommandItem[] = [];
     for (const item of this.nav.sidebarItems) {
@@ -78,8 +98,9 @@ export class CommandPaletteComponent {
           domId: toDomId(id),
           label: item.label,
           hint: 'Page',
-          route: item.route,
           icon: item.icon,
+          kind: 'route',
+          route: item.route,
         });
       }
     }
@@ -90,8 +111,22 @@ export class CommandPaletteComponent {
         domId: toDomId(id),
         label: post.title,
         hint: 'Blog post',
-        route: `/blog/${post.slug}`,
         icon: 'file-text',
+        kind: 'route',
+        route: `/blog/${post.slug}`,
+      });
+    }
+    for (const def of this.theme.registry) {
+      const id = `theme:${def.id}`;
+      items.push({
+        id,
+        domId: toDomId(id),
+        label: `Switch theme: ${def.label}`,
+        hint: def.scheme === 'dark' ? 'Theme · Dark' : 'Theme · Light',
+        icon: 'palette',
+        kind: 'action',
+        run: () => this.theme.setTheme(def.id),
+        swatch: def.swatch,
       });
     }
     return items;
@@ -102,7 +137,10 @@ export class CommandPaletteComponent {
     const all = this.catalog();
     if (!q) return all;
     return all.filter(
-      (item) => item.label.toLowerCase().includes(q) || item.route.toLowerCase().includes(q),
+      (item) =>
+        item.label.toLowerCase().includes(q) ||
+        (item.route?.toLowerCase().includes(q) ?? false) ||
+        item.id.toLowerCase().includes(q),
     );
   });
 
@@ -151,6 +189,27 @@ export class CommandPaletteComponent {
     });
   }
 
+  /**
+   * Opens the palette pre-filtered to a query string. Used by the
+   * sidebar / mobile FAB to surface theme actions in one keystroke.
+   */
+  openWith(initialQuery: string): void {
+    this.open.set(true);
+    this.query.set(initialQuery);
+    this.highlighted.set(0);
+    queueMicrotask(() => {
+      this.dialog()?.nativeElement.showModal?.();
+      const el = this.input()?.nativeElement;
+      if (el) {
+        el.focus();
+        // Place the caret at the end so the user can keep typing to
+        // narrow the list further (e.g. `theme:tokyo`).
+        const len = el.value.length;
+        el.setSelectionRange(len, len);
+      }
+    });
+  }
+
   protected close(): void {
     this.dialog()?.nativeElement.close?.();
     this.open.set(false);
@@ -178,6 +237,10 @@ export class CommandPaletteComponent {
 
   protected select(item: CommandItem): void {
     this.close();
-    this.router.navigate([item.route]);
+    if (item.kind === 'action') {
+      item.run?.();
+      return;
+    }
+    if (item.route) this.router.navigate([item.route]);
   }
 }

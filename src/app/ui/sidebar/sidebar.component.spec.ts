@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { SidebarComponent, SidebarItem } from './sidebar.component';
+import { THEME_REGISTRY, type ThemeDef, getThemeDef } from '@core/services/theme.registry';
 
 const MOCK_ITEMS: SidebarItem[] = [
   { type: 'link', label: 'About', ext: '.md', route: '/about', icon: 'user' },
@@ -10,6 +11,10 @@ const MOCK_ITEMS: SidebarItem[] = [
   { type: 'divider', label: 'Work' },
   { type: 'link', label: 'Experience', ext: '.ts', route: '/experience', icon: 'briefcase' },
 ];
+
+const CRIMSON_DARK: ThemeDef = getThemeDef('crimson-dark');
+const CRIMSON_LIGHT: ThemeDef = getThemeDef('crimson-light');
+const TOKYO: ThemeDef = getThemeDef('tokyo-night');
 
 describe('SidebarComponent', () => {
   let fixture: ComponentFixture<SidebarComponent>;
@@ -27,7 +32,7 @@ describe('SidebarComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('items', MOCK_ITEMS);
     fixture.componentRef.setInput('collapsed', false);
-    fixture.componentRef.setInput('isDark', true);
+    fixture.componentRef.setInput('currentTheme', CRIMSON_DARK);
     fixture.detectChanges();
     el = fixture.nativeElement;
   });
@@ -54,11 +59,6 @@ describe('SidebarComponent', () => {
   });
 
   it('should keep labels and identity in the DOM regardless of collapsed state', () => {
-    // After the G1 cleanup the sidebar no longer mutates DOM on collapse —
-    // the host's `transform: scaleX` collapses the rail and `:host(.collapsed)`
-    // CSS rules hide labels via `display: none`. The DOM stays stable so
-    // hydration is consistent and the compositor-only collapse contract is
-    // preserved.
     fixture.componentRef.setInput('collapsed', true);
     fixture.detectChanges();
     expect(el.classList.contains('collapsed')).toBe(true);
@@ -72,39 +72,76 @@ describe('SidebarComponent', () => {
     expect(el.classList.contains('collapsed')).toBe(false);
   });
 
-  it('should expose a single theme-toggle and resume-btn at every collapsed state', () => {
-    const assertSingle = () => {
+  it('should expose a single theme-toggle, picker chevron, and resume-btn at every collapsed state', () => {
+    const assertSingles = () => {
       expect(el.querySelectorAll('.theme-toggle').length).toBe(1);
+      expect(el.querySelectorAll('.theme-picker-btn').length).toBe(1);
       expect(el.querySelectorAll('.resume-btn').length).toBe(1);
-      expect(el.querySelector('.theme-toggle--icon')).toBeNull();
-      expect(el.querySelector('.resume-btn--icon')).toBeNull();
     };
-    assertSingle();
+    assertSingles();
     fixture.componentRef.setInput('collapsed', true);
     fixture.detectChanges();
-    assertSingle();
+    assertSingles();
   });
 
-  it('should reflect isDark in theme toggle label', () => {
-    const btn = el.querySelector('.theme-toggle');
-    expect(btn?.getAttribute('aria-label')).toBe('Switch to Light Mode');
-    expect(btn?.textContent).toContain('Light Mode');
-  });
-
-  it('should update theme toggle for light mode', () => {
-    fixture.componentRef.setInput('isDark', false);
+  it('renders the current theme label inside the toggle', () => {
+    expect(el.querySelector('.theme-toggle-label')?.textContent?.trim()).toBe('Crimson Dark');
+    fixture.componentRef.setInput('currentTheme', TOKYO);
     fixture.detectChanges();
-    const btn = el.querySelector('.theme-toggle');
-    expect(btn?.getAttribute('aria-label')).toBe('Switch to Dark Mode');
-    expect(btn?.textContent).toContain('Dark Mode');
+    expect(el.querySelector('.theme-toggle-label')?.textContent?.trim()).toBe('Tokyo Night');
   });
 
-  it('should emit themeToggled on click', () => {
-    let emitted = false;
-    component.themeToggled.subscribe(() => (emitted = true));
-    const btn = el.querySelector('.theme-toggle') as HTMLButtonElement;
-    btn.click();
-    expect(emitted).toBe(true);
+  it('exposes the active theme + Shift+click hint via aria-label', () => {
+    const btn = el.querySelector('.theme-toggle');
+    expect(btn?.getAttribute('aria-label')).toContain('Theme: Crimson Dark');
+    expect(btn?.getAttribute('aria-label')).toContain('switch to last light theme');
+    expect(btn?.getAttribute('aria-label')).toContain('Shift+click to open the theme picker');
+
+    fixture.componentRef.setInput('currentTheme', CRIMSON_LIGHT);
+    fixture.detectChanges();
+    expect(btn?.getAttribute('aria-label')).toContain('Theme: Crimson Light');
+    expect(btn?.getAttribute('aria-label')).toContain('switch to last dark theme');
+  });
+
+  it('exposes the next-target hint in the aria-label across schemes', () => {
+    // The `[name]` binding on `<ui-icon>` is a property, not an attribute,
+    // so a getAttribute('name') round-trip would always return null in
+    // jsdom. The visible-state contract that actually matters here — "the
+    // user knows whether the click goes to dark or light" — is exposed
+    // through the toggle's aria-label, which we assert end-to-end.
+    const labelOnDark = el.querySelector('.theme-toggle')?.getAttribute('aria-label') ?? '';
+    expect(labelOnDark).toContain('switch to last light theme');
+
+    fixture.componentRef.setInput('currentTheme', CRIMSON_LIGHT);
+    fixture.detectChanges();
+    const labelOnLight = el.querySelector('.theme-toggle')?.getAttribute('aria-label') ?? '';
+    expect(labelOnLight).toContain('switch to last dark theme');
+  });
+
+  it('emits themeToggled on a plain main-button click', () => {
+    let emitted = 0;
+    component.themeToggled.subscribe(() => emitted++);
+    (el.querySelector('.theme-toggle') as HTMLButtonElement).click();
+    expect(emitted).toBe(1);
+  });
+
+  it('emits themePickerRequested on a Shift+click of the main button', () => {
+    let toggled = 0;
+    let picker = 0;
+    component.themeToggled.subscribe(() => toggled++);
+    component.themePickerRequested.subscribe(() => picker++);
+    (el.querySelector('.theme-toggle') as HTMLButtonElement).dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true, shiftKey: true }),
+    );
+    expect(toggled).toBe(0);
+    expect(picker).toBe(1);
+  });
+
+  it('emits themePickerRequested on a click of the chevron picker button', () => {
+    let picker = 0;
+    component.themePickerRequested.subscribe(() => picker++);
+    (el.querySelector('.theme-picker-btn') as HTMLButtonElement).click();
+    expect(picker).toBe(1);
   });
 
   it('should emit resumeClicked on click', () => {
@@ -117,5 +154,16 @@ describe('SidebarComponent', () => {
 
   it('should have navigation role on host', () => {
     expect(fixture.nativeElement.getAttribute('role')).toBe('navigation');
+  });
+
+  it('every registry entry would render its own label correctly', () => {
+    // Smoke-test: feeding any registered theme through the input updates
+    // the label without throwing — guards against future ThemeDef shape
+    // drift breaking the sidebar binding silently.
+    for (const def of THEME_REGISTRY) {
+      fixture.componentRef.setInput('currentTheme', def);
+      fixture.detectChanges();
+      expect(el.querySelector('.theme-toggle-label')?.textContent?.trim()).toBe(def.label);
+    }
   });
 });

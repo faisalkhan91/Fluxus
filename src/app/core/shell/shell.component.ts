@@ -1,4 +1,10 @@
-import { Component, ChangeDetectionStrategy, inject, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  viewChild,
+  PLATFORM_ID,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '@ui/sidebar/sidebar.component';
@@ -34,6 +40,14 @@ export class ShellComponent {
   protected themeService = inject(ThemeService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  /**
+   * Reference to the command palette so the sidebar / FAB can pre-fill
+   * the input with `theme:` and surface every theme entry in one tap.
+   * Using `viewChild` keeps the wiring local to the shell instead of
+   * routing through a service for what is essentially a UI-glue call.
+   */
+  private palette = viewChild.required<CommandPaletteComponent>(CommandPaletteComponent);
+
   onResumeDownload(): void {
     if (this.isBrowser) {
       window.open('assets/resume.pdf', '_blank');
@@ -42,5 +56,29 @@ export class ShellComponent {
 
   onThemeToggle(): void {
     this.themeService.toggle();
+  }
+
+  /**
+   * Open the command palette pre-filtered to theme actions. Invoked by:
+   *   - the chevron next to the sidebar's theme toggle, and
+   *   - Shift / Alt + click on either the sidebar toggle or the mobile
+   *     theme FAB (handled below).
+   */
+  onThemePickerRequested(): void {
+    this.palette().openWith('theme:');
+  }
+
+  /**
+   * Mobile FAB handler. Default click toggles between the user's last
+   * dark / light pick; Shift / Alt + click opens the picker so the
+   * single round button still surfaces both intents (matching the
+   * sidebar contract on desktop).
+   */
+  onMobileThemeClick(event: MouseEvent | KeyboardEvent): void {
+    if (event.shiftKey || event.altKey) {
+      this.onThemePickerRequested();
+    } else {
+      this.onThemeToggle();
+    }
   }
 }

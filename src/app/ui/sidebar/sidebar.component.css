@@ -227,7 +227,8 @@
 :host(.collapsed) .nav-label,
 :host(.collapsed) .nav-ext,
 :host(.collapsed) .divider-label,
-:host(.collapsed) .theme-toggle > span,
+:host(.collapsed) .theme-toggle-label,
+:host(.collapsed) .theme-picker-btn,
 :host(.collapsed) .resume-btn > span {
   display: none;
 }
@@ -260,14 +261,29 @@
      as a defensive override of the baseline `center` to document the
      intent that the icon anchors at padding-left.
 */
+:host(.collapsed) .theme-toggle-group,
 :host(.collapsed) .theme-toggle,
 :host(.collapsed) .resume-btn {
   justify-content: flex-start;
   width: auto;
-  padding: var(--space-3);
+  padding: 0;
 }
 
 :host(.collapsed) .theme-toggle {
+  padding: var(--space-3);
+  margin-bottom: 0;
+  /* Strip the inner button's seam so the lone icon reads as a single
+     unified button in the rail (no half-pill artefact from the desktop
+     compound layout). */
+  border-right: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+}
+
+:host(.collapsed) .resume-btn {
+  padding: var(--space-3);
+}
+
+:host(.collapsed) .theme-toggle-group {
   margin-bottom: var(--space-2);
 }
 
@@ -327,39 +343,89 @@
   flex-shrink: 0;
 }
 
+/*
+  Compound theme control: a flex row holding the main toggle button and
+  the trailing "open picker" chevron. The two buttons share a single
+  pill-shaped border so visually they read as one control, but each is
+  a separate <button> so AT users can tab to either intent. The seam
+  between them is a single 1 px border on the chevron's left edge.
+*/
+.theme-toggle-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.theme-toggle-group:hover {
+  border-color: var(--glass-border-hover);
+}
+
 .theme-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: var(--space-3) var(--space-4);
   background: transparent;
   color: var(--text-secondary);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  border: none;
   font-family: var(--font-body);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition:
     background-color var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast);
+    color var(--transition-fast);
   white-space: nowrap;
-  margin-bottom: var(--space-3);
+}
+
+.theme-toggle-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .theme-toggle:hover {
   background: var(--glass-bg-hover);
   color: var(--text-primary);
-  border-color: var(--glass-border-hover);
 }
 
 .theme-toggle:active {
   background: var(--accent-subtle);
   color: var(--accent-hover);
-  border-color: var(--accent);
+}
+
+.theme-picker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  border-left: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.theme-picker-btn:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.theme-picker-btn:active {
+  background: var(--accent-subtle);
+  color: var(--accent-hover);
 }
 
 .resume-btn {
@@ -426,7 +492,8 @@
   .nav-label,
   .nav-ext,
   .divider-label,
-  .theme-toggle > span,
+  .theme-toggle-label,
+  .theme-picker-btn,
   .resume-btn > span {
     display: none;
   }
@@ -436,14 +503,26 @@
     border-bottom: 1px solid var(--glass-border);
   }
 
+  .theme-toggle-group,
   .theme-toggle,
   .resume-btn {
     justify-content: flex-start;
     width: auto;
-    padding: var(--space-3);
+    padding: 0;
   }
 
   .theme-toggle {
+    padding: var(--space-3);
+    margin-bottom: 0;
+    border-right: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+  }
+
+  .resume-btn {
+    padding: var(--space-3);
+  }
+
+  .theme-toggle-group {
     margin-bottom: var(--space-2);
   }
 }

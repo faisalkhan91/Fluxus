@@ -58,15 +58,6 @@
         "timeout": "1s",
         "strategy": "freshness"
       }
-    },
-    {
-      "name": "google-fonts",
-      "urls": ["https://fonts.googleapis.com/**", "https://fonts.gstatic.com/**"],
-      "cacheConfig": {
-        "maxSize": 30,
-        "maxAge": "30d",
-        "strategy": "performance"
-      }
     }
   ]
 }

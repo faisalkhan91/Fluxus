@@ -598,7 +598,12 @@ export class BlogPostComponent {
       const mermaid = (await import('mermaid')).default;
       mermaid.initialize({
         startOnLoad: false,
-        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark',
+        // Drive Mermaid's coarse palette from the active theme's scheme,
+        // not the literal `data-theme` value. The latter used to be the
+        // string `'light'` or unset; with the multi-theme registry it can
+        // be any registered id (`solarized-light`, `tokyo-night`, …),
+        // so we ask the ThemeService for the scheme directly.
+        theme: this.theme.scheme() === 'light' ? 'default' : 'dark',
         securityLevel: 'strict',
       });
       let id = 0;
