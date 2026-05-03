@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-05-03T10:26:23.969Z",
+  "fetchedAt": "2026-05-03T19:14:22.640Z",
   "topic": "portfolio",
   "repos": {
     "faisalkhan91/bookstore": {
@@ -35,7 +35,7 @@
       ],
       "pushedAt": "2023-03-01T03:53:48Z",
       "license": "MIT",
-      "topics": ["angular", "ngform", "routing", "services"],
+      "topics": ["angular", "ngform", "portfolio", "routing", "services"],
       "archived": false,
       "openIssues": 17,
       "latestRelease": null,
@@ -44,7 +44,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:22.800Z"
+      "fetchedAt": "2026-05-03T19:14:22.402Z"
     },
     "faisalkhan91/storm-events": {
       "name": "Storm-Events",
@@ -72,6 +72,7 @@
         "hadoop-mapreduce",
         "jar",
         "mapper",
+        "portfolio",
         "python",
         "python-streaming",
         "python3",
@@ -87,7 +88,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.100Z"
+      "fetchedAt": "2026-05-03T19:14:22.420Z"
     },
     "faisalkhan91/jenkins-ci-cd": {
       "name": "Jenkins-CI-CD",
@@ -169,6 +170,7 @@
         "linux",
         "ngnix",
         "php",
+        "portfolio",
         "ubuntu"
       ],
       "archived": false,
@@ -179,7 +181,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.295Z"
+      "fetchedAt": "2026-05-03T19:14:22.444Z"
     },
     "faisalkhan91/backtracking-search": {
       "name": "Backtracking-Search",
@@ -190,19 +192,14 @@
       "forks": 0,
       "primaryLanguage": "Python",
       "languageColor": "#3572A5",
-      "languagesBytes": [
-        {
-          "name": "Python",
-          "color": "#3572A5",
-          "bytes": 3344
-        }
-      ],
+      "languagesBytes": [],
       "pushedAt": "2023-02-24T04:12:12Z",
       "license": "MIT",
       "topics": [
         "artificial-intelligence",
         "backtracking-algorithm",
         "backtracking-search",
+        "portfolio",
         "python",
         "python3",
         "sudoku",
@@ -216,7 +213,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.559Z"
+      "fetchedAt": "2026-05-03T19:14:22.457Z"
     },
     "faisalkhan91/dictionary-application": {
       "name": "Dictionary-Application",
@@ -240,6 +237,7 @@
         "dictionary",
         "gui",
         "oxford-dictionary",
+        "portfolio",
         "python",
         "python3",
         "tkinter",
@@ -254,7 +252,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.756Z"
+      "fetchedAt": "2026-05-03T19:14:03.169Z"
     },
     "faisalkhan91/insecure-file-extraction": {
       "name": "Insecure-File-Extraction",
@@ -279,6 +277,7 @@
         "injection",
         "insecure",
         "path-traversal",
+        "portfolio",
         "python",
         "python3",
         "vulnerability"
@@ -291,7 +290,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.968Z"
+      "fetchedAt": "2026-05-03T19:14:03.338Z"
     },
     "abhisheknaiidu/awesome-github-profile-readme": {
       "name": "awesome-github-profile-readme",
@@ -375,6 +374,116 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
       "fetchedAt": "2026-05-03T09:08:52.669Z"
+    },
+    "faisalkhan91/fluxus": {
+      "name": "Fluxus",
+      "nameWithOwner": "faisalkhan91/Fluxus",
+      "description": "This is my personal profile and blogging application.",
+      "homepage": null,
+      "stars": 1,
+      "forks": 1,
+      "primaryLanguage": "TypeScript",
+      "languageColor": "#3178c6",
+      "languagesBytes": [
+        {
+          "name": "TypeScript",
+          "color": "#3178c6",
+          "bytes": 436707
+        },
+        {
+          "name": "CSS",
+          "color": "#563d7c",
+          "bytes": 154907
+        },
+        {
+          "name": "HTML",
+          "color": "#e34c26",
+          "bytes": 73940
+        },
+        {
+          "name": "JavaScript",
+          "color": "#f1e05a",
+          "bytes": 72628
+        },
+        {
+          "name": "Dockerfile",
+          "color": "#384d54",
+          "bytes": 2188
+        }
+      ],
+      "pushedAt": "2026-05-03T07:23:24Z",
+      "license": "MIT",
+      "topics": ["angular", "portfolio"],
+      "archived": false,
+      "openIssues": 10,
+      "latestRelease": {
+        "tag": "v3.0.0",
+        "publishedAt": "2026-04-27T07:40:19Z"
+      },
+      "readmeExcerpt": "A personal portfolio site built with Angular 21, styled as a code-editor workspace. The entire application is statically generated (SSG) and served from a hardened NGINX container on Kubernetes.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 29, 81, 21, 13, 29, 40
+      ],
+      "fetchedAt": "2026-05-03T19:06:38.373Z"
+    },
+    "faisalkhan91/text-analyzer-ai": {
+      "name": "Text-Analyzer-AI",
+      "nameWithOwner": "faisalkhan91/Text-Analyzer-AI",
+      "description": "This application uses Azure SDK to analyze text and give details such as language, sentiment, key phrases.",
+      "homepage": null,
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 2240
+        }
+      ],
+      "pushedAt": "2024-06-15T05:09:15Z",
+      "license": "GPL-3.0",
+      "topics": ["portfolio"],
+      "archived": false,
+      "openIssues": 0,
+      "latestRelease": null,
+      "readmeExcerpt": "This application uses Azure SDK to analyze text and give details such as language, sentiment, key phrases.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T19:14:03.502Z"
+    },
+    "faisalkhan91/image-generator-ai": {
+      "name": "Image-Generator-AI",
+      "nameWithOwner": "faisalkhan91/Image-Generator-AI",
+      "description": "This application uses Azure OpenAI DALL-E model to generate images based on user prompts.",
+      "homepage": null,
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 1211
+        }
+      ],
+      "pushedAt": "2024-06-19T20:26:33Z",
+      "license": "GPL-3.0",
+      "topics": ["portfolio"],
+      "archived": false,
+      "openIssues": 0,
+      "latestRelease": null,
+      "readmeExcerpt": "This application uses Azure OpenAI DALL-E model to generate images based on user prompts.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T19:14:03.690Z"
     }
   }
 }
