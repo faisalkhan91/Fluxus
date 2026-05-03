@@ -53,6 +53,22 @@
       "image": "assets/images/portfolio/InsecureFileExtraction.PNG",
       "tags": ["Python", "Security", "Web"],
       "order": 6
+    },
+    {
+      "repo": "faisalkhan91/Text-Analyzer-AI",
+      "title": "Text Analyzer",
+      "description": "A Python application that uses the Azure Text Analytics SDK to extract language, sentiment, and key phrases from user-supplied prose. Demonstrates cloud-native NLP with a thin, scriptable UI.",
+      "image": "assets/images/portfolio/TextAnalyzerAI.png",
+      "tags": ["Python", "Azure", "AI", "NLP"],
+      "order": 7
+    },
+    {
+      "repo": "faisalkhan91/Image-Generator-AI",
+      "title": "Image Generator",
+      "description": "A Python application that drives the Azure OpenAI DALL-E model from user prompts to produce generated images. A compact end-to-end example of prompt-to-image integration against a managed OpenAI endpoint.",
+      "image": "assets/images/portfolio/ImageGeneratorAI.png",
+      "tags": ["Python", "Azure", "AI", "OpenAI"],
+      "order": 8
     }
   ],
   "manual": []
