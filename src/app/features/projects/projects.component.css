@@ -89,6 +89,13 @@
 }
 
 .project-image-wrapper {
+  /*
+    `position: relative` is required by `NgOptimizedImage`'s `fill` mode —
+    the generated <img> takes `position: absolute; width: 100%; height: 100%`
+    and anchors to this box. Without a positioned ancestor the image would
+    escape the card and layer under sticky chrome.
+  */
+  position: relative;
   width: 100%;
   aspect-ratio: 16/10;
   overflow: hidden;

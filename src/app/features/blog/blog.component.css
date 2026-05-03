@@ -95,6 +95,9 @@
 }
 
 .post-card-cover {
+  /* `position: relative` anchors `NgOptimizedImage`'s `fill`-mode
+     <img>, which is absolutely-positioned inside the figure. */
+  position: relative;
   margin: 0;
   background: var(--surface-base);
   overflow: hidden;

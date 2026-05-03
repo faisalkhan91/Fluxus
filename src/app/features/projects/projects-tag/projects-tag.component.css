@@ -116,6 +116,9 @@
 }
 
 .project-image-wrapper {
+  /* `position: relative` anchors `NgOptimizedImage`'s `fill`-mode
+     absolute-positioned <img>. Same pattern as projects.component.css. */
+  position: relative;
   width: 100%;
   aspect-ratio: 16/10;
   overflow: hidden;

@@ -77,6 +77,9 @@
 }
 
 .detail-hero-image {
+  /* `position: relative` anchors `NgOptimizedImage`'s `fill`-mode
+     absolute-positioned <img>. */
+  position: relative;
   width: 100%;
   aspect-ratio: 16/10;
   overflow: hidden;
