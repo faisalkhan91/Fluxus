@@ -83,9 +83,13 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 720,
     h: 622,
   },
+  'assets/images/portfolio/ImageGeneratorAI.png': {
+    w: 1200,
+    h: 675,
+  },
   'assets/images/portfolio/InsecureFileExtraction.PNG': {
-    w: 1920,
-    h: 1223,
+    w: 900,
+    h: 573,
   },
   'assets/images/portfolio/JenkinsCICD.PNG': {
     w: 945,
@@ -98,6 +102,10 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
   'assets/images/portfolio/StormEvents.gif': {
     w: 853,
     h: 480,
+  },
+  'assets/images/portfolio/TextAnalyzerAI.png': {
+    w: 1200,
+    h: 675,
   },
   'assets/images/profile/profile_picture_original.jpg': {
     w: 2356,
