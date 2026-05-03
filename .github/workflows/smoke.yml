@@ -46,3 +46,47 @@ jobs:
           done
           echo "::error::Smoke check timed out after 10 minutes waiting for ${SMOKE_URL%/}/healthz"
           exit 1
+
+  csp-probe:
+    name: Probe live CSP
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: healthz
+    # Same gate as healthz so forks no-op cleanly.
+    if: ${{ vars.SMOKE_URL != '' }}
+
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+
+      # Cache the Playwright browser binaries keyed off the resolved package
+      # version (mirrors the pattern in ci.yml so we only pay the ~150MB
+      # Chromium download when @playwright/test itself changes).
+      - name: Get Playwright version
+        id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps (cache hit)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # Standalone Node script (not the Playwright test runner) so we don't
+      # have to thread a second config / project through playwright.config.ts
+      # for what is really just three navigations + a console-error filter.
+      - name: Probe production CSP
+        env:
+          SMOKE_URL: ${{ vars.SMOKE_URL }}
+        run: node tests/smoke/prod-csp-probe.mjs
