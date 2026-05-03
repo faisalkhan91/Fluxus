@@ -22,9 +22,6 @@ updates:
         patterns: ['*']
         update-types: [minor, patch]
     ignore:
-      # Angular 21 requires TS 5.9.x; TS 6 lands with Angular 22.
-      - dependency-name: typescript
-        update-types: [version-update:semver-major]
       # @types/node tracks the Node major pinned in Dockerfile + .nvmrc + engines.
       - dependency-name: '@types/node'
         update-types: [version-update:semver-major]

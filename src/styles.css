@@ -1,3 +1,23 @@
+/*
+ * Self-hosted webfonts via @fontsource. Bundled into styles-*.css so they
+ * ship same-origin (no fonts.gstatic.com → no CSP `font-src` exception, no
+ * cross-origin SW fetch failures). Weights/families mirror the previous
+ * `https://fonts.googleapis.com/css2?...` link in src/index.html.
+ */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+@import '@fontsource/fira-code/400.css';
+@import '@fontsource/fira-code/500.css';
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/600.css';
+
 :root {
   /* === Canvas === */
   --surface-void: #07070b;
@@ -133,8 +153,12 @@
   --z-overlay: 400;
 }
 
-/* === Light Mode === */
-[data-theme='light'] {
+/* === Crimson Light (default light theme) ===
+   Selector renamed from `[data-theme='light']` when the theme registry
+   moved to namespaced ids (`crimson-light`, `tokyo-night`, …). Legacy
+   `'light'` localStorage values are migrated to `crimson-light` on read
+   by ThemeService.resolveInitial() and the inline pre-paint script. */
+[data-theme='crimson-light'] {
   --surface-void: #f0f0f3;
   --surface-base: #f7f7f9;
   --surface-raised: #ffffff;
@@ -170,6 +194,170 @@
   --grid-line-color: rgba(0, 0, 0, 0.04);
 
   --shadow-glass: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-accent-glow: 0 0 20px var(--accent-glow);
+}
+
+/* === One Dark (Atom) ===
+   Each [data-theme] block below mirrors the same ~25 colour tokens that
+   [data-theme='light'] above overrides — non-colour tokens (spacing, radius,
+   z-index, motion durations, layout dimensions) stay inherited from :root so
+   layout never shifts between themes. */
+[data-theme='one-dark'] {
+  --surface-void: #21252b;
+  --surface-base: #282c34;
+  --surface-raised: #2c313a;
+  --surface-overlay: #3a3f4b;
+
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.16);
+
+  --accent: #61afef;
+  --accent-hover: #82c8ff;
+  --accent-glow: rgba(97, 175, 239, 0.32);
+  --accent-subtle: rgba(97, 175, 239, 0.1);
+
+  --text-primary: rgba(220, 223, 228, 0.95);
+  --text-secondary: rgba(171, 178, 191, 0.85);
+  --text-muted: rgba(130, 137, 151, 0.85);
+
+  --glass-bg-elevated: rgba(255, 255, 255, 0.08);
+  --nav-pill-bg: rgba(40, 44, 52, 0.85);
+
+  --accent-secondary: #c678dd;
+  --color-warning: #d19a66;
+  --color-success: #98c379;
+  --error: #e06c75;
+  --error-subtle: rgba(224, 108, 117, 0.14);
+
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.22);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(255, 255, 255, 0.1));
+  --grid-line-color: rgba(255, 255, 255, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Tokyo Night (Storm) === */
+[data-theme='tokyo-night'] {
+  --surface-void: #1a1b26;
+  --surface-base: #24283b;
+  --surface-raised: #292e42;
+  --surface-overlay: #414868;
+
+  --glass-bg: rgba(192, 202, 245, 0.04);
+  --glass-bg-hover: rgba(192, 202, 245, 0.07);
+  --glass-border: rgba(192, 202, 245, 0.08);
+  --glass-border-hover: rgba(192, 202, 245, 0.16);
+
+  --accent: #7aa2f7;
+  --accent-hover: #9bb8ff;
+  --accent-glow: rgba(122, 162, 247, 0.32);
+  --accent-subtle: rgba(122, 162, 247, 0.1);
+
+  --text-primary: rgba(192, 202, 245, 0.95);
+  --text-secondary: rgba(169, 177, 214, 0.85);
+  --text-muted: rgba(86, 95, 137, 0.95);
+
+  --glass-bg-elevated: rgba(192, 202, 245, 0.08);
+  --nav-pill-bg: rgba(36, 40, 59, 0.85);
+
+  --accent-secondary: #bb9af7;
+  --color-warning: #e0af68;
+  --color-success: #9ece6a;
+  --error: #f7768e;
+  --error-subtle: rgba(247, 118, 142, 0.14);
+
+  --scrollbar-thumb: rgba(192, 202, 245, 0.14);
+  --scrollbar-thumb-hover: rgba(192, 202, 245, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(122, 162, 247, 0.18));
+  --grid-line-color: rgba(192, 202, 245, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Catppuccin Mocha === */
+[data-theme='catppuccin-mocha'] {
+  --surface-void: #11111b;
+  --surface-base: #1e1e2e;
+  --surface-raised: #313244;
+  --surface-overlay: #45475a;
+
+  --glass-bg: rgba(205, 214, 244, 0.04);
+  --glass-bg-hover: rgba(205, 214, 244, 0.07);
+  --glass-border: rgba(205, 214, 244, 0.09);
+  --glass-border-hover: rgba(205, 214, 244, 0.16);
+
+  --accent: #cba6f7;
+  --accent-hover: #d4b6ff;
+  --accent-glow: rgba(203, 166, 247, 0.32);
+  --accent-subtle: rgba(203, 166, 247, 0.1);
+
+  --text-primary: rgba(205, 214, 244, 0.95);
+  --text-secondary: rgba(186, 194, 222, 0.85);
+  --text-muted: rgba(166, 173, 200, 0.85);
+
+  --glass-bg-elevated: rgba(205, 214, 244, 0.08);
+  --nav-pill-bg: rgba(30, 30, 46, 0.85);
+
+  --accent-secondary: #89b4fa;
+  --color-warning: #f9e2af;
+  --color-success: #a6e3a1;
+  --error: #f38ba8;
+  --error-subtle: rgba(243, 139, 168, 0.14);
+
+  --scrollbar-thumb: rgba(205, 214, 244, 0.14);
+  --scrollbar-thumb-hover: rgba(205, 214, 244, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(203, 166, 247, 0.18));
+  --grid-line-color: rgba(205, 214, 244, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Solarized Light === */
+[data-theme='solarized-light'] {
+  --surface-void: #eee8d5;
+  --surface-base: #fdf6e3;
+  --surface-raised: #ffffff;
+  --surface-overlay: #eee8d5;
+
+  --glass-bg: rgba(101, 123, 131, 0.05);
+  --glass-bg-hover: rgba(101, 123, 131, 0.1);
+  --glass-border: rgba(7, 54, 66, 0.1);
+  --glass-border-hover: rgba(7, 54, 66, 0.18);
+
+  --accent: #cb4b16;
+  --accent-hover: #e25d20;
+  --accent-glow: rgba(203, 75, 22, 0.22);
+  --accent-subtle: rgba(203, 75, 22, 0.08);
+
+  --text-primary: rgba(0, 43, 54, 0.92);
+  --text-secondary: rgba(7, 54, 66, 0.75);
+  --text-muted: rgba(101, 123, 131, 0.95);
+
+  --glass-bg-elevated: rgba(255, 255, 255, 0.7);
+  --nav-pill-bg: rgba(253, 246, 227, 0.78);
+
+  --accent-secondary: #268bd2;
+  --color-warning: #b58900;
+  --color-success: #859900;
+  --error: #dc322f;
+  --error-subtle: rgba(220, 50, 47, 0.1);
+
+  --scrollbar-thumb: rgba(7, 54, 66, 0.14);
+  --scrollbar-thumb-hover: rgba(7, 54, 66, 0.22);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(7, 54, 66, 0.08));
+  --grid-line-color: rgba(7, 54, 66, 0.04);
+
+  --shadow-glass: 0 4px 24px rgba(7, 54, 66, 0.1);
   --shadow-accent-glow: 0 0 20px var(--accent-glow);
 }
 
@@ -843,67 +1031,263 @@ p {
   text-decoration: underline;
 }
 
-/* === Highlight.js — Light === */
-[data-theme='light'] .hljs {
+/* === Highlight.js — Crimson Light === */
+[data-theme='crimson-light'] .hljs {
   color: #383a42;
 }
-[data-theme='light'] .hljs-comment,
-[data-theme='light'] .hljs-quote {
+[data-theme='crimson-light'] .hljs-comment,
+[data-theme='crimson-light'] .hljs-quote {
   color: #a0a1a7;
   font-style: italic;
 }
-[data-theme='light'] .hljs-doctag,
-[data-theme='light'] .hljs-formula,
-[data-theme='light'] .hljs-keyword {
+[data-theme='crimson-light'] .hljs-doctag,
+[data-theme='crimson-light'] .hljs-formula,
+[data-theme='crimson-light'] .hljs-keyword {
   color: #a626a4;
 }
-[data-theme='light'] .hljs-deletion,
-[data-theme='light'] .hljs-name,
-[data-theme='light'] .hljs-section,
-[data-theme='light'] .hljs-selector-tag,
-[data-theme='light'] .hljs-subst {
+[data-theme='crimson-light'] .hljs-deletion,
+[data-theme='crimson-light'] .hljs-name,
+[data-theme='crimson-light'] .hljs-section,
+[data-theme='crimson-light'] .hljs-selector-tag,
+[data-theme='crimson-light'] .hljs-subst {
   color: #e45649;
 }
-[data-theme='light'] .hljs-literal {
+[data-theme='crimson-light'] .hljs-literal {
   color: #0184bb;
 }
-[data-theme='light'] .hljs-addition,
-[data-theme='light'] .hljs-attribute,
-[data-theme='light'] .hljs-meta .hljs-string,
-[data-theme='light'] .hljs-regexp,
-[data-theme='light'] .hljs-string {
+[data-theme='crimson-light'] .hljs-addition,
+[data-theme='crimson-light'] .hljs-attribute,
+[data-theme='crimson-light'] .hljs-meta .hljs-string,
+[data-theme='crimson-light'] .hljs-regexp,
+[data-theme='crimson-light'] .hljs-string {
   color: #50a14f;
 }
-[data-theme='light'] .hljs-attr,
-[data-theme='light'] .hljs-number,
-[data-theme='light'] .hljs-selector-attr,
-[data-theme='light'] .hljs-selector-class,
-[data-theme='light'] .hljs-selector-pseudo,
-[data-theme='light'] .hljs-template-variable,
-[data-theme='light'] .hljs-type,
-[data-theme='light'] .hljs-variable {
+[data-theme='crimson-light'] .hljs-attr,
+[data-theme='crimson-light'] .hljs-number,
+[data-theme='crimson-light'] .hljs-selector-attr,
+[data-theme='crimson-light'] .hljs-selector-class,
+[data-theme='crimson-light'] .hljs-selector-pseudo,
+[data-theme='crimson-light'] .hljs-template-variable,
+[data-theme='crimson-light'] .hljs-type,
+[data-theme='crimson-light'] .hljs-variable {
   color: #986801;
 }
-[data-theme='light'] .hljs-bullet,
-[data-theme='light'] .hljs-link,
-[data-theme='light'] .hljs-meta,
-[data-theme='light'] .hljs-selector-id,
-[data-theme='light'] .hljs-symbol,
-[data-theme='light'] .hljs-title {
+[data-theme='crimson-light'] .hljs-bullet,
+[data-theme='crimson-light'] .hljs-link,
+[data-theme='crimson-light'] .hljs-meta,
+[data-theme='crimson-light'] .hljs-selector-id,
+[data-theme='crimson-light'] .hljs-symbol,
+[data-theme='crimson-light'] .hljs-title {
   color: #4078f2;
 }
-[data-theme='light'] .hljs-built_in,
-[data-theme='light'] .hljs-class .hljs-title,
-[data-theme='light'] .hljs-title.class_ {
+[data-theme='crimson-light'] .hljs-built_in,
+[data-theme='crimson-light'] .hljs-class .hljs-title,
+[data-theme='crimson-light'] .hljs-title.class_ {
   color: #c18401;
 }
-[data-theme='light'] .hljs-emphasis {
+[data-theme='crimson-light'] .hljs-emphasis {
   font-style: italic;
 }
-[data-theme='light'] .hljs-strong {
+[data-theme='crimson-light'] .hljs-strong {
   font-weight: 700;
 }
-[data-theme='light'] .hljs-link {
+[data-theme='crimson-light'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Tokyo Night ===
+   The base `:root` hljs palette is essentially Atom One Dark, so
+   [data-theme='one-dark'] inherits it for free; only Tokyo Night,
+   Catppuccin Mocha, and Solarized Light need their own selector-prefixed
+   overrides to match the rest of their theme tokens. */
+[data-theme='tokyo-night'] .hljs {
+  color: #c0caf5;
+}
+[data-theme='tokyo-night'] .hljs-comment,
+[data-theme='tokyo-night'] .hljs-quote {
+  color: #565f89;
+  font-style: italic;
+}
+[data-theme='tokyo-night'] .hljs-doctag,
+[data-theme='tokyo-night'] .hljs-formula,
+[data-theme='tokyo-night'] .hljs-keyword {
+  color: #bb9af7;
+}
+[data-theme='tokyo-night'] .hljs-deletion,
+[data-theme='tokyo-night'] .hljs-name,
+[data-theme='tokyo-night'] .hljs-section,
+[data-theme='tokyo-night'] .hljs-selector-tag,
+[data-theme='tokyo-night'] .hljs-subst {
+  color: #f7768e;
+}
+[data-theme='tokyo-night'] .hljs-literal {
+  color: #ff9e64;
+}
+[data-theme='tokyo-night'] .hljs-addition,
+[data-theme='tokyo-night'] .hljs-attribute,
+[data-theme='tokyo-night'] .hljs-meta .hljs-string,
+[data-theme='tokyo-night'] .hljs-regexp,
+[data-theme='tokyo-night'] .hljs-string {
+  color: #9ece6a;
+}
+[data-theme='tokyo-night'] .hljs-attr,
+[data-theme='tokyo-night'] .hljs-number,
+[data-theme='tokyo-night'] .hljs-selector-attr,
+[data-theme='tokyo-night'] .hljs-selector-class,
+[data-theme='tokyo-night'] .hljs-selector-pseudo,
+[data-theme='tokyo-night'] .hljs-template-variable,
+[data-theme='tokyo-night'] .hljs-type,
+[data-theme='tokyo-night'] .hljs-variable {
+  color: #e0af68;
+}
+[data-theme='tokyo-night'] .hljs-bullet,
+[data-theme='tokyo-night'] .hljs-link,
+[data-theme='tokyo-night'] .hljs-meta,
+[data-theme='tokyo-night'] .hljs-selector-id,
+[data-theme='tokyo-night'] .hljs-symbol,
+[data-theme='tokyo-night'] .hljs-title {
+  color: #7aa2f7;
+}
+[data-theme='tokyo-night'] .hljs-built_in,
+[data-theme='tokyo-night'] .hljs-class .hljs-title,
+[data-theme='tokyo-night'] .hljs-title.class_ {
+  color: #2ac3de;
+}
+[data-theme='tokyo-night'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='tokyo-night'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='tokyo-night'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Catppuccin Mocha === */
+[data-theme='catppuccin-mocha'] .hljs {
+  color: #cdd6f4;
+}
+[data-theme='catppuccin-mocha'] .hljs-comment,
+[data-theme='catppuccin-mocha'] .hljs-quote {
+  color: #6c7086;
+  font-style: italic;
+}
+[data-theme='catppuccin-mocha'] .hljs-doctag,
+[data-theme='catppuccin-mocha'] .hljs-formula,
+[data-theme='catppuccin-mocha'] .hljs-keyword {
+  color: #cba6f7;
+}
+[data-theme='catppuccin-mocha'] .hljs-deletion,
+[data-theme='catppuccin-mocha'] .hljs-name,
+[data-theme='catppuccin-mocha'] .hljs-section,
+[data-theme='catppuccin-mocha'] .hljs-selector-tag,
+[data-theme='catppuccin-mocha'] .hljs-subst {
+  color: #f38ba8;
+}
+[data-theme='catppuccin-mocha'] .hljs-literal {
+  color: #fab387;
+}
+[data-theme='catppuccin-mocha'] .hljs-addition,
+[data-theme='catppuccin-mocha'] .hljs-attribute,
+[data-theme='catppuccin-mocha'] .hljs-meta .hljs-string,
+[data-theme='catppuccin-mocha'] .hljs-regexp,
+[data-theme='catppuccin-mocha'] .hljs-string {
+  color: #a6e3a1;
+}
+[data-theme='catppuccin-mocha'] .hljs-attr,
+[data-theme='catppuccin-mocha'] .hljs-number,
+[data-theme='catppuccin-mocha'] .hljs-selector-attr,
+[data-theme='catppuccin-mocha'] .hljs-selector-class,
+[data-theme='catppuccin-mocha'] .hljs-selector-pseudo,
+[data-theme='catppuccin-mocha'] .hljs-template-variable,
+[data-theme='catppuccin-mocha'] .hljs-type,
+[data-theme='catppuccin-mocha'] .hljs-variable {
+  color: #f9e2af;
+}
+[data-theme='catppuccin-mocha'] .hljs-bullet,
+[data-theme='catppuccin-mocha'] .hljs-link,
+[data-theme='catppuccin-mocha'] .hljs-meta,
+[data-theme='catppuccin-mocha'] .hljs-selector-id,
+[data-theme='catppuccin-mocha'] .hljs-symbol,
+[data-theme='catppuccin-mocha'] .hljs-title {
+  color: #89b4fa;
+}
+[data-theme='catppuccin-mocha'] .hljs-built_in,
+[data-theme='catppuccin-mocha'] .hljs-class .hljs-title,
+[data-theme='catppuccin-mocha'] .hljs-title.class_ {
+  color: #94e2d5;
+}
+[data-theme='catppuccin-mocha'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='catppuccin-mocha'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='catppuccin-mocha'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Solarized Light === */
+[data-theme='solarized-light'] .hljs {
+  color: #657b83;
+}
+[data-theme='solarized-light'] .hljs-comment,
+[data-theme='solarized-light'] .hljs-quote {
+  color: #93a1a1;
+  font-style: italic;
+}
+[data-theme='solarized-light'] .hljs-doctag,
+[data-theme='solarized-light'] .hljs-formula,
+[data-theme='solarized-light'] .hljs-keyword {
+  color: #859900;
+}
+[data-theme='solarized-light'] .hljs-deletion,
+[data-theme='solarized-light'] .hljs-name,
+[data-theme='solarized-light'] .hljs-section,
+[data-theme='solarized-light'] .hljs-selector-tag,
+[data-theme='solarized-light'] .hljs-subst {
+  color: #dc322f;
+}
+[data-theme='solarized-light'] .hljs-literal {
+  color: #d33682;
+}
+[data-theme='solarized-light'] .hljs-addition,
+[data-theme='solarized-light'] .hljs-attribute,
+[data-theme='solarized-light'] .hljs-meta .hljs-string,
+[data-theme='solarized-light'] .hljs-regexp,
+[data-theme='solarized-light'] .hljs-string {
+  color: #2aa198;
+}
+[data-theme='solarized-light'] .hljs-attr,
+[data-theme='solarized-light'] .hljs-number,
+[data-theme='solarized-light'] .hljs-selector-attr,
+[data-theme='solarized-light'] .hljs-selector-class,
+[data-theme='solarized-light'] .hljs-selector-pseudo,
+[data-theme='solarized-light'] .hljs-template-variable,
+[data-theme='solarized-light'] .hljs-type,
+[data-theme='solarized-light'] .hljs-variable {
+  color: #b58900;
+}
+[data-theme='solarized-light'] .hljs-bullet,
+[data-theme='solarized-light'] .hljs-link,
+[data-theme='solarized-light'] .hljs-meta,
+[data-theme='solarized-light'] .hljs-selector-id,
+[data-theme='solarized-light'] .hljs-symbol,
+[data-theme='solarized-light'] .hljs-title {
+  color: #268bd2;
+}
+[data-theme='solarized-light'] .hljs-built_in,
+[data-theme='solarized-light'] .hljs-class .hljs-title,
+[data-theme='solarized-light'] .hljs-title.class_ {
+  color: #cb4b16;
+}
+[data-theme='solarized-light'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='solarized-light'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='solarized-light'] .hljs-link {
   text-decoration: underline;
 }
 
