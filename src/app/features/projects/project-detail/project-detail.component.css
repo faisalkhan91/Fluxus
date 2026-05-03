@@ -1,0 +1,330 @@
+:host {
+  display: block;
+}
+
+.detail-layout {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Breadcrumb — intentionally identical to projects-tag so the two
+   surfaces keep a unified "drilling down" visual language. */
+.detail-breadcrumb {
+  margin-bottom: var(--space-4);
+}
+
+.detail-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.detail-breadcrumb li:not(:last-child)::after {
+  content: '/';
+  margin-left: var(--space-2);
+}
+
+.detail-breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.detail-breadcrumb a:hover {
+  color: var(--accent-hover);
+}
+
+.detail-breadcrumb [aria-current='page'] {
+  color: var(--text-primary);
+}
+
+.detail-archived-note {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.detail-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detail-hero.archived {
+  opacity: 0.85;
+}
+
+.detail-language-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--language-stripe, transparent);
+}
+
+.detail-hero-image {
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--surface-overlay);
+}
+
+.detail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.detail-summary {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.detail-gh-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.gh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--surface-overlay);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.gh-language-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 8px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.detail-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  background: var(--surface-overlay);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.detail-source-link:hover,
+.detail-source-link:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.detail-section {
+  margin-bottom: var(--space-6);
+}
+
+.detail-section-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.detail-readme {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.detail-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.detail-chip {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--surface-overlay);
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  text-decoration: none;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.detail-chip:hover,
+.detail-chip:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.detail-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Skills chips adopt a subtly different accent so "Skills used" reads
+   as a distinct surface from the plain archive-links above. */
+.detail-chip-skill {
+  color: var(--accent);
+  border-color: var(--accent);
+  opacity: 0.85;
+}
+
+.detail-chip-skill:hover,
+.detail-chip-skill:focus-visible {
+  opacity: 1;
+  background: var(--accent);
+  color: var(--surface-overlay);
+}
+
+.detail-sparkline-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+}
+
+.detail-sparkline {
+  width: 240px;
+  height: 40px;
+  color: var(--accent);
+}
+
+.detail-sparkline-total {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.detail-related-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.detail-related-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--glass-border);
+}
+
+.detail-related-list li:last-child {
+  border-bottom: none;
+}
+
+.detail-related-list a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  transition: color var(--transition-fast);
+}
+
+.detail-related-list a:hover {
+  color: var(--accent-hover);
+}
+
+.detail-related-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.detail-back {
+  margin: var(--space-8) 0 0;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--glass-border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.detail-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.detail-back-link:hover,
+.detail-back-link:focus-visible {
+  background: var(--glass-bg);
+  color: var(--accent-hover);
+}
+
+.detail-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .detail-sparkline {
+    width: 180px;
+    height: 30px;
+  }
+}

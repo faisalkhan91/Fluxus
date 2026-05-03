@@ -85,12 +85,19 @@ test.describe('/skills connective tissue', () => {
   test('skills with zero project matches render as static (non-link) cards', async ({ page }) => {
     await page.goto('/skills', { waitUntil: 'networkidle' });
 
-    // Both `Go` and `AWS` are seeded as skills but no project tags
-    // reference them, so the badges must render as plain cards (no
-    // anchor). They're picked specifically because they sit in the top
-    // 3 of their categories — the contract holds at any viewport
+    // Both `Go` and `Datadog` are seeded as skills but no project tags
+    // — including merged GitHub topics — reference them, so the badges
+    // must render as plain cards (no anchor). Both are lead skills in
+    // their categories so they stay in the default top-3 on any viewport
     // width without needing to expand the truncated lists first.
-    for (const orphan of ['Go', 'AWS']) {
+    //
+    // If you find yourself needing to swap skills here after a catalog
+    // change, confirm the replacement is *orphan on merged tags* — i.e.
+    // not referenced via hand-curated tags in projects-data.service.ts
+    // and also not a topic string in scripts/cache/projects-github.json.
+    // AWS used to be here, but GitHub topic merging pulled the `aws`
+    // topic off the Jenkins project into its runtime tag list.
+    for (const orphan of ['Go', 'Datadog']) {
       const badge = page.locator('ui-skill-badge', { hasText: orphan }).first();
       await expect(badge).toBeVisible();
       const links = await badge.locator('a.badge-card-link').count();

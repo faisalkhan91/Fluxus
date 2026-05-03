@@ -23,6 +23,23 @@ export interface GithubMeta {
   archived: boolean;
   /** Open-issues count (PRs included — matches the GH badge semantic). */
   openIssues: number | null;
+  /**
+   * First substantive paragraph of the README, markdown-stripped to
+   * plain text, trimmed to ~500 chars. `null` when the README fetch
+   * failed or the repo doesn't have one. Stored as plain text rather
+   * than rendered HTML so the detail page can't be tricked by an
+   * adversarial README — no marked + sanitizer graph runs on
+   * third-party content.
+   */
+  readmeExcerpt: string | null;
+  /**
+   * GitHub's `/stats/participation` response — 52 weekly commit
+   * counts, oldest first. `null` when the stats endpoint returned
+   * 202 (GH was computing) at build time. The detail-page sparkline
+   * hides itself when absent. Shared metric: `all` (not `owner`) so
+   * we count every contributor.
+   */
+  commitsPerWeek: number[] | null;
   /** ISO timestamp of when the cache row was written. Diagnostic only. */
   fetchedAt: string;
 }

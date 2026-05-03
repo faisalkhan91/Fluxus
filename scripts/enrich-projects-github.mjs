@@ -84,19 +84,25 @@ function parseGithubLink(link) {
   }
 }
 
+function ghHeaders(mediaType = 'application/vnd.github+json') {
+  const headers = {
+    Accept: mediaType,
+    'User-Agent': USER_AGENT,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  if (GITHUB_TOKEN) headers.Authorization = `Bearer ${GITHUB_TOKEN}`;
+  return headers;
+}
+
 /**
  * Single-shot fetch wrapping the repo endpoint. Returns `null` on any
  * failure; the caller decides whether to fall back to cache.
  */
 async function fetchRepo(owner, repo) {
-  const headers = {
-    Accept: 'application/vnd.github+json',
-    'User-Agent': USER_AGENT,
-    'X-GitHub-Api-Version': '2022-11-28',
-  };
-  if (GITHUB_TOKEN) headers.Authorization = `Bearer ${GITHUB_TOKEN}`;
   try {
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: ghHeaders(),
+    });
     if (!res.ok) {
       console.warn(
         `enrich-projects-github: WARN GET /repos/${owner}/${repo} → ${res.status} ${res.statusText}`,
@@ -113,11 +119,105 @@ async function fetchRepo(owner, repo) {
 }
 
 /**
+ * Fetches the raw README markdown. Returns `null` when the repo has no
+ * README or the request fails. The raw-content media type sidesteps
+ * the base64 decode step on the json shape.
+ */
+async function fetchReadme(owner, repo) {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`, {
+      headers: ghHeaders('application/vnd.github.raw+json'),
+    });
+    if (!res.ok) return null;
+    return await res.text();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetches the 52-week commit participation stats. GitHub returns 202
+ * while computing the stats on a cold cache; we don't retry in the
+ * build loop — the next enrichment pass picks up a warm stats object.
+ */
+async function fetchParticipation(owner, repo) {
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/stats/participation`,
+      { headers: ghHeaders() },
+    );
+    if (!res.ok) return null;
+    // 202 is rendered as JSON `{}` in some runtimes; defend against it.
+    const json = await res.json();
+    if (!json || !Array.isArray(json.all) || json.all.length !== 52) return null;
+    return json.all.map((n) => (typeof n === 'number' ? n : 0));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Strip markdown syntax from a fragment and collapse to a ~500-char
+ * plain-text excerpt. Deliberately keeps to lexical heuristics — we
+ * do NOT run the README through a full marked + sanitizer pass,
+ * because the source is third-party content and the excerpt only
+ * needs to read as prose. Dropped: headings, code fences, images,
+ * inline code, links (text kept, URL dropped), emphasis markers,
+ * blockquote chevrons, list bullets.
+ */
+function extractReadmeExcerpt(md, repoName) {
+  if (typeof md !== 'string' || !md.trim()) return null;
+  let text = md;
+  // Drop the first H1 if it's just the repo name (common README shape).
+  text = text.replace(/^\s*#\s+([^\n]+)\n+/, (m, heading) => {
+    return heading.trim().toLowerCase() === repoName.toLowerCase() ? '' : m;
+  });
+  // Strip code fences + HTML comments + raw html attributes shields.
+  text = text.replace(/```[\s\S]*?```/g, ' ');
+  text = text.replace(/<!--[\s\S]*?-->/g, ' ');
+  // Drop badge lines (common at README top). Heuristic: a line that
+  // consists only of image-links to shields.io / github-actions /
+  // codecov. Replace with blanks so we don't land the excerpt on them.
+  text = text.replace(/^(?:\s*\[!\[.*?\]\(.*?\)\]\(.*?\)\s*)+$/gm, ' ');
+  text = text.replace(/^(?:\s*!\[.*?\]\(.*?\)\s*)+$/gm, ' ');
+  // Extract the first paragraph that has >30 non-space chars. Paragraphs
+  // are separated by blank lines. Skip anything starting with `#` or `>`
+  // so we pick prose over headings / callouts.
+  const paragraphs = text.split(/\n\s*\n/);
+  let paragraph = '';
+  for (const p of paragraphs) {
+    const trimmed = p.trim();
+    if (!trimmed) continue;
+    if (/^[#>]/.test(trimmed)) continue;
+    if (trimmed.replace(/\s+/g, '').length < 30) continue;
+    paragraph = trimmed;
+    break;
+  }
+  if (!paragraph) return null;
+  // Flatten inline markdown.
+  let plain = paragraph
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '') // images
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links → label
+    .replace(/`([^`]+)`/g, '$1') // inline code
+    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1') // emphasis
+    .replace(/^\s*[-*+]\s+/gm, '') // bullets
+    .replace(/^>\s?/gm, '') // blockquote chevrons
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!plain) return null;
+  if (plain.length > 500) {
+    plain = plain.slice(0, 497).trimEnd() + '…';
+  }
+  return plain;
+}
+
+/**
  * Map a GitHub repo JSON response to our `GithubMeta` shape. Runs only
  * when the fetch succeeded; `null` return means the response was
- * unexpectedly shaped.
+ * unexpectedly shaped. README + commit stats are layered on separately
+ * because they come from different endpoints.
  */
-function toMeta(json) {
+function toMeta(json, readmeExcerpt, commitsPerWeek) {
   if (!json || typeof json !== 'object') return null;
   const primaryLanguage = typeof json.language === 'string' ? json.language : null;
   const languageColor = primaryLanguage ? (LANGUAGE_COLORS[primaryLanguage] ?? null) : null;
@@ -132,6 +232,8 @@ function toMeta(json) {
     topics,
     archived: !!json.archived,
     openIssues: typeof json.open_issues_count === 'number' ? json.open_issues_count : null,
+    readmeExcerpt,
+    commitsPerWeek,
     fetchedAt: new Date().toISOString(),
   };
 }
@@ -200,16 +302,20 @@ async function main() {
       skipped++;
       continue;
     }
-    const meta = await fetchRepo(gh.owner, gh.repo);
+    const [meta, readmeMd, commits] = await Promise.all([
+      fetchRepo(gh.owner, gh.repo),
+      fetchReadme(gh.owner, gh.repo),
+      fetchParticipation(gh.owner, gh.repo),
+    ]);
     if (meta) {
-      const shaped = toMeta(meta);
+      const readmeExcerpt = extractReadmeExcerpt(readmeMd, gh.repo);
+      const shaped = toMeta(meta, readmeExcerpt, commits);
       if (shaped) {
         result[titleSlug] = shaped;
         fetched++;
         continue;
       }
     }
-    // Fetch or shape failed — keep whatever is in cache (may be undefined).
     if (cache[titleSlug]) {
       fromCache++;
     } else {
