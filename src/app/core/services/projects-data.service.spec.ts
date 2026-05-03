@@ -34,4 +34,28 @@ describe('ProjectsDataService', () => {
     expect(bookstore?.featured).toBe(true);
     expect(bookstore?.tags).toContain('Angular');
   });
+
+  it('every project carries a URL-safe slug derived by the fetch script', () => {
+    // The generated file is emitted by scripts/fetch-projects-github.mjs,
+    // which slugifies titles. We assert the contract here because every
+    // downstream consumer (palette fragments, /projects/:slug route,
+    // sitemap) keys off this field.
+    for (const project of service.projects()) {
+      expect(project.slug).toBeTruthy();
+      expect(project.slug).toMatch(/^[a-z0-9][a-z0-9-]*$/);
+    }
+  });
+
+  it('exposes optional github meta fields homepage, languagesBytes, latestRelease', () => {
+    // Shape check only — test fixtures can have any values including
+    // null. This asserts the fields survive the generated-file →
+    // service → consumer pipeline without being stripped by TS
+    // widening or JSON round-trip.
+    for (const project of service.projects()) {
+      if (!project.github) continue;
+      expect('homepage' in project.github).toBe(true);
+      expect(Array.isArray(project.github.languagesBytes)).toBe(true);
+      expect('latestRelease' in project.github).toBe(true);
+    }
+  });
 });

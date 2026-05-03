@@ -218,6 +218,24 @@ export class ProjectDetailComponent {
     return `${Math.round(value / 1000)}k`;
   }
 
+  protected languagesPercent(
+    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+    name: string,
+  ): string {
+    if (!segments?.length) return '';
+    const total = segments.reduce((acc, s) => acc + (s.bytes ?? 0), 0);
+    if (total === 0) return '';
+    const bytes = segments.find((s) => s.name === name)?.bytes ?? 0;
+    return `${((bytes / total) * 100).toFixed(1)}%`;
+  }
+
+  protected languagesBarLabel(
+    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+  ): string {
+    if (!segments?.length) return '';
+    return segments.map((s) => `${s.name} ${this.languagesPercent(segments, s.name)}`).join(', ');
+  }
+
   private updateMetaTags(project: Project): void {
     const slug = project.slug ?? slugify(project.title);
     const url = `${environment.siteUrl}/projects/${slug}`;
