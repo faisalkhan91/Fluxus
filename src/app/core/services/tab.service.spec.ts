@@ -42,6 +42,11 @@ describe('TabService', () => {
             component: DummyComponent,
             data: { tab: { label: 'Blog', ext: '.rss', color: '#f78c40' } },
           },
+          {
+            path: 'projects',
+            component: DummyComponent,
+            data: { tab: { label: 'Projects', ext: '.git', color: '#e64a19' } },
+          },
         ]),
       ],
     });
@@ -135,6 +140,21 @@ describe('TabService', () => {
     blogTabs = service.openTabs().filter((t) => t.id === 'blog');
     expect(blogTabs).toHaveLength(1);
     expect(blogTabs[0].route).toBe('/blog/first-post');
+  });
+
+  it('does not spawn a duplicate tab when only the query string changes', async () => {
+    await router.navigate(['/projects']);
+    await router.navigate(['/projects'], { queryParams: { sort: 'alpha' } });
+    await router.navigate(['/projects'], { queryParams: { sort: 'stars' } });
+    await router.navigate(['/projects'], { queryParams: {} });
+
+    // Each sort toggle used to append a fresh tab because the URL's
+    // first segment was `projects?sort=alpha` etc. The fix strips the
+    // query string before keying, so every projects navigation folds
+    // into a single tab whose `route` tracks the latest URL.
+    const projectsTabs = service.openTabs().filter((t) => t.id === 'projects');
+    expect(projectsTabs).toHaveLength(1);
+    expect(projectsTabs[0].route).toContain('/projects');
   });
 
   it('inserts the Welcome tab when deep-linking to a non-home route', async () => {

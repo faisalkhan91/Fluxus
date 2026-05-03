@@ -1,5 +1,10 @@
 :host {
   display: block;
+  /* Grid cells stretch by default along both axes, so the host already
+     fills the row's tallest cell height. `height: 100%` is an explicit
+     declaration against future grid-item CSS changes that might switch
+     `align-items` off `stretch`. */
+  height: 100%;
   /* When the badge is the target of a `#skill-<slug>` hash link (from the
      command palette, a blog post, or a project detail page), offset the
      scroll so it doesn't tuck under sticky chrome. Matches the pattern at
@@ -20,7 +25,16 @@
     background-color var(--transition-base),
     border-color var(--transition-base),
     transform var(--transition-base);
+  /* Fill the host box so all badges in a grid row present the same
+     height, not "shrink to content" height. Without this the row's
+     tallest badge (icon + name + level bar + two caption pills) towers
+     over a peer that has no level/captions, producing the uneven-cards
+     look on /skills. Captions + the optional bar still dock to the
+     bottom because they're trailing flex items. */
+  height: 100%;
+  box-sizing: border-box;
 }
+
 
 .badge-inner:hover {
   background: var(--glass-bg-hover);
@@ -122,13 +136,16 @@
 
 /* Caption row sits below the bar (or below the name when the badge has no
    level). Centred, mono-cased, and quieter than the name so it reads as
-   metadata rather than primary content. */
+   metadata rather than primary content. `margin-top: auto` shoves the
+   row to the bottom of the flex column so badges of different heights
+   still align their captions along a shared baseline. */
 .badge-captions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-2);
-  margin-top: var(--space-1);
+  margin-top: auto;
+  padding-top: var(--space-1);
 }
 
 .badge-caption {
