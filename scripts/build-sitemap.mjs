@@ -10,6 +10,7 @@
 import { readFile, writeFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
+import { loadProjectTagSlugs } from './lib/projects.mjs';
 
 const require = createRequire(import.meta.url);
 const { siteUrl: SITE_URL } = require('../site.config.json');
@@ -65,12 +66,19 @@ const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(
   .filter(Boolean)
   .sort();
 
+// `/projects/tag/<slug>` mirrors `/blog/tag/<slug>` — discovered via the
+// shared `loadProjectTagSlugs()` helper, which regex-extracts directly
+// from the projects-data.service.ts source so this stays in sync without
+// a parallel JSON manifest.
+const projectTagSlugs = (await loadProjectTagSlugs()).map((entry) => entry.slug);
+
 const entries = [
   ...STATIC_ROUTES.map(([path, priority]) =>
     urlEntry(`${SITE_URL}${path === '/' ? '/' : path}`, priority, today),
   ),
   ...livePosts.map((p) => urlEntry(`${SITE_URL}/blog/${p.slug}`, '0.8', p.date)),
   ...tagSlugs.map((slug) => urlEntry(`${SITE_URL}/blog/tag/${slug}`, '0.4', today)),
+  ...projectTagSlugs.map((slug) => urlEntry(`${SITE_URL}/projects/tag/${slug}`, '0.4', today)),
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -88,5 +96,5 @@ try {
 
 await writeFile(DIST_SITEMAP, xml, 'utf-8');
 console.log(
-  `Wrote ${DIST_SITEMAP} with ${STATIC_ROUTES.length} routes + ${livePosts.length} blog posts + ${tagSlugs.length} tag archives.`,
+  `Wrote ${DIST_SITEMAP} with ${STATIC_ROUTES.length} routes + ${livePosts.length} blog posts + ${tagSlugs.length} blog-tag archives + ${projectTagSlugs.length} project-tag archives.`,
 );

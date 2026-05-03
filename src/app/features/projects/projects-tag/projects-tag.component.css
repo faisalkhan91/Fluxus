@@ -1,0 +1,223 @@
+/*
+  Mirrors the layout of `BlogTagComponent` (breadcrumb, header, status,
+  back-link) plus the card visuals from `ProjectsComponent`. The CSS is
+  duplicated rather than `@import`-ed so each component owns its rules
+  and Angular's view encapsulation works without `::ng-deep`. If a third
+  filtered-grid surface ever appears, hoist these into a shared
+  utility-stylesheet.
+*/
+
+:host {
+  display: block;
+}
+
+.tag-layout {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tag-breadcrumb {
+  margin-bottom: var(--space-4);
+}
+
+.tag-breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.tag-breadcrumb li:not(:last-child)::after {
+  content: '/';
+  margin-left: var(--space-2);
+}
+
+.tag-breadcrumb a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.tag-breadcrumb a:hover {
+  color: var(--accent-hover);
+}
+
+.tag-breadcrumb [aria-current='page'] {
+  color: var(--text-primary);
+}
+
+.tag-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.tag-grid-footer {
+  margin: var(--space-8) 0 0;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--glass-border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.tag-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.tag-back-link:hover,
+.tag-back-link:focus-visible {
+  background: var(--glass-bg);
+  color: var(--accent-hover);
+}
+
+/*
+  Project card visuals. Kept structurally identical to
+  `ProjectsComponent` so the same card rendering applies whether the
+  user is on `/projects` or `/projects/tag/<slug>`. The only difference
+  is the lack of a horizontal-scroll mobile mode — on the filtered
+  view, a small list reads better as a 1-column stack than as a swipe
+  carousel.
+*/
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-6);
+}
+
+.project-card {
+  overflow: hidden;
+}
+
+.project-card ::ng-deep > * {
+  padding: 0;
+}
+
+.project-image-wrapper {
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: var(--surface-overlay);
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.project-card:hover .project-image {
+  transform: scale(1.05);
+}
+
+.project-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.project-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.project-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.project-card.expanded .project-desc {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  display: block;
+}
+
+.read-more-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  align-self: flex-start;
+}
+
+.read-more-toggle:hover {
+  color: var(--accent-hover);
+}
+
+.project-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-2);
+}
+
+.project-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: var(--surface-overlay);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.project-link:hover {
+  color: var(--accent-hover);
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}

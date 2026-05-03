@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { SkillBadgeComponent } from './skill-badge.component';
 
 describe('SkillBadgeComponent', () => {
@@ -9,6 +10,9 @@ describe('SkillBadgeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SkillBadgeComponent],
+      // RouterLink in the template needs an injector with the router
+      // tree, even when we only assert on the rendered href attribute.
+      providers: [provideRouter([])],
     }).compileComponents();
     fixture = TestBed.createComponent(SkillBadgeComponent);
     el = fixture.nativeElement;
@@ -85,5 +89,88 @@ describe('SkillBadgeComponent', () => {
 
     const fill = el.querySelector('.badge-fill') as HTMLElement | null;
     expect(fill?.style.getPropertyValue('--badge-fill-scale')).toBe('0.75');
+  });
+
+  describe('link + captions', () => {
+    it('renders only the inner card (no anchor) when href is omitted', () => {
+      fixture.componentRef.setInput('name', 'Static');
+      fixture.detectChanges();
+      // The wrapper carries the link-mode class only when href is set.
+      expect(el.querySelector('.badge-inner-link')).toBeNull();
+      expect(el.querySelector('a.badge-card-link')).toBeNull();
+    });
+
+    it('renders the projects caption as the card-wide link when href is set', () => {
+      fixture.componentRef.setInput('name', 'Rust');
+      fixture.componentRef.setInput('href', '/projects/tag/rust');
+      fixture.componentRef.setInput('projectsCount', 3);
+      fixture.detectChanges();
+
+      const inner = el.querySelector('.badge-inner-link');
+      expect(inner).not.toBeNull();
+      const link = el.querySelector('a.badge-card-link') as HTMLAnchorElement | null;
+      expect(link).not.toBeNull();
+      // RouterLink writes the resolved URL to the href attribute when
+      // a router is provided; the rendered text gives users the count.
+      expect(link?.getAttribute('href')).toBe('/projects/tag/rust');
+      expect(link?.textContent?.trim()).toBe('3 projects');
+    });
+
+    it('uses the singular form for projectsCount === 1', () => {
+      fixture.componentRef.setInput('name', 'Solo');
+      fixture.componentRef.setInput('href', '/projects/tag/solo');
+      fixture.componentRef.setInput('projectsCount', 1);
+      fixture.detectChanges();
+      expect(el.querySelector('a.badge-card-link')?.textContent?.trim()).toBe('1 project');
+    });
+
+    it('skips the captions row entirely when both counts are 0', () => {
+      fixture.componentRef.setInput('name', 'Quiet');
+      fixture.detectChanges();
+      expect(el.querySelector('.badge-captions')).toBeNull();
+    });
+
+    it('renders the posts caption as a separate anchor when postsHref is set', () => {
+      fixture.componentRef.setInput('name', 'Rust');
+      fixture.componentRef.setInput('href', '/projects/tag/rust');
+      fixture.componentRef.setInput('postsHref', '/blog/tag/rust');
+      fixture.componentRef.setInput('projectsCount', 3);
+      fixture.componentRef.setInput('postsCount', 2);
+      fixture.detectChanges();
+
+      const links = el.querySelectorAll('a.badge-caption-link');
+      expect(links.length).toBe(2);
+      const postsLink = Array.from(links).find(
+        (a) => (a as HTMLAnchorElement).getAttribute('href') === '/blog/tag/rust',
+      ) as HTMLAnchorElement | undefined;
+      expect(postsLink).toBeDefined();
+      expect(postsLink?.textContent?.trim()).toBe('2 posts');
+    });
+
+    it('renders the posts caption as plain text when postsHref is omitted', () => {
+      fixture.componentRef.setInput('name', 'Rust');
+      fixture.componentRef.setInput('href', '/projects/tag/rust');
+      fixture.componentRef.setInput('projectsCount', 3);
+      fixture.componentRef.setInput('postsCount', 1);
+      fixture.detectChanges();
+      // Only the projects-caption is a link in this case; the posts pill
+      // falls back to a plain <span> so we don't render an anchor with
+      // an empty href.
+      const links = el.querySelectorAll('a.badge-caption-link');
+      expect(links.length).toBe(1);
+      const postsSpan = Array.from(el.querySelectorAll('.badge-caption')).find((el) =>
+        (el.textContent ?? '').includes('1 post'),
+      );
+      expect(postsSpan?.tagName).toBe('SPAN');
+    });
+
+    it('exposes a screen-reader-friendly label on the projects link', () => {
+      fixture.componentRef.setInput('name', 'Rust');
+      fixture.componentRef.setInput('href', '/projects/tag/rust');
+      fixture.componentRef.setInput('projectsCount', 3);
+      fixture.detectChanges();
+      const link = el.querySelector('a.badge-card-link') as HTMLAnchorElement;
+      expect(link.getAttribute('aria-label')).toBe('Rust — view 3 projects');
+    });
   });
 });

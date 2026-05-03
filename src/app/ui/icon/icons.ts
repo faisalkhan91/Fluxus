@@ -181,4 +181,15 @@ export const ICONS: Record<string, IconShape[]> = {
       d: 'M12 22a10 10 0 1 1 10-10 4 4 0 0 1-4 4h-2.25a1.75 1.75 0 0 0-1.75 1.75v.5a1.75 1.75 0 0 1-1.75 1.75z',
     },
   ],
+  // Lucide-style "#" — used by command palette entries that route into a
+  // tag archive (skills, blog tags). Picked over a literal tag-shaped
+  // icon because hash reads as "category" while a label-shaped icon
+  // implies "label this thing", which isn't the action a route entry
+  // performs.
+  hash: [
+    { tag: 'line', x1: '4', y1: '9', x2: '20', y2: '9' },
+    { tag: 'line', x1: '4', y1: '15', x2: '20', y2: '15' },
+    { tag: 'line', x1: '10', y1: '3', x2: '8', y2: '21' },
+    { tag: 'line', x1: '16', y1: '3', x2: '14', y2: '21' },
+  ],
 };

@@ -1,6 +1,7 @@
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { join, relative, sep, posix } from 'node:path';
 import { createRequire } from 'node:module';
+import { loadProjectTagSlugs } from './lib/projects.mjs';
 
 const require = createRequire(import.meta.url);
 const config = require('../site.config.json');
@@ -51,6 +52,14 @@ for (const post of blogManifest) {
     if (!tagsBySlug.has(slug)) tagsBySlug.set(slug, { label: tag, posts: [] });
     tagsBySlug.get(slug).posts.push(post);
   }
+}
+
+// Same shape as `tagsBySlug`, but for `/projects/tag/:tag`. Source of truth
+// is `projects-data.service.ts` (regex-extracted via the shared loader so
+// scripts and the prerender route generator stay aligned).
+const projectTagsBySlug = new Map();
+for (const entry of await loadProjectTagSlugs()) {
+  projectTagsBySlug.set(entry.slug, { label: entry.label });
 }
 
 async function* walk(dir) {
@@ -147,6 +156,42 @@ function escapeText(value) {
 }
 
 /**
+ * Inject CollectionPage + BreadcrumbList JSON-LD for a /projects/tag/<slug>
+ * route. Mirrors `setTagJsonLd` shape exactly so crawlers see the same
+ * structured-data contract whether they land on a blog tag or a project
+ * tag page. Idempotent — uses a different `data-` attribute namespace
+ * so it doesn't clobber the blog block when both run on the same HTML.
+ */
+function setProjectTagJsonLd(html, slug, label, url) {
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Projects', item: `${SITE_URL}/projects` },
+      { '@type': 'ListItem', position: 3, name: `Tag: ${label}`, item: url },
+    ],
+  };
+  const collection = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `Projects tagged "${label}"`,
+    description: `Every project in Faisal Khan's portfolio tagged with "${label}".`,
+    url,
+    inLanguage: 'en',
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+  };
+  const block =
+    `    <script type="application/ld+json" data-project-tag-jsonld="${escapeAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
+    `    <script type="application/ld+json" data-project-tag-breadcrumb-jsonld="${escapeAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+  const stripped = html.replace(
+    /\s*<script\s+type="application\/ld\+json"\s+data-project-tag(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
+    '',
+  );
+  return stripped.replace('</head>', `${block}  </head>`);
+}
+
+/**
  * Inject CollectionPage + BreadcrumbList JSON-LD for a /blog/tag/<slug> route.
  * Idempotent — strips any prior tag-archive blocks before re-emitting.
  */
@@ -188,6 +233,7 @@ function setTagJsonLd(html, slug, label, posts, url) {
 let routesProcessed = 0;
 let blogProcessed = 0;
 let tagsProcessed = 0;
+let projectTagsProcessed = 0;
 
 for await (const htmlPath of walk(DIST)) {
   let html = await readFile(htmlPath, 'utf-8');
@@ -195,7 +241,35 @@ for await (const htmlPath of walk(DIST)) {
   const url = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`;
 
   const tagMatch = route.match(/^\/blog\/tag\/([^/]+)$/);
+  const projectTagMatch = route.match(/^\/projects\/tag\/([^/]+)$/);
   const blogMatch = route.match(/^\/blog\/([^/]+)$/);
+
+  if (projectTagMatch && projectTagsBySlug.has(projectTagMatch[1])) {
+    const { label } = projectTagsBySlug.get(projectTagMatch[1]);
+    const title = `Projects tagged "${label}" — ${SITE_NAME}`;
+    const description = `Every project in Faisal Khan's portfolio tagged with "${label}".`;
+    html = setTitle(html, title);
+    html = setMetaDescription(html, description);
+    html = setMetaProperty(html, 'og:title', title);
+    html = setMetaProperty(html, 'og:description', description);
+    html = setMetaProperty(html, 'og:type', 'website');
+    html = setMetaProperty(html, 'og:url', url);
+    html = setMetaProperty(html, 'og:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'og:site_name', SITE_NAME);
+    html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
+    html = setMetaProperty(html, 'twitter:title', title);
+    html = setMetaProperty(html, 'twitter:description', description);
+    html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    if (TWITTER_HANDLE) {
+      html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
+    }
+    html = setLinkCanonical(html, url);
+    html = setProjectTagJsonLd(html, projectTagMatch[1], label, url);
+    projectTagsProcessed++;
+    console.log(`  PTAG ${label}`);
+    await writeFile(htmlPath, html, 'utf-8');
+    continue;
+  }
 
   if (tagMatch && tagsBySlug.has(tagMatch[1])) {
     const { label, posts } = tagsBySlug.get(tagMatch[1]);
@@ -267,5 +341,5 @@ for await (const htmlPath of walk(DIST)) {
 }
 
 console.log(
-  `\nInjected meta tags for ${routesProcessed} routes, ${blogProcessed} blog posts, and ${tagsProcessed} tag archives.`,
+  `\nInjected meta tags for ${routesProcessed} routes, ${blogProcessed} blog posts, ${tagsProcessed} blog-tag archives, and ${projectTagsProcessed} project-tag archives.`,
 );
