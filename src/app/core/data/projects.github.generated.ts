@@ -27,7 +27,12 @@ export const PROJECTS_GITHUB_DATA: Readonly<Record<string, GithubMeta>> = {
     ],
     archived: false,
     openIssues: 0,
-    fetchedAt: '2026-05-03T08:13:05.189Z',
+    readmeExcerpt: 'This is a program to solve a 6x6 sudoko grid using backtracking search.',
+    commitsPerWeek: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ],
+    fetchedAt: '2026-05-03T08:18:54.628Z',
   },
   bookstore: {
     stars: 0,
@@ -39,7 +44,12 @@ export const PROJECTS_GITHUB_DATA: Readonly<Record<string, GithubMeta>> = {
     topics: ['angular', 'ngform', 'routing', 'services'],
     archived: false,
     openIssues: 17,
-    fetchedAt: '2026-05-03T08:13:04.640Z',
+    readmeExcerpt: 'This project was generated with Angular CLI version 8.3.20.',
+    commitsPerWeek: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ],
+    fetchedAt: '2026-05-03T08:18:54.070Z',
   },
   'dictionary-application': {
     stars: 0,
@@ -60,7 +70,13 @@ export const PROJECTS_GITHUB_DATA: Readonly<Record<string, GithubMeta>> = {
     ],
     archived: false,
     openIssues: 0,
-    fetchedAt: '2026-05-03T08:13:05.365Z',
+    readmeExcerpt:
+      'This is a GUI based dictionary application that displays information sourced from oxford dictionary API.',
+    commitsPerWeek: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ],
+    fetchedAt: '2026-05-03T08:18:54.870Z',
   },
   'insecure-file-extraction': {
     stars: 0,
@@ -80,7 +96,13 @@ export const PROJECTS_GITHUB_DATA: Readonly<Record<string, GithubMeta>> = {
     ],
     archived: false,
     openIssues: 2,
-    fetchedAt: '2026-05-03T08:13:05.534Z',
+    readmeExcerpt:
+      'This code is the demonstration of using path traversal to exploit a poorly coded upload file fuction for malicious code injection on to a web server.',
+    commitsPerWeek: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ],
+    fetchedAt: '2026-05-03T08:18:55.037Z',
   },
   'jenkins-cicd-pipeline': {
     stars: 0,
@@ -110,7 +132,12 @@ export const PROJECTS_GITHUB_DATA: Readonly<Record<string, GithubMeta>> = {
     ],
     archived: false,
     openIssues: 67,
-    fetchedAt: '2026-05-03T08:13:05.011Z',
+    readmeExcerpt: 'This is a project to create CI/CD pipelines using Jenkins.',
+    commitsPerWeek: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+    ],
+    fetchedAt: '2026-05-03T08:18:54.445Z',
   },
   'storm-events-analysis': {
     stars: 0,
@@ -136,6 +163,12 @@ export const PROJECTS_GITHUB_DATA: Readonly<Record<string, GithubMeta>> = {
     ],
     archived: false,
     openIssues: 0,
-    fetchedAt: '2026-05-03T08:13:04.813Z',
+    readmeExcerpt:
+      'This project focuses on finding storm events for the years 2012 to 2016 using the NOAA dataset and using hadoop to process the information.',
+    commitsPerWeek: [
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ],
+    fetchedAt: '2026-05-03T08:18:54.253Z',
   },
 };

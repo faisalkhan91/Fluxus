@@ -183,12 +183,12 @@ export class CommandPaletteComponent {
         });
       }
     }
-    // Project entries deep-link into the /projects grid and scroll to the
-    // matching card via `#project-<slug>`. Once PR-3 lands detail pages at
-    // `/projects/:slug`, swap `route`/`fragment` for the slug route and drop
-    // the fragment — the anchor ids will stay as safety-net deep targets.
+    // Project entries deep-link into the `/projects/:slug` detail page.
+    // That's the canonical, richer surface; the `/projects#project-<slug>`
+    // scroll target remains supported by direct-URL traffic (old bookmarks,
+    // external deep links) but the palette prefers the detail route now.
     for (const project of this.projectsData.projects()) {
-      const slug = slugify(project.title);
+      const slug = project.slug ?? slugify(project.title);
       if (!slug) continue;
       const id = `project:${slug}`;
       const tagCount = project.tags.length;
@@ -202,8 +202,7 @@ export class CommandPaletteComponent {
         hint,
         icon: 'github',
         kind: 'route',
-        route: '/projects',
-        fragment: `project-${slug}`,
+        route: `/projects/${slug}`,
         keywords: [...project.tags, project.description].join(' ').toLowerCase(),
       });
     }

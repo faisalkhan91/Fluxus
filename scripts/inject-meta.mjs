@@ -1,7 +1,7 @@
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { join, relative, sep, posix } from 'node:path';
 import { createRequire } from 'node:module';
-import { loadProjectTagSlugs } from './lib/projects.mjs';
+import { loadProjectTagSlugs, loadProjectEntries } from './lib/projects.mjs';
 
 const require = createRequire(import.meta.url);
 const config = require('../site.config.json');
@@ -60,6 +60,29 @@ for (const post of blogManifest) {
 const projectTagsBySlug = new Map();
 for (const entry of await loadProjectTagSlugs()) {
   projectTagsBySlug.set(entry.slug, { label: entry.label });
+}
+
+// `/projects/:slug` detail pages — shares most of the meta shape with
+// blog posts (title, description, og:article, canonical) but without
+// a generated OG card (we use the project's screenshot directly).
+const projectsBySlug = new Map();
+const githubCachePath = join(process.cwd(), 'scripts/cache/projects-github.json');
+let githubCache = {};
+try {
+  githubCache = JSON.parse(await readFile(githubCachePath, 'utf-8'));
+} catch {
+  // No cache yet — detail pages get a plain description from the
+  // curated TS source.
+}
+for (const entry of await loadProjectEntries()) {
+  const meta = githubCache[entry.titleSlug] ?? null;
+  projectsBySlug.set(entry.titleSlug, {
+    title: entry.title,
+    description: entry.description,
+    image: entry.image,
+    link: entry.link,
+    readmeExcerpt: meta?.readmeExcerpt ?? null,
+  });
 }
 
 async function* walk(dir) {
@@ -234,6 +257,7 @@ let routesProcessed = 0;
 let blogProcessed = 0;
 let tagsProcessed = 0;
 let projectTagsProcessed = 0;
+let projectDetailsProcessed = 0;
 
 for await (const htmlPath of walk(DIST)) {
   let html = await readFile(htmlPath, 'utf-8');
@@ -243,6 +267,50 @@ for await (const htmlPath of walk(DIST)) {
   const tagMatch = route.match(/^\/blog\/tag\/([^/]+)$/);
   const projectTagMatch = route.match(/^\/projects\/tag\/([^/]+)$/);
   const blogMatch = route.match(/^\/blog\/([^/]+)$/);
+  const projectDetailMatch = route.match(/^\/projects\/([^/]+)$/);
+
+  // Detail page check runs *before* the tag check because both routes
+  // match `/projects/<something>`. Detail matches only when the slug
+  // corresponds to a known project; tag archives handle the `/tag/<x>`
+  // shape via their own regex branch above.
+  if (
+    projectDetailMatch &&
+    !projectTagMatch &&
+    projectsBySlug.has(projectDetailMatch[1])
+  ) {
+    const { title: projectTitle, description, image, readmeExcerpt } = projectsBySlug.get(
+      projectDetailMatch[1],
+    );
+    const title = `${projectTitle} — ${SITE_NAME}`;
+    // README excerpt (when present) reads like an article abstract; the
+    // curated `description` is the backup because nothing rules out a
+    // project with no README.
+    const metaDescription = readmeExcerpt?.trim() || description;
+    const imageUrl = image
+      ? `${SITE_URL}${image.startsWith('/') ? '' : '/'}${image}`
+      : DEFAULT_OG_IMAGE;
+    html = setTitle(html, title);
+    html = setMetaDescription(html, metaDescription);
+    html = setMetaProperty(html, 'og:title', title);
+    html = setMetaProperty(html, 'og:description', metaDescription);
+    html = setMetaProperty(html, 'og:type', 'article');
+    html = setMetaProperty(html, 'og:url', url);
+    html = setMetaProperty(html, 'og:image', imageUrl);
+    html = setMetaProperty(html, 'og:site_name', SITE_NAME);
+    html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
+    html = setMetaProperty(html, 'twitter:title', title);
+    html = setMetaProperty(html, 'twitter:description', metaDescription);
+    html = setMetaProperty(html, 'twitter:image', imageUrl);
+    if (TWITTER_HANDLE) {
+      html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
+      html = setMetaProperty(html, 'twitter:creator', TWITTER_HANDLE);
+    }
+    html = setLinkCanonical(html, url);
+    projectDetailsProcessed++;
+    console.log(`  PROJ ${projectDetailMatch[1]} → "${projectTitle}"`);
+    await writeFile(htmlPath, html, 'utf-8');
+    continue;
+  }
 
   if (projectTagMatch && projectTagsBySlug.has(projectTagMatch[1])) {
     const { label } = projectTagsBySlug.get(projectTagMatch[1]);
@@ -341,5 +409,5 @@ for await (const htmlPath of walk(DIST)) {
 }
 
 console.log(
-  `\nInjected meta tags for ${routesProcessed} routes, ${blogProcessed} blog posts, ${tagsProcessed} blog-tag archives, and ${projectTagsProcessed} project-tag archives.`,
+  `\nInjected meta tags for ${routesProcessed} routes, ${blogProcessed} blog posts, ${tagsProcessed} blog-tag archives, ${projectTagsProcessed} project-tag archives, and ${projectDetailsProcessed} project detail pages.`,
 );

@@ -52,7 +52,7 @@ test.describe('/projects connective tissue', () => {
 });
 
 test.describe('command palette → project navigation', () => {
-  test('typing a project title surfaces the Project row and Enter scrolls to the card', async ({
+  test('typing a project title surfaces the Project row and Enter lands on the detail page', async ({
     page,
   }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
@@ -88,10 +88,8 @@ test.describe('command palette → project navigation', () => {
     }
     await page.keyboard.press('Enter');
 
-    // Router lands on /projects with `#project-bookstore` fragment;
-    // anchorScrolling drops the viewport on the corresponding card.
-    await page.waitForURL(/\/projects#project-bookstore$/);
-    const card = page.locator('#project-bookstore');
-    await expect(card).toBeVisible();
+    await page.waitForURL(/\/projects\/bookstore$/);
+    await expect(page.locator('h1')).toContainText('Bookstore');
+    await expect(page.locator('.detail-breadcrumb')).toBeVisible();
   });
 });
