@@ -14,6 +14,7 @@ import { THEME_REGISTRY, getThemeDef, type ThemeId } from '@core/services/theme.
 import { BlogPost } from '@shared/models/blog-post.model';
 import { Project } from '@shared/models/project.model';
 import { Skill, SkillCategory } from '@shared/models/skill.model';
+import { createMockProject } from '@testing/project-mocks';
 
 const SIDEBAR = [
   {
@@ -134,21 +135,23 @@ const mockSkillsService = {
  *     so we can assert tag-based search hits project rows too.
  */
 const PROJECTS: Project[] = [
-  {
+  createMockProject({
     title: 'Atlas',
+    slug: 'atlas',
     description: 'Rust-based log indexer with a Kafka ingest pipeline.',
     image: 'a.png',
     link: 'https://github.com/example/atlas',
     tags: ['Rust', 'Kafka'],
     featured: true,
-  },
-  {
+  }),
+  createMockProject({
     title: 'Backtracking Search',
+    slug: 'backtracking-search',
     description: 'Solves a 6x6 sudoku grid using constraint propagation.',
     image: 'b.png',
     link: 'https://github.com/example/backtracking',
     tags: ['Python', 'Algorithms'],
-  },
+  }),
 ];
 
 const mockProjectsService = {

@@ -7,6 +7,7 @@ import { ProfileDataService } from '@core/services/profile-data.service';
 import { BlogService } from '@core/services/blog.service';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { Project } from '@shared/models/project.model';
+import { createMockGithubMeta, createMockProject } from '@testing/project-mocks';
 
 const mockProfile = {
   personalInfo: signal({
@@ -42,49 +43,36 @@ const mockBlog = {
 };
 
 const MOCK_PROJECTS: Project[] = [
-  {
+  createMockProject({
     title: 'Alpha',
     slug: 'alpha',
     description: 'Featured one.',
     image: 'a.png',
     link: '#',
-    tags: [],
     featured: true,
-    github: {
+    github: createMockGithubMeta({
       stars: 42,
-      forks: 0,
       primaryLanguage: 'TypeScript',
       languageColor: '#3178c6',
       pushedAt: '2026-05-01T00:00:00Z',
       license: 'MIT',
-      topics: [],
-      archived: false,
-      openIssues: 0,
-      homepage: null,
-      languagesBytes: [],
-      latestRelease: null,
-      readmeExcerpt: null,
-      commitsPerWeek: null,
-      fetchedAt: '2026-05-01T00:00:00Z',
-    },
-  },
-  {
+    }),
+  }),
+  createMockProject({
     title: 'Beta',
     slug: 'beta',
     description: 'Not featured.',
     image: 'b.png',
     link: '#',
-    tags: [],
-  },
-  {
+  }),
+  createMockProject({
     title: 'Gamma',
     slug: 'gamma',
     description: 'Featured two.',
     image: 'c.png',
     link: '#',
-    tags: [],
     featured: true,
-  },
+  }),
 ];
 
 const mockProjects = {
