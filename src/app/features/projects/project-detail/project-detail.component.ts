@@ -14,6 +14,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SkillUsageService } from '@core/services/skill-usage.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
@@ -49,6 +50,7 @@ const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
     GlassCardComponent,
     IconComponent,
     SectionHeaderComponent,
+    GithubMetaComponent,
     RouterLink,
     NgOptimizedImage,
   ],
@@ -202,44 +204,6 @@ export class ProjectDetailComponent {
       if (!p) return;
       untracked(() => this.updateMetaTags(p));
     });
-  }
-
-  protected relativeTime(iso: string | null | undefined): string {
-    if (!iso) return '';
-    const then = new Date(iso).getTime();
-    if (!Number.isFinite(then)) return '';
-    const diff = Math.max(0, Date.now() - then);
-    const days = Math.floor(diff / 86_400_000);
-    if (days < 1) return 'today';
-    if (days < 30) return `${days}d ago`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months}mo ago`;
-    return String(new Date(iso).getUTCFullYear());
-  }
-
-  protected compactNumber(value: number | null | undefined): string {
-    if (value == null) return '';
-    if (value < 1000) return String(value);
-    if (value < 10_000) return `${(value / 1000).toFixed(1)}k`;
-    return `${Math.round(value / 1000)}k`;
-  }
-
-  protected languagesPercent(
-    segments: readonly { name: string; bytes: number }[] | undefined,
-    name: string,
-  ): string {
-    if (!segments?.length) return '';
-    const total = segments.reduce((acc, s) => acc + (s.bytes ?? 0), 0);
-    if (total === 0) return '';
-    const bytes = segments.find((s) => s.name === name)?.bytes ?? 0;
-    return `${((bytes / total) * 100).toFixed(1)}%`;
-  }
-
-  protected languagesBarLabel(
-    segments: readonly { name: string; bytes: number }[] | undefined,
-  ): string {
-    if (!segments?.length) return '';
-    return segments.map((s) => `${s.name} ${this.languagesPercent(segments, s.name)}`).join(', ');
   }
 
   private updateMetaTags(project: Project): void {
