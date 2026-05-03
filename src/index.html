@@ -13,14 +13,33 @@
     <script>
       (function () {
         try {
-          var s = localStorage.getItem('theme');
-          var t =
-            s === 'light' || s === 'dark'
-              ? s
-              : window.matchMedia('(prefers-color-scheme: light)').matches
-                ? 'light'
-                : 'dark';
-          if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+          // Allowlist mirrors THEME_REGISTRY in src/app/core/services/theme.registry.ts.
+          // Kept in sync by the contract spec in theme.registry.spec.ts so a
+          // missing id here would fail unit tests before it ever reaches a CSP
+          // surprise. Drift between the two is the most painful failure mode
+          // (silently-wrong theme on first paint) so the duplication is intentional.
+          var THEME_IDS = [
+            'crimson-dark',
+            'crimson-light',
+            'one-dark',
+            'tokyo-night',
+            'catppuccin-mocha',
+            'solarized-light',
+          ];
+          var LEGACY = { dark: 'crimson-dark', light: 'crimson-light' };
+          var stored = localStorage.getItem('theme');
+          var id = null;
+          if (stored && THEME_IDS.indexOf(stored) !== -1) {
+            id = stored;
+          } else if (stored && LEGACY[stored]) {
+            id = LEGACY[stored];
+            localStorage.setItem('theme', id);
+          } else {
+            id = window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'crimson-light'
+              : 'crimson-dark';
+          }
+          document.documentElement.setAttribute('data-theme', id);
         } catch (e) {}
       })();
     </script>

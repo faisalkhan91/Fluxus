@@ -20,9 +20,10 @@
     id="main-navigation"
     [items]="navService.sidebarItems"
     [collapsed]="media.sidebarCollapsed()"
-    [isDark]="themeService.isDark()"
+    [currentTheme]="themeService.themeDef()"
     (resumeClicked)="onResumeDownload()"
     (themeToggled)="onThemeToggle()"
+    (themePickerRequested)="onThemePickerRequested()"
   />
 </header>
 
@@ -40,10 +41,23 @@
   </main>
 </div>
 
+<!--
+  Mobile theme FAB — single-tap toggles between the user's last dark /
+  light pick; Shift / Alt + click (when paired with an external keyboard)
+  surfaces the full picker. The picker is also reachable from Cmd+K, so
+  the secondary modifier path is purely for convenience.
+-->
 <button
   class="mobile-theme-toggle"
-  (click)="onThemeToggle()"
-  [attr.aria-label]="themeService.isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+  (click)="onMobileThemeClick($event)"
+  [attr.aria-label]="
+    'Theme: ' +
+    themeService.themeDef().label +
+    '. Activate to switch to ' +
+    (themeService.isDark() ? 'last light theme' : 'last dark theme') +
+    '. Shift+click to open the theme picker.'
+  "
+  aria-keyshortcuts="Shift"
 >
   <ui-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
 </button>

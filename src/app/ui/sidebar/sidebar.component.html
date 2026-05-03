@@ -45,14 +45,43 @@
 </ul>
 
 <div class="sidebar-footer">
-  <button
-    class="theme-toggle"
-    (click)="themeToggled.emit()"
-    [attr.aria-label]="isDark() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
-  >
-    <ui-icon [name]="isDark() ? 'sun' : 'moon'" [size]="16" />
-    <span>{{ isDark() ? 'Light Mode' : 'Dark Mode' }}</span>
-  </button>
+  <!--
+    Compound theme control:
+      - Main button toggles between the user's last-dark and last-light
+        pick (sun icon when on a dark theme = "next is light").
+      - Trailing chevron opens the command palette pre-filtered to
+        `theme:` so the user can pick any theme by name.
+      - Shift / Alt + click on the main button is a keyboard-friendly
+        alias for the chevron.
+
+    aria-keyshortcuts advertises the modifier alias to AT users so the
+    discoverability of the picker doesn't depend on noticing the chevron.
+  -->
+  <div class="theme-toggle-group">
+    <button
+      class="theme-toggle"
+      (click)="onThemeButtonClick($event)"
+      [attr.aria-label]="
+        'Theme: ' +
+        currentTheme().label +
+        '. Activate to switch to ' +
+        (isDark() ? 'last light theme' : 'last dark theme') +
+        '. Shift+click to open the theme picker.'
+      "
+      aria-keyshortcuts="Shift"
+    >
+      <ui-icon [name]="isDark() ? 'sun' : 'moon'" [size]="16" />
+      <span class="theme-toggle-label">{{ currentTheme().label }}</span>
+    </button>
+    <button
+      class="theme-picker-btn"
+      (click)="themePickerRequested.emit()"
+      aria-label="Open theme picker"
+      title="Open theme picker"
+    >
+      <ui-icon name="chevron-down" [size]="14" />
+    </button>
+  </div>
   <button class="resume-btn" (click)="resumeClicked.emit()" aria-label="Download Resume">
     <ui-icon name="download" [size]="16" />
     <span>Download Resume</span>

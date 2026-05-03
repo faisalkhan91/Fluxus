@@ -170,6 +170,20 @@
   background: var(--glass-bg-hover);
 }
 
+/*
+  Theme-action accent dot — a 10 px circle painted in the theme's iconic
+  accent. Renders ahead of the icon so the eye can scan the palette and
+  pick the desired theme by colour without reading every label. `inline-block`
+  + flex-shrink: 0 keeps it square at any container width.
+*/
+.palette-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  border: 1px solid var(--glass-border);
+}
+
 .palette-label {
   flex: 1;
   white-space: nowrap;
