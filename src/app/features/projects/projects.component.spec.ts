@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { ProjectsComponent } from './projects.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 
@@ -191,6 +191,78 @@ describe('ProjectsComponent', () => {
     it('returns empty string for null / undefined so the pill is hidden', () => {
       expect(component['compactNumber'](null)).toBe('');
       expect(component['compactNumber'](undefined)).toBe('');
+    });
+  });
+
+  describe('sort controls', () => {
+    it('defaults to Featured (catalog order)', () => {
+      expect(el.querySelector('.projects-sort-option.active')?.textContent?.trim()).toBe(
+        'Featured',
+      );
+      const titles = Array.from(
+        el.querySelectorAll('.project-title') as NodeListOf<HTMLElement>,
+      ).map((t) => t.textContent?.trim());
+      expect(titles).toEqual(['Project Alpha', 'Project Beta']);
+    });
+
+    it('sorts alphabetically when "A–Z" is selected', async () => {
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { sort: 'alpha' } });
+      fixture.detectChanges();
+      const titles = Array.from(
+        el.querySelectorAll('.project-title') as NodeListOf<HTMLElement>,
+      ).map((t) => t.textContent?.trim());
+      expect(titles).toEqual(['Project Alpha', 'Project Beta']);
+      expect(el.querySelector('.projects-sort-option.active')?.textContent?.trim()).toBe('A–Z');
+    });
+
+    it('sorts by stars descending when "Most starred" is selected', async () => {
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { sort: 'stars' } });
+      fixture.detectChanges();
+      const titles = Array.from(
+        el.querySelectorAll('.project-title') as NodeListOf<HTMLElement>,
+      ).map((t) => t.textContent?.trim());
+      // Alpha has stars=1234, Beta has no github; Alpha must sort first.
+      expect(titles[0]).toBe('Project Alpha');
+    });
+
+    it('falls back to "featured" for an unknown sort key in the URL', async () => {
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { sort: 'garbage' } });
+      fixture.detectChanges();
+      expect(el.querySelector('.projects-sort-option.active')?.textContent?.trim()).toBe(
+        'Featured',
+      );
+    });
+
+    it('writes ?sort=alpha to the URL on click and scrubs the param for the Featured default', () => {
+      const router = TestBed.inject(Router);
+      const navSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+      const alphaBtn = Array.from(
+        el.querySelectorAll('.projects-sort-option') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.textContent?.trim() === 'A–Z');
+      alphaBtn!.click();
+      expect(navSpy).toHaveBeenLastCalledWith(
+        [],
+        expect.objectContaining({
+          queryParams: { sort: 'alpha' },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        }),
+      );
+
+      const featuredBtn = Array.from(
+        el.querySelectorAll('.projects-sort-option') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.textContent?.trim() === 'Featured');
+      featuredBtn!.click();
+      expect(navSpy).toHaveBeenLastCalledWith(
+        [],
+        expect.objectContaining({ queryParams: { sort: null } }),
+      );
+
+      navSpy.mockRestore();
     });
   });
 

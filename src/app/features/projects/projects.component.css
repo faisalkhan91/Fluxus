@@ -7,6 +7,45 @@
   margin: 0 auto;
 }
 
+.projects-sort-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.projects-sort-option {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: transparent;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.projects-sort-option:hover,
+.projects-sort-option:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.projects-sort-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.projects-sort-option.active {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--surface-overlay);
+}
+
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
