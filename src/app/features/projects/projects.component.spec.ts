@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { ProjectsComponent } from './projects.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 
@@ -34,7 +35,10 @@ describe('ProjectsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectsComponent],
-      providers: [{ provide: ProjectsDataService, useValue: mockProjectsData }],
+      providers: [
+        provideRouter([]),
+        { provide: ProjectsDataService, useValue: mockProjectsData },
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
@@ -104,5 +108,15 @@ describe('ProjectsComponent', () => {
     const firstCardTags = el.querySelector('.project-card')?.querySelectorAll('.tag');
     expect(firstCardTags?.length).toBe(2);
     expect(firstCardTags?.[0].textContent?.trim()).toBe('Angular');
+  });
+
+  it('renders tags as links to the projects archive at /projects/tag/:slug', () => {
+    const firstCardTags = el
+      .querySelector('.project-card')
+      ?.querySelectorAll<HTMLAnchorElement>('a.tag');
+    expect(firstCardTags?.length).toBe(2);
+    expect(firstCardTags?.[0].getAttribute('href')).toBe('/projects/tag/angular');
+    expect(firstCardTags?.[1].getAttribute('href')).toBe('/projects/tag/typescript');
+    expect(firstCardTags?.[0].getAttribute('aria-label')).toBe('View all projects tagged Angular');
   });
 });
