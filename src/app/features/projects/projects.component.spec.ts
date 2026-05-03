@@ -110,6 +110,12 @@ describe('ProjectsComponent', () => {
     expect(firstCardTags?.[0].textContent?.trim()).toBe('Angular');
   });
 
+  it('assigns id="project-<slug>" on each card so #project-... deep-links work', () => {
+    const cards = Array.from(el.querySelectorAll('.project-card'));
+    const ids = cards.map((card) => card.getAttribute('id'));
+    expect(ids).toEqual(['project-project-alpha', 'project-project-beta']);
+  });
+
   it('renders tags as links to the projects archive at /projects/tag/:slug', () => {
     const firstCardTags = el
       .querySelector('.project-card')

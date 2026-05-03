@@ -18,6 +18,8 @@ import { BlogService } from '@core/services/blog.service';
 import { ThemeService } from '@core/services/theme.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
 import { SkillUsageService } from '@core/services/skill-usage.service';
+import { ProjectsDataService } from '@core/services/projects-data.service';
+import { slugify } from '@shared/utils/string.utils';
 
 /**
  * Discriminator separates plain navigation from in-place actions
@@ -47,8 +49,21 @@ interface CommandItem {
   kind: CommandKind;
   /** Click target — only meaningful when `kind === 'route'`. */
   route?: string;
+  /**
+   * Optional URL fragment for `kind === 'route'` entries. Used by project
+   * entries to land on a specific card within `/projects` (`#project-<slug>`)
+   * and in the future by skills-page deep links (`#skill-<slug>`).
+   */
+  fragment?: string;
   /** Side effect — only meaningful when `kind === 'action'`. */
   run?: () => void;
+  /**
+   * Extra lowercased search terms folded into the fuzzy filter. Projects
+   * use this to surface a hit when the user types a tag or a description
+   * word (e.g. "sudoku" → Backtracking Search). Separate from `label` so
+   * the visible row stays compact while search is still permissive.
+   */
+  keywords?: string;
   /**
    * Optional accent dot rendered ahead of the icon. Used by theme entries
    * to preview the active accent for each theme without enumerating yet
@@ -81,6 +96,7 @@ export class CommandPaletteComponent {
   private theme = inject(ThemeService);
   private skills = inject(SkillsDataService);
   private skillUsage = inject(SkillUsageService);
+  private projectsData = inject(ProjectsDataService);
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -167,6 +183,30 @@ export class CommandPaletteComponent {
         });
       }
     }
+    // Project entries deep-link into the /projects grid and scroll to the
+    // matching card via `#project-<slug>`. Once PR-3 lands detail pages at
+    // `/projects/:slug`, swap `route`/`fragment` for the slug route and drop
+    // the fragment — the anchor ids will stay as safety-net deep targets.
+    for (const project of this.projectsData.projects()) {
+      const slug = slugify(project.title);
+      if (!slug) continue;
+      const id = `project:${slug}`;
+      const tagCount = project.tags.length;
+      const hint = project.featured
+        ? `Project · Featured · ${tagCount} tag${tagCount === 1 ? '' : 's'}`
+        : `Project · ${tagCount} tag${tagCount === 1 ? '' : 's'}`;
+      items.push({
+        id,
+        domId: toDomId(id),
+        label: project.title,
+        hint,
+        icon: 'github',
+        kind: 'route',
+        route: '/projects',
+        fragment: `project-${slug}`,
+        keywords: [...project.tags, project.description].join(' ').toLowerCase(),
+      });
+    }
     return items;
   });
 
@@ -178,7 +218,8 @@ export class CommandPaletteComponent {
       (item) =>
         item.label.toLowerCase().includes(q) ||
         (item.route?.toLowerCase().includes(q) ?? false) ||
-        item.id.toLowerCase().includes(q),
+        item.id.toLowerCase().includes(q) ||
+        (item.keywords?.includes(q) ?? false),
     );
   });
 
@@ -279,6 +320,12 @@ export class CommandPaletteComponent {
       item.run?.();
       return;
     }
-    if (item.route) this.router.navigate([item.route]);
+    if (item.route) {
+      if (item.fragment) {
+        this.router.navigate([item.route], { fragment: item.fragment });
+      } else {
+        this.router.navigate([item.route]);
+      }
+    }
   }
 }

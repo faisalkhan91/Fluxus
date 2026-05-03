@@ -8,6 +8,7 @@
   <div class="projects-grid">
     @for (project of projectsData.projects(); track project.title; let i = $index) {
       <ui-glass-card
+        [attr.id]="'project-' + slugify(project.title)"
         [hover]="true"
         [glow]="!!project.featured"
         class="project-card"
