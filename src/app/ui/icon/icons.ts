@@ -171,4 +171,14 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'line', x1: '18.36', y1: '5.64', x2: '19.78', y2: '4.22' },
   ],
   moon: [{ tag: 'path', d: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' }],
+  palette: [
+    { tag: 'circle', cx: '13.5', cy: '6.5', r: '1' },
+    { tag: 'circle', cx: '17.5', cy: '10.5', r: '1' },
+    { tag: 'circle', cx: '8.5', cy: '7.5', r: '1' },
+    { tag: 'circle', cx: '6.5', cy: '12.5', r: '1' },
+    {
+      tag: 'path',
+      d: 'M12 22a10 10 0 1 1 10-10 4 4 0 0 1-4 4h-2.25a1.75 1.75 0 0 0-1.75 1.75v.5a1.75 1.75 0 0 1-1.75 1.75z',
+    },
+  ],
 };

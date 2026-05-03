@@ -5,6 +5,7 @@ import {
   DestroyRef,
   ElementRef,
   PLATFORM_ID,
+  computed,
   inject,
   input,
   output,
@@ -14,6 +15,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
+import type { ThemeDef } from '@core/services/theme.registry';
 
 export type SidebarItem =
   | { type: 'link'; label: string; ext: string; route: string; icon: string }
@@ -41,9 +43,40 @@ export class SidebarComponent implements AfterViewInit {
 
   items = input.required<SidebarItem[]>();
   collapsed = input(false);
-  isDark = input(true);
+  /**
+   * Currently-active theme definition. Drives the icon (sun on dark themes
+   * = "next is light", moon on light themes = "next is dark") and the
+   * inline label. Required so the sidebar never has to guess; the shell
+   * always has a definite ThemeService reading available.
+   */
+  currentTheme = input.required<ThemeDef>();
   resumeClicked = output<void>();
+  /** Quick swap to the user's last pick within the opposite scheme. */
   themeToggled = output<void>();
+  /**
+   * Open the command palette pre-filtered to theme entries so the user can
+   * pick any theme by name (not just bounce between dark/light).
+   */
+  themePickerRequested = output<void>();
+
+  /** Computed shorthand for the template; keeps the binding boilerplate down. */
+  protected isDark = computed<boolean>(() => this.currentTheme().scheme === 'dark');
+
+  /**
+   * Click handler that lets a single visible button cover both default
+   * (toggle) and discoverable (open picker) intents — Shift+click /
+   * Alt+click bypass the binary swap and surface the full picker so power
+   * users don't have to chase a separate affordance. Mouse + keyboard
+   * activation both flow through here because Angular fires `click` for
+   * Enter / Space on `<button>` automatically.
+   */
+  protected onThemeButtonClick(event: MouseEvent | KeyboardEvent): void {
+    if (event.shiftKey || event.altKey) {
+      this.themePickerRequested.emit();
+    } else {
+      this.themeToggled.emit();
+    }
+  }
 
   /*
     H4 — single sliding indicator (mirrors the editor tab bar).

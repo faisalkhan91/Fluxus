@@ -62,6 +62,13 @@
               (mouseenter)="highlighted.set(i)"
               (click)="select(item)"
             >
+              @if (item.swatch) {
+                <span
+                  class="palette-swatch"
+                  [style.background-color]="item.swatch"
+                  aria-hidden="true"
+                ></span>
+              }
               <ui-icon [name]="item.icon" [size]="14" />
               <span class="palette-label">{{ item.label }}</span>
               <span class="palette-hint">{{ item.hint }}</span>

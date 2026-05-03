@@ -1,6 +1,20 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
-export type Theme = 'light' | 'dark';
+/**
+ * Accepts both the new registry ids (`crimson-dark`, `tokyo-night`, …) and
+ * the legacy `'dark'` / `'light'` values that ThemeService migrates on
+ * read. Specs that exercise the migration path use the legacy values
+ * directly; everything else seeds a registry id.
+ */
+export type Theme =
+  | 'crimson-dark'
+  | 'crimson-light'
+  | 'one-dark'
+  | 'tokyo-night'
+  | 'catppuccin-mocha'
+  | 'solarized-light'
+  | 'dark'
+  | 'light';
 
 /**
  * Seed `localStorage.theme` *before* the page navigates so the inline
