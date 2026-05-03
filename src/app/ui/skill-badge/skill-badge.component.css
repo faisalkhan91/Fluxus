@@ -1,5 +1,10 @@
 :host {
   display: block;
+  /* When the badge is the target of a `#skill-<slug>` hash link (from the
+     command palette, a blog post, or a project detail page), offset the
+     scroll so it doesn't tuck under sticky chrome. Matches the pattern at
+     src/styles.css:500. */
+  scroll-margin-top: var(--space-8);
 }
 
 .badge-inner {

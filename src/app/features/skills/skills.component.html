@@ -17,6 +17,7 @@
         @for (skill of visibleSkills(category); track skill.name; let i = $index) {
           @let u = usageFor(skill);
           <ui-skill-badge
+            [attr.id]="'skill-' + slugify(skill.name)"
             [name]="skill.name"
             [iconSrc]="skill.iconSrc"
             [level]="skill.level"
