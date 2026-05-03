@@ -13,9 +13,14 @@
         [glow]="!!project.featured"
         class="project-card"
         [class.expanded]="isExpanded(project.title)"
+        [class.archived]="project.github?.archived"
         animate.enter="enter-fade-up"
         [style.--enter-delay]="i * 60 + 'ms'"
+        [style.--language-stripe]="project.github?.languageColor || 'transparent'"
       >
+        @if (project.github?.languageColor) {
+          <div class="project-language-stripe" aria-hidden="true"></div>
+        }
         <div class="project-image-wrapper">
           <img
             [ngSrc]="project.image"
@@ -26,7 +31,14 @@
           />
         </div>
         <div class="project-body">
-          <h3 class="project-title">{{ project.title }}</h3>
+          <h3 class="project-title">
+            {{ project.title }}
+            @if (project.github?.archived) {
+              <span class="archived-badge" title="This repository is archived on GitHub"
+                >archived</span
+              >
+            }
+          </h3>
           <p class="project-desc" [id]="'desc-' + slugify(project.title)">
             {{ project.description }}
           </p>
@@ -44,6 +56,49 @@
           >
             {{ isExpanded(project.title) ? '− Show less' : '+ Read more' }}
           </button>
+
+          @if (project.github; as gh) {
+            <div
+              class="project-github-meta"
+              [attr.aria-label]="'GitHub metadata for ' + project.title"
+            >
+              @if (gh.primaryLanguage) {
+                <span class="gh-pill">
+                  <span
+                    class="gh-language-dot"
+                    [style.background]="gh.languageColor || 'currentColor'"
+                    aria-hidden="true"
+                  ></span>
+                  {{ gh.primaryLanguage }}
+                </span>
+              }
+              @if (gh.stars != null) {
+                <span class="gh-pill" [attr.aria-label]="gh.stars + ' stars on GitHub'">
+                  <ui-icon name="star" [size]="12" />
+                  {{ compactNumber(gh.stars) }}
+                </span>
+              }
+              @if (gh.forks != null && gh.forks > 0) {
+                <span class="gh-pill" [attr.aria-label]="gh.forks + ' forks on GitHub'">
+                  <ui-icon name="git-fork" [size]="12" />
+                  {{ compactNumber(gh.forks) }}
+                </span>
+              }
+              @if (relativeTime(gh.pushedAt); as rt) {
+                <span class="gh-pill" [attr.aria-label]="'Last pushed ' + rt">
+                  <ui-icon name="clock" [size]="12" />
+                  {{ rt }}
+                </span>
+              }
+              @if (gh.license) {
+                <span class="gh-pill" [attr.aria-label]="gh.license + ' licensed'">
+                  <ui-icon name="scale" [size]="12" />
+                  {{ gh.license }}
+                </span>
+              }
+            </div>
+          }
+
           <div class="project-footer">
             <div class="project-tags">
               @for (tag of project.tags; track tag) {
