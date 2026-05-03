@@ -129,6 +129,40 @@
         </div>
       </div>
     }
+
+    @if (featuredProjects().length > 0) {
+      <div class="featured-projects">
+        <h2 class="latest-posts-label">
+          <span class="label-decoration">//</span> featured projects
+        </h2>
+        <div class="latest-posts-row">
+          @for (project of featuredProjects(); track project.title; let i = $index) {
+            <a
+              [routerLink]="['/projects', project.slug || slugify(project.title)]"
+              class="latest-post-link"
+              animate.enter="fade-in"
+              [style.--enter-delay]="i * 80 + 'ms'"
+              [attr.aria-label]="'View project ' + project.title"
+            >
+              <ui-glass-card [elevation]="1" [hover]="true" class="latest-post-card">
+                <div class="latest-post-meta">
+                  <ui-icon name="github" [size]="12" />
+                  @if (project.github?.primaryLanguage) {
+                    <span>{{ project.github!.primaryLanguage }}</span>
+                    <span class="meta-separator">&middot;</span>
+                  }
+                  <ui-icon name="star" [size]="12" />
+                  <span>{{ project.github?.stars ?? 0 }}</span>
+                </div>
+                <h3 class="latest-post-title">{{ project.title }}</h3>
+                <p class="latest-post-excerpt">{{ project.description }}</p>
+              </ui-glass-card>
+            </a>
+          }
+        </div>
+        <a routerLink="/projects" class="view-all-link">View all projects &rarr;</a>
+      </div>
+    }
   </div>
 
   <!--

@@ -49,6 +49,48 @@ test.describe('/projects connective tissue', () => {
       expect(id!.startsWith('project-')).toBe(true);
     }
   });
+
+  test('sort controls reorder the grid and persist the choice in the URL', async ({ page }) => {
+    await page.goto('/projects', { waitUntil: 'networkidle' });
+    const initial = await page.locator('.project-title').allTextContents();
+
+    await page.getByRole('radio', { name: 'A–Z' }).click();
+    await expect(page).toHaveURL(/\?sort=alpha/);
+    const alpha = await page.locator('.project-title').allTextContents();
+    // "A-Z" order must differ from the catalog order for our seed set
+    // (Backtracking, Bookstore, Dictionary, Insecure, Jenkins, Storm).
+    expect(alpha).not.toEqual(initial);
+    expect(alpha[0].localeCompare(alpha[1])).toBeLessThan(0);
+
+    // Returning to Featured scrubs the param rather than leaving
+    // `?sort=featured` dangling.
+    await page.getByRole('radio', { name: 'Featured' }).click();
+    await expect(page).not.toHaveURL(/\?sort=/);
+  });
+});
+
+test.describe('home page featured projects strip', () => {
+  test('surfaces featured projects linking to their detail pages', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    // Projects strip lives under .featured-projects — below the blog row.
+    const strip = page.locator('.featured-projects');
+    await expect(strip).toBeVisible();
+
+    const links = strip.locator('.latest-post-link');
+    const count = await links.count();
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThanOrEqual(3);
+
+    const href = await links.first().getAttribute('href');
+    expect(href).toBeTruthy();
+    expect(href!.startsWith('/projects/')).toBe(true);
+    expect(href).not.toBe('/projects');
+
+    await links.first().click();
+    await page.waitForURL(/\/projects\/[^/]+$/);
+    await expect(page.locator('.detail-breadcrumb')).toBeVisible();
+  });
 });
 
 test.describe('command palette → project navigation', () => {
