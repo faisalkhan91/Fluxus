@@ -35,7 +35,6 @@
   box-sizing: border-box;
 }
 
-
 .badge-inner:hover {
   background: var(--glass-bg-hover);
   border-color: var(--glass-border-hover);

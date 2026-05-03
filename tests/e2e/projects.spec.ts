@@ -34,14 +34,12 @@ test.describe('/projects connective tissue', () => {
     await expect(page.locator('h1')).toContainText('Projects tagged');
   });
 
-  test('each card carries id="project-<slug>" for hash-link deep targeting', async ({
-    page,
-  }) => {
+  test('each card carries id="project-<slug>" for hash-link deep targeting', async ({ page }) => {
     await page.goto('/projects', { waitUntil: 'networkidle' });
 
-    const ids = await page.locator('.project-card').evaluateAll((els) =>
-      els.map((el) => el.getAttribute('id')),
-    );
+    const ids = await page
+      .locator('.project-card')
+      .evaluateAll((els) => els.map((el) => el.getAttribute('id')));
     // All cards must have an id, and all ids must start with `project-`.
     expect(ids.length).toBeGreaterThan(0);
     for (const id of ids) {

@@ -44,7 +44,10 @@ export class HeroComponent {
    * latest-posts row (also 3 columns at wide viewport).
    */
   protected readonly featuredProjects = computed(() =>
-    this.projects.projects().filter((p) => p.featured).slice(0, 3),
+    this.projects
+      .projects()
+      .filter((p) => p.featured)
+      .slice(0, 3),
   );
 
   /**

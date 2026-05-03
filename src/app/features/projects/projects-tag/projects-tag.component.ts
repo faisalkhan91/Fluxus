@@ -38,7 +38,13 @@ const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
   selector: 'app-projects-tag',
   templateUrl: './projects-tag.component.html',
   styleUrl: './projects-tag.component.css',
-  imports: [GlassCardComponent, IconComponent, SectionHeaderComponent, RouterLink, NgOptimizedImage],
+  imports: [
+    GlassCardComponent,
+    IconComponent,
+    SectionHeaderComponent,
+    RouterLink,
+    NgOptimizedImage,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsTagComponent {

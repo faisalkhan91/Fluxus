@@ -45,7 +45,13 @@ const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.css',
-  imports: [GlassCardComponent, IconComponent, SectionHeaderComponent, RouterLink, NgOptimizedImage],
+  imports: [
+    GlassCardComponent,
+    IconComponent,
+    SectionHeaderComponent,
+    RouterLink,
+    NgOptimizedImage,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectDetailComponent {
@@ -219,7 +225,7 @@ export class ProjectDetailComponent {
   }
 
   protected languagesPercent(
-    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+    segments: readonly { name: string; bytes: number }[] | undefined,
     name: string,
   ): string {
     if (!segments?.length) return '';
@@ -230,7 +236,7 @@ export class ProjectDetailComponent {
   }
 
   protected languagesBarLabel(
-    segments: ReadonlyArray<{ name: string; bytes: number }> | undefined,
+    segments: readonly { name: string; bytes: number }[] | undefined,
   ): string {
     if (!segments?.length) return '';
     return segments.map((s) => `${s.name} ${this.languagesPercent(segments, s.name)}`).join(', ');

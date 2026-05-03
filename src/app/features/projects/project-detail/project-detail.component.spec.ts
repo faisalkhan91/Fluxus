@@ -150,7 +150,8 @@ describe('ProjectDetailComponent', () => {
     expect(tags.some((t) => t['property'] === 'og:type' && t['content'] === 'article')).toBe(true);
     expect(
       tags.some(
-        (t) => t['property'] === 'og:url' && t['content'] === `${environment.siteUrl}/projects/atlas`,
+        (t) =>
+          t['property'] === 'og:url' && t['content'] === `${environment.siteUrl}/projects/atlas`,
       ),
     ).toBe(true);
   });
@@ -162,9 +163,7 @@ describe('ProjectDetailComponent', () => {
 
   it('renders "Skills used" chips that deep-link to /skills#skill-<canonical>', () => {
     const chips = Array.from(
-      fixture.nativeElement.querySelectorAll(
-        '.detail-chip-skill',
-      ) as NodeListOf<HTMLAnchorElement>,
+      fixture.nativeElement.querySelectorAll('.detail-chip-skill') as NodeListOf<HTMLAnchorElement>,
     );
     const labels = chips.map((a) => a.textContent?.trim());
     // Atlas tags include TypeScript + Angular (both skills) + serverless-framework (not a skill).
@@ -179,7 +178,9 @@ describe('ProjectDetailComponent', () => {
 
   it('lists related blog posts that share at least one tag with the project', () => {
     const posts = Array.from(
-      fixture.nativeElement.querySelectorAll('.detail-related-list li a') as NodeListOf<HTMLElement>,
+      fixture.nativeElement.querySelectorAll(
+        '.detail-related-list li a',
+      ) as NodeListOf<HTMLElement>,
     ).map((el) => el.textContent?.trim());
     expect(posts).toContain('TypeScript Tricks');
     expect(posts).toContain('Angular Signals');

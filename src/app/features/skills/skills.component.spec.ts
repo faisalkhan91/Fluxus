@@ -72,12 +72,13 @@ const mockSkillsData = {
  * `skill-usage.service.spec.ts`.
  */
 function mockUsageFor(skill: Skill): SkillUsage {
-  const slug = skill.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const slug = skill.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
   return {
     slug,
-    projects: [
-      { title: `${skill.name} Project`, description: '', image: '', link: '#', tags: [] },
-    ],
+    projects: [{ title: `${skill.name} Project`, description: '', image: '', link: '#', tags: [] }],
     posts: [],
     projectsRouteSlug: slug,
     postsRouteSlug: null,
