@@ -1,0 +1,78 @@
+@if (meta(); as gh) {
+  <div class="gh-pill-row" [attr.aria-label]="'GitHub metadata for ' + projectTitle()">
+    @if (gh.primaryLanguage) {
+      <span class="gh-pill">
+        <span
+          class="gh-language-dot"
+          [style.background]="gh.languageColor || 'currentColor'"
+          aria-hidden="true"
+        ></span>
+        {{ gh.primaryLanguage }}
+      </span>
+    }
+    @if (rel(); as r) {
+      <span class="gh-pill" [attr.aria-label]="r.tag + ' released ' + releaseRelative()">
+        <ui-icon name="code-2" [size]="12" />
+        {{ r.tag }}
+      </span>
+    }
+    @if (gh.homepage) {
+      <a
+        class="gh-pill gh-pill-link"
+        [href]="gh.homepage"
+        target="_blank"
+        rel="noopener"
+        [attr.aria-label]="'Live demo: ' + gh.homepage"
+      >
+        <ui-icon name="external-link" [size]="12" />
+        Live demo
+      </a>
+    }
+    @if (gh.stars !== null) {
+      <span class="gh-pill" [attr.aria-label]="gh.stars + ' stars on GitHub'">
+        <ui-icon name="star" [size]="12" />
+        {{ starsCompact() }}
+      </span>
+    }
+    @if (gh.forks !== null && gh.forks > 0) {
+      <span class="gh-pill" [attr.aria-label]="gh.forks + ' forks on GitHub'">
+        <ui-icon name="git-fork" [size]="12" />
+        {{ forksCompact() }}
+      </span>
+    }
+    @if (showOpenIssues() && gh.openIssues !== null && gh.openIssues > 0 && !gh.archived) {
+      <span class="gh-pill" [attr.aria-label]="gh.openIssues + ' open issues + PRs'">
+        <ui-icon name="alert-triangle" [size]="12" />
+        {{ gh.openIssues }}
+      </span>
+    }
+    @if (pushedRelative(); as rt) {
+      <span class="gh-pill" [attr.aria-label]="'Last pushed ' + rt">
+        <ui-icon name="clock" [size]="12" />
+        {{ rt }}
+      </span>
+    }
+    @if (gh.license) {
+      <span class="gh-pill" [attr.aria-label]="gh.license + ' licensed'">
+        <ui-icon name="scale" [size]="12" />
+        {{ gh.license }}
+      </span>
+    }
+  </div>
+  @if (languages().length) {
+    <div
+      class="gh-languages-bar"
+      role="img"
+      [attr.aria-label]="'Language distribution: ' + languagesLabel()"
+    >
+      @for (lang of languages(); track lang.name) {
+        <span
+          class="gh-languages-segment"
+          [style.flex]="lang.bytes"
+          [style.background]="lang.color || 'currentColor'"
+          [title]="lang.name + ' · ' + percentOf(lang.name)"
+        ></span>
+      }
+    </div>
+  }
+}

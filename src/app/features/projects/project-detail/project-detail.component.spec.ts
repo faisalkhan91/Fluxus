@@ -13,9 +13,10 @@ import { SkillUsageService } from '@core/services/skill-usage.service';
 import { BlogService } from '@core/services/blog.service';
 import { Project } from '@shared/models/project.model';
 import { environment } from '@env/environment';
+import { createMockGithubMeta, createMockProject } from '@testing/project-mocks';
 
 const MOCK_PROJECTS: Project[] = [
-  {
+  createMockProject({
     title: 'Atlas',
     slug: 'atlas',
     description: 'Short description.',
@@ -23,7 +24,7 @@ const MOCK_PROJECTS: Project[] = [
     link: 'https://github.com/faisalkhan91/atlas',
     tags: ['TypeScript', 'Angular', 'serverless-framework'],
     featured: true,
-    github: {
+    github: createMockGithubMeta({
       stars: 120,
       forks: 8,
       primaryLanguage: 'TypeScript',
@@ -31,24 +32,19 @@ const MOCK_PROJECTS: Project[] = [
       pushedAt: new Date(Date.now() - 3 * 86_400_000).toISOString(),
       license: 'MIT',
       topics: ['angular', 'serverless-framework'],
-      archived: false,
       openIssues: 4,
-      homepage: null,
-      languagesBytes: [],
-      latestRelease: null,
       readmeExcerpt: 'Atlas is a log indexer with a streaming ingest.',
       commitsPerWeek: Array.from({ length: 52 }, (_v, i) => i % 7),
-      fetchedAt: '2026-05-03T00:00:00Z',
-    },
-  },
-  {
+    }),
+  }),
+  createMockProject({
     title: 'Beacon',
     slug: 'beacon',
     description: 'Plain project without GithubMeta.',
     image: 'assets/beacon.png',
     link: 'https://example.com/beacon',
     tags: ['Python'],
-  },
+  }),
 ];
 
 const MOCK_SKILLS = {
@@ -136,7 +132,7 @@ describe('ProjectDetailComponent', () => {
       'log indexer',
     );
     const pills = Array.from(
-      fixture.nativeElement.querySelectorAll('.detail-gh-meta .gh-pill') as NodeListOf<HTMLElement>,
+      fixture.nativeElement.querySelectorAll('.gh-pill-row .gh-pill') as NodeListOf<HTMLElement>,
     ).map((el) => el.textContent?.trim().replace(/\s+/g, ' '));
     expect(pills.some((t) => t?.includes('TypeScript'))).toBe(true);
     expect(pills.some((t) => t?.includes('120'))).toBe(true); // stars
@@ -201,7 +197,7 @@ describe('ProjectDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('h1')?.textContent).toContain('Beacon');
     expect(fixture.nativeElement.querySelector('.detail-readme')).toBeNull();
     expect(fixture.nativeElement.querySelector('.detail-sparkline')).toBeNull();
-    expect(fixture.nativeElement.querySelector('.detail-gh-meta')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.gh-pill-row')).toBeNull();
   });
 
   it('renders the "project not found" status when the slug does not resolve', () => {
