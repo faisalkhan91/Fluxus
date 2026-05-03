@@ -92,14 +92,15 @@ describe('BlogComponent', () => {
   });
 
   it('renders a cover image inside the featured card from the post.cover field', () => {
-    // First card: explicit cover wins.
+    // First card: explicit cover wins. `NgOptimizedImage` in `fill` mode
+    // does not emit `width`/`height` attributes — the parent figure sizes
+    // the image via `position: relative` + `aspect-ratio`. We assert on
+    // `src` + `alt` + `sizes` (the responsive hint) instead.
     const cover = el.querySelector('.post-link--featured .post-card-cover img');
     expect(cover).toBeTruthy();
     expect(cover?.getAttribute('src')).toBe('assets/images/blog/cover-one.webp');
     expect(cover?.getAttribute('alt')).toBe('Post One');
-    // Falls back to (1200, 630) when not in IMAGE_DIMS — keeps CLS bounded.
-    expect(cover?.getAttribute('width')).toBeTruthy();
-    expect(cover?.getAttribute('height')).toBeTruthy();
+    expect(cover?.getAttribute('sizes')).toBeTruthy();
   });
 
   it('falls back to the build-time OG card when the featured post has no cover', () => {

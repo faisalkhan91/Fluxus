@@ -35,8 +35,9 @@
             <img
               [ngSrc]="project.image"
               [alt]="project.title"
-              width="400"
-              height="256"
+              fill
+              [priority]="i === 0"
+              sizes="(max-width: 768px) 85vw, 33vw"
               class="project-image"
             />
           </div>
