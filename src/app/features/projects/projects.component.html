@@ -5,8 +5,26 @@
     decoration="// git log --oneline"
     [level]="1"
   />
+  <div
+    class="projects-sort-row"
+    role="radiogroup"
+    aria-label="Sort projects"
+  >
+    @for (opt of sortOptions; track opt.key) {
+      <button
+        type="button"
+        class="projects-sort-option"
+        role="radio"
+        [attr.aria-checked]="sort() === opt.key"
+        [class.active]="sort() === opt.key"
+        (click)="setSort(opt.key)"
+      >
+        {{ opt.label }}
+      </button>
+    }
+  </div>
   <div class="projects-grid">
-    @for (project of projectsData.projects(); track project.title; let i = $index) {
+    @for (project of visibleProjects(); track project.title; let i = $index) {
       <ui-glass-card
         [attr.id]="'project-' + slugify(project.title)"
         [hover]="true"

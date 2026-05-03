@@ -14,7 +14,10 @@ import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import { BlogService } from '@core/services/blog.service';
+import { ProjectsDataService } from '@core/services/projects-data.service';
 import { formatPostDate } from '@shared/utils/blog.utils';
+import { slugify } from '@shared/utils/string.utils';
+import { computed } from '@angular/core';
 
 @Component({
   selector: 'app-hero',
@@ -30,6 +33,19 @@ export class HeroComponent {
   private readonly destroyRef = inject(DestroyRef);
   protected profile = inject(ProfileDataService);
   protected blog = inject(BlogService);
+  protected projects = inject(ProjectsDataService);
+  protected slugify = slugify;
+
+  /**
+   * Up to 3 `featured` projects, in catalog order. Surfaced on the
+   * homepage under the latest-blog row so visitors see curated
+   * portfolio highlights without having to navigate to `/projects`.
+   * Limited to 3 to keep the row visually balanced against the
+   * latest-posts row (also 3 columns at wide viewport).
+   */
+  protected readonly featuredProjects = computed(() =>
+    this.projects.projects().filter((p) => p.featured).slice(0, 3),
+  );
 
   /**
    * Slot count for the latest-posts skeleton row. Lifted out of the
