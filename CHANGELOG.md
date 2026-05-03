@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0](https://github.com/faisalkhan91/Fluxus/compare/v3.0.0...v3.1.0) (2026-05-03)
+
+
+### Features
+
+* Theme switcher ([4c9bc6b](https://github.com/faisalkhan91/Fluxus/commit/4c9bc6bc26060ea4e9241e160908f3d10750cf76))
+* **theme:** add multi-theme registry with palette picker and last-by-scheme toggle ([9133692](https://github.com/faisalkhan91/Fluxus/commit/91336923e0ac6cf974cf453122f2eade251b10da))
+
+
+### Bug Fixes
+
+* **csp:** unbreak prerendered blog first paint and lock down with regression checks ([0973ffa](https://github.com/faisalkhan91/Fluxus/commit/0973ffaaaa08f716cbbd78385a09e3a8b397273f))
+
 ## [3.0.0](https://github.com/faisalkhan91/Fluxus/compare/v2.4.0...v3.0.0) (2026-04-27)
 
 
