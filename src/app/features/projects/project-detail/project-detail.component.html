@@ -1,0 +1,192 @@
+<div class="detail-layout" animate.enter="enter-fade-up">
+  <nav aria-label="Breadcrumb" class="detail-breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/projects">Projects</a></li>
+      <li aria-current="page">{{ project()?.title ?? 'Not found' }}</li>
+    </ol>
+  </nav>
+
+  @if (project(); as p) {
+    <ui-section-header
+      [title]="p.title"
+      decoration="// README.md"
+      [level]="1"
+    />
+
+    @if (p.github?.archived) {
+      <p class="detail-archived-note">
+        This repository is archived on GitHub — no new changes are expected.
+      </p>
+    }
+
+    <ui-glass-card
+      class="detail-hero"
+      [class.archived]="p.github?.archived"
+      [style.--language-stripe]="p.github?.languageColor || 'transparent'"
+    >
+      @if (p.github?.languageColor) {
+        <div class="detail-language-stripe" aria-hidden="true"></div>
+      }
+      <div class="detail-hero-image">
+        <img
+          [ngSrc]="p.image"
+          [alt]="p.title"
+          width="960"
+          height="600"
+          priority
+          class="detail-image"
+        />
+      </div>
+      <p class="detail-summary">{{ p.description }}</p>
+
+      @if (p.github; as gh) {
+        <div class="detail-gh-meta" [attr.aria-label]="'GitHub metadata for ' + p.title">
+          @if (gh.primaryLanguage) {
+            <span class="gh-pill">
+              <span
+                class="gh-language-dot"
+                [style.background]="gh.languageColor || 'currentColor'"
+                aria-hidden="true"
+              ></span>
+              {{ gh.primaryLanguage }}
+            </span>
+          }
+          @if (gh.stars != null) {
+            <span class="gh-pill" [attr.aria-label]="gh.stars + ' stars on GitHub'">
+              <ui-icon name="star" [size]="12" />
+              {{ compactNumber(gh.stars) }}
+            </span>
+          }
+          @if (gh.forks != null && gh.forks > 0) {
+            <span class="gh-pill" [attr.aria-label]="gh.forks + ' forks on GitHub'">
+              <ui-icon name="git-fork" [size]="12" />
+              {{ compactNumber(gh.forks) }}
+            </span>
+          }
+          @if (gh.openIssues != null && gh.openIssues > 0 && !gh.archived) {
+            <span class="gh-pill" [attr.aria-label]="gh.openIssues + ' open issues + PRs'">
+              <ui-icon name="alert-triangle" [size]="12" />
+              {{ gh.openIssues }}
+            </span>
+          }
+          @if (relativeTime(gh.pushedAt); as rt) {
+            <span class="gh-pill" [attr.aria-label]="'Last pushed ' + rt">
+              <ui-icon name="clock" [size]="12" />
+              {{ rt }}
+            </span>
+          }
+          @if (gh.license) {
+            <span class="gh-pill" [attr.aria-label]="gh.license + ' licensed'">
+              <ui-icon name="scale" [size]="12" />
+              {{ gh.license }}
+            </span>
+          }
+        </div>
+      }
+
+      <div class="detail-actions">
+        <a
+          [href]="p.link"
+          target="_blank"
+          rel="noopener"
+          class="detail-source-link"
+          [attr.aria-label]="'Open ' + p.title + ' on GitHub'"
+        >
+          <ui-icon name="github" [size]="18" />
+          <span>Source on GitHub</span>
+          <ui-icon name="external-link" [size]="14" />
+        </a>
+      </div>
+    </ui-glass-card>
+
+    @if (p.github?.readmeExcerpt) {
+      <section class="detail-section" aria-labelledby="detail-about">
+        <h2 class="detail-section-title" id="detail-about">About</h2>
+        <p class="detail-readme">{{ p.github?.readmeExcerpt }}</p>
+      </section>
+    }
+
+    @if (p.tags.length > 0) {
+      <section class="detail-section" aria-labelledby="detail-tags">
+        <h2 class="detail-section-title" id="detail-tags">Tags</h2>
+        <div class="detail-chip-row">
+          @for (tag of p.tags; track tag) {
+            <a
+              class="detail-chip"
+              [routerLink]="['/projects/tag', slugify(tag)]"
+              [attr.aria-label]="'View all projects tagged ' + tag"
+              >{{ tag }}</a
+            >
+          }
+        </div>
+      </section>
+    }
+
+    @if (skillTags().length > 0) {
+      <section class="detail-section" aria-labelledby="detail-skills">
+        <h2 class="detail-section-title" id="detail-skills">Skills used</h2>
+        <div class="detail-chip-row">
+          @for (tag of skillTags(); track tag) {
+            <a
+              class="detail-chip detail-chip-skill"
+              [routerLink]="'/skills'"
+              [fragment]="'skill-' + slugify(tag)"
+              [attr.aria-label]="'View ' + tag + ' on the Skills page'"
+              >{{ tag }}</a
+            >
+          }
+        </div>
+      </section>
+    }
+
+    @if (sparklinePath(); as path) {
+      <section class="detail-section" aria-labelledby="detail-activity">
+        <h2 class="detail-section-title" id="detail-activity">Commit activity (52 weeks)</h2>
+        <div class="detail-sparkline-row">
+          <svg
+            class="detail-sparkline"
+            viewBox="0 0 100 20"
+            preserveAspectRatio="none"
+            role="img"
+            [attr.aria-label]="
+              sparklineTotal() + ' commits in the last year'
+            "
+          >
+            <path [attr.d]="path" fill="none" stroke="currentColor" stroke-width="0.75" />
+          </svg>
+          <span class="detail-sparkline-total">{{ sparklineTotal() }} commits</span>
+        </div>
+      </section>
+    }
+
+    @if (relatedPosts().length > 0) {
+      <section class="detail-section" aria-labelledby="detail-related">
+        <h2 class="detail-section-title" id="detail-related">Related posts</h2>
+        <ul class="detail-related-list">
+          @for (post of relatedPosts(); track post.slug) {
+            <li>
+              <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+              <span class="detail-related-date">{{ post.date }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    <p class="detail-back">
+      <a routerLink="/projects" class="detail-back-link">
+        <ui-icon name="arrow-left" [size]="14" />
+        <span>View all projects</span>
+      </a>
+    </p>
+  } @else {
+    <ui-section-header title="Project not found" decoration="// 404.txt" [level]="1" />
+    <div class="detail-status">
+      <p>
+        No project matches <strong>{{ slugParam() }}</strong
+        >. <a routerLink="/projects">Browse all projects</a>.
+      </p>
+    </div>
+  }
+</div>

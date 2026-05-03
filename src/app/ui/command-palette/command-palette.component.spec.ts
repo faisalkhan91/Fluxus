@@ -490,10 +490,10 @@ describe('CommandPaletteComponent', () => {
       expect(hints).toContain('Project · Featured · 2 tags');
     });
 
-    it('Enter on a project entry navigates to /projects with a #project-<slug> fragment', () => {
+    it('Enter on a project entry navigates to the /projects/:slug detail page', () => {
       openAndType('atlas');
       inner().onKey(new KeyboardEvent('keydown', { key: 'Enter' }));
-      expect(router.navigate).toHaveBeenCalledWith(['/projects'], { fragment: 'project-atlas' });
+      expect(router.navigate).toHaveBeenCalledWith(['/projects/atlas']);
     });
 
     it('surfaces a project via a description keyword that is not in the title', () => {

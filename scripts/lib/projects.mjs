@@ -79,10 +79,11 @@ export async function loadProjectTagSlugs() {
 }
 
 /**
- * Returns `{ titleSlug, title, link }[]` — one entry per project in
- * source order. Used by the GitHub enrichment script to locate the
- * repo a link points at, and to key the generated metadata by the
- * same slug the runtime `ProjectsDataService` will compute.
+ * Returns `{ titleSlug, title, description, image, link, tags[] }[]` — one
+ * entry per project in source order. Used by the GitHub enrichment script
+ * to locate the repo a link points at, by `inject-meta.mjs` to build the
+ * per-project `<head>` tags, and by `build-sitemap.mjs` to enumerate the
+ * `/projects/:slug` detail route URLs.
  *
  * The lexer is block-scoped: it matches each `{ ... }` object literal
  * inside the outer array, then regex-pulls `title` and `link` from
@@ -122,7 +123,15 @@ export async function loadProjectEntries() {
     const title = block.match(/title:\s*['"]([^'"]+)['"]/)?.[1];
     const link = block.match(/link:\s*['"]([^'"]+)['"]/)?.[1];
     if (!title || !link) continue;
-    entries.push({ titleSlug: projectTagSlug(title), title, link });
+    // Description can legitimately contain backslash-escaped quotes from
+    // prose. Accept either `"..."` with no nested quotes, or `'...'`.
+    const description = block.match(/description:\s*'([^']+)'/)?.[1]
+      ?? block.match(/description:\s*"([^"]+)"/)?.[1]
+      ?? '';
+    const image = block.match(/image:\s*['"]([^'"]+)['"]/)?.[1] ?? '';
+    const tagsBlock = block.match(/tags:\s*\[([^\]]+)\]/)?.[1] ?? '';
+    const tags = [...tagsBlock.matchAll(/['"]([^'"]+)['"]/g)].map((m) => m[1]);
+    entries.push({ titleSlug: projectTagSlug(title), title, description, image, link, tags });
   }
   return entries;
 }

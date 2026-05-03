@@ -10,7 +10,7 @@
 import { readFile, writeFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
-import { loadProjectTagSlugs } from './lib/projects.mjs';
+import { loadProjectTagSlugs, loadProjectEntries } from './lib/projects.mjs';
 
 const require = createRequire(import.meta.url);
 const { siteUrl: SITE_URL } = require('../site.config.json');
@@ -72,6 +72,13 @@ const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(
 // a parallel JSON manifest.
 const projectTagSlugs = (await loadProjectTagSlugs()).map((entry) => entry.slug);
 
+// `/projects/:slug` — one URL per project. Detail pages get a higher
+// priority than the tag archive (0.7 vs 0.4) since they are the richer,
+// canonical surface for a project. Tag archives remain for discovery.
+const projectDetailSlugs = (await loadProjectEntries())
+  .map((entry) => entry.titleSlug)
+  .filter(Boolean);
+
 const entries = [
   ...STATIC_ROUTES.map(([path, priority]) =>
     urlEntry(`${SITE_URL}${path === '/' ? '/' : path}`, priority, today),
@@ -79,6 +86,7 @@ const entries = [
   ...livePosts.map((p) => urlEntry(`${SITE_URL}/blog/${p.slug}`, '0.8', p.date)),
   ...tagSlugs.map((slug) => urlEntry(`${SITE_URL}/blog/tag/${slug}`, '0.4', today)),
   ...projectTagSlugs.map((slug) => urlEntry(`${SITE_URL}/projects/tag/${slug}`, '0.4', today)),
+  ...projectDetailSlugs.map((slug) => urlEntry(`${SITE_URL}/projects/${slug}`, '0.7', today)),
 ];
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -96,5 +104,5 @@ try {
 
 await writeFile(DIST_SITEMAP, xml, 'utf-8');
 console.log(
-  `Wrote ${DIST_SITEMAP} with ${STATIC_ROUTES.length} routes + ${livePosts.length} blog posts + ${tagSlugs.length} blog-tag archives + ${projectTagSlugs.length} project-tag archives.`,
+  `Wrote ${DIST_SITEMAP} with ${STATIC_ROUTES.length} routes + ${livePosts.length} blog posts + ${tagSlugs.length} blog-tag archives + ${projectTagSlugs.length} project-tag archives + ${projectDetailSlugs.length} project detail pages.`,
 );
