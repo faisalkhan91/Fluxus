@@ -5,7 +5,7 @@
     "description": "An Angular web application for browsing and purchasing books online. Built with Angular CLI, TypeScript, and component-driven architecture with routing, services, and responsive HTML/CSS templates.",
     "image": "assets/images/portfolio/BookStore.png",
     "link": "https://github.com/faisalkhan91/Bookstore",
-    "tags": ["Angular", "TypeScript", "HTML", "CSS", "ngform", "routing", "services"],
+    "tags": ["Angular", "TypeScript", "HTML", "CSS", "ngform", "portfolio", "routing", "services"],
     "featured": true,
     "github": {
       "stars": 0,
@@ -14,7 +14,7 @@
       "languageColor": "#3178c6",
       "pushedAt": "2023-03-01T03:53:48Z",
       "license": "MIT",
-      "topics": ["angular", "ngform", "routing", "services"],
+      "topics": ["angular", "ngform", "portfolio", "routing", "services"],
       "archived": false,
       "openIssues": 17,
       "homepage": null,
@@ -46,7 +46,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:22.800Z"
+      "fetchedAt": "2026-05-03T19:14:22.402Z"
     }
   },
   {
@@ -65,6 +65,7 @@
       "hadoop-mapreduce",
       "jar",
       "mapper",
+      "portfolio",
       "python-streaming",
       "python3",
       "reducer",
@@ -87,6 +88,7 @@
         "hadoop-mapreduce",
         "jar",
         "mapper",
+        "portfolio",
         "python",
         "python-streaming",
         "python3",
@@ -110,7 +112,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.100Z"
+      "fetchedAt": "2026-05-03T19:14:22.420Z"
     }
   },
   {
@@ -138,6 +140,7 @@
       "linux",
       "ngnix",
       "php",
+      "portfolio",
       "ubuntu"
     ],
     "featured": true,
@@ -165,6 +168,7 @@
         "linux",
         "ngnix",
         "php",
+        "portfolio",
         "ubuntu"
       ],
       "archived": false,
@@ -228,7 +232,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.295Z"
+      "fetchedAt": "2026-05-03T19:14:22.444Z"
     }
   },
   {
@@ -244,6 +248,7 @@
       "artificial-intelligence",
       "backtracking-algorithm",
       "backtracking-search",
+      "portfolio",
       "python3",
       "sudoku",
       "sudoku-solver"
@@ -260,6 +265,7 @@
         "artificial-intelligence",
         "backtracking-algorithm",
         "backtracking-search",
+        "portfolio",
         "python",
         "python3",
         "sudoku",
@@ -268,20 +274,14 @@
       "archived": false,
       "openIssues": 0,
       "homepage": null,
-      "languagesBytes": [
-        {
-          "name": "Python",
-          "color": "#3572A5",
-          "bytes": 3344
-        }
-      ],
+      "languagesBytes": [],
       "latestRelease": null,
       "readmeExcerpt": "This is a program to solve a 6x6 sudoko grid using backtracking search.",
       "commitsPerWeek": [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.559Z"
+      "fetchedAt": "2026-05-03T19:14:22.457Z"
     }
   },
   {
@@ -297,6 +297,7 @@
       "dictionary",
       "gui",
       "oxford-dictionary",
+      "portfolio",
       "python3",
       "tkinter-gui",
       "widgets"
@@ -313,6 +314,7 @@
         "dictionary",
         "gui",
         "oxford-dictionary",
+        "portfolio",
         "python",
         "python3",
         "tkinter",
@@ -335,7 +337,7 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.756Z"
+      "fetchedAt": "2026-05-03T19:14:03.169Z"
     }
   },
   {
@@ -352,6 +354,7 @@
       "injection",
       "insecure",
       "path-traversal",
+      "portfolio",
       "python3",
       "vulnerability"
     ],
@@ -368,6 +371,7 @@
         "injection",
         "insecure",
         "path-traversal",
+        "portfolio",
         "python",
         "python3",
         "vulnerability"
@@ -388,7 +392,77 @@
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       ],
-      "fetchedAt": "2026-05-03T10:26:23.968Z"
+      "fetchedAt": "2026-05-03T19:14:03.338Z"
+    }
+  },
+  {
+    "title": "Text Analyzer",
+    "slug": "text-analyzer",
+    "description": "A Python application that uses the Azure Text Analytics SDK to extract language, sentiment, and key phrases from user-supplied prose. Demonstrates cloud-native NLP with a thin, scriptable UI.",
+    "image": "assets/images/portfolio/TextAnalyzerAI.png",
+    "link": "https://github.com/faisalkhan91/Text-Analyzer-AI",
+    "tags": ["Python", "Azure", "AI", "NLP", "portfolio"],
+    "featured": false,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "pushedAt": "2024-06-15T05:09:15Z",
+      "license": "GPL-3.0",
+      "topics": ["portfolio"],
+      "archived": false,
+      "openIssues": 0,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 2240
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This application uses Azure SDK to analyze text and give details such as language, sentiment, key phrases.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T19:14:03.502Z"
+    }
+  },
+  {
+    "title": "Image Generator",
+    "slug": "image-generator",
+    "description": "A Python application that drives the Azure OpenAI DALL-E model from user prompts to produce generated images. A compact end-to-end example of prompt-to-image integration against a managed OpenAI endpoint.",
+    "image": "assets/images/portfolio/ImageGeneratorAI.png",
+    "link": "https://github.com/faisalkhan91/Image-Generator-AI",
+    "tags": ["Python", "Azure", "AI", "OpenAI", "portfolio"],
+    "featured": false,
+    "github": {
+      "stars": 0,
+      "forks": 0,
+      "primaryLanguage": "Python",
+      "languageColor": "#3572A5",
+      "pushedAt": "2024-06-19T20:26:33Z",
+      "license": "GPL-3.0",
+      "topics": ["portfolio"],
+      "archived": false,
+      "openIssues": 0,
+      "homepage": null,
+      "languagesBytes": [
+        {
+          "name": "Python",
+          "color": "#3572A5",
+          "bytes": 1211
+        }
+      ],
+      "latestRelease": null,
+      "readmeExcerpt": "This application uses Azure OpenAI DALL-E model to generate images based on user prompts.",
+      "commitsPerWeek": [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "fetchedAt": "2026-05-03T19:14:03.690Z"
     }
   }
 ]
