@@ -7,8 +7,11 @@ import { CommandPaletteComponent } from './command-palette.component';
 import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
 import { ThemeService } from '@core/services/theme.service';
+import { SkillsDataService } from '@core/services/skills-data.service';
+import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.service';
 import { THEME_REGISTRY, getThemeDef, type ThemeId } from '@core/services/theme.registry';
 import { BlogPost } from '@shared/models/blog-post.model';
+import { Skill, SkillCategory } from '@shared/models/skill.model';
 
 const SIDEBAR = [
   {
@@ -62,6 +65,78 @@ const mockThemeService = {
   setTheme: setThemeSpy,
 };
 
+/**
+ * Skills catalog used by palette tests. Two skills with project matches
+ * (Rust, TypeScript) plus one orphan (Esoteric) so we can verify the
+ * "hide zero-match skills" behaviour. A duplicate Rust entry in a
+ * second category covers the de-dup path.
+ */
+const SKILL_CATEGORIES: SkillCategory[] = [
+  {
+    title: 'Languages',
+    skills: [{ name: 'Rust' }, { name: 'TypeScript' }, { name: 'Esoteric' }],
+  },
+  {
+    title: 'Other',
+    skills: [{ name: 'Rust' }],
+  },
+];
+
+const usageBySlug: Record<string, SkillUsage> = {
+  rust: {
+    slug: 'rust',
+    projects: [
+      { title: 'Atlas', description: '', image: '', link: '#', tags: ['Rust'] },
+      { title: 'Beacon', description: '', image: '', link: '#', tags: ['Rust'] },
+    ],
+    posts: [
+      {
+        slug: 'p1',
+        title: 'P1',
+        date: '2025-01-01',
+        excerpt: '',
+        tags: ['Rust'],
+        readingTime: '1 min',
+      },
+    ],
+    projectsRouteSlug: 'rust',
+    postsRouteSlug: 'rust',
+  },
+  typescript: {
+    slug: 'typescript',
+    projects: [{ title: 'Beacon', description: '', image: '', link: '#', tags: ['TypeScript'] }],
+    posts: [],
+    projectsRouteSlug: 'typescript',
+    postsRouteSlug: null,
+  },
+  esoteric: {
+    slug: 'esoteric',
+    projects: [],
+    posts: [],
+    projectsRouteSlug: null,
+    postsRouteSlug: null,
+  },
+};
+
+const mockSkillsService = {
+  categories: signal(SKILL_CATEGORIES),
+};
+
+const mockSkillUsage: Pick<SkillUsageService, 'usageFor' | 'usageBySlug'> = {
+  usageFor(skill: Skill): SkillUsage | undefined {
+    const slug = skill.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return usageBySlug[slug];
+  },
+  usageBySlug: computed(() => usageBySlug),
+};
+
+/**
+ * Number of unique skill entries the palette should render given the
+ * catalog above: Rust (de-dup'd to 1) + TypeScript = 2. Esoteric is
+ * filtered out because it has no project matches.
+ */
+const PALETTE_SKILL_COUNT = 2;
+
 describe('CommandPaletteComponent', () => {
   let fixture: ComponentFixture<CommandPaletteComponent>;
   let component: CommandPaletteComponent;
@@ -77,6 +152,8 @@ describe('CommandPaletteComponent', () => {
         { provide: NavigationService, useValue: { sidebarItems: SIDEBAR } },
         { provide: BlogService, useValue: { posts: POSTS } },
         { provide: ThemeService, useValue: mockThemeService },
+        { provide: SkillsDataService, useValue: mockSkillsService },
+        { provide: SkillUsageService, useValue: mockSkillUsage },
       ],
     }).compileComponents();
 
@@ -145,11 +222,13 @@ describe('CommandPaletteComponent', () => {
   });
 
   describe('filtering', () => {
-    it('starts with the full catalog (routes + posts + themes) when the query is empty', () => {
+    it('starts with the full catalog (routes + posts + themes + skills) when the query is empty', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
       fixture.detectChanges();
       const items = host.querySelectorAll('.palette-item');
-      expect(items.length).toBe(SIDEBAR.length + POSTS().length + THEME_REGISTRY.length);
+      expect(items.length).toBe(
+        SIDEBAR.length + POSTS().length + THEME_REGISTRY.length + PALETTE_SKILL_COUNT,
+      );
     });
 
     it('filters by label, case-insensitive', () => {
@@ -164,12 +243,16 @@ describe('CommandPaletteComponent', () => {
 
     it('filters by route', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
-      inner().onInput('/projects');
+      // Use a more specific route fragment so we don't also match the
+      // skill entries whose routes are `/projects/tag/<slug>`. The
+      // sidebar Projects entry is keyed `route:/projects` whereas the
+      // skill entries are `route:/projects/tag/...`.
+      inner().onInput('/about');
       fixture.detectChanges();
       const labels = Array.from(host.querySelectorAll('.palette-label')).map(
         (el) => el.textContent?.trim() ?? '',
       );
-      expect(labels).toEqual(['Projects']);
+      expect(labels).toEqual(['About']);
     });
 
     it('shows the "No matches." hint when nothing matches', () => {
@@ -195,7 +278,8 @@ describe('CommandPaletteComponent', () => {
     });
 
     it('ArrowDown advances the highlighted item up to the last index', () => {
-      const total = SIDEBAR.length + POSTS().length + THEME_REGISTRY.length;
+      const total =
+        SIDEBAR.length + POSTS().length + THEME_REGISTRY.length + PALETTE_SKILL_COUNT;
       for (let i = 0; i < total + 2; i++) {
         inner().onKey(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
       }
@@ -284,6 +368,55 @@ describe('CommandPaletteComponent', () => {
       component.openWith('theme:');
       expect(inner().open()).toBe(true);
       expect(inner().query()).toBe('theme:');
+    });
+  });
+
+  describe('skill actions', () => {
+    function openAndType(query: string) {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+      inner().onInput(query);
+      fixture.detectChanges();
+    }
+
+    it('emits one route entry per skill that has at least one project', () => {
+      openAndType('');
+      const labels = Array.from(host.querySelectorAll('.palette-label')).map(
+        (el) => el.textContent?.trim() ?? '',
+      );
+      // Two skills with projects (Rust, TypeScript). Esoteric is excluded
+      // because it would land on an empty archive.
+      expect(labels.filter((l) => l === 'Rust' || l === 'TypeScript').length).toBe(2);
+      expect(labels).not.toContain('Esoteric');
+    });
+
+    it('renders a hint with project + post counts (omits posts when zero)', () => {
+      openAndType('rust');
+      const hints = Array.from(host.querySelectorAll('.palette-hint')).map(
+        (el) => el.textContent?.trim() ?? '',
+      );
+      expect(hints).toContain('Skill · 2 projects · 1 post');
+
+      openAndType('typescript');
+      const tsHints = Array.from(host.querySelectorAll('.palette-hint')).map(
+        (el) => el.textContent?.trim() ?? '',
+      );
+      // 0 posts → the hint reads "Skill · 1 project" with no post fragment.
+      expect(tsHints).toContain('Skill · 1 project');
+    });
+
+    it('Enter on a skill entry navigates to /projects/tag/<routeSlug>', () => {
+      openAndType('rust');
+      inner().onKey(new KeyboardEvent('keydown', { key: 'Enter' }));
+      expect(router.navigate).toHaveBeenCalledWith(['/projects/tag/rust']);
+    });
+
+    it('does not duplicate skill entries when the same skill appears in two categories', () => {
+      openAndType('rust');
+      const labels = Array.from(host.querySelectorAll('.palette-label')).map(
+        (el) => el.textContent?.trim() ?? '',
+      );
+      // The mock seeds Rust under both "Languages" and "Other".
+      expect(labels.filter((l) => l === 'Rust').length).toBe(1);
     });
   });
 });

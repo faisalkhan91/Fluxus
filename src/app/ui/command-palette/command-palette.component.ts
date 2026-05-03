@@ -16,6 +16,8 @@ import { IconComponent } from '../icon/icon.component';
 import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
 import { ThemeService } from '@core/services/theme.service';
+import { SkillsDataService } from '@core/services/skills-data.service';
+import { SkillUsageService } from '@core/services/skill-usage.service';
 
 /**
  * Discriminator separates plain navigation from in-place actions
@@ -77,6 +79,8 @@ export class CommandPaletteComponent {
   private nav = inject(NavigationService);
   private blog = inject(BlogService);
   private theme = inject(ThemeService);
+  private skills = inject(SkillsDataService);
+  private skillUsage = inject(SkillUsageService);
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -128,6 +132,40 @@ export class CommandPaletteComponent {
         run: () => this.theme.setTheme(def.id),
         swatch: def.swatch,
       });
+    }
+    // Skill entries deep-link into `/projects/tag/<slug>`. Skills with
+    // zero project matches are intentionally hidden — they'd land the
+    // user on an empty archive, which makes the palette feel broken.
+    // Once the skill is referenced by any project tag, it shows up
+    // automatically (the `usageFor()` read inside this `computed()`
+    // tracks `usageBySlug()` for reactivity).
+    const seenSkillIds = new Set<string>();
+    for (const cat of this.skills.categories()) {
+      for (const skill of cat.skills) {
+        const usage = this.skillUsage.usageFor(skill);
+        if (!usage || !usage.projectsRouteSlug || usage.projects.length === 0) continue;
+        // Defensive de-duplication: a future copy-paste mistake that lists
+        // the same skill in two categories would otherwise emit two
+        // palette rows pointing at the same archive.
+        const id = `skill:${usage.slug}`;
+        if (seenSkillIds.has(id)) continue;
+        seenSkillIds.add(id);
+        const projectCount = usage.projects.length;
+        const postCount = usage.posts.length;
+        const hintParts = [`${projectCount} project${projectCount === 1 ? '' : 's'}`];
+        if (postCount > 0) {
+          hintParts.push(`${postCount} post${postCount === 1 ? '' : 's'}`);
+        }
+        items.push({
+          id,
+          domId: toDomId(id),
+          label: skill.name,
+          hint: `Skill · ${hintParts.join(' · ')}`,
+          icon: 'hash',
+          kind: 'route',
+          route: `/projects/tag/${usage.projectsRouteSlug}`,
+        });
+      }
     }
     return items;
   });
