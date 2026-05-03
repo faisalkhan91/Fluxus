@@ -68,7 +68,14 @@ const MOCK_PROJECTS: Project[] = [
       fetchedAt: '2026-05-01T00:00:00Z',
     },
   },
-  { title: 'Beta', slug: 'beta', description: 'Not featured.', image: 'b.png', link: '#', tags: [] },
+  {
+    title: 'Beta',
+    slug: 'beta',
+    description: 'Not featured.',
+    image: 'b.png',
+    link: '#',
+    tags: [],
+  },
   {
     title: 'Gamma',
     slug: 'gamma',
@@ -178,9 +185,7 @@ describe('HeroComponent', () => {
   });
 
   it('hides the featured-projects block entirely when no projects are featured', () => {
-    mockProjects.projects.set(
-      MOCK_PROJECTS.map((p) => ({ ...p, featured: false })),
-    );
+    mockProjects.projects.set(MOCK_PROJECTS.map((p) => ({ ...p, featured: false })));
     fixture.detectChanges();
     expect(el.querySelector('.featured-projects')).toBeNull();
     // Reset for subsequent tests.

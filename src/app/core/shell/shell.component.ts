@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  viewChild,
-  PLATFORM_ID,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, viewChild, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from '@ui/sidebar/sidebar.component';

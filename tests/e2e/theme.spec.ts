@@ -110,9 +110,9 @@ test.describe('command palette → theme switch', () => {
     await seedTheme(page, 'crimson-dark');
     await page.goto('/', { waitUntil: 'networkidle' });
 
-    expect(
-      await page.evaluate(() => document.documentElement.getAttribute('data-theme')),
-    ).toBe('crimson-dark');
+    expect(await page.evaluate(() => document.documentElement.getAttribute('data-theme'))).toBe(
+      'crimson-dark',
+    );
 
     // Cmd+K toggles on macOS; Ctrl+K is the cross-platform alias the
     // component listens for. Use Control here so the spec passes on the

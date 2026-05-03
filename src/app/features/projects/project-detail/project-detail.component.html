@@ -8,11 +8,7 @@
   </nav>
 
   @if (project(); as p) {
-    <ui-section-header
-      [title]="p.title"
-      decoration="// README.md"
-      [level]="1"
-    />
+    <ui-section-header [title]="p.title" decoration="// README.md" [level]="1" />
 
     @if (p.github?.archived) {
       <p class="detail-archived-note">
@@ -73,19 +69,19 @@
               Live demo
             </a>
           }
-          @if (gh.stars != null) {
+          @if (gh.stars !== null) {
             <span class="gh-pill" [attr.aria-label]="gh.stars + ' stars on GitHub'">
               <ui-icon name="star" [size]="12" />
               {{ compactNumber(gh.stars) }}
             </span>
           }
-          @if (gh.forks != null && gh.forks > 0) {
+          @if (gh.forks !== null && gh.forks > 0) {
             <span class="gh-pill" [attr.aria-label]="gh.forks + ' forks on GitHub'">
               <ui-icon name="git-fork" [size]="12" />
               {{ compactNumber(gh.forks) }}
             </span>
           }
-          @if (gh.openIssues != null && gh.openIssues > 0 && !gh.archived) {
+          @if (gh.openIssues !== null && gh.openIssues > 0 && !gh.archived) {
             <span class="gh-pill" [attr.aria-label]="gh.openIssues + ' open issues + PRs'">
               <ui-icon name="alert-triangle" [size]="12" />
               {{ gh.openIssues }}
@@ -186,9 +182,7 @@
             viewBox="0 0 100 20"
             preserveAspectRatio="none"
             role="img"
-            [attr.aria-label]="
-              sparklineTotal() + ' commits in the last year'
-            "
+            [attr.aria-label]="sparklineTotal() + ' commits in the last year'"
           >
             <path [attr.d]="path" fill="none" stroke="currentColor" stroke-width="0.75" />
           </svg>

@@ -34,9 +34,7 @@ test.describe('/skills connective tissue', () => {
     // Python is the first skill in Languages & Frameworks, always above
     // the topN truncation cut. Filtering by name keeps the selector
     // resilient to category re-ordering as the catalog grows.
-    const pythonBadge = page
-      .locator('ui-skill-badge', { hasText: 'Python' })
-      .first();
+    const pythonBadge = page.locator('ui-skill-badge', { hasText: 'Python' }).first();
     await expect(pythonBadge).toBeVisible();
 
     const projectsLink = pythonBadge.locator('a.badge-card-link');

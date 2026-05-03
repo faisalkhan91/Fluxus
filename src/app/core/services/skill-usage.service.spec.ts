@@ -191,10 +191,7 @@ describe('SkillUsageService', () => {
     // hold a single entry keyed by the canonical slug so downstream UIs
     // (palette, badges) don't render two clickable rows that point to the
     // same place.
-    categoriesSignal.update((curr) => [
-      ...curr,
-      { title: 'Other', skills: [{ name: 'Rust' }] },
-    ]);
+    categoriesSignal.update((curr) => [...curr, { title: 'Other', skills: [{ name: 'Rust' }] }]);
     const map = service.usageBySlug();
     expect(Object.keys(map).filter((s) => s === 'rust').length).toBe(1);
   });

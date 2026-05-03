@@ -54,10 +54,7 @@ describe('ProjectsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectsComponent],
-      providers: [
-        provideRouter([]),
-        { provide: ProjectsDataService, useValue: mockProjectsData },
-      ],
+      providers: [provideRouter([]), { provide: ProjectsDataService, useValue: mockProjectsData }],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
@@ -181,9 +178,7 @@ describe('ProjectsComponent', () => {
 
   it('renders a release pill with the tag when latestRelease is present', () => {
     const alphaPills = Array.from(
-      el.querySelectorAll(
-        '.project-card .project-github-meta .gh-pill',
-      ) as NodeListOf<HTMLElement>,
+      el.querySelectorAll('.project-card .project-github-meta .gh-pill') as NodeListOf<HTMLElement>,
     ).map((p) => p.textContent?.trim() ?? '');
     expect(alphaPills.some((t) => t.includes('v1.2.3'))).toBe(true);
   });
