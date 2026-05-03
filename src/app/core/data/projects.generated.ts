@@ -9,7 +9,7 @@
 
 import type { Project } from '@shared/models/project.model';
 
-export const PROJECTS: Readonly<Project[]> = [
+export const PROJECTS: readonly Project[] = [
   {
     title: 'Bookstore',
     slug: 'bookstore',
