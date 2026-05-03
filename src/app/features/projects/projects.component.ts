@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
@@ -10,7 +11,7 @@ import { slugify } from '@shared/utils/string.utils';
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css',
-  imports: [NgOptimizedImage, SectionHeaderComponent, GlassCardComponent, IconComponent],
+  imports: [NgOptimizedImage, RouterLink, SectionHeaderComponent, GlassCardComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsComponent {
