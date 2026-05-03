@@ -297,7 +297,7 @@ async function writeGeneratedTs(projects) {
 
 import type { Project } from '@shared/models/project.model';
 
-export const PROJECTS: Readonly<Project[]> = ${JSON.stringify(projects, null, 2)};
+export const PROJECTS: readonly Project[] = ${JSON.stringify(projects, null, 2)};
 `;
   let serialized = body;
   try {
