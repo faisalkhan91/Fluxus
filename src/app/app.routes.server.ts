@@ -42,6 +42,35 @@ export const serverRoutes: ServerRoute[] = [
     },
   },
   {
+    path: 'projects/tag/:tag',
+    renderMode: RenderMode.Prerender,
+    fallback: PrerenderFallback.Client,
+    async getPrerenderParams() {
+      // ProjectsDataService is a plain class with no DI dependencies in its
+      // constructor (just a `signal()` wrapping a literal array), so we can
+      // instantiate it outside Angular's injector to harvest tags at
+      // prerender time. If we ever add constructor injection, this needs
+      // to switch to either reading a JSON manifest (like blog/tag does)
+      // or running inside a TestBed-style harness.
+      const { ProjectsDataService } = await import('./core/services/projects-data.service');
+      const projects = new ProjectsDataService().projects();
+      const tags = new Set<string>();
+      for (const p of projects) {
+        for (const tag of p.tags ?? []) {
+          const slug = tag
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+          if (slug) tags.add(slug);
+        }
+      }
+      return Array.from(tags).map((tag) => ({ tag }));
+    },
+  },
+  {
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,

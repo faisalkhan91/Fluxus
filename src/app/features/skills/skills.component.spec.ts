@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, computed, signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { SkillsComponent } from './skills.component';
 import { SkillsDataService } from '@core/services/skills-data.service';
+import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.service';
 import { MediaQueryService } from '@core/services/media-query.service';
-import { SkillCategory } from '@shared/models/skill.model';
+import { SkillCategory, Skill } from '@shared/models/skill.model';
 
 const MOCK_CATEGORIES: SkillCategory[] = [
   {
@@ -62,6 +64,31 @@ const mockSkillsData = {
   categories: signal(MOCK_CATEGORIES),
 };
 
+/**
+ * Tiny SkillUsageService mock — returns a synthetic count for any
+ * skill name so we can verify the SkillsComponent passes the resolved
+ * `href` / `projectsCount` / `postsCount` / `postsHref` through to the
+ * badge bindings. Production behaviour of usage joining is covered in
+ * `skill-usage.service.spec.ts`.
+ */
+function mockUsageFor(skill: Skill): SkillUsage {
+  const slug = skill.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return {
+    slug,
+    projects: [
+      { title: `${skill.name} Project`, description: '', image: '', link: '#', tags: [] },
+    ],
+    posts: [],
+    projectsRouteSlug: slug,
+    postsRouteSlug: null,
+  };
+}
+
+const mockSkillUsage: Pick<SkillUsageService, 'usageFor' | 'usageBySlug'> = {
+  usageFor: mockUsageFor,
+  usageBySlug: computed(() => ({})),
+};
+
 function createMockMediaQuery(mobile = false) {
   return {
     isMobile: signal(mobile),
@@ -84,7 +111,13 @@ describe('SkillsComponent', () => {
       await TestBed.configureTestingModule({
         imports: [SkillsComponent],
         providers: [
+          // SkillsComponent imports SkillBadgeComponent directly, which now
+          // pulls in RouterLink for its [href] anchor. Without a router
+          // provider, Angular can't construct the directive at render
+          // time even when no badge actually has an href in the test.
+          provideRouter([]),
           { provide: SkillsDataService, useValue: mockSkillsData },
+          { provide: SkillUsageService, useValue: mockSkillUsage },
           { provide: MediaQueryService, useValue: createMockMediaQuery(false) },
         ],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -169,6 +202,27 @@ describe('SkillsComponent', () => {
       fixture.detectChanges();
       expect(toggleButton.getAttribute('aria-expanded')).toBe('true');
     });
+
+    it('resolves a /projects/tag/<slug> href via the SkillUsageService mock', () => {
+      // CUSTOM_ELEMENTS_SCHEMA prevents real <ui-skill-badge> instantiation,
+      // so attribute reflection isn't reliable across environments. Verify
+      // the binding-source helpers on the component directly — they are
+      // what the template feeds into [href] / [projectsCount].
+      const skill = MOCK_CATEGORIES[0].skills[0]; // Python
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const c = component as unknown as any;
+      const usage = c.usageFor(skill);
+      expect(usage).toBeDefined();
+      expect(c.projectsHref(usage)).toBe('/projects/tag/python');
+      expect(usage.projects.length).toBe(1);
+    });
+
+    it('returns undefined for projectsHref when the usage is missing', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const c = component as unknown as any;
+      expect(c.projectsHref(undefined)).toBeUndefined();
+      expect(c.postsHref(undefined)).toBeUndefined();
+    });
   });
 
   describe('mobile layout', () => {
@@ -176,7 +230,9 @@ describe('SkillsComponent', () => {
       await TestBed.configureTestingModule({
         imports: [SkillsComponent],
         providers: [
+          provideRouter([]),
           { provide: SkillsDataService, useValue: mockSkillsData },
+          { provide: SkillUsageService, useValue: mockSkillUsage },
           { provide: MediaQueryService, useValue: createMockMediaQuery(true) },
         ],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],

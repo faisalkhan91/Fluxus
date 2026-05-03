@@ -7,11 +7,12 @@ export class SkillsDataService {
     {
       title: 'Languages & Frameworks',
       skills: [
-        { name: 'Python', iconSrc: 'assets/icons/skills/icons8-python.svg' },
-        { name: 'Go', iconSrc: 'assets/icons/skills/go-original.svg' },
+        { name: 'Python', iconSrc: 'assets/icons/skills/icons8-python.svg', level: 95 },
+        { name: 'Go', iconSrc: 'assets/icons/skills/go-original.svg', level: 85 },
         {
           name: 'TypeScript',
           iconSrc: 'assets/icons/skills/typescript-original.svg',
+          level: 85,
         },
         { name: 'Rust', iconSrc: 'assets/icons/skills/icons8-rust-programming-language.svg' },
         { name: 'Angular', iconSrc: 'assets/icons/skills/icons8-angularjs.svg' },
@@ -20,8 +21,16 @@ export class SkillsDataService {
           iconSrc: 'assets/icons/skills/javascript-original.svg',
         },
         { name: 'Django', iconSrc: 'assets/icons/skills/icons8-django.svg' },
-        { name: 'HTML5', iconSrc: 'assets/icons/skills/icons8-html-5.svg' },
-        { name: 'CSS3', iconSrc: 'assets/icons/skills/icons8-css3.svg' },
+        {
+          name: 'HTML5',
+          iconSrc: 'assets/icons/skills/icons8-html-5.svg',
+          aliases: ['HTML'],
+        },
+        {
+          name: 'CSS3',
+          iconSrc: 'assets/icons/skills/icons8-css3.svg',
+          aliases: ['CSS'],
+        },
       ],
     },
     {
@@ -30,9 +39,10 @@ export class SkillsDataService {
         {
           name: 'AWS',
           iconSrc: 'assets/icons/skills/amazonwebservices-original-wordmark.svg',
+          level: 90,
         },
-        { name: 'Azure', iconSrc: 'assets/icons/skills/azure-original.svg' },
-        { name: 'Docker', iconSrc: 'assets/icons/skills/icons8-docker.svg' },
+        { name: 'Azure', iconSrc: 'assets/icons/skills/azure-original.svg', level: 80 },
+        { name: 'Docker', iconSrc: 'assets/icons/skills/icons8-docker.svg', level: 90 },
         {
           name: 'Kubernetes',
           iconSrc: 'assets/icons/skills/icons8-kubernetes.svg',
@@ -55,9 +65,10 @@ export class SkillsDataService {
         {
           name: 'GitHub Actions',
           iconSrc: 'assets/icons/skills/icons8-github.svg',
+          level: 90,
         },
-        { name: 'ArgoCD', iconSrc: 'assets/icons/skills/argocd-original.svg' },
-        { name: 'Git', iconSrc: 'assets/icons/skills/icons8-git.svg' },
+        { name: 'ArgoCD', iconSrc: 'assets/icons/skills/argocd-original.svg', level: 75 },
+        { name: 'Git', iconSrc: 'assets/icons/skills/icons8-git.svg', level: 95 },
         { name: 'GitHub', iconSrc: 'assets/icons/skills/icons8-github.svg' },
         { name: 'Jenkins', iconSrc: 'assets/icons/skills/icons8-jenkins.svg' },
         { name: 'GitLab', iconSrc: 'assets/icons/skills/gitlab-original.svg' },
@@ -70,12 +81,14 @@ export class SkillsDataService {
         {
           name: 'PostgreSQL',
           iconSrc: 'assets/icons/skills/icons8-postgresql.svg',
+          level: 90,
         },
         {
           name: 'Kafka',
           iconSrc: 'assets/icons/skills/apachekafka-original.svg',
+          level: 80,
         },
-        { name: 'Redis', iconSrc: 'assets/icons/skills/redis-original.svg' },
+        { name: 'Redis', iconSrc: 'assets/icons/skills/redis-original.svg', level: 75 },
         {
           name: 'MongoDB',
           iconSrc: 'assets/icons/skills/mongodb-original.svg',
@@ -100,14 +113,17 @@ export class SkillsDataService {
         {
           name: 'Datadog',
           iconSrc: 'assets/icons/skills/datadog-original.svg',
+          level: 85,
         },
         {
           name: 'Coralogix',
           iconSrc: 'assets/icons/skills/coralogix-original.svg',
+          level: 75,
         },
         {
           name: 'OpenTelemetry',
           iconSrc: 'assets/icons/skills/opentelemetry-original.svg',
+          level: 75,
         },
         { name: 'Splunk', iconSrc: 'assets/icons/skills/splunk-original.svg' },
         {
@@ -123,10 +139,11 @@ export class SkillsDataService {
     {
       title: 'AI & LLMs',
       skills: [
-        { name: 'OpenAI', iconSrc: 'assets/icons/skills/openai-original.svg' },
+        { name: 'OpenAI', iconSrc: 'assets/icons/skills/openai-original.svg', level: 80 },
         {
           name: 'GitHub Copilot',
           iconSrc: 'assets/icons/skills/githubcopilot-original.svg',
+          level: 85,
         },
         {
           name: 'AWS Bedrock',
@@ -139,6 +156,7 @@ export class SkillsDataService {
         {
           name: 'Cursor',
           iconSrc: 'assets/icons/skills/cursor-original.svg',
+          level: 90,
         },
         {
           name: 'Claude Code',

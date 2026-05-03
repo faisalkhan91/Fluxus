@@ -15,9 +15,15 @@
 
       <div class="badge-grid" [id]="'skill-grid-' + slugify(category.title)">
         @for (skill of visibleSkills(category); track skill.name; let i = $index) {
+          @let u = usageFor(skill);
           <ui-skill-badge
             [name]="skill.name"
             [iconSrc]="skill.iconSrc"
+            [level]="skill.level"
+            [href]="projectsHref(u)"
+            [projectsCount]="u?.projects?.length ?? 0"
+            [postsCount]="u?.posts?.length ?? 0"
+            [postsHref]="postsHref(u)"
             animate.enter="enter-fade-up"
             [style.--enter-delay]="i * 40 + 'ms'"
           />

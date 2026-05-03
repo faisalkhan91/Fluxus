@@ -1,0 +1,91 @@
+<div class="tag-layout" animate.enter="enter-fade-up">
+  <nav aria-label="Breadcrumb" class="tag-breadcrumb">
+    <ol>
+      <li><a routerLink="/">Home</a></li>
+      <li><a routerLink="/projects">Projects</a></li>
+      <li aria-current="page">{{ tagLabel() }}</li>
+    </ol>
+  </nav>
+
+  <ui-section-header
+    [title]="'Projects tagged ' + tagLabel()"
+    decoration="// filtered.csv"
+    [level]="1"
+  />
+
+  @if (matchingProjects().length === 0) {
+    <div class="tag-status">
+      <p>
+        No projects found for <strong>{{ tagLabel() }}</strong
+        >. <a routerLink="/projects">Browse all projects</a>.
+      </p>
+    </div>
+  } @else {
+    <div class="projects-grid">
+      @for (project of matchingProjects(); track project.title; let i = $index) {
+        <ui-glass-card
+          [hover]="true"
+          [glow]="!!project.featured"
+          class="project-card"
+          [class.expanded]="isExpanded(project.title)"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="i * 60 + 'ms'"
+        >
+          <div class="project-image-wrapper">
+            <img
+              [ngSrc]="project.image"
+              [alt]="project.title"
+              width="400"
+              height="256"
+              class="project-image"
+            />
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-desc" [id]="'desc-' + slugify(project.title)">
+              {{ project.description }}
+            </p>
+            <button
+              type="button"
+              class="read-more-toggle"
+              [attr.aria-expanded]="isExpanded(project.title)"
+              [attr.aria-controls]="'desc-' + slugify(project.title)"
+              [attr.aria-label]="
+                isExpanded(project.title)
+                  ? 'Show less about ' + project.title
+                  : 'Read more about ' + project.title
+              "
+              (click)="toggleExpand(project.title)"
+            >
+              {{ isExpanded(project.title) ? '− Show less' : '+ Read more' }}
+            </button>
+            <div class="project-footer">
+              <div class="project-tags">
+                @for (tag of project.tags; track tag) {
+                  <span class="tag">{{ tag }}</span>
+                }
+              </div>
+              <a
+                [href]="project.link"
+                target="_blank"
+                rel="noopener"
+                class="project-link"
+                [attr.aria-label]="'View ' + project.title + ' on GitHub'"
+              >
+                <ui-icon name="github" [size]="16" />
+                <span>Source</span>
+                <ui-icon name="external-link" [size]="12" />
+              </a>
+            </div>
+          </div>
+        </ui-glass-card>
+      }
+    </div>
+    <p class="tag-grid-footer">
+      <a routerLink="/projects" class="tag-back-link">
+        <ui-icon name="arrow-left" [size]="14" />
+        <span>View all projects</span>
+      </a>
+    </p>
+  }
+</div>

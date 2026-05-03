@@ -70,6 +70,17 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'projects/tag/:tag',
+        loadComponent: () =>
+          import('./features/projects/projects-tag/projects-tag.component').then(
+            (m) => m.ProjectsTagComponent,
+          ),
+        data: {
+          tab: { label: 'Projects', ext: '.git', color: '#e64a19' },
+          seo: { dynamicMeta: true },
+        },
+      },
+      {
         path: 'certifications',
         loadComponent: () =>
           import('./features/certifications/certifications.component').then(
