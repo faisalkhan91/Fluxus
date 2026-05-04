@@ -15,7 +15,8 @@ import { test, expect } from './fixtures';
  */
 test.describe('/projects connective tissue', () => {
   test('tag chips on a card link to /projects/tag/<slug>', async ({ page }) => {
-    await page.goto('/projects', { waitUntil: 'networkidle' });
+    // Grid is opt-in via `?view=grid` now; list is the landing default.
+    await page.goto('/projects?view=grid', { waitUntil: 'networkidle' });
 
     const firstCard = page.locator('.project-card').first();
     await expect(firstCard).toBeVisible();
@@ -23,8 +24,6 @@ test.describe('/projects connective tissue', () => {
     const firstTag = firstCard.locator('a.tag').first();
     const tagText = (await firstTag.textContent())?.trim().toLowerCase();
     const href = await firstTag.getAttribute('href');
-    // Slugify collapses non-alphanumerics to a single dash. The chip
-    // URL must start with `/projects/tag/` and encode the tag text.
     expect(href).toBeTruthy();
     expect(href!.startsWith('/projects/tag/')).toBe(true);
     expect(href!.split('/').at(-1)).toContain(tagText ?? '');
@@ -35,12 +34,11 @@ test.describe('/projects connective tissue', () => {
   });
 
   test('each card carries id="project-<slug>" for hash-link deep targeting', async ({ page }) => {
-    await page.goto('/projects', { waitUntil: 'networkidle' });
+    await page.goto('/projects?view=grid', { waitUntil: 'networkidle' });
 
     const ids = await page
       .locator('.project-card')
       .evaluateAll((els) => els.map((el) => el.getAttribute('id')));
-    // All cards must have an id, and all ids must start with `project-`.
     expect(ids.length).toBeGreaterThan(0);
     for (const id of ids) {
       expect(id).toBeTruthy();
@@ -49,47 +47,52 @@ test.describe('/projects connective tissue', () => {
   });
 
   test('sort controls reorder the grid and persist the choice in the URL', async ({ page }) => {
-    await page.goto('/projects', { waitUntil: 'networkidle' });
+    await page.goto('/projects?view=grid', { waitUntil: 'networkidle' });
     const initial = await page.locator('.project-title').allTextContents();
 
     await page.getByRole('radio', { name: 'A–Z' }).click();
-    await expect(page).toHaveURL(/\?sort=alpha/);
+    await expect(page).toHaveURL(/sort=alpha/);
     const alpha = await page.locator('.project-title').allTextContents();
     // "A-Z" order must differ from the catalog order for our seed set
     // (Backtracking, Bookstore, Dictionary, Insecure, Jenkins, Storm).
     expect(alpha).not.toEqual(initial);
     expect(alpha[0].localeCompare(alpha[1])).toBeLessThan(0);
 
-    // Returning to Featured scrubs the param rather than leaving
-    // `?sort=featured` dangling.
+    // Returning to Featured scrubs `?sort=` but keeps `?view=grid`.
     await page.getByRole('radio', { name: 'Featured' }).click();
-    await expect(page).not.toHaveURL(/\?sort=/);
+    await expect(page).not.toHaveURL(/sort=/);
   });
 
-  test('view toggle flips between grid and list and preserves ?sort=', async ({ page }) => {
+  test('view toggle — list is the default; grid sticks; sort persists across both', async ({
+    page,
+  }) => {
+    // Landing on /projects?sort=stars lands in list view (no `?view=`).
     await page.goto('/projects?sort=stars', { waitUntil: 'networkidle' });
-    await expect(page.locator('.projects-grid')).toBeVisible();
-    await expect(page.locator('.projects-list')).toHaveCount(0);
-
-    await page.getByRole('radio', { name: 'List view' }).click();
-    await expect(page).toHaveURL(/\?sort=stars&view=list|\?view=list&sort=stars/);
     await expect(page.locator('.projects-list')).toBeVisible();
     await expect(page.locator('.projects-grid')).toHaveCount(0);
 
-    // Hero count matches featured project count; compact rows fill the rest.
+    // Flipping to grid writes `?view=grid` while preserving `?sort=stars`.
+    await page.getByRole('radio', { name: 'Grid view' }).click();
+    await expect(page).toHaveURL(/\?sort=stars&view=grid|\?view=grid&sort=stars/);
+    await expect(page.locator('.projects-grid')).toBeVisible();
+    await expect(page.locator('.projects-list')).toHaveCount(0);
+
+    // Going back to list scrubs `?view=` but keeps `?sort=`.
+    await page.getByRole('radio', { name: 'List view' }).click();
+    await expect(page).toHaveURL(/\?sort=stars$/);
+    await expect(page.locator('.projects-list')).toBeVisible();
+    await expect(page.locator('.projects-grid')).toHaveCount(0);
+
+    // In list view the featured projects render as heroes and the rest
+    // as compact rows under a "More work" heading.
     const heroCount = await page.locator('.projects-list-hero').count();
     expect(heroCount).toBeGreaterThan(0);
     await expect(page.locator('.projects-list-more-heading')).toBeVisible();
-
-    // Going back to grid scrubs `view=` but keeps `sort=`.
-    await page.getByRole('radio', { name: 'Grid view' }).click();
-    await expect(page).toHaveURL(/\?sort=stars$/);
-    await expect(page.locator('.projects-grid')).toBeVisible();
-    await expect(page.locator('.projects-list')).toHaveCount(0);
   });
 
   test('list-view compact row links to the detail page', async ({ page }) => {
-    await page.goto('/projects?view=list', { waitUntil: 'networkidle' });
+    await page.goto('/projects', { waitUntil: 'networkidle' });
+    // No `?view=` → list is default → compact rows are visible.
     const firstRowLink = page.locator('.projects-list-row-title a').first();
     const href = await firstRowLink.getAttribute('href');
     expect(href).toBeTruthy();

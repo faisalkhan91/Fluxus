@@ -464,7 +464,8 @@
   }
 }
 
-.latest-posts {
+.latest-posts,
+.featured-projects {
   margin-top: var(--space-10);
 }
 
