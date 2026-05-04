@@ -228,14 +228,46 @@
   color: var(--text-muted);
 }
 
+/*
+  3-column compact row: thumbnail | prose + tags | source link. The
+  thumbnail is a same-row-height 16:10 frame hovering at ~140px wide;
+  the prose column absorbs all remaining width via `minmax(0, 1fr)`
+  (the `0` floor prevents a stubborn `min-content` from inflating the
+  row past its container); the source link hugs the right edge.
+*/
 .projects-list-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-5);
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--glass-border);
   scroll-margin-top: var(--space-8);
+}
+
+/* Rows without a thumbnail (manual entries) drop the first column so
+   the prose starts flush-left rather than indenting past an empty slot. */
+.projects-list-row:not(:has(.projects-list-row-media)) {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.projects-list-row-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-overlay);
+}
+
+.projects-list-row-image {
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.projects-list-row:hover .projects-list-row-image {
+  transform: scale(1.03);
 }
 
 .projects-list-row:last-of-type {
@@ -314,9 +346,12 @@
     gap: var(--space-4);
   }
 
-  .projects-list-row {
-    flex-direction: column;
-    gap: var(--space-2);
+  /* Narrow viewports collapse the row to a single column; the
+     thumbnail sits on top, prose below, source link wraps last. */
+  .projects-list-row,
+  .projects-list-row:not(:has(.projects-list-row-media)) {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
 }
 

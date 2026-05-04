@@ -93,11 +93,22 @@ test.describe('/projects connective tissue', () => {
   test('list-view compact row links to the detail page', async ({ page }) => {
     await page.goto('/projects', { waitUntil: 'networkidle' });
     // No `?view=` → list is default → compact rows are visible.
-    const firstRowLink = page.locator('.projects-list-row-title a').first();
-    const href = await firstRowLink.getAttribute('href');
-    expect(href).toBeTruthy();
-    expect(href!.startsWith('/projects/')).toBe(true);
-    await firstRowLink.click();
+    const firstRow = page.locator('.projects-list-row').first();
+    const titleLink = firstRow.locator('.projects-list-row-title a');
+
+    // Each row also carries a left-aligned thumbnail wrapped in the
+    // same detail-page link — the media anchor + the title anchor
+    // both point at `/projects/:slug`. The thumbnail sits at
+    // tabindex=-1 so keyboard users don't double-tab the title.
+    const media = firstRow.locator('.projects-list-row-media');
+    await expect(media).toBeVisible();
+    const mediaHref = await media.getAttribute('href');
+    const titleHref = await titleLink.getAttribute('href');
+    expect(mediaHref).toBeTruthy();
+    expect(mediaHref).toBe(titleHref);
+    await expect(media.locator('img')).toBeVisible();
+
+    await titleLink.click();
     await page.waitForURL(/\/projects\/[^/]+$/);
     await expect(page.locator('.detail-breadcrumb')).toBeVisible();
   });
