@@ -39,10 +39,12 @@
   </div>
 
   @if (view() === 'list') {
-    <div class="projects-list">
+    <div class="projects-results projects-list">
       @for (project of featuredProjects(); track project.title; let i = $index) {
-        <article
+        <ui-glass-card
           class="projects-list-hero"
+          [hover]="true"
+          [glow]="!!project.featured"
           [attr.id]="'project-' + slugify(project.title)"
           [class.archived]="project.github?.archived"
           [style.--language-stripe]="project.github?.languageColor || 'transparent'"
@@ -63,43 +65,69 @@
             />
           </div>
           <div class="projects-list-hero-body">
-            <h3 class="projects-list-hero-title">
+            <h2 class="projects-list-hero-title">
               {{ project.title }}
               @if (project.github?.archived) {
                 <span class="archived-badge" title="This repository is archived on GitHub"
                   >archived</span
                 >
               }
-            </h3>
+            </h2>
             <p class="projects-list-hero-desc">{{ project.description }}</p>
-            <div class="projects-list-tags">
-              @for (tag of project.tags; track tag) {
-                <a
-                  class="tag"
-                  [routerLink]="['/projects/tag', slugify(tag)]"
-                  [attr.aria-label]="'View all projects tagged ' + tag"
-                  >{{ tag }}</a
-                >
-              }
+
+            <ui-github-meta [meta]="project.github" [projectTitle]="project.title" />
+
+            <div class="projects-list-hero-footer">
+              <div class="projects-list-tags">
+                @for (tag of project.tags; track tag) {
+                  <a
+                    class="tag"
+                    [routerLink]="['/projects/tag', slugify(tag)]"
+                    [attr.aria-label]="'View all projects tagged ' + tag"
+                    >{{ tag }}</a
+                  >
+                }
+              </div>
+              <a
+                [href]="project.link"
+                target="_blank"
+                rel="noopener"
+                class="project-link"
+                [attr.aria-label]="'View ' + project.title + ' on GitHub'"
+              >
+                <ui-icon name="github" [size]="14" />
+                <span>Source</span>
+                <ui-icon name="external-link" [size]="12" />
+              </a>
             </div>
+
             <a
               [routerLink]="['/projects', project.slug || slugify(project.title)]"
               class="projects-list-cta"
               [attr.aria-label]="'View details for ' + project.title"
             >
-              View source <span aria-hidden="true">→</span>
+              View details
+              <span class="projects-list-cta-arrow" aria-hidden="true">→</span>
             </a>
           </div>
-        </article>
+        </ui-glass-card>
       }
 
       @if (moreProjects().length > 0) {
-        <h2 class="projects-list-more-heading">More work</h2>
-        @for (project of moreProjects(); track project.title) {
+        <h2
+          class="projects-list-more-heading"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="'0ms'"
+        >
+          More work
+        </h2>
+        @for (project of moreProjects(); track project.title; let i = $index) {
           <article
             class="projects-list-row"
             [attr.id]="'project-' + slugify(project.title)"
             [class.archived]="project.github?.archived"
+            animate.enter="enter-fade-up"
+            [style.--enter-delay]="(i + 1) * 40 + 'ms'"
           >
             @if (project.image) {
               <a
@@ -160,7 +188,7 @@
       }
     </div>
   } @else {
-    <div class="projects-grid">
+    <div class="projects-results projects-grid">
       @for (project of visibleProjects(); track project.title; let i = $index) {
         <ui-glass-card
           [attr.id]="'project-' + slugify(project.title)"

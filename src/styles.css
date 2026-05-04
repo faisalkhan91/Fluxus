@@ -1391,6 +1391,27 @@ p {
   animation: simple-fade-in var(--transition-tab) both;
 }
 
+/*
+  Projects-page results region. Giving the list/grid container its own
+  `view-transition-name` extracts it from the `main-content` snapshot so
+  list↔grid toggles (and sort-order changes — both are same-route query-
+  param navigations handled by `withViewTransitions()`) cross-fade in
+  place instead of snapping. A longer duration than the page-level
+  `--transition-tab` suits content swaps where the eye needs a beat to
+  re-parse the new layout.
+*/
+.projects-results {
+  view-transition-name: projects-results;
+}
+
+::view-transition-old(projects-results) {
+  animation: simple-fade-out var(--duration-base) var(--ease-decelerate) both;
+}
+
+::view-transition-new(projects-results) {
+  animation: simple-fade-in var(--duration-base) var(--ease-decelerate) both;
+}
+
 /* WCAG 2.3.3 — honor user's reduced-motion preference. Collapses every
    animation, transition, and View Transitions pseudo-element animation to a
    near-zero duration so the UI remains static during motion-sensitive use. */
