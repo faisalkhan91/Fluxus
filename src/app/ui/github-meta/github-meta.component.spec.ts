@@ -121,8 +121,24 @@ describe('GithubMetaComponent', () => {
     expect(bar!.getAttribute('aria-label')).toContain('HTML 20.0%');
   });
 
-  it('omits the language bar when languagesBytes is empty', async () => {
-    const fixture = await mount(baseMeta({ languagesBytes: [] }));
+  it('falls back to a single-segment bar when languagesBytes is empty but primaryLanguage is set', async () => {
+    // Older repos and ones the GitHub languages endpoint didn't return data
+    // for still get a colored divider, drawn from primaryLanguage/languageColor,
+    // so all cards on the projects grid stay visually consistent.
+    const fixture = await mount(
+      baseMeta({ languagesBytes: [], primaryLanguage: 'Python', languageColor: '#3572A5' }),
+    );
+    const bar = fixture.nativeElement.querySelector('.gh-languages-bar') as HTMLElement | null;
+    expect(bar).toBeTruthy();
+    const segments = bar!.querySelectorAll('.gh-languages-segment');
+    expect(segments.length).toBe(1);
+    expect(bar!.getAttribute('aria-label')).toContain('Python 100.0%');
+  });
+
+  it('omits the language bar when no language info is available at all', async () => {
+    const fixture = await mount(
+      baseMeta({ languagesBytes: [], primaryLanguage: null, languageColor: null }),
+    );
     expect(fixture.nativeElement.querySelector('.gh-languages-bar')).toBeNull();
   });
 

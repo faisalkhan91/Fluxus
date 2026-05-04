@@ -46,7 +46,23 @@ export class GithubMetaComponent {
   readonly showOpenIssues = input<boolean>(false);
 
   protected readonly rel = computed(() => this.meta()?.latestRelease ?? null);
-  protected readonly languages = computed(() => this.meta()?.languagesBytes ?? []);
+  /**
+   * Segments for the language-distribution bar. Prefers the real
+   * `languagesBytes` breakdown when present, otherwise falls back to
+   * a single-segment bar drawn from `primaryLanguage` + `languageColor`.
+   * The fallback keeps cards visually consistent for older/tiny repos
+   * where the GitHub languages endpoint returned nothing — without it,
+   * those cards lose the colored divider that every other card shows.
+   */
+  protected readonly languages = computed(() => {
+    const meta = this.meta();
+    const bytes = meta?.languagesBytes ?? [];
+    if (bytes.length > 0) return bytes;
+    if (meta?.primaryLanguage && meta.languageColor) {
+      return [{ name: meta.primaryLanguage, color: meta.languageColor, bytes: 1 }];
+    }
+    return [];
+  });
   protected readonly pushedRelative = computed(() => relativeTime(this.meta()?.pushedAt));
   protected readonly releaseRelative = computed(() =>
     this.rel() ? relativeTime(this.rel()!.publishedAt) : '',
