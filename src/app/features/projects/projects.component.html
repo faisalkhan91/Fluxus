@@ -55,14 +55,32 @@
             <div class="projects-list-hero-stripe" aria-hidden="true"></div>
           }
           <div class="projects-list-hero-media">
-            <img
-              [ngSrc]="project.image"
-              [alt]="project.title"
-              fill
-              [priority]="i === 0"
-              sizes="(max-width: 768px) 92vw, 50vw"
-              class="projects-list-hero-image"
-            />
+            <!--
+              `priority` is gated via `@if` rather than a `[priority]` input
+              binding: sort/view changes reorder these cards, so the index-0
+              slot moves between projects. NgOptimizedImage locks its
+              `priority` at init and throws NG02953 if the binding later
+              flips, so we render two distinct <img> elements (fresh
+              directive instance each time i-eq-0 changes hands).
+            -->
+            @if (i === 0) {
+              <img
+                [ngSrc]="project.image"
+                [alt]="project.title"
+                fill
+                priority
+                sizes="(max-width: 768px) 92vw, 50vw"
+                class="projects-list-hero-image"
+              />
+            } @else {
+              <img
+                [ngSrc]="project.image"
+                [alt]="project.title"
+                fill
+                sizes="(max-width: 768px) 92vw, 50vw"
+                class="projects-list-hero-image"
+              />
+            }
           </div>
           <div class="projects-list-hero-body">
             <h2 class="projects-list-hero-title">
@@ -205,14 +223,26 @@
             <div class="project-language-stripe" aria-hidden="true"></div>
           }
           <div class="project-image-wrapper">
-            <img
-              [ngSrc]="project.image"
-              [alt]="project.title"
-              fill
-              [priority]="i === 0"
-              sizes="(max-width: 768px) 85vw, 33vw"
-              class="project-image"
-            />
+            <!-- See the list-hero media block above for why `priority` is
+                 gated by `@if` instead of a dynamic input binding. -->
+            @if (i === 0) {
+              <img
+                [ngSrc]="project.image"
+                [alt]="project.title"
+                fill
+                priority
+                sizes="(max-width: 768px) 85vw, 33vw"
+                class="project-image"
+              />
+            } @else {
+              <img
+                [ngSrc]="project.image"
+                [alt]="project.title"
+                fill
+                sizes="(max-width: 768px) 85vw, 33vw"
+                class="project-image"
+              />
+            }
           </div>
           <div class="project-body">
             <h3 class="project-title">
