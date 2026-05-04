@@ -10,11 +10,11 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
-import { DOCUMENT } from '@angular/common';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { BlogService } from '@core/services/blog.service';
+import { SeoService } from '@core/services/seo.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { environment } from '@env/environment';
@@ -35,7 +35,7 @@ export class BlogTagComponent {
   // route and we own the head tags ourselves (mirrors BlogPostComponent).
   private titleService = inject(Title);
   private metaService = inject(Meta);
-  private document = inject(DOCUMENT);
+  private seo = inject(SeoService);
 
   protected tagSlug = toSignal(
     this.route.paramMap.pipe(map((p) => (p.get('tag') ?? '').toLowerCase())),
@@ -90,17 +90,7 @@ export class BlogTagComponent {
     this.metaService.updateTag({ name: 'twitter:title', content: title });
     this.metaService.updateTag({ name: 'twitter:description', content: description });
     this.metaService.updateTag({ name: 'twitter:image', content: DEFAULT_OG_IMAGE });
-    this.setCanonical(url);
-  }
-
-  private setCanonical(url: string): void {
-    let link = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (!link) {
-      link = this.document.createElement('link');
-      link.setAttribute('rel', 'canonical');
-      this.document.head.appendChild(link);
-    }
-    link.setAttribute('href', url);
+    this.seo.setCanonical(url);
   }
 
   protected formatDate(iso: string): string {
