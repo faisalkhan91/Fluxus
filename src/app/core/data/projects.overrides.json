@@ -4,13 +4,22 @@
   "topic": "portfolio",
   "repos": [
     {
-      "repo": "faisalkhan91/Bookstore",
-      "title": "Bookstore",
-      "description": "An Angular web application for browsing and purchasing books online. Built with Angular CLI, TypeScript, and component-driven architecture with routing, services, and responsive HTML/CSS templates.",
-      "image": "assets/images/portfolio/BookStore.png",
-      "tags": ["Angular", "TypeScript", "HTML", "CSS"],
+      "repo": "faisalkhan91/Text-Analyzer-AI",
+      "title": "Text Analyzer",
+      "description": "A Python application that uses the Azure Text Analytics SDK to extract language, sentiment, and key phrases from user-supplied prose. Demonstrates cloud-native NLP with a thin, scriptable UI.",
+      "image": "assets/images/portfolio/TextAnalyzerAI.png",
+      "tags": ["Python", "Azure", "AI", "NLP"],
       "featured": true,
       "order": 1
+    },
+    {
+      "repo": "faisalkhan91/Image-Generator-AI",
+      "title": "Image Generator",
+      "description": "A Python application that drives the Azure OpenAI DALL-E model from user prompts to produce generated images. A compact end-to-end example of prompt-to-image integration against a managed OpenAI endpoint.",
+      "image": "assets/images/portfolio/ImageGeneratorAI.png",
+      "tags": ["Python", "Azure", "AI", "OpenAI"],
+      "featured": true,
+      "order": 2
     },
     {
       "repo": "faisalkhan91/Storm-Events",
@@ -19,16 +28,15 @@
       "image": "assets/images/portfolio/StormEvents.gif",
       "tags": ["Python", "Hadoop", "Data Science"],
       "featured": true,
-      "order": 2
+      "order": 3
     },
     {
-      "repo": "faisalkhan91/Jenkins-CI-CD",
-      "title": "Jenkins CI/CD Pipeline",
-      "description": "An end-to-end CI/CD pipeline built with Jenkins and Ansible. Automates building, testing, and deploying applications using Docker, Nginx, PHP, and MySQL. Includes a Maven-based Java build pipeline with unit testing and artifact management.",
-      "image": "assets/images/portfolio/JenkinsCICD.PNG",
-      "tags": ["Jenkins", "Ansible", "Docker", "CI/CD", "Shell"],
-      "featured": true,
-      "order": 3
+      "repo": "faisalkhan91/Bookstore",
+      "title": "Bookstore",
+      "description": "An Angular web application for browsing and purchasing books online. Built with Angular CLI, TypeScript, and component-driven architecture with routing, services, and responsive HTML/CSS templates.",
+      "image": "assets/images/portfolio/BookStore.png",
+      "tags": ["Angular", "TypeScript", "HTML", "CSS"],
+      "order": 4
     },
     {
       "repo": "faisalkhan91/Backtracking-Search",
@@ -36,7 +44,7 @@
       "description": "A Python program that solves a 6x6 Sudoku grid using the backtracking search algorithm, systematically exploring possible values and backtracking on constraint violations to produce a solved matrix.",
       "image": "assets/images/portfolio/BacktrackingSearch.PNG",
       "tags": ["Python", "Algorithms", "AI"],
-      "order": 4
+      "order": 5
     },
     {
       "repo": "faisalkhan91/Dictionary-Application",
@@ -44,7 +52,7 @@
       "description": "A GUI-based dictionary app built with Python and Tkinter, powered by the Oxford Dictionary API. Features word definitions, etymology, phonetic pronunciation, audio playback, synonyms, antonyms, rhymes, and example usage.",
       "image": "assets/images/portfolio/DictionaryApp.PNG",
       "tags": ["Python", "Tkinter", "API"],
-      "order": 5
+      "order": 6
     },
     {
       "repo": "faisalkhan91/Insecure-File-Extraction",
@@ -52,23 +60,15 @@
       "description": "A security demonstration of path traversal exploitation in a poorly coded file upload function, showing how malicious code can be injected onto a web server through insecure file extraction.",
       "image": "assets/images/portfolio/InsecureFileExtraction.PNG",
       "tags": ["Python", "Security", "Web"],
-      "order": 6
-    },
-    {
-      "repo": "faisalkhan91/Text-Analyzer-AI",
-      "title": "Text Analyzer",
-      "description": "A Python application that uses the Azure Text Analytics SDK to extract language, sentiment, and key phrases from user-supplied prose. Demonstrates cloud-native NLP with a thin, scriptable UI.",
-      "image": "assets/images/portfolio/TextAnalyzerAI.png",
-      "tags": ["Python", "Azure", "AI", "NLP"],
       "order": 7
     },
     {
-      "repo": "faisalkhan91/Image-Generator-AI",
-      "title": "Image Generator",
-      "description": "A Python application that drives the Azure OpenAI DALL-E model from user prompts to produce generated images. A compact end-to-end example of prompt-to-image integration against a managed OpenAI endpoint.",
-      "image": "assets/images/portfolio/ImageGeneratorAI.png",
-      "tags": ["Python", "Azure", "AI", "OpenAI"],
-      "order": 8
+      "repo": "faisalkhan91/Jenkins-CI-CD",
+      "title": "Jenkins CI/CD Pipeline",
+      "description": "An end-to-end CI/CD pipeline built with Jenkins and Ansible. Automates building, testing, and deploying applications using Docker, Nginx, PHP, and MySQL. Includes a Maven-based Java build pipeline with unit testing and artifact management.",
+      "image": "assets/images/portfolio/JenkinsCICD.PNG",
+      "tags": ["Jenkins", "Ansible", "Docker", "CI/CD", "Shell"],
+      "order": 99
     }
   ],
   "manual": []
