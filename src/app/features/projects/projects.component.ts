@@ -153,8 +153,11 @@ export class ProjectsComponent {
     icon: string;
     label: string;
   }[] = [
-    { key: 'grid', icon: 'layout-grid', label: 'Grid view' },
+    // `list` is the default view, so it leads the toggle — matches the
+    // left-to-right "resting state first" pattern used elsewhere in the
+    // app's view switchers.
     { key: 'list', icon: 'list', label: 'List view' },
+    { key: 'grid', icon: 'layout-grid', label: 'Grid view' },
   ];
 
   protected setView(key: ProjectView): void {

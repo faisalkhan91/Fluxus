@@ -117,25 +117,22 @@
   gap: var(--space-6);
 }
 
+/*
+  List-view featured card. Layout-only rules live here; visual state
+  (background, border, hover lift, shadow, accent glow when featured)
+  is inherited from <ui-glass-card [hover] [glow]=featured> — same
+  elevation/hover/glow contract the grid cards use. `--glass-card-padding`
+  overrides the shared component's default (space-6) so this card keeps
+  the tighter space-5 gutter it used pre-refactor.
+*/
 .projects-list-hero {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: var(--space-5);
-  padding: var(--space-5);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
   overflow: hidden;
   scroll-margin-top: var(--space-8);
-  transition:
-    border-color var(--transition-base),
-    transform var(--transition-base);
-}
-
-.projects-list-hero:hover {
-  border-color: var(--glass-border-hover);
-  transform: translateY(-1px);
+  --glass-card-padding: var(--space-5);
 }
 
 .projects-list-hero.archived {
@@ -166,6 +163,11 @@
 
 .projects-list-hero-image {
   object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.projects-list-hero:hover .projects-list-hero-image {
+  transform: scale(1.04);
 }
 
 .projects-list-hero-body {
@@ -194,6 +196,38 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  min-width: 0;
+}
+
+/*
+  Cap visible tags at 5 so long tag lists don't bloat cards and
+  shove the Source link around. Hidden tags remain in the DOM for
+  the command palette, SEO, and tag-index pages — only presentation
+  is trimmed. The full set is visible on the project detail page.
+*/
+.projects-list-tags > .tag:nth-child(n + 6) {
+  display: none;
+}
+
+/*
+  Mirrors `.project-footer` on the grid card: tags left, external
+  Source link right, on a single row. `flex-wrap` stays off here —
+  overflow wraps *inside* `.projects-list-tags`, keeping the Source
+  glyph pinned to the right regardless of tag count.
+*/
+.projects-list-hero-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.projects-list-hero-footer .projects-list-tags {
+  flex: 1 1 auto;
+}
+
+.projects-list-hero-footer .project-link {
+  flex-shrink: 0;
 }
 
 /*
@@ -203,6 +237,9 @@
 */
 .projects-list-cta {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 600;
@@ -214,6 +251,21 @@
 .projects-list-cta:hover,
 .projects-list-cta:focus-visible {
   color: var(--accent-hover);
+}
+
+/*
+  Arrow glyph nudges right on hover — same peek-on-hover affordance
+  that row titles use, applied here at a softer magnitude (-2px → 0)
+  since the CTA already carries accent color and weight on its own.
+*/
+.projects-list-cta-arrow {
+  transform: translateX(-2px);
+  transition: transform var(--transition-fast);
+}
+
+.projects-list-cta:hover .projects-list-cta-arrow,
+.projects-list-cta:focus-visible .projects-list-cta-arrow {
+  transform: translateX(0);
 }
 
 .projects-list-more-heading {
@@ -402,6 +454,7 @@
   width: 100%;
   aspect-ratio: 16/10;
   overflow: hidden;
+  border-radius: var(--radius-sm);
   background: var(--surface-overlay);
 }
 
@@ -452,7 +505,7 @@
   border: none;
   padding: 0;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--accent);
   cursor: pointer;
   transition: color var(--transition-fast);
@@ -482,13 +535,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-3);
   margin-top: var(--space-2);
+}
+
+.project-footer .project-tags {
+  flex: 1 1 auto;
+}
+
+.project-footer .project-link {
+  flex-shrink: 0;
 }
 
 .project-tags {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* Same 5-tag display cap as the list view — see `.projects-list-tags`. */
+.project-tags > .tag:nth-child(n + 6) {
+  display: none;
 }
 
 .tag {
