@@ -5,6 +5,7 @@ import {
   ElementRef,
   PLATFORM_ID,
   afterNextRender,
+  computed,
   inject,
 } from '@angular/core';
 import { isPlatformBrowser, NgTemplateOutlet } from '@angular/common';
@@ -17,7 +18,6 @@ import { BlogService } from '@core/services/blog.service';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { slugify } from '@shared/utils/string.utils';
-import { computed } from '@angular/core';
 
 @Component({
   selector: 'app-hero',
