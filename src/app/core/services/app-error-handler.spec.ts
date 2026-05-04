@@ -59,7 +59,11 @@ describe('AppErrorHandler', () => {
       ],
       ['Generic TypeError', new TypeError("can't read prop"), false],
       ['Null input', null, false],
-      ['Non-Error with chunk-ish message', { message: 'loading bar failed' } as unknown, true],
+      // Regression guard: a bare "loading" token without "chunk" must NOT fire
+      // the recovery toast. NgOptimizedImage, hydration, and plenty of other
+      // Angular messages include "loading" and previously spammed the toast
+      // on every re-render of the /projects sort/view toolbar.
+      ['Generic "loading" message without chunk context', { message: 'loading bar failed' }, false],
       ['Primitive string with chunk keyword', 'Loading chunk meta', true],
     ];
 
