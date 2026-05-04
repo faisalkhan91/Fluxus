@@ -29,10 +29,15 @@ describe('ProjectsDataService', () => {
     expect(featured.length).toBeGreaterThan(0);
   });
 
-  it('Bookstore is a featured Angular project', () => {
-    const bookstore = service.projects().find((p) => p.title === 'Bookstore');
-    expect(bookstore?.featured).toBe(true);
-    expect(bookstore?.tags).toContain('Angular');
+  it('Storm Events Analysis is a featured Python/Data Science project', () => {
+    // Sentinel assertion: a hand-curated entry with the expected
+    // shape (featured flag flows through, tags present) survived
+    // the fetch → merge → emit pipeline. The specific row is a
+    // curation choice in `projects.overrides.json`; update the
+    // expectations when the featured set rotates.
+    const storm = service.projects().find((p) => p.title === 'Storm Events Analysis');
+    expect(storm?.featured).toBe(true);
+    expect(storm?.tags).toContain('Python');
   });
 
   it('every project carries a URL-safe slug derived by the fetch script', () => {

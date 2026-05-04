@@ -101,6 +101,22 @@
             [attr.id]="'project-' + slugify(project.title)"
             [class.archived]="project.github?.archived"
           >
+            @if (project.image) {
+              <a
+                [routerLink]="['/projects', project.slug || slugify(project.title)]"
+                class="projects-list-row-media"
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <img
+                  [ngSrc]="project.image"
+                  [alt]="project.title"
+                  fill
+                  sizes="(max-width: 768px) 92vw, 12vw"
+                  class="projects-list-row-image"
+                />
+              </a>
+            }
             <div class="projects-list-row-main">
               <h3 class="projects-list-row-title">
                 <a

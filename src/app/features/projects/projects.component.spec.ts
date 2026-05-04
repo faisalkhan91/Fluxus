@@ -313,6 +313,30 @@ describe('ProjectsComponent', () => {
       expect(el.querySelector('.projects-grid')).toBeNull();
     });
 
+    it('renders a thumbnail anchor on each compact row whose project has an image', async () => {
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { view: 'list' } });
+      fixture.detectChanges();
+
+      // Beta is the only non-featured in the fixture and it has an
+      // `image` set, so the single compact row must expose a media
+      // wrapper pointing at the detail route. The `tabindex="-1"` +
+      // `aria-hidden` combo keeps the thumbnail out of the keyboard
+      // tab sequence and the SR reading order — the title link
+      // already owns that affordance.
+      const media = el.querySelector(
+        '.projects-list-row .projects-list-row-media',
+      ) as HTMLAnchorElement | null;
+      expect(media).toBeTruthy();
+      expect(media?.getAttribute('href')).toBe('/projects/project-beta');
+      expect(media?.getAttribute('tabindex')).toBe('-1');
+      expect(media?.getAttribute('aria-hidden')).toBe('true');
+
+      const img = media?.querySelector('img');
+      expect(img).toBeTruthy();
+      expect(img?.getAttribute('src')).toBe('assets/beta.png');
+    });
+
     it('renders list view with featured heroes and "More work" compact rows when ?view=list', async () => {
       const router = TestBed.inject(Router);
       await router.navigate([], { queryParams: { view: 'list' } });
