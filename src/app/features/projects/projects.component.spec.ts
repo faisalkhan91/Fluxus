@@ -64,6 +64,15 @@ describe('ProjectsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     el = fixture.nativeElement;
+
+    // Production default is `list`, but most of these specs assert
+    // grid-layout behaviour (`.project-card`, `.project-title`, etc.).
+    // Navigate into the grid view once here so the shared assertions
+    // stay compact; the `view toggle` describe below overrides this
+    // via explicit `?view=` navigations per test.
+    const router = TestBed.inject(Router);
+    await router.navigate([], { queryParams: { view: 'grid' } });
+    fixture.detectChanges();
   });
 
   it('should be created', () => {
@@ -219,7 +228,13 @@ describe('ProjectsComponent', () => {
 
     it('sorts alphabetically when "A–Z" is selected', async () => {
       const router = TestBed.inject(Router);
-      await router.navigate([], { queryParams: { sort: 'alpha' } });
+      // `merge` preserves the `?view=grid` from the outer beforeEach
+      // so the grid-specific selectors below still resolve. Matches
+      // the production `setSort()` call shape.
+      await router.navigate([], {
+        queryParams: { sort: 'alpha' },
+        queryParamsHandling: 'merge',
+      });
       fixture.detectChanges();
       const titles = Array.from(
         el.querySelectorAll('.project-title') as NodeListOf<HTMLElement>,
@@ -230,7 +245,10 @@ describe('ProjectsComponent', () => {
 
     it('sorts by stars descending when "Most starred" is selected', async () => {
       const router = TestBed.inject(Router);
-      await router.navigate([], { queryParams: { sort: 'stars' } });
+      await router.navigate([], {
+        queryParams: { sort: 'stars' },
+        queryParamsHandling: 'merge',
+      });
       fixture.detectChanges();
       const titles = Array.from(
         el.querySelectorAll('.project-title') as NodeListOf<HTMLElement>,
@@ -241,7 +259,10 @@ describe('ProjectsComponent', () => {
 
     it('falls back to "featured" for an unknown sort key in the URL', async () => {
       const router = TestBed.inject(Router);
-      await router.navigate([], { queryParams: { sort: 'garbage' } });
+      await router.navigate([], {
+        queryParams: { sort: 'garbage' },
+        queryParamsHandling: 'merge',
+      });
       fixture.detectChanges();
       expect(el.querySelector('.projects-sort-option.active')?.textContent?.trim()).toBe(
         'Featured',
@@ -279,12 +300,17 @@ describe('ProjectsComponent', () => {
   });
 
   describe('view toggle', () => {
-    it('defaults to grid view when ?view is absent', () => {
+    it('defaults to list view when ?view is absent', async () => {
+      // Override the outer beforeEach's `?view=grid` nav so we can
+      // observe the actual parameterless default.
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { view: null } });
+      fixture.detectChanges();
+
       const activeViewBtn = el.querySelector('.projects-view-option.active');
-      expect(activeViewBtn?.getAttribute('aria-label')).toBe('Grid view');
-      // Grid renders via `.projects-grid`; no list hero/rows visible.
-      expect(el.querySelector('.projects-grid')).toBeTruthy();
-      expect(el.querySelector('.projects-list')).toBeNull();
+      expect(activeViewBtn?.getAttribute('aria-label')).toBe('List view');
+      expect(el.querySelector('.projects-list')).toBeTruthy();
+      expect(el.querySelector('.projects-grid')).toBeNull();
     });
 
     it('renders list view with featured heroes and "More work" compact rows when ?view=list', async () => {
@@ -311,35 +337,45 @@ describe('ProjectsComponent', () => {
       );
     });
 
-    it('falls back to grid for an unknown view value in the URL', async () => {
-      const router = TestBed.inject(Router);
-      await router.navigate([], { queryParams: { view: 'garbage' } });
-      fixture.detectChanges();
+    it('renders grid view when ?view=grid is set', async () => {
+      // Outer beforeEach already navigated to ?view=grid, so assert
+      // directly.
       expect(el.querySelector('.projects-grid')).toBeTruthy();
       expect(el.querySelector('.projects-list')).toBeNull();
     });
 
-    it('writes ?view=list on list-toggle click and scrubs the param for grid', () => {
+    it('falls back to list for an unknown view value in the URL', async () => {
       const router = TestBed.inject(Router);
-      const navSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      await router.navigate([], { queryParams: { view: 'garbage' } });
+      fixture.detectChanges();
+      expect(el.querySelector('.projects-list')).toBeTruthy();
+      expect(el.querySelector('.projects-grid')).toBeNull();
+    });
 
-      const listBtn = Array.from(
-        el.querySelectorAll('.projects-view-option') as NodeListOf<HTMLButtonElement>,
-      ).find((b) => b.getAttribute('aria-label') === 'List view');
-      listBtn!.click();
-      expect(navSpy).toHaveBeenLastCalledWith(
-        [],
-        expect.objectContaining({
-          queryParams: { view: 'list' },
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        }),
-      );
+    it('writes ?view=grid on grid-toggle click and scrubs the param for list (default)', async () => {
+      const router = TestBed.inject(Router);
+      // Reset to default view first so both clicks register cleanly.
+      await router.navigate([], { queryParams: { view: null } });
+      fixture.detectChanges();
+      const navSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
       const gridBtn = Array.from(
         el.querySelectorAll('.projects-view-option') as NodeListOf<HTMLButtonElement>,
       ).find((b) => b.getAttribute('aria-label') === 'Grid view');
       gridBtn!.click();
+      expect(navSpy).toHaveBeenLastCalledWith(
+        [],
+        expect.objectContaining({
+          queryParams: { view: 'grid' },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        }),
+      );
+
+      const listBtn = Array.from(
+        el.querySelectorAll('.projects-view-option') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.getAttribute('aria-label') === 'List view');
+      listBtn!.click();
       expect(navSpy).toHaveBeenLastCalledWith(
         [],
         expect.objectContaining({ queryParams: { view: null } }),
