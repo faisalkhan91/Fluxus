@@ -75,4 +75,32 @@ export class SeoService {
     }
     link.setAttribute('href', url);
   }
+
+  /**
+   * Applies the full dynamic-meta tag set for a `seo: { dynamicMeta: true }`
+   * route: page title plus nine `<meta>` tags covering OpenGraph, Twitter
+   * Cards, and the basic `name="description"`. Consolidates the same
+   * block that blog-post, blog-tag, projects-tag, and project-detail
+   * each used to implement by hand. Callers that lack a per-entity
+   * image omit the field and get the site-wide OG fallback.
+   */
+  updateDynamicMeta(input: {
+    title: string;
+    description: string;
+    url: string;
+    type: 'website' | 'article';
+    image?: string;
+  }): void {
+    const image = input.image ?? DEFAULT_OG_IMAGE;
+    this.title.setTitle(input.title);
+    this.meta.updateTag({ name: 'description', content: input.description });
+    this.meta.updateTag({ property: 'og:title', content: input.title });
+    this.meta.updateTag({ property: 'og:description', content: input.description });
+    this.meta.updateTag({ property: 'og:url', content: input.url });
+    this.meta.updateTag({ property: 'og:type', content: input.type });
+    this.meta.updateTag({ property: 'og:image', content: image });
+    this.meta.updateTag({ name: 'twitter:title', content: input.title });
+    this.meta.updateTag({ name: 'twitter:description', content: input.description });
+    this.meta.updateTag({ name: 'twitter:image', content: image });
+  }
 }
