@@ -21,9 +21,11 @@ const GENERATED_JSON = join(process.cwd(), 'src/app/core/data/projects.generated
 
 /**
  * Mirrors `slugify()` in `src/app/shared/utils/string.utils.ts`. Kept
- * inline so this module has zero TS deps.
+ * inline so this module has zero TS deps. Also re-used by
+ * `scripts/fetch-projects-github.mjs` so tags, topics, and titles all
+ * normalise the same way across the build pipeline.
  */
-export function projectTagSlug(value) {
+export function slugify(value) {
   return String(value)
     .toLowerCase()
     .trim()
@@ -63,7 +65,7 @@ export async function loadProjectTagSlugs() {
   const bySlug = new Map();
   for (const project of projects) {
     for (const tag of project.tags ?? []) {
-      const slug = projectTagSlug(tag);
+      const slug = slugify(tag);
       if (!slug) continue;
       if (!bySlug.has(slug)) bySlug.set(slug, { slug, label: tag });
     }
@@ -81,7 +83,7 @@ export async function loadProjectTagSlugs() {
 export async function loadProjectEntries() {
   const projects = await loadGenerated();
   return projects.map((p) => ({
-    titleSlug: p.slug || projectTagSlug(p.title),
+    titleSlug: p.slug || slugify(p.title),
     title: p.title,
     description: p.description ?? '',
     image: p.image ?? '',

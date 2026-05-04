@@ -40,6 +40,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Octokit } from 'octokit';
+import { slugify } from './lib/projects.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -74,16 +75,6 @@ const octokit = new Octokit({
     doNotRetry: [400, 401, 403, 404, 422],
   },
 });
-
-function slugify(value) {
-  return String(value)
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
 /**
  * Strip markdown syntax from the README and collapse to ~500 chars of
