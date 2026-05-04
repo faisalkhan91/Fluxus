@@ -9,7 +9,6 @@ import {
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { Meta, Title } from '@angular/platform-browser';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
@@ -18,8 +17,6 @@ import { SeoService } from '@core/services/seo.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { environment } from '@env/environment';
-
-const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
 
 @Component({
   selector: 'app-blog-tag',
@@ -33,8 +30,6 @@ export class BlogTagComponent {
   protected blog = inject(BlogService);
   // Route data sets `seo: { dynamicMeta: true }` so SeoService skips this
   // route and we own the head tags ourselves (mirrors BlogPostComponent).
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
   private seo = inject(SeoService);
 
   protected tagSlug = toSignal(
@@ -80,16 +75,7 @@ export class BlogTagComponent {
     const title = `Posts tagged "${label}" - ${environment.siteName}`;
     const description = `Every post on Faisal Khan's blog tagged with "${label}".`;
 
-    this.titleService.setTitle(title);
-    this.metaService.updateTag({ name: 'description', content: description });
-    this.metaService.updateTag({ property: 'og:title', content: title });
-    this.metaService.updateTag({ property: 'og:description', content: description });
-    this.metaService.updateTag({ property: 'og:url', content: url });
-    this.metaService.updateTag({ property: 'og:type', content: 'website' });
-    this.metaService.updateTag({ property: 'og:image', content: DEFAULT_OG_IMAGE });
-    this.metaService.updateTag({ name: 'twitter:title', content: title });
-    this.metaService.updateTag({ name: 'twitter:description', content: description });
-    this.metaService.updateTag({ name: 'twitter:image', content: DEFAULT_OG_IMAGE });
+    this.seo.updateDynamicMeta({ title, description, url, type: 'website' });
     this.seo.setCanonical(url);
   }
 

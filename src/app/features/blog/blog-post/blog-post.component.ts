@@ -13,7 +13,6 @@ import {
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { Meta, Title } from '@angular/platform-browser';
 import { httpResource } from '@angular/common/http';
 import { DOCUMENT, NgOptimizedImage } from '@angular/common';
 import { GlassPanelComponent } from '@ui/glass-panel/glass-panel.component';
@@ -24,6 +23,7 @@ import { BlogService } from '@core/services/blog.service';
 import { MarkdownService } from '@core/services/markdown.service';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import { ErrorToastService } from '@core/services/error-toast.service';
+import { SeoService } from '@core/services/seo.service';
 import { ThemeService } from '@core/services/theme.service';
 import { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
@@ -80,8 +80,7 @@ export class BlogPostComponent {
   private theme = inject(ThemeService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
-  private metaService = inject(Meta);
-  private titleService = inject(Title);
+  private seo = inject(SeoService);
   private document = inject(DOCUMENT);
 
   /**
@@ -704,15 +703,12 @@ export class BlogPostComponent {
         : `${environment.siteUrl}${post.cover.startsWith('/') ? '' : '/'}${post.cover}`
       : `${environment.siteUrl}/og/${post.slug}.png`;
 
-    this.titleService.setTitle(title);
-    this.metaService.updateTag({ property: 'og:title', content: title });
-    this.metaService.updateTag({ property: 'og:description', content: post.excerpt });
-    this.metaService.updateTag({ property: 'og:url', content: url });
-    this.metaService.updateTag({ property: 'og:type', content: 'article' });
-    this.metaService.updateTag({ property: 'og:image', content: cover });
-    this.metaService.updateTag({ name: 'twitter:title', content: title });
-    this.metaService.updateTag({ name: 'twitter:description', content: post.excerpt });
-    this.metaService.updateTag({ name: 'twitter:image', content: cover });
-    this.metaService.updateTag({ name: 'description', content: post.excerpt });
+    this.seo.updateDynamicMeta({
+      title,
+      description: post.excerpt,
+      url,
+      type: 'article',
+      image: cover,
+    });
   }
 }
