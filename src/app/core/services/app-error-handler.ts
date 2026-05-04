@@ -7,13 +7,18 @@ import { environment } from '@env/environment';
  * Cheap structural matcher for "the dynamic import that loads a route chunk
  * failed because the underlying network/CDN went down or because the user is
  * looking at a tab opened before a fresh deploy invalidated the chunk hashes".
- * Catches Vite/Angular CLI shapes across browsers.
+ * Matches specific chunk-load error shapes from Vite / webpack / Angular CLI —
+ * a bare "loading" token is intentionally NOT matched because it collides with
+ * NgOptimizedImage diagnostics, hydration warnings, and other routine Angular
+ * messages that would otherwise spam the recovery toast on every re-render.
  */
 function isChunkLoadFailure(err: unknown): boolean {
   if (!err) return false;
   const message =
     err instanceof Error ? err.message : String((err as { message?: unknown }).message ?? err);
-  return /chunk|loading|dynamically imported module|Failed to fetch/i.test(message);
+  return /ChunkLoadError|Loading chunk\b|dynamically imported module|Failed to fetch/i.test(
+    message,
+  );
 }
 
 /**
