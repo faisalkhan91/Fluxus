@@ -221,4 +221,21 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'path', d: 'm6 8-4 4 4 4' },
     { tag: 'path', d: 'm14.5 4-5 16' },
   ],
+  // View-toggle icons for /projects — 2x2 grid and a bullet-prefixed
+  // list. Match Lucide's `layout-grid` and `list` shapes so the pair
+  // reads as "switch how the grid renders".
+  'layout-grid': [
+    { tag: 'rect', width: '7', height: '7', x: '3', y: '3', rx: '1' },
+    { tag: 'rect', width: '7', height: '7', x: '14', y: '3', rx: '1' },
+    { tag: 'rect', width: '7', height: '7', x: '14', y: '14', rx: '1' },
+    { tag: 'rect', width: '7', height: '7', x: '3', y: '14', rx: '1' },
+  ],
+  list: [
+    { tag: 'line', x1: '8', y1: '6', x2: '21', y2: '6' },
+    { tag: 'line', x1: '8', y1: '12', x2: '21', y2: '12' },
+    { tag: 'line', x1: '8', y1: '18', x2: '21', y2: '18' },
+    { tag: 'line', x1: '3', y1: '6', x2: '3.01', y2: '6' },
+    { tag: 'line', x1: '3', y1: '12', x2: '3.01', y2: '12' },
+    { tag: 'line', x1: '3', y1: '18', x2: '3.01', y2: '18' },
+  ],
 };

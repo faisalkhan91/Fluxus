@@ -277,4 +277,75 @@ describe('ProjectsComponent', () => {
       navSpy.mockRestore();
     });
   });
+
+  describe('view toggle', () => {
+    it('defaults to grid view when ?view is absent', () => {
+      const activeViewBtn = el.querySelector('.projects-view-option.active');
+      expect(activeViewBtn?.getAttribute('aria-label')).toBe('Grid view');
+      // Grid renders via `.projects-grid`; no list hero/rows visible.
+      expect(el.querySelector('.projects-grid')).toBeTruthy();
+      expect(el.querySelector('.projects-list')).toBeNull();
+    });
+
+    it('renders list view with featured heroes and "More work" compact rows when ?view=list', async () => {
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { view: 'list' } });
+      fixture.detectChanges();
+
+      expect(el.querySelector('.projects-grid')).toBeNull();
+      expect(el.querySelector('.projects-list')).toBeTruthy();
+
+      // Alpha is featured; Beta isn't. One hero, one row, one "More work" heading.
+      const heroes = el.querySelectorAll('.projects-list-hero');
+      const rows = el.querySelectorAll('.projects-list-row');
+      expect(heroes.length).toBe(1);
+      expect(rows.length).toBe(1);
+      expect(heroes[0].querySelector('.projects-list-hero-title')?.textContent).toContain(
+        'Project Alpha',
+      );
+      expect(rows[0].querySelector('.projects-list-row-title')?.textContent).toContain(
+        'Project Beta',
+      );
+      expect(el.querySelector('.projects-list-more-heading')?.textContent?.trim()).toBe(
+        'More work',
+      );
+    });
+
+    it('falls back to grid for an unknown view value in the URL', async () => {
+      const router = TestBed.inject(Router);
+      await router.navigate([], { queryParams: { view: 'garbage' } });
+      fixture.detectChanges();
+      expect(el.querySelector('.projects-grid')).toBeTruthy();
+      expect(el.querySelector('.projects-list')).toBeNull();
+    });
+
+    it('writes ?view=list on list-toggle click and scrubs the param for grid', () => {
+      const router = TestBed.inject(Router);
+      const navSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+
+      const listBtn = Array.from(
+        el.querySelectorAll('.projects-view-option') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.getAttribute('aria-label') === 'List view');
+      listBtn!.click();
+      expect(navSpy).toHaveBeenLastCalledWith(
+        [],
+        expect.objectContaining({
+          queryParams: { view: 'list' },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        }),
+      );
+
+      const gridBtn = Array.from(
+        el.querySelectorAll('.projects-view-option') as NodeListOf<HTMLButtonElement>,
+      ).find((b) => b.getAttribute('aria-label') === 'Grid view');
+      gridBtn!.click();
+      expect(navSpy).toHaveBeenLastCalledWith(
+        [],
+        expect.objectContaining({ queryParams: { view: null } }),
+      );
+
+      navSpy.mockRestore();
+    });
+  });
 });
