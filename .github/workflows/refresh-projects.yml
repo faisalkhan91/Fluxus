@@ -1,0 +1,82 @@
+name: Refresh projects
+# Regenerates the committed GitHub project metadata out of band so
+# every PR build stays deterministic + network-free. Opens a PR
+# against main with any updated artefacts; merge queue handles the
+# rest. See README § "Project Showcase Authoring" for the full flow.
+
+on:
+  schedule:
+    # Daily at 06:00 UTC — catches slow-moving metadata drift (stars,
+    # forks, pushedAt, latest release) without burning runner minutes
+    # on every commit. Off-minute is intentional — see the scheduler
+    # best-practice note in the repo (avoid the 00/30 minute marks
+    # that every cron job on earth seems to pick).
+    - cron: '7 6 * * *'
+  workflow_dispatch:
+    # Manual trigger for an immediate refresh after editing
+    # `projects.overrides.json` on main — authors should run
+    # `npm run fetch:projects` locally first and commit, but this
+    # provides a recovery path when they forget.
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh-projects
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    name: Fetch + PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      # GraphQL requires authentication; the default Actions token
+      # gives us 5000 req/hr with read-only scope on the current repo.
+      # Write scope for the `peter-evans/create-pull-request` step is
+      # granted via the `permissions:` block above, not the token.
+      - name: Fetch GitHub metadata
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run fetch:projects
+
+      # Opens a PR against main with just the regenerated artefacts.
+      # `add-paths` scopes the diff so this never accidentally commits
+      # something else the runner touched. No-op when nothing changed.
+      - uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: chore/refresh-projects
+          delete-branch: true
+          title: 'chore(projects): refresh GitHub metadata'
+          commit-message: |
+            chore(projects): refresh GitHub metadata
+
+            Automated refresh from the scheduled `refresh-projects` workflow.
+            Regenerates `projects.generated.{ts,json}` + the GitHub fetch
+            cache from the live GraphQL response.
+          body: |
+            Automated refresh from the `refresh-projects` workflow.
+
+            **What changed:** `projects.generated.{ts,json}` + the committed
+            GitHub fetch cache got a fresh snapshot of repo metadata
+            (stars, forks, pushedAt, topics, latest release, README excerpts,
+            commit participation).
+
+            **Why it runs out of band:** CI builds consume these files
+            directly, so the fetch itself stays on a nightly cadence +
+            manual dispatch rather than running on every PR. See the
+            README project-showcase section for the full story.
+          labels: |
+            automation
+            projects
+          add-paths: |
+            src/app/core/data/projects.generated.ts
+            src/app/core/data/projects.generated.json
+            scripts/cache/projects-github.json

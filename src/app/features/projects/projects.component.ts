@@ -23,6 +23,17 @@ export type ProjectSort = 'featured' | 'alpha' | 'stars' | 'updated';
 
 const ALLOWED_SORTS: readonly ProjectSort[] = ['featured', 'alpha', 'stars', 'updated'];
 
+/**
+ * Presentation mode for the projects list. `grid` is the default
+ * thumbnail-first card layout; `list` stacks featured projects as
+ * hero cards on top with the remainder as compact "more work" rows.
+ * Persisted in the `?view=` query parameter so a reader's choice
+ * survives refresh and share-links.
+ */
+export type ProjectView = 'grid' | 'list';
+
+const ALLOWED_VIEWS: readonly ProjectView[] = ['grid', 'list'];
+
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
@@ -101,6 +112,55 @@ export class ProjectsComponent {
       // leaving `?sort=featured` dangling in the URL; every other value
       // sticks so refresh + share-link survive.
       queryParams: { sort: key === 'featured' ? null : key },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  /** Query-driven view mode, defaulting to `grid` when absent or invalid. */
+  protected readonly view = toSignal(
+    this.route.queryParamMap.pipe(
+      map((q): ProjectView => {
+        const raw = (q.get('view') ?? '').toLowerCase() as ProjectView;
+        return ALLOWED_VIEWS.includes(raw) ? raw : 'grid';
+      }),
+    ),
+    { initialValue: 'grid' as ProjectView },
+  );
+
+  /**
+   * Featured projects in `visibleProjects()` order. Renders as the
+   * hero cards atop the list view. `grid` view ignores the split.
+   */
+  protected readonly featuredProjects = computed<Project[]>(() =>
+    this.visibleProjects().filter((p) => p.featured),
+  );
+
+  /**
+   * Non-featured projects — the "More work" bucket under the list
+   * view. Sort order matches `visibleProjects()`, so switching to
+   * `?sort=stars` reorders the compact rows the same way it reorders
+   * the grid.
+   */
+  protected readonly moreProjects = computed<Project[]>(() =>
+    this.visibleProjects().filter((p) => !p.featured),
+  );
+
+  protected readonly viewOptions: readonly {
+    key: ProjectView;
+    icon: string;
+    label: string;
+  }[] = [
+    { key: 'grid', icon: 'layout-grid', label: 'Grid view' },
+    { key: 'list', icon: 'list', label: 'List view' },
+  ];
+
+  protected setView(key: ProjectView): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      // Grid is the default — scrub the query param when selecting it
+      // so the URL stays clean. `list` sticks.
+      queryParams: { view: key === 'grid' ? null : key },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });

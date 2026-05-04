@@ -78,19 +78,20 @@ npm run build:prod
 
 This runs the full build pipeline in order:
 
-1. `node scripts/fetch-projects-github.mjs` — fetches live GitHub metadata (stars, forks, language, license, topics, README excerpt, weekly commit counts, latest release, homepage) for every repo matching `user:<you> topic:portfolio` _or_ listed in `src/app/core/data/projects.overrides.json`. Writes `projects.generated.{ts,json}` + `scripts/cache/projects-github.json`. Uses `GITHUB_TOKEN` when set (5000 req/hr) and gracefully falls back to the committed cache offline.
-2. `node scripts/sync-reading-times.mjs` — recomputes `readingTime` on every `posts.json` entry from the matching markdown body so manifest and prose never disagree.
-3. `node scripts/build-image-dims.mjs` — sweeps `src/assets/images/` with `sharp` and writes intrinsic width/height for every image into `src/app/core/services/image-dims.generated.ts`. The MarkdownService renderer reads this map so blog `<img>` tags ship with `width` / `height` / `loading="lazy"` / `decoding="async"` (no CLS).
-4. `node scripts/build-version-stamp.mjs` — writes the build's commit SHA + timestamp into `app-version.generated.ts` so the sidebar footer can surface it.
-5. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included. Prerenders every known `/projects/:slug`, `/projects/tag/:tag`, `/blog/:slug`, and `/blog/tag/:tag`.
-6. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts get JSON-LD `BlogPosting` + `BreadcrumbList`; project-tag archives get `CollectionPage` + `BreadcrumbList`; project detail pages get per-project `<head>` tags.
-7. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list + the generated project list (no manual sitemap maintenance).
-8. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
-9. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
-10. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
-11. `node scripts/audit-csp.mjs` — walks the prerendered tree and fails the build if any inline script / event handler lacks a matching CSP hash.
+1. `node scripts/sync-reading-times.mjs` — recomputes `readingTime` on every `posts.json` entry from the matching markdown body so manifest and prose never disagree.
+2. `node scripts/build-image-dims.mjs` — sweeps `src/assets/images/` with `sharp` and writes intrinsic width/height for every image into `src/app/core/services/image-dims.generated.ts`. The MarkdownService renderer reads this map so blog `<img>` tags ship with `width` / `height` / `loading="lazy"` / `decoding="async"` (no CLS).
+3. `node scripts/build-version-stamp.mjs` — writes the build's commit SHA + timestamp into `app-version.generated.ts` so the sidebar footer can surface it.
+4. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included. Prerenders every known `/projects/:slug`, `/projects/tag/:tag`, `/blog/:slug`, and `/blog/tag/:tag`.
+5. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts get JSON-LD `BlogPosting` + `BreadcrumbList`; project-tag archives get `CollectionPage` + `BreadcrumbList`; project detail pages get per-project `<head>` tags.
+6. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list + the generated project list (no manual sitemap maintenance).
+7. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
+8. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
+9. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
+10. `node scripts/audit-csp.mjs` — walks the prerendered tree and fails the build if any inline script / event handler lacks a matching CSP hash.
 
 Build output goes to `dist/fluxus/browser/` — one directory per prerendered route (`index.html` inside each), plus `feed.xml`, `sitemap.xml`, `og/<slug>.png`, and the SW manifests. A representative recent run emitted **99** prerendered routes: 8 top-level + 5 blog posts + 13 blog-tag archives + 65 project-tag archives + 8 project detail pages. The counts move with the repo's topic tags and blog manifest; the pipeline enumerates them automatically.
+
+**Project metadata is fetched out of band.** `projects.generated.{ts,json}` + `scripts/cache/projects-github.json` are committed artefacts consumed directly by the build. The actual GitHub fetch (`scripts/fetch-projects-github.mjs`, via Octokit GraphQL — one request for every repo in scope) runs on a scheduled `refresh-projects.yml` workflow (daily cron + `workflow_dispatch`) and opens a PR with any updated files. That keeps every PR build deterministic, network-free, and immune to GitHub API flake. Locally, `npm run fetch:projects` runs the same script — set `GITHUB_TOKEN` in your env for a fresh fetch; unset falls back to the committed cache.
 
 ## Docker
 

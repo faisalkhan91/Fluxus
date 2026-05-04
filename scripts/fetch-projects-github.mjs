@@ -2,35 +2,44 @@
 /**
  * Builds the canonical project list by merging a hand-edited override
  * manifest (`src/app/core/data/projects.overrides.json`) with GitHub
- * repo metadata fetched at build time. Emits two artefacts:
+ * repo metadata fetched at build time. Emits three artefacts:
  *
  *   1. `src/app/core/data/projects.generated.ts` — the full `Project[]`
  *      imported by `ProjectsDataService`. Committed.
  *   2. `src/app/core/data/projects.generated.json` — JSON mirror of the
  *      same list for `.mjs` consumers (sitemap, inject-meta, prerender).
- *   3. `scripts/cache/projects-github.json` — normalized GitHub fetch
+ *   3. `scripts/cache/projects-github.json` — normalised GitHub fetch
  *      cache, keyed by `owner/name` lowercased. Offline fallback.
  *
- * Selection model (union of both):
+ * Selection model (union):
  *   - Every entry in `overrides.repos[]` (must-include allowlist).
  *   - Every public repo matching the topic filter when present
- *     (`topic:portfolio fork:false archived:false`), via the Search API.
+ *     (`user:<you> topic:<topic> fork:false archived:false`).
  *
  * Plus any `overrides.manual[]` entries are appended as manual
  * projects (no github block).
  *
- * Rate-limit safety:
- *   - Unauthenticated REST = 60/hr (per IP). N=6 repos × 5 endpoints
- *     = 30 calls. Fine.
- *   - `GITHUB_TOKEN` when present gets us 5000/hr.
- *   - Any fetch failure falls through to the cached value for that
- *     repo; only a completely cold cache + completely offline build
- *     fails the script.
+ * Runs out of band via `.github/workflows/refresh-projects.yml`
+ * (daily cron + manual dispatch). Not part of `build:prod`, so the
+ * CI build is deterministic and free of network flake.
+ *
+ * Network layer: one GraphQL query covers the topic search plus
+ * every allowlisted repo's full metadata (via aliased
+ * `repository(owner, name)` nodes sharing a RepoFields fragment).
+ * That collapses 5 REST endpoints × N repos (~40 calls) into a
+ * single request with rate-limit cost ~1. The only REST call
+ * retained is `/stats/participation` per repo for the sparkline —
+ * GraphQL doesn't expose pre-computed weekly buckets.
+ *
+ * Error semantics: GraphQL fetch wrapped in try/catch. On failure,
+ * fall back to the committed cache row per-repo. A cold cache plus
+ * a failing network is the only fatal condition.
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Octokit } from 'octokit';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -40,35 +49,31 @@ const GENERATED_JSON = join(ROOT, 'src/app/core/data/projects.generated.json');
 const CACHE_JSON = join(ROOT, 'scripts/cache/projects-github.json');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
-const USER_AGENT = 'fluxus-build-fetch';
 
 /**
- * Inline Linguist palette. Extend when a new language appears in any
- * repo. The full `linguist-languages` npm package is ~80KB; the list
- * below covers every language actually in use across the portfolio.
+ * Pre-configured Octokit client. `octokit` bundles `plugin-throttling`
+ * and `plugin-retry`; a single `new Octokit()` wires both up against
+ * the default constructor. `userAgent` is required by GitHub for
+ * unauthenticated requests.
+ *
+ * Throttle callbacks both return `false` — we never wait out a
+ * rate-limit retry window (can be 60+ seconds). The script runs on a
+ * schedule; if a given invocation hits the ceiling, we fall through
+ * to the committed cache and the next scheduled run rebuilds fresh.
  */
-const LANGUAGE_COLORS = {
-  TypeScript: '#3178c6',
-  JavaScript: '#f1e05a',
-  Python: '#3572A5',
-  Go: '#00ADD8',
-  Rust: '#dea584',
-  Java: '#b07219',
-  Shell: '#89e051',
-  HTML: '#e34c26',
-  CSS: '#563d7c',
-  SCSS: '#c6538c',
-  C: '#555555',
-  'C++': '#f34b7d',
-  Ruby: '#701516',
-  PHP: '#4F5D95',
-  Dockerfile: '#384d54',
-  HCL: '#844FBA',
-  Jupyter: '#DA5B0B',
-  Makefile: '#427819',
-  Groovy: '#4298b8',
-  Roff: '#ecdebe',
-};
+const octokit = new Octokit({
+  auth: GITHUB_TOKEN || undefined,
+  userAgent: 'fluxus-build-fetch',
+  throttle: {
+    onRateLimit: () => false,
+    onSecondaryRateLimit: () => false,
+  },
+  retry: {
+    // Don't retry client errors — they'll never succeed. 5xx + network
+    // errors retry with exponential backoff out of the box.
+    doNotRetry: [400, 401, 403, 404, 422],
+  },
+});
 
 function slugify(value) {
   return String(value)
@@ -80,78 +85,9 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-function ghHeaders(mediaType = 'application/vnd.github+json') {
-  const headers = {
-    Accept: mediaType,
-    'User-Agent': USER_AGENT,
-    'X-GitHub-Api-Version': '2022-11-28',
-  };
-  if (GITHUB_TOKEN) headers.Authorization = `Bearer ${GITHUB_TOKEN}`;
-  return headers;
-}
-
-async function tryFetch(url, { mediaType } = {}) {
-  try {
-    const res = await fetch(url, { headers: ghHeaders(mediaType) });
-    if (!res.ok) {
-      if (res.status !== 404) {
-        console.warn(`fetch-projects-github: WARN ${url} → ${res.status} ${res.statusText}`);
-      }
-      return null;
-    }
-    if (mediaType && mediaType.includes('raw')) {
-      return await res.text();
-    }
-    return await res.json();
-  } catch (err) {
-    console.warn(`fetch-projects-github: WARN network failure for ${url}: ${err.message}`);
-    return null;
-  }
-}
-
-/**
- * Selection: union of allowlist (`overrides.repos[].repo`) and topic
- * search results (when topic filter is set). Returns a Map keyed by
- * `owner/name` lowercased so callers can de-dup and merge overrides.
- */
-async function selectRepos(overrides) {
-  const selected = new Map();
-  // Allowlist is always authoritative: even if GitHub is down, these
-  // repos still show up (their cached metadata gets used below).
-  for (const entry of overrides.repos ?? []) {
-    if (!entry.repo) continue;
-    const key = entry.repo.toLowerCase();
-    selected.set(key, { nameWithOwner: entry.repo, override: entry });
-  }
-  // Topic search adds any *additional* repos tagged by the user that
-  // aren't already in the allowlist. MUST be scoped to the user
-  // (`user:X topic:Y`) — without the user scope we'd pull in every
-  // public repo on GitHub that happens to share the topic string.
-  const topic = overrides.topic;
-  const user = overrides.user;
-  if (topic && user) {
-    const q = encodeURIComponent(`user:${user} topic:${topic} fork:false archived:false`);
-    const url = `https://api.github.com/search/repositories?q=${q}&per_page=50`;
-    const json = await tryFetch(url);
-    if (json && Array.isArray(json.items)) {
-      for (const item of json.items) {
-        if (!item?.full_name) continue;
-        const key = item.full_name.toLowerCase();
-        if (selected.has(key)) continue;
-        selected.set(key, { nameWithOwner: item.full_name, override: null });
-      }
-    }
-  } else if (topic && !user) {
-    console.warn(
-      'fetch-projects-github: `topic` set in overrides but no `user`; skipping topic search to avoid pulling in every public repo on GitHub.',
-    );
-  }
-  return selected;
-}
-
 /**
  * Strip markdown syntax from the README and collapse to ~500 chars of
- * plain prose. Deliberately not a full marked + sanitizer pass —
+ * plain prose. Deliberately not a full marked + sanitiser pass —
  * third-party content should never hit a rich-text renderer on this
  * site.
  */
@@ -190,79 +126,165 @@ function extractReadmeExcerpt(md, repoName) {
 }
 
 /**
- * Fetches all per-repo endpoints in parallel, normalizes into our
- * cache shape. Any individual call failing drops that field to null
- * rather than failing the whole row — a partial row is still useful.
+ * RepoFields fragment shared by the topic-search result set and every
+ * allowlist repository alias. Keeps the mapping to our cache shape
+ * straightforward — one fragment, one `repoToCacheRow()` mapper.
  */
-async function fetchRepoNormalized(nameWithOwner) {
-  const [owner, repo] = nameWithOwner.split('/');
-  const base = `https://api.github.com/repos/${owner}/${repo}`;
-  const [core, languages, release, readmeMd, participation] = await Promise.all([
-    tryFetch(base),
-    tryFetch(`${base}/languages`),
-    tryFetch(`${base}/releases/latest`),
-    tryFetch(`${base}/readme`, { mediaType: 'application/vnd.github.raw+json' }),
-    tryFetch(`${base}/stats/participation`),
-  ]);
-  if (!core) return null;
+const REPO_FIELDS_FRAGMENT = `
+  fragment RepoFields on Repository {
+    name
+    nameWithOwner
+    description
+    homepageUrl
+    pushedAt
+    stargazerCount
+    forkCount
+    isArchived
+    openIssues: issues(states: OPEN) { totalCount }
+    primaryLanguage { name color }
+    languages(first: 20, orderBy: { field: SIZE, direction: DESC }) {
+      edges { size node { name color } }
+    }
+    licenseInfo { spdxId }
+    repositoryTopics(first: 20) { nodes { topic { name } } }
+    latestRelease { tagName publishedAt }
+    readme: object(expression: "HEAD:README.md") { ... on Blob { text } }
+  }
+`;
 
-  const primaryLanguage = typeof core.language === 'string' ? core.language : null;
-  const languageColor = primaryLanguage ? (LANGUAGE_COLORS[primaryLanguage] ?? null) : null;
-  const languagesBytes = languages
-    ? Object.entries(languages)
-        .filter(([, v]) => typeof v === 'number' && v > 0)
-        .sort(([, a], [, b]) => b - a)
-        .map(([name, bytes]) => ({
-          name,
-          color: LANGUAGE_COLORS[name] ?? null,
-          bytes,
-        }))
-    : [];
-  const topics = Array.isArray(core.topics) ? core.topics.filter((t) => typeof t === 'string') : [];
+/**
+ * Build one GraphQL query that:
+ *   - runs the topic search (returns every repo matching the filter),
+ *   - aliases every allowlist entry to `repoN: repository(...)` for
+ *     explicit fetch (so repos without the topic still come back),
+ *   - reports rateLimit so we can log cost and verify the 5× drop
+ *     vs the old REST pipeline.
+ *
+ * Allowlist names get sanitised into safe alias identifiers
+ * (`[A-Za-z_][A-Za-z0-9_]*`) so GraphQL accepts them.
+ */
+function buildPortfolioQuery(overrides) {
+  const user = overrides.user ?? '';
+  const topic = overrides.topic ?? '';
+  const searchQuery = user && topic ? `user:${user} topic:${topic} fork:false archived:false` : '';
+  const allowlist = (overrides.repos ?? []).filter((r) => r?.repo);
+  const aliases = allowlist
+    .map((entry, idx) => {
+      const [owner, name] = entry.repo.split('/');
+      return `  repo${idx}: repository(owner: "${owner}", name: "${name}") { ...RepoFields }`;
+    })
+    .join('\n');
+  const searchSection = searchQuery
+    ? `  search(query: "${searchQuery}", type: REPOSITORY, first: 50) {
+        nodes { ... on Repository { ...RepoFields } }
+      }`
+    : '';
+  return `
+    ${REPO_FIELDS_FRAGMENT}
+    query Portfolio {
+      ${searchSection}
+      ${aliases}
+      rateLimit { cost remaining resetAt limit }
+    }
+  `;
+}
+
+/**
+ * Collect RepoFields nodes from a GraphQL response into a
+ * Map<nameWithOwner-lowercased, node>, deduping across `search.nodes`
+ * and every `repoN` alias.
+ */
+function collectRepoNodes(data) {
+  const byKey = new Map();
+  const addNode = (node) => {
+    if (!node?.nameWithOwner) return;
+    const key = node.nameWithOwner.toLowerCase();
+    if (!byKey.has(key)) byKey.set(key, node);
+  };
+  for (const node of data?.search?.nodes ?? []) addNode(node);
+  for (const field of Object.keys(data ?? {})) {
+    if (field.startsWith('repo')) addNode(data[field]);
+  }
+  return byKey;
+}
+
+/**
+ * Map a RepoFields GraphQL node onto our normalised cache row shape.
+ * Field-for-field equivalent of the prior REST mapper, with
+ * `language.color` coming from GitHub's Linguist source of truth
+ * (no hardcoded palette).
+ */
+function repoNodeToCacheRow(node) {
+  const primaryLanguage = node.primaryLanguage?.name ?? null;
+  const languageColor = node.primaryLanguage?.color ?? null;
+  const languagesBytes = (node.languages?.edges ?? []).map((edge) => ({
+    name: edge.node?.name ?? '',
+    color: edge.node?.color ?? null,
+    bytes: typeof edge.size === 'number' ? edge.size : 0,
+  }));
+  const topics = (node.repositoryTopics?.nodes ?? [])
+    .map((n) => n?.topic?.name)
+    .filter((t) => typeof t === 'string');
   const latestRelease =
-    release && typeof release.tag_name === 'string' && typeof release.published_at === 'string'
-      ? { tag: release.tag_name, publishedAt: release.published_at }
+    node.latestRelease?.tagName && node.latestRelease?.publishedAt
+      ? { tag: node.latestRelease.tagName, publishedAt: node.latestRelease.publishedAt }
       : null;
-  const commitsPerWeek =
-    participation && Array.isArray(participation.all) && participation.all.length === 52
-      ? participation.all.map((n) => (typeof n === 'number' ? n : 0))
-      : null;
-
+  const [, repoName] = (node.nameWithOwner ?? '').split('/');
   return {
-    name: repo,
-    nameWithOwner: core.full_name ?? nameWithOwner,
-    description: typeof core.description === 'string' ? core.description : null,
+    name: node.name ?? repoName ?? '',
+    nameWithOwner: node.nameWithOwner,
+    description: typeof node.description === 'string' ? node.description : null,
     homepage:
-      typeof core.homepage === 'string' && core.homepage.trim().length > 0 ? core.homepage : null,
-    stars: typeof core.stargazers_count === 'number' ? core.stargazers_count : null,
-    forks: typeof core.forks_count === 'number' ? core.forks_count : null,
+      typeof node.homepageUrl === 'string' && node.homepageUrl.trim().length > 0
+        ? node.homepageUrl
+        : null,
+    stars: typeof node.stargazerCount === 'number' ? node.stargazerCount : null,
+    forks: typeof node.forkCount === 'number' ? node.forkCount : null,
     primaryLanguage,
     languageColor,
     languagesBytes,
-    pushedAt: typeof core.pushed_at === 'string' ? core.pushed_at : null,
-    license: core.license?.spdx_id ?? null,
+    pushedAt: typeof node.pushedAt === 'string' ? node.pushedAt : null,
+    license: node.licenseInfo?.spdxId ?? null,
     topics,
-    archived: !!core.archived,
-    openIssues: typeof core.open_issues_count === 'number' ? core.open_issues_count : null,
+    archived: !!node.isArchived,
+    openIssues: typeof node.openIssues?.totalCount === 'number' ? node.openIssues.totalCount : null,
     latestRelease,
-    readmeExcerpt: extractReadmeExcerpt(readmeMd, repo),
-    commitsPerWeek,
+    readmeExcerpt: extractReadmeExcerpt(node.readme?.text, repoName ?? ''),
+    // `commitsPerWeek` is filled in by a follow-up REST call — GraphQL
+    // doesn't expose the pre-computed weekly buckets.
+    commitsPerWeek: null,
     fetchedAt: new Date().toISOString(),
   };
+}
+
+/**
+ * Fetch the 52-week participation stats for one repo. GitHub returns
+ * HTTP 202 with an empty body while the stats are cold-computing —
+ * callers retry within a session. Octokit's retry plugin handles
+ * transient 5xx; we wrap in try/catch so a shaped failure falls
+ * through to whatever cached `commitsPerWeek` we have.
+ */
+async function fetchParticipation(owner, repo) {
+  try {
+    const res = await octokit.rest.repos.getParticipationStats({ owner, repo });
+    const all = res.data?.all;
+    if (Array.isArray(all) && all.length === 52) {
+      return all.map((n) => (typeof n === 'number' ? n : 0));
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 async function loadCache() {
   if (!existsSync(CACHE_JSON)) return { fetchedAt: null, repos: {} };
   try {
     const raw = JSON.parse(await readFile(CACHE_JSON, 'utf-8'));
-    // Accept either the new shape `{ fetchedAt, repos: {…} }` or the
-    // prior shape `{ <slug>: { … } }` so an old cache doesn't force a
-    // re-fetch at migration time. Old-shape rows keyed by slug are
-    // left behind; the script will warn but keep going.
     if (raw && raw.repos && typeof raw.repos === 'object') return raw;
     if (raw && typeof raw === 'object') {
       console.warn(
-        'fetch-projects-github: legacy cache shape detected; ignoring (the next run with network will rewrite it).',
+        'fetch-projects-github: legacy cache shape detected; ignoring (the next successful run will rewrite it).',
       );
     }
     return { fetchedAt: null, repos: {} };
@@ -287,13 +309,14 @@ async function writeJson(path, data) {
 
 async function writeGeneratedTs(projects) {
   const body = `// AUTO-GENERATED by scripts/fetch-projects-github.mjs - do not hand-edit.
-// Re-run via \`npm run fetch:projects\` or as part of \`build:prod\`.
+// Re-run via \`npm run fetch:projects\` locally, or via the
+// refresh-projects GitHub Actions workflow (cron + manual dispatch).
 //
 // Source-of-truth for the projects surface. The list = union of repos
 // opted-in via \`src/app/core/data/projects.overrides.json\` (allowlist
-// + optional topic filter) plus any \`manual[]\` entries. Fields are
-// populated from the GitHub REST API at build time; missing values
-// fall back to the committed cache at \`scripts/cache/projects-github.json\`.
+// + optional topic filter) plus any \`manual[]\` entries. Fields come
+// from the GitHub GraphQL API; missing fields fall back to the
+// committed cache at \`scripts/cache/projects-github.json\`.
 
 import type { Project } from '@shared/models/project.model';
 
@@ -310,11 +333,23 @@ export const PROJECTS: readonly Project[] = ${JSON.stringify(projects, null, 2)}
   await writeFile(GENERATED_TS, serialized, 'utf-8');
 }
 
+function mergeTagsWithTopics(tags, topics) {
+  const seen = new Set((tags ?? []).map((t) => slugify(t)).filter(Boolean));
+  const out = [...(tags ?? [])];
+  for (const topic of topics ?? []) {
+    const s = slugify(topic);
+    if (!s || seen.has(s)) continue;
+    seen.add(s);
+    out.push(topic);
+  }
+  return out;
+}
+
 /**
- * Merge: apply override row fields on top of GitHub data, de-duping
- * tags with topics. Overrides win for `title`, `description`, `image`;
- * `featured` and `order` come exclusively from overrides (GitHub has
- * no notion of either). Manual entries skip this path.
+ * Apply override row fields on top of GitHub data, de-duping tags
+ * with topics. Overrides win for `title`, `description`, `image`;
+ * `featured` and `order` come exclusively from overrides (GitHub
+ * has no notion of either). Manual entries skip this path.
  */
 function mergeRepoRow(cacheRow, override) {
   const name = override?.title ?? cacheRow.name;
@@ -358,18 +393,6 @@ function mergeRepoRow(cacheRow, override) {
   };
 }
 
-function mergeTagsWithTopics(tags, topics) {
-  const seen = new Set((tags ?? []).map((t) => slugify(t)).filter(Boolean));
-  const out = [...(tags ?? [])];
-  for (const topic of topics ?? []) {
-    const s = slugify(topic);
-    if (!s || seen.has(s)) continue;
-    seen.add(s);
-    out.push(topic);
-  }
-  return out;
-}
-
 function sortProjects(projects) {
   // Primary: `order` ascending when set. Secondary: featured first.
   // Tertiary: most-recently-pushed first (manual entries have no
@@ -390,32 +413,86 @@ function sortProjects(projects) {
 async function main() {
   const overrides = JSON.parse(await readFile(OVERRIDES_JSON, 'utf-8'));
   const cache = await loadCache();
-  const selected = await selectRepos(overrides);
+  const allowlist = (overrides.repos ?? []).filter((r) => r?.repo);
+  const overrideByKey = new Map(allowlist.map((entry) => [entry.repo.toLowerCase(), entry]));
+
+  // Issue the single GraphQL query. On any failure (network, auth,
+  // rate-limit exceeded), we proceed with whatever is in the cache —
+  // that's the "builds keep working offline" contract.
+  //
+  // Short-circuit: GitHub's GraphQL endpoint requires authentication
+  // (unlike REST which allows 60/hr anonymous). If no token is set,
+  // skip the query entirely and rely on the cache. The refresh
+  // workflow always supplies `secrets.GITHUB_TOKEN`; local dev needs
+  // an explicit `GITHUB_TOKEN` in the environment.
+  let nodeMap = new Map();
+  if (!GITHUB_TOKEN) {
+    console.warn(
+      'fetch-projects-github: no GITHUB_TOKEN in environment — skipping GraphQL query, using cache only. Set GITHUB_TOKEN for a fresh fetch.',
+    );
+  } else {
+    try {
+      const query = buildPortfolioQuery(overrides);
+      const data = await octokit.graphql(query);
+      nodeMap = collectRepoNodes(data);
+      const rl = data?.rateLimit;
+      if (rl) {
+        console.log(
+          `fetch-projects-github: graphql cost=${rl.cost} remaining=${rl.remaining}/${rl.limit} resetAt=${rl.resetAt}`,
+        );
+      }
+    } catch (err) {
+      console.warn(
+        `fetch-projects-github: WARN GraphQL request failed (${err.status ?? 'n/a'} ${err.message ?? err}); falling back to cache rows.`,
+      );
+    }
+  }
+
+  // Union set of repo keys: allowlist ∪ topic-search results. Allowlist
+  // entries always stay in the final project list (even if GraphQL
+  // failed to return them) because their cached row may still resolve.
+  const selected = new Map();
+  for (const entry of allowlist) {
+    const key = entry.repo.toLowerCase();
+    selected.set(key, { nameWithOwner: entry.repo, override: entry });
+  }
+  for (const [key, node] of nodeMap) {
+    if (selected.has(key)) continue;
+    selected.set(key, {
+      nameWithOwner: node.nameWithOwner,
+      override: overrideByKey.get(key) ?? null,
+    });
+  }
 
   let fetched = 0;
   let fromCache = 0;
   let missing = 0;
   const freshRepos = { ...cache.repos };
 
-  for (const [key, { nameWithOwner, override }] of selected) {
-    const row = await fetchRepoNormalized(nameWithOwner);
-    if (row) {
+  for (const [key, { nameWithOwner }] of selected) {
+    const node = nodeMap.get(key);
+    if (node) {
+      const row = repoNodeToCacheRow(node);
+      // Participation stats aren't in GraphQL — tag one REST call onto
+      // every repo we have a node for. Empty result (cold cache) falls
+      // through to whatever the old cache had.
+      const [owner, repo] = nameWithOwner.split('/');
+      const commits = await fetchParticipation(owner, repo);
+      row.commitsPerWeek = commits ?? cache.repos?.[key]?.commitsPerWeek ?? null;
       freshRepos[key] = row;
       fetched++;
     } else if (cache.repos?.[key]) {
       fromCache++;
     } else {
       console.warn(
-        `fetch-projects-github: WARN no data for ${nameWithOwner} (network + cache both empty); skipping.`,
+        `fetch-projects-github: WARN no data for ${nameWithOwner} (graphql + cache both empty); skipping.`,
       );
       missing++;
       selected.delete(key);
     }
-    // Keep override on the entry for the merge step.
-    selected.get(key) && (selected.get(key).override = override);
   }
 
-  // Build Project[] from selected repos.
+  // Build Project[] from the selected repos.
   const fromGithub = [];
   for (const [key, { override }] of selected) {
     const cacheRow = freshRepos[key];
@@ -423,7 +500,7 @@ async function main() {
     fromGithub.push(mergeRepoRow(cacheRow, override));
   }
 
-  // Manual entries are rendered with no github block.
+  // Manual entries render with no github block.
   const fromManual = (overrides.manual ?? []).map((m) => ({
     title: m.title,
     slug: m.slug ?? slugify(m.title ?? 'manual'),
@@ -437,7 +514,7 @@ async function main() {
 
   const merged = sortProjects([...fromGithub, ...fromManual]);
 
-  // Strip the `order` field before serialisation; it's a merge-time
+  // Strip the `order` field before serialisation — it's a merge-time
   // hint, not a runtime property on `Project`.
   const emitted = merged.map(({ order: _order, ...rest }) => rest);
 
@@ -449,10 +526,9 @@ async function main() {
   await writeGeneratedTs(emitted);
   await writeJson(GENERATED_JSON, emitted);
 
-  const allEmpty = fetched === 0 && fromCache === 0;
-  if (allEmpty && !GITHUB_TOKEN && !existsSync(CACHE_JSON)) {
+  if (fetched === 0 && fromCache === 0 && !existsSync(CACHE_JSON)) {
     console.error(
-      'fetch-projects-github: FATAL no GITHUB_TOKEN and no cache — cannot bootstrap an empty list.',
+      'fetch-projects-github: FATAL no graphql data and no cache — cannot bootstrap an empty list.',
     );
     process.exit(1);
   }

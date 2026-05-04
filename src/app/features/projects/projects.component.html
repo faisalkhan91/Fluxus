@@ -5,77 +5,74 @@
     decoration="// git log --oneline"
     [level]="1"
   />
-  <div class="projects-sort-row" role="radiogroup" aria-label="Sort projects">
-    @for (opt of sortOptions; track opt.key) {
-      <button
-        type="button"
-        class="projects-sort-option"
-        role="radio"
-        [attr.aria-checked]="sort() === opt.key"
-        [class.active]="sort() === opt.key"
-        (click)="setSort(opt.key)"
-      >
-        {{ opt.label }}
-      </button>
-    }
+  <div class="projects-toolbar">
+    <div class="projects-sort-row" role="radiogroup" aria-label="Sort projects">
+      @for (opt of sortOptions; track opt.key) {
+        <button
+          type="button"
+          class="projects-sort-option"
+          role="radio"
+          [attr.aria-checked]="sort() === opt.key"
+          [class.active]="sort() === opt.key"
+          (click)="setSort(opt.key)"
+        >
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+    <div class="projects-view-row" role="radiogroup" aria-label="View mode">
+      @for (opt of viewOptions; track opt.key) {
+        <button
+          type="button"
+          class="projects-view-option"
+          role="radio"
+          [attr.aria-checked]="view() === opt.key"
+          [attr.aria-label]="opt.label"
+          [attr.title]="opt.label"
+          [class.active]="view() === opt.key"
+          (click)="setView(opt.key)"
+        >
+          <ui-icon [name]="opt.icon" [size]="14" />
+        </button>
+      }
+    </div>
   </div>
-  <div class="projects-grid">
-    @for (project of visibleProjects(); track project.title; let i = $index) {
-      <ui-glass-card
-        [attr.id]="'project-' + slugify(project.title)"
-        [hover]="true"
-        [glow]="!!project.featured"
-        class="project-card"
-        [class.expanded]="isExpanded(project.title)"
-        [class.archived]="project.github?.archived"
-        animate.enter="enter-fade-up"
-        [style.--enter-delay]="i * 60 + 'ms'"
-        [style.--language-stripe]="project.github?.languageColor || 'transparent'"
-      >
-        @if (project.github?.languageColor) {
-          <div class="project-language-stripe" aria-hidden="true"></div>
-        }
-        <div class="project-image-wrapper">
-          <img
-            [ngSrc]="project.image"
-            [alt]="project.title"
-            fill
-            [priority]="i === 0"
-            sizes="(max-width: 768px) 85vw, 33vw"
-            class="project-image"
-          />
-        </div>
-        <div class="project-body">
-          <h3 class="project-title">
-            {{ project.title }}
-            @if (project.github?.archived) {
-              <span class="archived-badge" title="This repository is archived on GitHub"
-                >archived</span
-              >
-            }
-          </h3>
-          <p class="project-desc" [id]="'desc-' + slugify(project.title)">
-            {{ project.description }}
-          </p>
-          <button
-            type="button"
-            class="read-more-toggle"
-            [attr.aria-expanded]="isExpanded(project.title)"
-            [attr.aria-controls]="'desc-' + slugify(project.title)"
-            [attr.aria-label]="
-              isExpanded(project.title)
-                ? 'Show less about ' + project.title
-                : 'Read more about ' + project.title
-            "
-            (click)="toggleExpand(project.title)"
-          >
-            {{ isExpanded(project.title) ? '− Show less' : '+ Read more' }}
-          </button>
 
-          <ui-github-meta [meta]="project.github" [projectTitle]="project.title" />
-
-          <div class="project-footer">
-            <div class="project-tags">
+  @if (view() === 'list') {
+    <div class="projects-list">
+      @for (project of featuredProjects(); track project.title; let i = $index) {
+        <article
+          class="projects-list-hero"
+          [attr.id]="'project-' + slugify(project.title)"
+          [class.archived]="project.github?.archived"
+          [style.--language-stripe]="project.github?.languageColor || 'transparent'"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="i * 60 + 'ms'"
+        >
+          @if (project.github?.languageColor) {
+            <div class="projects-list-hero-stripe" aria-hidden="true"></div>
+          }
+          <div class="projects-list-hero-media">
+            <img
+              [ngSrc]="project.image"
+              [alt]="project.title"
+              fill
+              [priority]="i === 0"
+              sizes="(max-width: 768px) 92vw, 50vw"
+              class="projects-list-hero-image"
+            />
+          </div>
+          <div class="projects-list-hero-body">
+            <h3 class="projects-list-hero-title">
+              {{ project.title }}
+              @if (project.github?.archived) {
+                <span class="archived-badge" title="This repository is archived on GitHub"
+                  >archived</span
+                >
+              }
+            </h3>
+            <p class="projects-list-hero-desc">{{ project.description }}</p>
+            <div class="projects-list-tags">
               @for (tag of project.tags; track tag) {
                 <a
                   class="tag"
@@ -86,19 +83,148 @@
               }
             </div>
             <a
+              [routerLink]="['/projects', project.slug || slugify(project.title)]"
+              class="projects-list-cta"
+              [attr.aria-label]="'View details for ' + project.title"
+            >
+              View source <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
+      }
+
+      @if (moreProjects().length > 0) {
+        <h2 class="projects-list-more-heading">More work</h2>
+        @for (project of moreProjects(); track project.title) {
+          <article
+            class="projects-list-row"
+            [attr.id]="'project-' + slugify(project.title)"
+            [class.archived]="project.github?.archived"
+          >
+            <div class="projects-list-row-main">
+              <h3 class="projects-list-row-title">
+                <a
+                  [routerLink]="['/projects', project.slug || slugify(project.title)]"
+                  [attr.aria-label]="'View details for ' + project.title"
+                >
+                  {{ project.title }}
+                  <span aria-hidden="true" class="projects-list-row-arrow">→</span>
+                </a>
+                @if (project.github?.archived) {
+                  <span class="archived-badge" title="This repository is archived on GitHub"
+                    >archived</span
+                  >
+                }
+              </h3>
+              <p class="projects-list-row-desc">{{ project.description }}</p>
+              <div class="projects-list-tags">
+                @for (tag of project.tags; track tag) {
+                  <a
+                    class="tag"
+                    [routerLink]="['/projects/tag', slugify(tag)]"
+                    [attr.aria-label]="'View all projects tagged ' + tag"
+                    >{{ tag }}</a
+                  >
+                }
+              </div>
+            </div>
+            <a
               [href]="project.link"
               target="_blank"
               rel="noopener"
               class="project-link"
               [attr.aria-label]="'View ' + project.title + ' on GitHub'"
             >
-              <ui-icon name="github" [size]="16" />
+              <ui-icon name="github" [size]="14" />
               <span>Source</span>
               <ui-icon name="external-link" [size]="12" />
             </a>
+          </article>
+        }
+      }
+    </div>
+  } @else {
+    <div class="projects-grid">
+      @for (project of visibleProjects(); track project.title; let i = $index) {
+        <ui-glass-card
+          [attr.id]="'project-' + slugify(project.title)"
+          [hover]="true"
+          [glow]="!!project.featured"
+          class="project-card"
+          [class.expanded]="isExpanded(project.title)"
+          [class.archived]="project.github?.archived"
+          animate.enter="enter-fade-up"
+          [style.--enter-delay]="i * 60 + 'ms'"
+          [style.--language-stripe]="project.github?.languageColor || 'transparent'"
+        >
+          @if (project.github?.languageColor) {
+            <div class="project-language-stripe" aria-hidden="true"></div>
+          }
+          <div class="project-image-wrapper">
+            <img
+              [ngSrc]="project.image"
+              [alt]="project.title"
+              fill
+              [priority]="i === 0"
+              sizes="(max-width: 768px) 85vw, 33vw"
+              class="project-image"
+            />
           </div>
-        </div>
-      </ui-glass-card>
-    }
-  </div>
+          <div class="project-body">
+            <h3 class="project-title">
+              {{ project.title }}
+              @if (project.github?.archived) {
+                <span class="archived-badge" title="This repository is archived on GitHub"
+                  >archived</span
+                >
+              }
+            </h3>
+            <p class="project-desc" [id]="'desc-' + slugify(project.title)">
+              {{ project.description }}
+            </p>
+            <button
+              type="button"
+              class="read-more-toggle"
+              [attr.aria-expanded]="isExpanded(project.title)"
+              [attr.aria-controls]="'desc-' + slugify(project.title)"
+              [attr.aria-label]="
+                isExpanded(project.title)
+                  ? 'Show less about ' + project.title
+                  : 'Read more about ' + project.title
+              "
+              (click)="toggleExpand(project.title)"
+            >
+              {{ isExpanded(project.title) ? '− Show less' : '+ Read more' }}
+            </button>
+
+            <ui-github-meta [meta]="project.github" [projectTitle]="project.title" />
+
+            <div class="project-footer">
+              <div class="project-tags">
+                @for (tag of project.tags; track tag) {
+                  <a
+                    class="tag"
+                    [routerLink]="['/projects/tag', slugify(tag)]"
+                    [attr.aria-label]="'View all projects tagged ' + tag"
+                    >{{ tag }}</a
+                  >
+                }
+              </div>
+              <a
+                [href]="project.link"
+                target="_blank"
+                rel="noopener"
+                class="project-link"
+                [attr.aria-label]="'View ' + project.title + ' on GitHub'"
+              >
+                <ui-icon name="github" [size]="16" />
+                <span>Source</span>
+                <ui-icon name="external-link" [size]="12" />
+              </a>
+            </div>
+          </div>
+        </ui-glass-card>
+      }
+    </div>
+  }
 </div>

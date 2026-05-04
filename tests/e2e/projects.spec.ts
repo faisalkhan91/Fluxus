@@ -65,6 +65,39 @@ test.describe('/projects connective tissue', () => {
     await page.getByRole('radio', { name: 'Featured' }).click();
     await expect(page).not.toHaveURL(/\?sort=/);
   });
+
+  test('view toggle flips between grid and list and preserves ?sort=', async ({ page }) => {
+    await page.goto('/projects?sort=stars', { waitUntil: 'networkidle' });
+    await expect(page.locator('.projects-grid')).toBeVisible();
+    await expect(page.locator('.projects-list')).toHaveCount(0);
+
+    await page.getByRole('radio', { name: 'List view' }).click();
+    await expect(page).toHaveURL(/\?sort=stars&view=list|\?view=list&sort=stars/);
+    await expect(page.locator('.projects-list')).toBeVisible();
+    await expect(page.locator('.projects-grid')).toHaveCount(0);
+
+    // Hero count matches featured project count; compact rows fill the rest.
+    const heroCount = await page.locator('.projects-list-hero').count();
+    expect(heroCount).toBeGreaterThan(0);
+    await expect(page.locator('.projects-list-more-heading')).toBeVisible();
+
+    // Going back to grid scrubs `view=` but keeps `sort=`.
+    await page.getByRole('radio', { name: 'Grid view' }).click();
+    await expect(page).toHaveURL(/\?sort=stars$/);
+    await expect(page.locator('.projects-grid')).toBeVisible();
+    await expect(page.locator('.projects-list')).toHaveCount(0);
+  });
+
+  test('list-view compact row links to the detail page', async ({ page }) => {
+    await page.goto('/projects?view=list', { waitUntil: 'networkidle' });
+    const firstRowLink = page.locator('.projects-list-row-title a').first();
+    const href = await firstRowLink.getAttribute('href');
+    expect(href).toBeTruthy();
+    expect(href!.startsWith('/projects/')).toBe(true);
+    await firstRowLink.click();
+    await page.waitForURL(/\/projects\/[^/]+$/);
+    await expect(page.locator('.detail-breadcrumb')).toBeVisible();
+  });
 });
 
 test.describe('home page featured projects strip', () => {
