@@ -55,6 +55,21 @@ for (const theme of PRIMARY_THEMES) {
         });
       });
     }
+
+    // The `/projects?view=list` layout is a distinct surface from the
+    // grid captured above — featured projects render as stacked hero
+    // cards and the rest as compact "More work" rows. Adding explicit
+    // coverage so regressions on either path are caught per viewport.
+    test('route /projects?view=list matches baseline', async ({ page }) => {
+      await page.goto('/projects?view=list', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(250);
+      await expect(page).toHaveScreenshot({
+        fullPage: true,
+        mask: [page.locator('.reading-progress'), page.locator('.post-date')],
+        maxDiffPixelRatio: 0.02,
+        animations: 'disabled',
+      });
+    });
   });
 }
 
