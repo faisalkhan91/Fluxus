@@ -32,14 +32,28 @@
           [style.--enter-delay]="i * 60 + 'ms'"
         >
           <div class="project-image-wrapper">
-            <img
-              [ngSrc]="project.image"
-              [alt]="project.title"
-              fill
-              [priority]="i === 0"
-              sizes="(max-width: 768px) 85vw, 33vw"
-              class="project-image"
-            />
+            <!-- `priority` is gated via `@if` because NgOptimizedImage
+                 locks its `priority` input at init (NG02953). This archive
+                 isn't sort-driven, but the `@if`/`@else` pair keeps the
+                 pattern consistent with the main /projects surface. -->
+            @if (i === 0) {
+              <img
+                [ngSrc]="project.image"
+                [alt]="project.title"
+                fill
+                priority
+                sizes="(max-width: 768px) 85vw, 33vw"
+                class="project-image"
+              />
+            } @else {
+              <img
+                [ngSrc]="project.image"
+                [alt]="project.title"
+                fill
+                sizes="(max-width: 768px) 85vw, 33vw"
+                class="project-image"
+              />
+            }
           </div>
           <div class="project-body">
             <h3 class="project-title">{{ project.title }}</h3>
