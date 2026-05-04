@@ -82,8 +82,12 @@
   --glass-bg-elevated: rgba(255, 255, 255, 0.08);
   --nav-pill-bg: rgba(14, 14, 20, 0.85);
 
-  /* === Secondary / Semantic Colors === */
+  /* === Secondary / Semantic Colors ===
+     Naming drift: `--error` predates the `--color-*` convention used for
+     info/warning/success. Left as-is to avoid churning the ~8 consumers
+     across styles.css / blog / contact; fold into a later rename pass. */
   --accent-secondary: #3178c6;
+  --color-info: #60a5fa;
   --color-warning: #febc2e;
   --color-success: #28c840;
   --error: #f87171;
@@ -182,6 +186,7 @@
   --nav-pill-bg: rgba(255, 255, 255, 0.72);
 
   --accent-secondary: #2563eb;
+  --color-info: #2563eb;
   --color-warning: #f59e0b;
   --color-success: #22c55e;
   --error: #b91c1c;
@@ -220,12 +225,13 @@
 
   --text-primary: rgba(220, 223, 228, 0.95);
   --text-secondary: rgba(171, 178, 191, 0.85);
-  --text-muted: rgba(130, 137, 151, 0.85);
+  --text-muted: rgba(171, 178, 191, 0.8);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.08);
   --nav-pill-bg: rgba(40, 44, 52, 0.85);
 
   --accent-secondary: #c678dd;
+  --color-info: #56b6c2;
   --color-warning: #d19a66;
   --color-success: #98c379;
   --error: #e06c75;
@@ -260,12 +266,13 @@
 
   --text-primary: rgba(192, 202, 245, 0.95);
   --text-secondary: rgba(169, 177, 214, 0.85);
-  --text-muted: rgba(86, 95, 137, 0.95);
+  --text-muted: rgba(169, 177, 214, 0.75);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.08);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
 
   --accent-secondary: #bb9af7;
+  --color-info: #7dcfff;
   --color-warning: #e0af68;
   --color-success: #9ece6a;
   --error: #f7768e;
@@ -306,6 +313,7 @@
   --nav-pill-bg: rgba(30, 30, 46, 0.85);
 
   --accent-secondary: #89b4fa;
+  --color-info: #89b4fa;
   --color-warning: #f9e2af;
   --color-success: #a6e3a1;
   --error: #f38ba8;
@@ -340,12 +348,13 @@
 
   --text-primary: rgba(0, 43, 54, 0.92);
   --text-secondary: rgba(7, 54, 66, 0.75);
-  --text-muted: rgba(101, 123, 131, 0.95);
+  --text-muted: rgba(88, 110, 117, 0.95);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.7);
   --nav-pill-bg: rgba(253, 246, 227, 0.78);
 
   --accent-secondary: #268bd2;
+  --color-info: #268bd2;
   --color-warning: #b58900;
   --color-success: #859900;
   --error: #dc322f;
@@ -358,6 +367,170 @@
   --grid-line-color: rgba(7, 54, 66, 0.04);
 
   --shadow-glass: 0 4px 24px rgba(7, 54, 66, 0.1);
+  --shadow-accent-glow: 0 0 20px var(--accent-glow);
+}
+
+/* === Dracula === */
+[data-theme='dracula'] {
+  --surface-void: #1e1f29;
+  --surface-base: #282a36;
+  --surface-raised: #2e303e;
+  --surface-overlay: #44475a;
+
+  --glass-bg: rgba(248, 248, 242, 0.04);
+  --glass-bg-hover: rgba(248, 248, 242, 0.07);
+  --glass-border: rgba(248, 248, 242, 0.08);
+  --glass-border-hover: rgba(248, 248, 242, 0.16);
+
+  --accent: #bd93f9;
+  --accent-hover: #caa9fa;
+  --accent-glow: rgba(189, 147, 249, 0.32);
+  --accent-subtle: rgba(189, 147, 249, 0.1);
+
+  --text-primary: rgba(248, 248, 242, 0.95);
+  --text-secondary: rgba(248, 248, 242, 0.78);
+  --text-muted: rgba(248, 248, 242, 0.6);
+
+  --glass-bg-elevated: rgba(248, 248, 242, 0.08);
+  --nav-pill-bg: rgba(40, 42, 54, 0.85);
+
+  --accent-secondary: #ff79c6;
+  --color-info: #8be9fd;
+  --color-warning: #ffb86c;
+  --color-success: #50fa7b;
+  --error: #ff5555;
+  --error-subtle: rgba(255, 85, 85, 0.14);
+
+  --scrollbar-thumb: rgba(248, 248, 242, 0.14);
+  --scrollbar-thumb-hover: rgba(248, 248, 242, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(189, 147, 249, 0.2));
+  --grid-line-color: rgba(248, 248, 242, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Nord === */
+[data-theme='nord'] {
+  --surface-void: #242933;
+  --surface-base: #2e3440;
+  --surface-raised: #3b4252;
+  --surface-overlay: #434c5e;
+
+  --glass-bg: rgba(216, 222, 233, 0.04);
+  --glass-bg-hover: rgba(216, 222, 233, 0.07);
+  --glass-border: rgba(216, 222, 233, 0.08);
+  --glass-border-hover: rgba(216, 222, 233, 0.16);
+
+  --accent: #88c0d0;
+  --accent-hover: #8fbcbb;
+  --accent-glow: rgba(136, 192, 208, 0.3);
+  --accent-subtle: rgba(136, 192, 208, 0.1);
+
+  --text-primary: rgba(236, 239, 244, 0.95);
+  --text-secondary: rgba(216, 222, 233, 0.82);
+  --text-muted: rgba(216, 222, 233, 0.68);
+
+  --glass-bg-elevated: rgba(216, 222, 233, 0.08);
+  --nav-pill-bg: rgba(46, 52, 64, 0.85);
+
+  --accent-secondary: #81a1c1;
+  --color-info: #81a1c1;
+  --color-warning: #ebcb8b;
+  --color-success: #a3be8c;
+  --error: #bf616a;
+  --error-subtle: rgba(191, 97, 106, 0.14);
+
+  --scrollbar-thumb: rgba(216, 222, 233, 0.14);
+  --scrollbar-thumb-hover: rgba(216, 222, 233, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(136, 192, 208, 0.18));
+  --grid-line-color: rgba(216, 222, 233, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Gruvbox Dark === */
+[data-theme='gruvbox-dark'] {
+  --surface-void: #1d2021;
+  --surface-base: #282828;
+  --surface-raised: #3c3836;
+  --surface-overlay: #504945;
+
+  --glass-bg: rgba(235, 219, 178, 0.04);
+  --glass-bg-hover: rgba(235, 219, 178, 0.07);
+  --glass-border: rgba(235, 219, 178, 0.08);
+  --glass-border-hover: rgba(235, 219, 178, 0.16);
+
+  --accent: #fabd2f;
+  --accent-hover: #ffd966;
+  --accent-glow: rgba(250, 189, 47, 0.3);
+  --accent-subtle: rgba(250, 189, 47, 0.1);
+
+  --text-primary: rgba(235, 219, 178, 0.95);
+  --text-secondary: rgba(213, 196, 161, 0.85);
+  --text-muted: rgba(168, 153, 132, 0.9);
+
+  --glass-bg-elevated: rgba(235, 219, 178, 0.08);
+  --nav-pill-bg: rgba(40, 40, 40, 0.85);
+
+  --accent-secondary: #d3869b;
+  --color-info: #83a598;
+  --color-warning: #fe8019;
+  --color-success: #b8bb26;
+  --error: #fb4934;
+  --error-subtle: rgba(251, 73, 52, 0.14);
+
+  --scrollbar-thumb: rgba(235, 219, 178, 0.14);
+  --scrollbar-thumb-hover: rgba(235, 219, 178, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(250, 189, 47, 0.18));
+  --grid-line-color: rgba(235, 219, 178, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Gruvbox Light === */
+[data-theme='gruvbox-light'] {
+  --surface-void: #ebdbb2;
+  --surface-base: #fbf1c7;
+  --surface-raised: #ffffff;
+  --surface-overlay: #d5c4a1;
+
+  --glass-bg: rgba(60, 56, 54, 0.05);
+  --glass-bg-hover: rgba(60, 56, 54, 0.1);
+  --glass-border: rgba(60, 56, 54, 0.1);
+  --glass-border-hover: rgba(60, 56, 54, 0.2);
+
+  --accent: #b57614;
+  --accent-hover: #d79921;
+  --accent-glow: rgba(181, 118, 20, 0.22);
+  --accent-subtle: rgba(181, 118, 20, 0.08);
+
+  --text-primary: rgba(40, 40, 40, 0.92);
+  --text-secondary: rgba(60, 56, 54, 0.78);
+  --text-muted: rgba(102, 92, 84, 0.92);
+
+  --glass-bg-elevated: rgba(255, 255, 255, 0.75);
+  --nav-pill-bg: rgba(251, 241, 199, 0.82);
+
+  --accent-secondary: #8f3f71;
+  --color-info: #076678;
+  --color-warning: #af3a03;
+  --color-success: #79740e;
+  --error: #9d0006;
+  --error-subtle: rgba(157, 0, 6, 0.1);
+
+  --scrollbar-thumb: rgba(60, 56, 54, 0.18);
+  --scrollbar-thumb-hover: rgba(60, 56, 54, 0.28);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(60, 56, 54, 0.08));
+  --grid-line-color: rgba(60, 56, 54, 0.04);
+
+  --shadow-glass: 0 4px 24px rgba(60, 56, 54, 0.12);
   --shadow-accent-glow: 0 0 20px var(--accent-glow);
 }
 
@@ -871,10 +1044,10 @@ p {
 }
 
 .prose .callout--note {
-  border-left-color: var(--accent-secondary);
+  border-left-color: var(--color-info);
 }
 .prose .callout--note .callout-title {
-  color: var(--accent-secondary);
+  color: var(--color-info);
 }
 
 .prose .callout--tip {
@@ -885,10 +1058,10 @@ p {
 }
 
 .prose .callout--info {
-  border-left-color: var(--accent-secondary);
+  border-left-color: var(--color-info);
 }
 .prose .callout--info .callout-title {
-  color: var(--accent-secondary);
+  color: var(--color-info);
 }
 
 .prose .callout--warning {
@@ -1288,6 +1461,262 @@ p {
   font-weight: 700;
 }
 [data-theme='solarized-light'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Dracula === */
+[data-theme='dracula'] .hljs {
+  color: #f8f8f2;
+}
+[data-theme='dracula'] .hljs-comment,
+[data-theme='dracula'] .hljs-quote {
+  color: #6272a4;
+  font-style: italic;
+}
+[data-theme='dracula'] .hljs-doctag,
+[data-theme='dracula'] .hljs-formula,
+[data-theme='dracula'] .hljs-keyword {
+  color: #ff79c6;
+}
+[data-theme='dracula'] .hljs-deletion,
+[data-theme='dracula'] .hljs-name,
+[data-theme='dracula'] .hljs-section,
+[data-theme='dracula'] .hljs-selector-tag,
+[data-theme='dracula'] .hljs-subst {
+  color: #ff5555;
+}
+[data-theme='dracula'] .hljs-literal {
+  color: #bd93f9;
+}
+[data-theme='dracula'] .hljs-addition,
+[data-theme='dracula'] .hljs-attribute,
+[data-theme='dracula'] .hljs-meta .hljs-string,
+[data-theme='dracula'] .hljs-regexp,
+[data-theme='dracula'] .hljs-string {
+  color: #f1fa8c;
+}
+[data-theme='dracula'] .hljs-attr,
+[data-theme='dracula'] .hljs-number,
+[data-theme='dracula'] .hljs-selector-attr,
+[data-theme='dracula'] .hljs-selector-class,
+[data-theme='dracula'] .hljs-selector-pseudo,
+[data-theme='dracula'] .hljs-template-variable,
+[data-theme='dracula'] .hljs-type,
+[data-theme='dracula'] .hljs-variable {
+  color: #ffb86c;
+}
+[data-theme='dracula'] .hljs-bullet,
+[data-theme='dracula'] .hljs-link,
+[data-theme='dracula'] .hljs-meta,
+[data-theme='dracula'] .hljs-selector-id,
+[data-theme='dracula'] .hljs-symbol,
+[data-theme='dracula'] .hljs-title {
+  color: #8be9fd;
+}
+[data-theme='dracula'] .hljs-built_in,
+[data-theme='dracula'] .hljs-class .hljs-title,
+[data-theme='dracula'] .hljs-title.class_ {
+  color: #50fa7b;
+}
+[data-theme='dracula'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='dracula'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='dracula'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Nord === */
+[data-theme='nord'] .hljs {
+  color: #d8dee9;
+}
+[data-theme='nord'] .hljs-comment,
+[data-theme='nord'] .hljs-quote {
+  color: #616e88;
+  font-style: italic;
+}
+[data-theme='nord'] .hljs-doctag,
+[data-theme='nord'] .hljs-formula,
+[data-theme='nord'] .hljs-keyword {
+  color: #81a1c1;
+}
+[data-theme='nord'] .hljs-deletion,
+[data-theme='nord'] .hljs-name,
+[data-theme='nord'] .hljs-section,
+[data-theme='nord'] .hljs-selector-tag,
+[data-theme='nord'] .hljs-subst {
+  color: #bf616a;
+}
+[data-theme='nord'] .hljs-literal {
+  color: #b48ead;
+}
+[data-theme='nord'] .hljs-addition,
+[data-theme='nord'] .hljs-attribute,
+[data-theme='nord'] .hljs-meta .hljs-string,
+[data-theme='nord'] .hljs-regexp,
+[data-theme='nord'] .hljs-string {
+  color: #a3be8c;
+}
+[data-theme='nord'] .hljs-attr,
+[data-theme='nord'] .hljs-number,
+[data-theme='nord'] .hljs-selector-attr,
+[data-theme='nord'] .hljs-selector-class,
+[data-theme='nord'] .hljs-selector-pseudo,
+[data-theme='nord'] .hljs-template-variable,
+[data-theme='nord'] .hljs-type,
+[data-theme='nord'] .hljs-variable {
+  color: #d08770;
+}
+[data-theme='nord'] .hljs-bullet,
+[data-theme='nord'] .hljs-link,
+[data-theme='nord'] .hljs-meta,
+[data-theme='nord'] .hljs-selector-id,
+[data-theme='nord'] .hljs-symbol,
+[data-theme='nord'] .hljs-title {
+  color: #8fbcbb;
+}
+[data-theme='nord'] .hljs-built_in,
+[data-theme='nord'] .hljs-class .hljs-title,
+[data-theme='nord'] .hljs-title.class_ {
+  color: #88c0d0;
+}
+[data-theme='nord'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='nord'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='nord'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Gruvbox Dark === */
+[data-theme='gruvbox-dark'] .hljs {
+  color: #ebdbb2;
+}
+[data-theme='gruvbox-dark'] .hljs-comment,
+[data-theme='gruvbox-dark'] .hljs-quote {
+  color: #928374;
+  font-style: italic;
+}
+[data-theme='gruvbox-dark'] .hljs-doctag,
+[data-theme='gruvbox-dark'] .hljs-formula,
+[data-theme='gruvbox-dark'] .hljs-keyword {
+  color: #fb4934;
+}
+[data-theme='gruvbox-dark'] .hljs-deletion,
+[data-theme='gruvbox-dark'] .hljs-name,
+[data-theme='gruvbox-dark'] .hljs-section,
+[data-theme='gruvbox-dark'] .hljs-selector-tag,
+[data-theme='gruvbox-dark'] .hljs-subst {
+  color: #fe8019;
+}
+[data-theme='gruvbox-dark'] .hljs-literal {
+  color: #d3869b;
+}
+[data-theme='gruvbox-dark'] .hljs-addition,
+[data-theme='gruvbox-dark'] .hljs-attribute,
+[data-theme='gruvbox-dark'] .hljs-meta .hljs-string,
+[data-theme='gruvbox-dark'] .hljs-regexp,
+[data-theme='gruvbox-dark'] .hljs-string {
+  color: #b8bb26;
+}
+[data-theme='gruvbox-dark'] .hljs-attr,
+[data-theme='gruvbox-dark'] .hljs-number,
+[data-theme='gruvbox-dark'] .hljs-selector-attr,
+[data-theme='gruvbox-dark'] .hljs-selector-class,
+[data-theme='gruvbox-dark'] .hljs-selector-pseudo,
+[data-theme='gruvbox-dark'] .hljs-template-variable,
+[data-theme='gruvbox-dark'] .hljs-type,
+[data-theme='gruvbox-dark'] .hljs-variable {
+  color: #fabd2f;
+}
+[data-theme='gruvbox-dark'] .hljs-bullet,
+[data-theme='gruvbox-dark'] .hljs-link,
+[data-theme='gruvbox-dark'] .hljs-meta,
+[data-theme='gruvbox-dark'] .hljs-selector-id,
+[data-theme='gruvbox-dark'] .hljs-symbol,
+[data-theme='gruvbox-dark'] .hljs-title {
+  color: #83a598;
+}
+[data-theme='gruvbox-dark'] .hljs-built_in,
+[data-theme='gruvbox-dark'] .hljs-class .hljs-title,
+[data-theme='gruvbox-dark'] .hljs-title.class_ {
+  color: #8ec07c;
+}
+[data-theme='gruvbox-dark'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='gruvbox-dark'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='gruvbox-dark'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Gruvbox Light === */
+[data-theme='gruvbox-light'] .hljs {
+  color: #3c3836;
+}
+[data-theme='gruvbox-light'] .hljs-comment,
+[data-theme='gruvbox-light'] .hljs-quote {
+  color: #928374;
+  font-style: italic;
+}
+[data-theme='gruvbox-light'] .hljs-doctag,
+[data-theme='gruvbox-light'] .hljs-formula,
+[data-theme='gruvbox-light'] .hljs-keyword {
+  color: #9d0006;
+}
+[data-theme='gruvbox-light'] .hljs-deletion,
+[data-theme='gruvbox-light'] .hljs-name,
+[data-theme='gruvbox-light'] .hljs-section,
+[data-theme='gruvbox-light'] .hljs-selector-tag,
+[data-theme='gruvbox-light'] .hljs-subst {
+  color: #af3a03;
+}
+[data-theme='gruvbox-light'] .hljs-literal {
+  color: #8f3f71;
+}
+[data-theme='gruvbox-light'] .hljs-addition,
+[data-theme='gruvbox-light'] .hljs-attribute,
+[data-theme='gruvbox-light'] .hljs-meta .hljs-string,
+[data-theme='gruvbox-light'] .hljs-regexp,
+[data-theme='gruvbox-light'] .hljs-string {
+  color: #79740e;
+}
+[data-theme='gruvbox-light'] .hljs-attr,
+[data-theme='gruvbox-light'] .hljs-number,
+[data-theme='gruvbox-light'] .hljs-selector-attr,
+[data-theme='gruvbox-light'] .hljs-selector-class,
+[data-theme='gruvbox-light'] .hljs-selector-pseudo,
+[data-theme='gruvbox-light'] .hljs-template-variable,
+[data-theme='gruvbox-light'] .hljs-type,
+[data-theme='gruvbox-light'] .hljs-variable {
+  color: #b57614;
+}
+[data-theme='gruvbox-light'] .hljs-bullet,
+[data-theme='gruvbox-light'] .hljs-link,
+[data-theme='gruvbox-light'] .hljs-meta,
+[data-theme='gruvbox-light'] .hljs-selector-id,
+[data-theme='gruvbox-light'] .hljs-symbol,
+[data-theme='gruvbox-light'] .hljs-title {
+  color: #076678;
+}
+[data-theme='gruvbox-light'] .hljs-built_in,
+[data-theme='gruvbox-light'] .hljs-class .hljs-title,
+[data-theme='gruvbox-light'] .hljs-title.class_ {
+  color: #427b58;
+}
+[data-theme='gruvbox-light'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='gruvbox-light'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='gruvbox-light'] .hljs-link {
   text-decoration: underline;
 }
 
