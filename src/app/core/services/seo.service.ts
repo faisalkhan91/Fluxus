@@ -60,7 +60,13 @@ export class SeoService {
       });
   }
 
-  private setCanonical(url: string): void {
+  /**
+   * Upserts `<link rel="canonical" href="...">` on the document head.
+   * Public so `dynamicMeta: true` routes (blog-tag, projects-tag,
+   * project-detail) can set a route-param-driven canonical themselves
+   * instead of duplicating this 9-liner across components.
+   */
+  setCanonical(url: string): void {
     let link = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!link) {
       link = this.document.createElement('link');

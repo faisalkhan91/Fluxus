@@ -7,7 +7,7 @@ import {
   untracked,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { NgOptimizedImage, DOCUMENT } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { Meta, Title } from '@angular/platform-browser';
@@ -18,6 +18,7 @@ import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SkillUsageService } from '@core/services/skill-usage.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
+import { SeoService } from '@core/services/seo.service';
 import { BlogService } from '@core/services/blog.service';
 import { Project } from '@shared/models/project.model';
 import { BlogPost } from '@shared/models/blog-post.model';
@@ -64,7 +65,7 @@ export class ProjectDetailComponent {
   private blog = inject(BlogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
-  private document = inject(DOCUMENT);
+  private seo = inject(SeoService);
 
   protected slugify = slugify;
 
@@ -223,16 +224,6 @@ export class ProjectDetailComponent {
     this.metaService.updateTag({ name: 'twitter:title', content: title });
     this.metaService.updateTag({ name: 'twitter:description', content: description });
     this.metaService.updateTag({ name: 'twitter:image', content: image || DEFAULT_OG_IMAGE });
-    this.setCanonical(url);
-  }
-
-  private setCanonical(url: string): void {
-    let link = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (!link) {
-      link = this.document.createElement('link');
-      link.setAttribute('rel', 'canonical');
-      this.document.head.appendChild(link);
-    }
-    link.setAttribute('href', url);
+    this.seo.setCanonical(url);
   }
 }

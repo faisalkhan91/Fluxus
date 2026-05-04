@@ -225,6 +225,14 @@ describe('CommandPaletteComponent', () => {
     return component as unknown as ReturnType<typeof inner>;
   }
 
+  // Shared Cmd-K + type sequence used by every entry-filtering suite.
+  // Closes over `inner` and `fixture` from this describe's scope.
+  function openAndType(query: string) {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+    inner().onInput(query);
+    fixture.detectChanges();
+  }
+
   describe('keyboard toggle', () => {
     it('starts closed', () => {
       expect(inner().open()).toBe(false);
@@ -420,12 +428,6 @@ describe('CommandPaletteComponent', () => {
   });
 
   describe('skill actions', () => {
-    function openAndType(query: string) {
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
-      inner().onInput(query);
-      fixture.detectChanges();
-    }
-
     it('emits one route entry per skill that has at least one project', () => {
       openAndType('');
       const labels = Array.from(host.querySelectorAll('.palette-label')).map(
@@ -469,12 +471,6 @@ describe('CommandPaletteComponent', () => {
   });
 
   describe('project entries', () => {
-    function openAndType(query: string) {
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
-      inner().onInput(query);
-      fixture.detectChanges();
-    }
-
     it('emits one entry per project with a Project hint', () => {
       openAndType('');
       const rows = Array.from(host.querySelectorAll('.palette-item')).map((el) => ({
