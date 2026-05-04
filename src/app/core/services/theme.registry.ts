@@ -22,7 +22,11 @@ export type ThemeId =
   | 'one-dark'
   | 'tokyo-night'
   | 'catppuccin-mocha'
-  | 'solarized-light';
+  | 'solarized-light'
+  | 'dracula'
+  | 'nord'
+  | 'gruvbox-dark'
+  | 'gruvbox-light';
 
 export interface ThemeDef {
   /** Stable identifier; written to `<html data-theme="...">` and localStorage. */
@@ -88,6 +92,34 @@ export const THEME_REGISTRY: readonly ThemeDef[] = [
     scheme: 'light',
     swatch: '#cb4b16',
     themeColor: '#eee8d5',
+  },
+  {
+    id: 'dracula',
+    label: 'Dracula',
+    scheme: 'dark',
+    swatch: '#bd93f9',
+    themeColor: '#1e1f29',
+  },
+  {
+    id: 'nord',
+    label: 'Nord',
+    scheme: 'dark',
+    swatch: '#88c0d0',
+    themeColor: '#242933',
+  },
+  {
+    id: 'gruvbox-dark',
+    label: 'Gruvbox Dark',
+    scheme: 'dark',
+    swatch: '#fabd2f',
+    themeColor: '#1d2021',
+  },
+  {
+    id: 'gruvbox-light',
+    label: 'Gruvbox Light',
+    scheme: 'light',
+    swatch: '#b57614',
+    themeColor: '#ebdbb2',
   },
 ];
 
