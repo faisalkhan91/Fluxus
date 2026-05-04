@@ -24,15 +24,17 @@ export type ProjectSort = 'featured' | 'alpha' | 'stars' | 'updated';
 const ALLOWED_SORTS: readonly ProjectSort[] = ['featured', 'alpha', 'stars', 'updated'];
 
 /**
- * Presentation mode for the projects list. `grid` is the default
- * thumbnail-first card layout; `list` stacks featured projects as
- * hero cards on top with the remainder as compact "more work" rows.
- * Persisted in the `?view=` query parameter so a reader's choice
- * survives refresh and share-links.
+ * Presentation mode for the projects list. `list` is the default —
+ * featured projects render as stacked hero cards with the rest as
+ * compact "more work" rows (denser, text-first, scannable). `grid`
+ * is opt-in via `?view=grid` and renders the thumbnail card layout.
+ * A reader's choice is persisted in the query parameter so refresh
+ * + share-links survive.
  */
 export type ProjectView = 'grid' | 'list';
 
 const ALLOWED_VIEWS: readonly ProjectView[] = ['grid', 'list'];
+const DEFAULT_VIEW: ProjectView = 'list';
 
 @Component({
   selector: 'app-projects',
@@ -117,15 +119,15 @@ export class ProjectsComponent {
     });
   }
 
-  /** Query-driven view mode, defaulting to `grid` when absent or invalid. */
+  /** Query-driven view mode, defaulting to `list` when absent or invalid. */
   protected readonly view = toSignal(
     this.route.queryParamMap.pipe(
       map((q): ProjectView => {
         const raw = (q.get('view') ?? '').toLowerCase() as ProjectView;
-        return ALLOWED_VIEWS.includes(raw) ? raw : 'grid';
+        return ALLOWED_VIEWS.includes(raw) ? raw : DEFAULT_VIEW;
       }),
     ),
-    { initialValue: 'grid' as ProjectView },
+    { initialValue: DEFAULT_VIEW },
   );
 
   /**
@@ -158,9 +160,9 @@ export class ProjectsComponent {
   protected setView(key: ProjectView): void {
     this.router.navigate([], {
       relativeTo: this.route,
-      // Grid is the default — scrub the query param when selecting it
-      // so the URL stays clean. `list` sticks.
-      queryParams: { view: key === 'grid' ? null : key },
+      // `list` is the default — scrub the query param when selecting it
+      // so the URL stays clean. `grid` sticks.
+      queryParams: { view: key === DEFAULT_VIEW ? null : key },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
