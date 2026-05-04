@@ -10,7 +10,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { Meta, Title } from '@angular/platform-browser';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
@@ -24,8 +23,6 @@ import { Project } from '@shared/models/project.model';
 import { BlogPost } from '@shared/models/blog-post.model';
 import { slugify } from '@shared/utils/string.utils';
 import { environment } from '@env/environment';
-
-const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
 
 /**
  * `/projects/:slug` — per-project detail page.
@@ -63,8 +60,6 @@ export class ProjectDetailComponent {
   private skillUsage = inject(SkillUsageService);
   private skillsData = inject(SkillsDataService);
   private blog = inject(BlogService);
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
   private seo = inject(SeoService);
 
   protected slugify = slugify;
@@ -214,16 +209,7 @@ export class ProjectDetailComponent {
     const description = project.github?.readmeExcerpt ?? project.description;
     const image = `${environment.siteUrl}/${project.image.replace(/^\/+/, '')}`;
 
-    this.titleService.setTitle(title);
-    this.metaService.updateTag({ name: 'description', content: description });
-    this.metaService.updateTag({ property: 'og:title', content: title });
-    this.metaService.updateTag({ property: 'og:description', content: description });
-    this.metaService.updateTag({ property: 'og:url', content: url });
-    this.metaService.updateTag({ property: 'og:type', content: 'article' });
-    this.metaService.updateTag({ property: 'og:image', content: image || DEFAULT_OG_IMAGE });
-    this.metaService.updateTag({ name: 'twitter:title', content: title });
-    this.metaService.updateTag({ name: 'twitter:description', content: description });
-    this.metaService.updateTag({ name: 'twitter:image', content: image || DEFAULT_OG_IMAGE });
+    this.seo.updateDynamicMeta({ title, description, url, type: 'article', image });
     this.seo.setCanonical(url);
   }
 }
