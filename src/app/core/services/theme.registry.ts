@@ -19,14 +19,14 @@
 export type ThemeId =
   | 'crimson-dark'
   | 'crimson-light'
-  | 'one-dark'
   | 'tokyo-night'
-  | 'catppuccin-mocha'
   | 'solarized-light'
   | 'dracula'
   | 'nord'
   | 'gruvbox-dark'
-  | 'gruvbox-light';
+  | 'gruvbox-light'
+  | 'ayu-dark'
+  | 'rose-pine';
 
 export interface ThemeDef {
   /** Stable identifier; written to `<html data-theme="...">` and localStorage. */
@@ -66,25 +66,11 @@ export const THEME_REGISTRY: readonly ThemeDef[] = [
     themeColor: '#f0f0f3',
   },
   {
-    id: 'one-dark',
-    label: 'One Dark',
-    scheme: 'dark',
-    swatch: '#61afef',
-    themeColor: '#21252b',
-  },
-  {
     id: 'tokyo-night',
     label: 'Tokyo Night',
     scheme: 'dark',
     swatch: '#7aa2f7',
     themeColor: '#1a1b26',
-  },
-  {
-    id: 'catppuccin-mocha',
-    label: 'Catppuccin Mocha',
-    scheme: 'dark',
-    swatch: '#cba6f7',
-    themeColor: '#181825',
   },
   {
     id: 'solarized-light',
@@ -120,6 +106,20 @@ export const THEME_REGISTRY: readonly ThemeDef[] = [
     scheme: 'light',
     swatch: '#b57614',
     themeColor: '#ebdbb2',
+  },
+  {
+    id: 'ayu-dark',
+    label: 'Ayu Dark',
+    scheme: 'dark',
+    swatch: '#ff9940',
+    themeColor: '#0b0e14',
+  },
+  {
+    id: 'rose-pine',
+    label: 'Rose Pine',
+    scheme: 'dark',
+    swatch: '#eb6f92',
+    themeColor: '#191724',
   },
 ];
 

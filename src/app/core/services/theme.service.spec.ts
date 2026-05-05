@@ -173,6 +173,28 @@ describe('ThemeService — legacy localStorage migration', () => {
     expect(localStorage.getItem('theme')).toBe('crimson-dark');
   });
 
+  it('migrates a dropped "one-dark" value to tokyo-night (its retained blue-slate sibling)', () => {
+    localStorage.setItem('theme', 'one-dark');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    expect(svc.theme()).toBe('tokyo-night');
+    expect(localStorage.getItem('theme')).toBe('tokyo-night');
+  });
+
+  it('migrates a dropped "catppuccin-mocha" value to dracula (its retained purple-dark sibling)', () => {
+    localStorage.setItem('theme', 'catppuccin-mocha');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    expect(svc.theme()).toBe('dracula');
+    expect(localStorage.getItem('theme')).toBe('dracula');
+  });
+
   it('falls back to the system preference when storage holds an unknown value', () => {
     localStorage.setItem('theme', 'midnight-banana');
     window.matchMedia = vi.fn().mockReturnValue({

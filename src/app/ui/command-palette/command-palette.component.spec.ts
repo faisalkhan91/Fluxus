@@ -393,7 +393,7 @@ describe('CommandPaletteComponent', () => {
 
     it('renders the theme swatch dot ahead of the icon for theme entries', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
-      inner().onInput('catppuccin');
+      inner().onInput('dracula');
       fixture.detectChanges();
       const swatch = host.querySelector('.palette-item .palette-swatch') as HTMLElement | null;
       expect(swatch).toBeTruthy();
@@ -401,7 +401,7 @@ describe('CommandPaletteComponent', () => {
       // registry swatch hex back to the same canonical form and compare
       // verbatim — keeps the assertion robust without leaking renderer
       // quirks into the spec body.
-      const def = getThemeDef('catppuccin-mocha');
+      const def = getThemeDef('dracula');
       const r = parseInt(def.swatch.slice(1, 3), 16);
       const g = parseInt(def.swatch.slice(3, 5), 16);
       const b = parseInt(def.swatch.slice(5, 7), 16);

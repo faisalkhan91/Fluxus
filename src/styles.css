@@ -187,8 +187,8 @@
 
   --accent-secondary: #2563eb;
   --color-info: #2563eb;
-  --color-warning: #f59e0b;
-  --color-success: #22c55e;
+  --color-warning: #b45309;
+  --color-success: #15803d;
   --error: #b91c1c;
   --error-subtle: rgba(185, 28, 28, 0.1);
 
@@ -202,52 +202,11 @@
   --shadow-accent-glow: 0 0 20px var(--accent-glow);
 }
 
-/* === One Dark (Atom) ===
-   Each [data-theme] block below mirrors the same ~25 colour tokens that
-   [data-theme='light'] above overrides — non-colour tokens (spacing, radius,
-   z-index, motion durations, layout dimensions) stay inherited from :root so
-   layout never shifts between themes. */
-[data-theme='one-dark'] {
-  --surface-void: #21252b;
-  --surface-base: #282c34;
-  --surface-raised: #2c313a;
-  --surface-overlay: #3a3f4b;
-
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-bg-hover: rgba(255, 255, 255, 0.07);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-hover: rgba(255, 255, 255, 0.16);
-
-  --accent: #61afef;
-  --accent-hover: #82c8ff;
-  --accent-glow: rgba(97, 175, 239, 0.32);
-  --accent-subtle: rgba(97, 175, 239, 0.1);
-
-  --text-primary: rgba(220, 223, 228, 0.95);
-  --text-secondary: rgba(171, 178, 191, 0.85);
-  --text-muted: rgba(171, 178, 191, 0.8);
-
-  --glass-bg-elevated: rgba(255, 255, 255, 0.08);
-  --nav-pill-bg: rgba(40, 44, 52, 0.85);
-
-  --accent-secondary: #c678dd;
-  --color-info: #56b6c2;
-  --color-warning: #d19a66;
-  --color-success: #98c379;
-  --error: #e06c75;
-  --error-subtle: rgba(224, 108, 117, 0.14);
-
-  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.22);
-
-  --icon-drop-shadow: drop-shadow(0 0 6px rgba(255, 255, 255, 0.1));
-  --grid-line-color: rgba(255, 255, 255, 0.025);
-
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.55);
-  --shadow-accent-glow: 0 0 24px var(--accent-glow);
-}
-
-/* === Tokyo Night (Storm) === */
+/* === Tokyo Night (Storm) ===
+   Each [data-theme] block below mirrors the same colour tokens that
+   [data-theme='crimson-light'] above overrides — non-colour tokens (spacing,
+   radius, z-index, motion durations, layout dimensions) stay inherited from
+   :root so layout never shifts between themes. */
 [data-theme='tokyo-night'] {
   --surface-void: #1a1b26;
   --surface-base: #24283b;
@@ -288,47 +247,6 @@
   --shadow-accent-glow: 0 0 24px var(--accent-glow);
 }
 
-/* === Catppuccin Mocha === */
-[data-theme='catppuccin-mocha'] {
-  --surface-void: #11111b;
-  --surface-base: #1e1e2e;
-  --surface-raised: #313244;
-  --surface-overlay: #45475a;
-
-  --glass-bg: rgba(205, 214, 244, 0.04);
-  --glass-bg-hover: rgba(205, 214, 244, 0.07);
-  --glass-border: rgba(205, 214, 244, 0.09);
-  --glass-border-hover: rgba(205, 214, 244, 0.16);
-
-  --accent: #cba6f7;
-  --accent-hover: #d4b6ff;
-  --accent-glow: rgba(203, 166, 247, 0.32);
-  --accent-subtle: rgba(203, 166, 247, 0.1);
-
-  --text-primary: rgba(205, 214, 244, 0.95);
-  --text-secondary: rgba(186, 194, 222, 0.85);
-  --text-muted: rgba(166, 173, 200, 0.85);
-
-  --glass-bg-elevated: rgba(205, 214, 244, 0.08);
-  --nav-pill-bg: rgba(30, 30, 46, 0.85);
-
-  --accent-secondary: #89b4fa;
-  --color-info: #89b4fa;
-  --color-warning: #f9e2af;
-  --color-success: #a6e3a1;
-  --error: #f38ba8;
-  --error-subtle: rgba(243, 139, 168, 0.14);
-
-  --scrollbar-thumb: rgba(205, 214, 244, 0.14);
-  --scrollbar-thumb-hover: rgba(205, 214, 244, 0.24);
-
-  --icon-drop-shadow: drop-shadow(0 0 6px rgba(203, 166, 247, 0.18));
-  --grid-line-color: rgba(205, 214, 244, 0.025);
-
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.55);
-  --shadow-accent-glow: 0 0 24px var(--accent-glow);
-}
-
 /* === Solarized Light === */
 [data-theme='solarized-light'] {
   --surface-void: #eee8d5;
@@ -342,7 +260,7 @@
   --glass-border-hover: rgba(7, 54, 66, 0.18);
 
   --accent: #cb4b16;
-  --accent-hover: #e25d20;
+  --accent-hover: #a33a0e;
   --accent-glow: rgba(203, 75, 22, 0.22);
   --accent-subtle: rgba(203, 75, 22, 0.08);
 
@@ -355,8 +273,8 @@
 
   --accent-secondary: #268bd2;
   --color-info: #268bd2;
-  --color-warning: #b58900;
-  --color-success: #859900;
+  --color-warning: #8a6700;
+  --color-success: #657100;
   --error: #dc322f;
   --error-subtle: rgba(220, 50, 47, 0.1);
 
@@ -506,7 +424,7 @@
   --glass-border-hover: rgba(60, 56, 54, 0.2);
 
   --accent: #b57614;
-  --accent-hover: #d79921;
+  --accent-hover: #8e5d10;
   --accent-glow: rgba(181, 118, 20, 0.22);
   --accent-subtle: rgba(181, 118, 20, 0.08);
 
@@ -532,6 +450,93 @@
 
   --shadow-glass: 0 4px 24px rgba(60, 56, 54, 0.12);
   --shadow-accent-glow: 0 0 20px var(--accent-glow);
+}
+
+/* === Ayu Dark === */
+[data-theme='ayu-dark'] {
+  --surface-void: #0b0e14;
+  --surface-base: #0d1017;
+  --surface-raised: #131721;
+  --surface-overlay: #1f2430;
+
+  --glass-bg: rgba(191, 189, 182, 0.04);
+  --glass-bg-hover: rgba(191, 189, 182, 0.07);
+  --glass-border: rgba(191, 189, 182, 0.08);
+  --glass-border-hover: rgba(191, 189, 182, 0.16);
+
+  --accent: #ff9940;
+  --accent-hover: #ffb454;
+  --accent-glow: rgba(255, 153, 64, 0.3);
+  --accent-subtle: rgba(255, 153, 64, 0.1);
+
+  --text-primary: rgba(191, 189, 182, 0.95);
+  --text-secondary: rgba(191, 189, 182, 0.78);
+  --text-muted: rgba(191, 189, 182, 0.68);
+
+  --glass-bg-elevated: rgba(191, 189, 182, 0.08);
+  --nav-pill-bg: rgba(13, 16, 23, 0.85);
+
+  --accent-secondary: #d2a6ff;
+  --color-info: #59c2ff;
+  --color-warning: #e6b673;
+  --color-success: #7fd962;
+  --error: #d95757;
+  --error-subtle: rgba(217, 87, 87, 0.14);
+
+  --scrollbar-thumb: rgba(191, 189, 182, 0.14);
+  --scrollbar-thumb-hover: rgba(191, 189, 182, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(255, 153, 64, 0.2));
+  --grid-line-color: rgba(191, 189, 182, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.65);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Rose Pine (Main) ===
+   Canonical Rose Pine `love` (#eb6f92) is both the theme's primary accent
+   and its "red" semantic. We split the two roles: accent stays on `love`;
+   --error uses a truer red so error states don't read identically to
+   primary-action CTAs. Success maps to `pine` (teal) but lightened to
+   clear WCAG AA against --surface-base; straight #31748f lands at 3.16. */
+[data-theme='rose-pine'] {
+  --surface-void: #191724;
+  --surface-base: #1f1d2e;
+  --surface-raised: #26233a;
+  --surface-overlay: #403d52;
+
+  --glass-bg: rgba(224, 222, 244, 0.04);
+  --glass-bg-hover: rgba(224, 222, 244, 0.07);
+  --glass-border: rgba(224, 222, 244, 0.08);
+  --glass-border-hover: rgba(224, 222, 244, 0.16);
+
+  --accent: #eb6f92;
+  --accent-hover: #f18fa7;
+  --accent-glow: rgba(235, 111, 146, 0.32);
+  --accent-subtle: rgba(235, 111, 146, 0.1);
+
+  --text-primary: rgba(224, 222, 244, 0.95);
+  --text-secondary: rgba(224, 222, 244, 0.78);
+  --text-muted: rgba(224, 222, 244, 0.6);
+
+  --glass-bg-elevated: rgba(224, 222, 244, 0.08);
+  --nav-pill-bg: rgba(31, 29, 46, 0.85);
+
+  --accent-secondary: #c4a7e7;
+  --color-info: #9ccfd8;
+  --color-warning: #f6c177;
+  --color-success: #4d8fab;
+  --error: #ef5454;
+  --error-subtle: rgba(239, 84, 84, 0.14);
+
+  --scrollbar-thumb: rgba(224, 222, 244, 0.14);
+  --scrollbar-thumb-hover: rgba(224, 222, 244, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(235, 111, 146, 0.2));
+  --grid-line-color: rgba(224, 222, 244, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
 }
 
 *,
@@ -1269,10 +1274,12 @@ p {
 }
 
 /* === Highlight.js — Tokyo Night ===
-   The base `:root` hljs palette is essentially Atom One Dark, so
-   [data-theme='one-dark'] inherits it for free; only Tokyo Night,
-   Catppuccin Mocha, and Solarized Light need their own selector-prefixed
-   overrides to match the rest of their theme tokens. */
+   The base `:root` hljs palette is essentially Atom One Dark, so dark
+   themes whose surface and accent hues are close to that palette can
+   inherit it for free. Tokyo Night diverges enough (deeper navy, pink-red
+   name tokens, unique aqua built-in colour) to warrant its own
+   selector-prefixed overrides; the same rationale applies to every
+   selector-prefixed block that follows. */
 [data-theme='tokyo-night'] .hljs {
   color: #c0caf5;
 }
@@ -1333,70 +1340,6 @@ p {
   font-weight: 700;
 }
 [data-theme='tokyo-night'] .hljs-link {
-  text-decoration: underline;
-}
-
-/* === Highlight.js — Catppuccin Mocha === */
-[data-theme='catppuccin-mocha'] .hljs {
-  color: #cdd6f4;
-}
-[data-theme='catppuccin-mocha'] .hljs-comment,
-[data-theme='catppuccin-mocha'] .hljs-quote {
-  color: #6c7086;
-  font-style: italic;
-}
-[data-theme='catppuccin-mocha'] .hljs-doctag,
-[data-theme='catppuccin-mocha'] .hljs-formula,
-[data-theme='catppuccin-mocha'] .hljs-keyword {
-  color: #cba6f7;
-}
-[data-theme='catppuccin-mocha'] .hljs-deletion,
-[data-theme='catppuccin-mocha'] .hljs-name,
-[data-theme='catppuccin-mocha'] .hljs-section,
-[data-theme='catppuccin-mocha'] .hljs-selector-tag,
-[data-theme='catppuccin-mocha'] .hljs-subst {
-  color: #f38ba8;
-}
-[data-theme='catppuccin-mocha'] .hljs-literal {
-  color: #fab387;
-}
-[data-theme='catppuccin-mocha'] .hljs-addition,
-[data-theme='catppuccin-mocha'] .hljs-attribute,
-[data-theme='catppuccin-mocha'] .hljs-meta .hljs-string,
-[data-theme='catppuccin-mocha'] .hljs-regexp,
-[data-theme='catppuccin-mocha'] .hljs-string {
-  color: #a6e3a1;
-}
-[data-theme='catppuccin-mocha'] .hljs-attr,
-[data-theme='catppuccin-mocha'] .hljs-number,
-[data-theme='catppuccin-mocha'] .hljs-selector-attr,
-[data-theme='catppuccin-mocha'] .hljs-selector-class,
-[data-theme='catppuccin-mocha'] .hljs-selector-pseudo,
-[data-theme='catppuccin-mocha'] .hljs-template-variable,
-[data-theme='catppuccin-mocha'] .hljs-type,
-[data-theme='catppuccin-mocha'] .hljs-variable {
-  color: #f9e2af;
-}
-[data-theme='catppuccin-mocha'] .hljs-bullet,
-[data-theme='catppuccin-mocha'] .hljs-link,
-[data-theme='catppuccin-mocha'] .hljs-meta,
-[data-theme='catppuccin-mocha'] .hljs-selector-id,
-[data-theme='catppuccin-mocha'] .hljs-symbol,
-[data-theme='catppuccin-mocha'] .hljs-title {
-  color: #89b4fa;
-}
-[data-theme='catppuccin-mocha'] .hljs-built_in,
-[data-theme='catppuccin-mocha'] .hljs-class .hljs-title,
-[data-theme='catppuccin-mocha'] .hljs-title.class_ {
-  color: #94e2d5;
-}
-[data-theme='catppuccin-mocha'] .hljs-emphasis {
-  font-style: italic;
-}
-[data-theme='catppuccin-mocha'] .hljs-strong {
-  font-weight: 700;
-}
-[data-theme='catppuccin-mocha'] .hljs-link {
   text-decoration: underline;
 }
 
@@ -1717,6 +1660,134 @@ p {
   font-weight: 700;
 }
 [data-theme='gruvbox-light'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Ayu Dark === */
+[data-theme='ayu-dark'] .hljs {
+  color: #bfbdb6;
+}
+[data-theme='ayu-dark'] .hljs-comment,
+[data-theme='ayu-dark'] .hljs-quote {
+  color: #565b66;
+  font-style: italic;
+}
+[data-theme='ayu-dark'] .hljs-doctag,
+[data-theme='ayu-dark'] .hljs-formula,
+[data-theme='ayu-dark'] .hljs-keyword {
+  color: #ff8f40;
+}
+[data-theme='ayu-dark'] .hljs-deletion,
+[data-theme='ayu-dark'] .hljs-name,
+[data-theme='ayu-dark'] .hljs-section,
+[data-theme='ayu-dark'] .hljs-selector-tag,
+[data-theme='ayu-dark'] .hljs-subst {
+  color: #f07178;
+}
+[data-theme='ayu-dark'] .hljs-literal {
+  color: #d2a6ff;
+}
+[data-theme='ayu-dark'] .hljs-addition,
+[data-theme='ayu-dark'] .hljs-attribute,
+[data-theme='ayu-dark'] .hljs-meta .hljs-string,
+[data-theme='ayu-dark'] .hljs-regexp,
+[data-theme='ayu-dark'] .hljs-string {
+  color: #aad94c;
+}
+[data-theme='ayu-dark'] .hljs-attr,
+[data-theme='ayu-dark'] .hljs-number,
+[data-theme='ayu-dark'] .hljs-selector-attr,
+[data-theme='ayu-dark'] .hljs-selector-class,
+[data-theme='ayu-dark'] .hljs-selector-pseudo,
+[data-theme='ayu-dark'] .hljs-template-variable,
+[data-theme='ayu-dark'] .hljs-type,
+[data-theme='ayu-dark'] .hljs-variable {
+  color: #ffb454;
+}
+[data-theme='ayu-dark'] .hljs-bullet,
+[data-theme='ayu-dark'] .hljs-link,
+[data-theme='ayu-dark'] .hljs-meta,
+[data-theme='ayu-dark'] .hljs-selector-id,
+[data-theme='ayu-dark'] .hljs-symbol,
+[data-theme='ayu-dark'] .hljs-title {
+  color: #59c2ff;
+}
+[data-theme='ayu-dark'] .hljs-built_in,
+[data-theme='ayu-dark'] .hljs-class .hljs-title,
+[data-theme='ayu-dark'] .hljs-title.class_ {
+  color: #95e6cb;
+}
+[data-theme='ayu-dark'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='ayu-dark'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='ayu-dark'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Rose Pine === */
+[data-theme='rose-pine'] .hljs {
+  color: #e0def4;
+}
+[data-theme='rose-pine'] .hljs-comment,
+[data-theme='rose-pine'] .hljs-quote {
+  color: #6e6a86;
+  font-style: italic;
+}
+[data-theme='rose-pine'] .hljs-doctag,
+[data-theme='rose-pine'] .hljs-formula,
+[data-theme='rose-pine'] .hljs-keyword {
+  color: #31748f;
+}
+[data-theme='rose-pine'] .hljs-deletion,
+[data-theme='rose-pine'] .hljs-name,
+[data-theme='rose-pine'] .hljs-section,
+[data-theme='rose-pine'] .hljs-selector-tag,
+[data-theme='rose-pine'] .hljs-subst {
+  color: #eb6f92;
+}
+[data-theme='rose-pine'] .hljs-literal {
+  color: #c4a7e7;
+}
+[data-theme='rose-pine'] .hljs-addition,
+[data-theme='rose-pine'] .hljs-attribute,
+[data-theme='rose-pine'] .hljs-meta .hljs-string,
+[data-theme='rose-pine'] .hljs-regexp,
+[data-theme='rose-pine'] .hljs-string {
+  color: #f6c177;
+}
+[data-theme='rose-pine'] .hljs-attr,
+[data-theme='rose-pine'] .hljs-number,
+[data-theme='rose-pine'] .hljs-selector-attr,
+[data-theme='rose-pine'] .hljs-selector-class,
+[data-theme='rose-pine'] .hljs-selector-pseudo,
+[data-theme='rose-pine'] .hljs-template-variable,
+[data-theme='rose-pine'] .hljs-type,
+[data-theme='rose-pine'] .hljs-variable {
+  color: #ebbcba;
+}
+[data-theme='rose-pine'] .hljs-bullet,
+[data-theme='rose-pine'] .hljs-link,
+[data-theme='rose-pine'] .hljs-meta,
+[data-theme='rose-pine'] .hljs-selector-id,
+[data-theme='rose-pine'] .hljs-symbol,
+[data-theme='rose-pine'] .hljs-title {
+  color: #9ccfd8;
+}
+[data-theme='rose-pine'] .hljs-built_in,
+[data-theme='rose-pine'] .hljs-class .hljs-title,
+[data-theme='rose-pine'] .hljs-title.class_ {
+  color: #c4a7e7;
+}
+[data-theme='rose-pine'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='rose-pine'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='rose-pine'] .hljs-link {
   text-decoration: underline;
 }
 

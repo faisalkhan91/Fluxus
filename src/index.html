@@ -21,16 +21,21 @@
           var THEME_IDS = [
             'crimson-dark',
             'crimson-light',
-            'one-dark',
             'tokyo-night',
-            'catppuccin-mocha',
             'solarized-light',
             'dracula',
             'nord',
             'gruvbox-dark',
             'gruvbox-light',
+            'ayu-dark',
+            'rose-pine',
           ];
-          var LEGACY = { dark: 'crimson-dark', light: 'crimson-light' };
+          var LEGACY = {
+            dark: 'crimson-dark',
+            light: 'crimson-light',
+            'one-dark': 'tokyo-night',
+            'catppuccin-mocha': 'dracula',
+          };
           var stored = localStorage.getItem('theme');
           var id = null;
           if (stored && THEME_IDS.indexOf(stored) !== -1) {
