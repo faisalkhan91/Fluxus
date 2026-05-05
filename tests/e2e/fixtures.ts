@@ -1,18 +1,31 @@
 import { test as base, expect, type Page } from '@playwright/test';
 
 /**
- * Accepts both the new registry ids (`crimson-dark`, `tokyo-night`, …) and
- * the legacy `'dark'` / `'light'` values that ThemeService migrates on
- * read. Specs that exercise the migration path use the legacy values
- * directly; everything else seeds a registry id.
+ * Accepts the current registry ids plus the legacy values that
+ * ThemeService migrates on read (`'dark'`, `'light'`, and ids retired
+ * across prior refactors — `'one-dark'`, `'catppuccin-mocha'`,
+ * `'dracula'`, `'gruvbox-dark'`, `'gruvbox-light'`). Specs exercising
+ * the migration path seed the legacy values directly; everything else
+ * seeds a current registry id. Keep in sync with THEME_REGISTRY and
+ * the inline allowlist in src/index.html.
  */
 export type Theme =
   | 'crimson-dark'
   | 'crimson-light'
-  | 'one-dark'
   | 'tokyo-night'
-  | 'catppuccin-mocha'
   | 'solarized-light'
+  | 'nord'
+  | 'ayu-dark'
+  | 'rose-pine'
+  | 'night-owl'
+  | 'horizon'
+  | 'github-light'
+  // Legacy ids retained for migration-path tests.
+  | 'one-dark'
+  | 'catppuccin-mocha'
+  | 'dracula'
+  | 'gruvbox-dark'
+  | 'gruvbox-light'
   | 'dark'
   | 'light';
 
