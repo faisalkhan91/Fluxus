@@ -27,13 +27,22 @@ const STORAGE_KEY = 'theme';
  */
 const LAST_BY_SCHEME_KEY = 'theme:last-by-scheme';
 /**
- * Pre-existing localStorage values from before the multi-theme refactor.
- * We migrate `'dark'` / `'light'` to their `crimson-*` equivalents on read
- * so returning visitors don't drop back to the system default.
+ * Pre-existing localStorage values from previous registry shapes.
+ * Migrated on read so returning visitors keep their selection intent:
+ *   - `'dark'` / `'light'` — the original pre-multi-theme pair; maps to
+ *     the canonical Crimson pair.
+ *   - `'one-dark'` / `'catppuccin-mocha'` — dropped in the
+ *     variety-swap (both had close-duplicate siblings in the picker).
+ *     Each maps to the retained sibling so a user who picked "blue-slate
+ *     dark" or "purple-on-near-black" lands on a visually related theme
+ *     rather than silently falling back to the system-pref default.
+ * Keep this in sync with the inline `LEGACY` object in `src/index.html`.
  */
 const LEGACY_TO_ID: Record<string, ThemeId> = {
   dark: DEFAULT_DARK_ID,
   light: DEFAULT_LIGHT_ID,
+  'one-dark': 'tokyo-night',
+  'catppuccin-mocha': 'dracula',
 };
 
 interface LastByScheme {
