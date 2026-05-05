@@ -492,21 +492,41 @@
   margin-right: var(--space-2);
 }
 
+/*
+  Grid instead of flex so `grid-auto-rows: 1fr` can lock every card
+  in a row to the same height regardless of title/excerpt length. The
+  2-card blog strip + 3-card featured-projects strip both rendered
+  off-balance when one neighbour had a longer title — a tall title
+  pushed one card taller, leaving its short-excerpt peer with dead
+  space below. `minmax(0, 1fr)` keeps the zero floor the old flex
+  layout had (prevents min-content from bloating the track past its
+  share). Each row's `@media` rule below stacks them on narrow
+  viewports.
+*/
 .latest-posts-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: var(--space-4);
 }
 
 .latest-post-link {
-  flex: 1;
   text-decoration: none;
   color: inherit;
   display: block;
   min-width: 0;
+  /* The link itself now stretches to the grid cell height so its
+     nested `ui-glass-card` can claim the same height via
+     `height: 100%` below. Without this the link collapses to the
+     content height and the card's `height: 100%` has nothing to
+     measure against. */
+  height: 100%;
 }
 
 .latest-post-card {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Skeleton placeholder while the blog manifest is loading. Same outer shape
@@ -581,6 +601,15 @@
   color: var(--text-primary);
   margin-bottom: var(--space-2);
   line-height: 1.3;
+  /* Clamp the title at 2 lines so a 5-word post-title and a 12-word
+     one produce the same card height. The excerpt clamp below is
+     the only piece that was already in place; together the two set
+     the card's content ceiling. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .latest-post-excerpt {
@@ -592,6 +621,11 @@
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  /* Pin the excerpt to the bottom of the column-flex card so short
+     descriptions don't leave visible whitespace between the title
+     and the card's lower edge; the `grid-auto-rows: 1fr` on the
+     parent row already ensures that bottom edge aligns with peers. */
+  margin-top: auto;
 }
 
 .view-all-link {
@@ -620,6 +654,10 @@
   }
 
   .latest-posts-row {
-    flex-direction: column;
+    /* Grid is the new default (see .latest-posts-row above) — stack
+       with a single-column template on narrow viewports. The
+       `flex-direction: column` rule that lived here was a no-op
+       against a grid container. */
+    grid-template-columns: 1fr;
   }
 }

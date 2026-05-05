@@ -52,6 +52,15 @@
 .post-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  /*
+    `grid-auto-rows: 1fr` locks every row's card height to its
+    tallest peer — without this, a row with a 4-line excerpt
+    stretched its neighbour row's 2-line-excerpt cards to match,
+    leaving awkward whitespace. Paired with the title + excerpt
+    clamps below, each row resolves to a predictable ceiling
+    regardless of content length.
+  */
+  grid-auto-rows: 1fr;
   gap: var(--space-6);
 }
 
@@ -232,6 +241,18 @@
   color: var(--text-primary);
   margin-bottom: var(--space-3);
   line-height: 1.3;
+  /*
+    Clamp regular post titles at 2 lines so a long-title / short-
+    title pair in the same row doesn't unbalance the cards. The
+    featured card (`.post-link--featured .post-title`) overrides
+    the font-size but keeps the clamp — the side-by-side layout
+    still benefits from title length not blowing out the column.
+  */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .post-excerpt {
@@ -239,6 +260,19 @@
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: var(--space-4);
+  /*
+    3-line ceiling on the excerpt matches the projects list-view
+    compact row pattern (`.projects-list-row-desc`). `flex: 1`
+    below still lets the excerpt absorb whatever vertical space
+    remains between the title and the tag row, which — paired
+    with `grid-auto-rows: 1fr` on the parent grid — anchors the
+    tag row to the card bottom across every card in the row.
+  */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   flex: 1;
 }
 
