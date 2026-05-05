@@ -189,8 +189,10 @@
   --color-info: #2563eb;
   --color-warning: #b45309;
   --color-success: #15803d;
-  --error: #b91c1c;
-  --error-subtle: rgba(185, 28, 28, 0.1);
+  /* --error is a shade darker than --accent (#b91c1c) so error states
+     don't look identical to primary-action CTAs on the brand-red theme. */
+  --error: #991b1b;
+  --error-subtle: rgba(153, 27, 27, 0.1);
 
   --scrollbar-thumb: rgba(0, 0, 0, 0.12);
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
@@ -1151,7 +1153,12 @@ p {
 }
 .hljs-comment,
 .hljs-quote {
-  color: #5c6370;
+  /* Lifted from the canonical Atom One Dark #5c6370 (3.18:1) to clear
+     WCAG AA (4.5:1) against --surface-base. Editor-theme convention runs
+     comments below AA; we deliberately break convention on the web where
+     body-text accessibility rules apply. Per-theme overrides below do
+     the same shift for their own palettes. */
+  color: #727b8c;
   font-style: italic;
 }
 .hljs-doctag,
@@ -1215,7 +1222,7 @@ p {
 }
 [data-theme='crimson-light'] .hljs-comment,
 [data-theme='crimson-light'] .hljs-quote {
-  color: #a0a1a7;
+  color: #6e6f77;
   font-style: italic;
 }
 [data-theme='crimson-light'] .hljs-doctag,
@@ -1285,7 +1292,7 @@ p {
 }
 [data-theme='tokyo-night'] .hljs-comment,
 [data-theme='tokyo-night'] .hljs-quote {
-  color: #565f89;
+  color: #878eb3;
   font-style: italic;
 }
 [data-theme='tokyo-night'] .hljs-doctag,
@@ -1349,7 +1356,7 @@ p {
 }
 [data-theme='solarized-light'] .hljs-comment,
 [data-theme='solarized-light'] .hljs-quote {
-  color: #93a1a1;
+  color: #647373;
   font-style: italic;
 }
 [data-theme='solarized-light'] .hljs-doctag,
@@ -1413,7 +1420,7 @@ p {
 }
 [data-theme='dracula'] .hljs-comment,
 [data-theme='dracula'] .hljs-quote {
-  color: #6272a4;
+  color: #8591b8;
   font-style: italic;
 }
 [data-theme='dracula'] .hljs-doctag,
@@ -1477,7 +1484,7 @@ p {
 }
 [data-theme='nord'] .hljs-comment,
 [data-theme='nord'] .hljs-quote {
-  color: #616e88;
+  color: #929db1;
   font-style: italic;
 }
 [data-theme='nord'] .hljs-doctag,
@@ -1541,7 +1548,7 @@ p {
 }
 [data-theme='gruvbox-dark'] .hljs-comment,
 [data-theme='gruvbox-dark'] .hljs-quote {
-  color: #928374;
+  color: #9a8d7f;
   font-style: italic;
 }
 [data-theme='gruvbox-dark'] .hljs-doctag,
@@ -1605,7 +1612,7 @@ p {
 }
 [data-theme='gruvbox-light'] .hljs-comment,
 [data-theme='gruvbox-light'] .hljs-quote {
-  color: #928374;
+  color: #76695c;
   font-style: italic;
 }
 [data-theme='gruvbox-light'] .hljs-doctag,
@@ -1669,7 +1676,7 @@ p {
 }
 [data-theme='ayu-dark'] .hljs-comment,
 [data-theme='ayu-dark'] .hljs-quote {
-  color: #565b66;
+  color: #777d8c;
   font-style: italic;
 }
 [data-theme='ayu-dark'] .hljs-doctag,
@@ -1733,7 +1740,7 @@ p {
 }
 [data-theme='rose-pine'] .hljs-comment,
 [data-theme='rose-pine'] .hljs-quote {
-  color: #6e6a86;
+  color: #88849e;
   font-style: italic;
 }
 [data-theme='rose-pine'] .hljs-doctag,
