@@ -436,7 +436,7 @@
   width: 100%;
   padding: var(--space-3) var(--space-4);
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-body);

@@ -184,15 +184,48 @@ describe('ThemeService — legacy localStorage migration', () => {
     expect(localStorage.getItem('theme')).toBe('tokyo-night');
   });
 
-  it('migrates a dropped "catppuccin-mocha" value to dracula (its retained purple-dark sibling)', () => {
+  it('migrates a dropped "catppuccin-mocha" value to rose-pine (nearest purple-plum dark)', () => {
     localStorage.setItem('theme', 'catppuccin-mocha');
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
       providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
     });
     const svc = TestBed.inject(ThemeService);
-    expect(svc.theme()).toBe('dracula');
-    expect(localStorage.getItem('theme')).toBe('dracula');
+    expect(svc.theme()).toBe('rose-pine');
+    expect(localStorage.getItem('theme')).toBe('rose-pine');
+  });
+
+  it('migrates a dropped "dracula" value to rose-pine', () => {
+    localStorage.setItem('theme', 'dracula');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    expect(svc.theme()).toBe('rose-pine');
+    expect(localStorage.getItem('theme')).toBe('rose-pine');
+  });
+
+  it('migrates a dropped "gruvbox-dark" value to ayu-dark (warm-saffron dark)', () => {
+    localStorage.setItem('theme', 'gruvbox-dark');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    expect(svc.theme()).toBe('ayu-dark');
+    expect(localStorage.getItem('theme')).toBe('ayu-dark');
+  });
+
+  it('migrates a dropped "gruvbox-light" value to solarized-light', () => {
+    localStorage.setItem('theme', 'gruvbox-light');
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    expect(svc.theme()).toBe('solarized-light');
+    expect(localStorage.getItem('theme')).toBe('solarized-light');
   });
 
   it('falls back to the system preference when storage holds an unknown value', () => {
