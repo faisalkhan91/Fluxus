@@ -99,7 +99,7 @@
 
 .toast-action:hover {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
 }
 
 .toast-action:active {

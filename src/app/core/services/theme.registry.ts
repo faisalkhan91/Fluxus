@@ -21,12 +21,12 @@ export type ThemeId =
   | 'crimson-light'
   | 'tokyo-night'
   | 'solarized-light'
-  | 'dracula'
   | 'nord'
-  | 'gruvbox-dark'
-  | 'gruvbox-light'
   | 'ayu-dark'
-  | 'rose-pine';
+  | 'rose-pine'
+  | 'night-owl'
+  | 'horizon'
+  | 'github-light';
 
 export interface ThemeDef {
   /** Stable identifier; written to `<html data-theme="...">` and localStorage. */
@@ -80,32 +80,11 @@ export const THEME_REGISTRY: readonly ThemeDef[] = [
     themeColor: '#eee8d5',
   },
   {
-    id: 'dracula',
-    label: 'Dracula',
-    scheme: 'dark',
-    swatch: '#bd93f9',
-    themeColor: '#1e1f29',
-  },
-  {
     id: 'nord',
     label: 'Nord',
     scheme: 'dark',
     swatch: '#88c0d0',
     themeColor: '#242933',
-  },
-  {
-    id: 'gruvbox-dark',
-    label: 'Gruvbox Dark',
-    scheme: 'dark',
-    swatch: '#fabd2f',
-    themeColor: '#1d2021',
-  },
-  {
-    id: 'gruvbox-light',
-    label: 'Gruvbox Light',
-    scheme: 'light',
-    swatch: '#b57614',
-    themeColor: '#ebdbb2',
   },
   {
     id: 'ayu-dark',
@@ -120,6 +99,27 @@ export const THEME_REGISTRY: readonly ThemeDef[] = [
     scheme: 'dark',
     swatch: '#eb6f92',
     themeColor: '#191724',
+  },
+  {
+    id: 'night-owl',
+    label: 'Night Owl',
+    scheme: 'dark',
+    swatch: '#7fdbca',
+    themeColor: '#011627',
+  },
+  {
+    id: 'horizon',
+    label: 'Horizon',
+    scheme: 'dark',
+    swatch: '#fab795',
+    themeColor: '#1c1e26',
+  },
+  {
+    id: 'github-light',
+    label: 'GitHub Light',
+    scheme: 'light',
+    swatch: '#0969da',
+    themeColor: '#ffffff',
   },
 ];
 

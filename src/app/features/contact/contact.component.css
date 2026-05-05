@@ -58,12 +58,12 @@
 }
 
 .form-input[aria-invalid='true'] {
-  border-color: var(--error, #ef4444);
+  border-color: var(--error);
 }
 
 .form-error {
   font-size: 0.8rem;
-  color: var(--error, #ef4444);
+  color: var(--error);
 }
 
 /*

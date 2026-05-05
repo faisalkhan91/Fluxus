@@ -26,7 +26,7 @@
   z-index: 10000;
   padding: var(--space-2) var(--space-4);
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   border-radius: var(--radius-sm);
