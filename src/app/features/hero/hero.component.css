@@ -245,10 +245,17 @@
   }
 }
 
-[data-theme='light'] .hero-name {
-  /* Anchor the accent stop with a darker red so the trailing characters
-     remain readable on the lighter surface. */
-  background: linear-gradient(135deg, var(--text-primary) 75%, #991b1b);
+/*
+  Anchor the gradient's trailing stop with the theme accent so the
+  name ends in the theme's brand colour. `[data-theme='light']` was a
+  legacy selector that no theme id matches any more — it was a dead
+  rule from before the namespaced-theme refactor. List every light
+  theme explicitly so the gradient tracks the active accent.
+*/
+[data-theme='crimson-light'] .hero-name,
+[data-theme='solarized-light'] .hero-name,
+[data-theme='github-light'] .hero-name {
+  background: linear-gradient(135deg, var(--text-primary) 75%, var(--accent));
   -webkit-background-clip: text;
   background-clip: text;
 }

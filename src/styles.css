@@ -37,6 +37,15 @@
   --accent-hover: #e03131;
   --accent-glow: rgba(201, 42, 42, 0.35);
   --accent-subtle: rgba(201, 42, 42, 0.08);
+  /*
+    Text color used when a component fills its background with --accent
+    (skip-link, primary button, tag hover, toast action, sidebar CTA).
+    Switches between white and black per theme so the fill stays readable
+    regardless of the accent's own luminance — `color: #fff` hardcoded on
+    an accent button would read as blue-on-blue on Tokyo Night or
+    grey-on-yellow on any warm theme.
+  */
+  --text-on-accent: #ffffff;
 
   /* === Text === */
   /* Tuned to satisfy WCAG AA (4.5:1) over --surface-base. Pushing
@@ -177,6 +186,7 @@
   --accent-hover: #dc2626;
   --accent-glow: rgba(185, 28, 28, 0.2);
   --accent-subtle: rgba(185, 28, 28, 0.06);
+  --text-on-accent: #ffffff;
 
   --text-primary: rgba(0, 0, 0, 0.87);
   --text-secondary: rgba(0, 0, 0, 0.7);
@@ -224,6 +234,7 @@
   --accent-hover: #9bb8ff;
   --accent-glow: rgba(122, 162, 247, 0.32);
   --accent-subtle: rgba(122, 162, 247, 0.1);
+  --text-on-accent: #000000;
 
   --text-primary: rgba(192, 202, 245, 0.95);
   --text-secondary: rgba(169, 177, 214, 0.85);
@@ -265,6 +276,7 @@
   --accent-hover: #a33a0e;
   --accent-glow: rgba(203, 75, 22, 0.22);
   --accent-subtle: rgba(203, 75, 22, 0.08);
+  --text-on-accent: #ffffff;
 
   --text-primary: rgba(0, 43, 54, 0.92);
   --text-secondary: rgba(7, 54, 66, 0.75);
@@ -290,47 +302,6 @@
   --shadow-accent-glow: 0 0 20px var(--accent-glow);
 }
 
-/* === Dracula === */
-[data-theme='dracula'] {
-  --surface-void: #1e1f29;
-  --surface-base: #282a36;
-  --surface-raised: #2e303e;
-  --surface-overlay: #44475a;
-
-  --glass-bg: rgba(248, 248, 242, 0.04);
-  --glass-bg-hover: rgba(248, 248, 242, 0.07);
-  --glass-border: rgba(248, 248, 242, 0.08);
-  --glass-border-hover: rgba(248, 248, 242, 0.16);
-
-  --accent: #bd93f9;
-  --accent-hover: #caa9fa;
-  --accent-glow: rgba(189, 147, 249, 0.32);
-  --accent-subtle: rgba(189, 147, 249, 0.1);
-
-  --text-primary: rgba(248, 248, 242, 0.95);
-  --text-secondary: rgba(248, 248, 242, 0.78);
-  --text-muted: rgba(248, 248, 242, 0.6);
-
-  --glass-bg-elevated: rgba(248, 248, 242, 0.08);
-  --nav-pill-bg: rgba(40, 42, 54, 0.85);
-
-  --accent-secondary: #ff79c6;
-  --color-info: #8be9fd;
-  --color-warning: #ffb86c;
-  --color-success: #50fa7b;
-  --error: #ff5555;
-  --error-subtle: rgba(255, 85, 85, 0.14);
-
-  --scrollbar-thumb: rgba(248, 248, 242, 0.14);
-  --scrollbar-thumb-hover: rgba(248, 248, 242, 0.24);
-
-  --icon-drop-shadow: drop-shadow(0 0 6px rgba(189, 147, 249, 0.2));
-  --grid-line-color: rgba(248, 248, 242, 0.025);
-
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-accent-glow: 0 0 24px var(--accent-glow);
-}
-
 /* === Nord === */
 [data-theme='nord'] {
   --surface-void: #242933;
@@ -347,6 +318,7 @@
   --accent-hover: #8fbcbb;
   --accent-glow: rgba(136, 192, 208, 0.3);
   --accent-subtle: rgba(136, 192, 208, 0.1);
+  --text-on-accent: #000000;
 
   --text-primary: rgba(236, 239, 244, 0.95);
   --text-secondary: rgba(216, 222, 233, 0.82);
@@ -372,88 +344,6 @@
   --shadow-accent-glow: 0 0 24px var(--accent-glow);
 }
 
-/* === Gruvbox Dark === */
-[data-theme='gruvbox-dark'] {
-  --surface-void: #1d2021;
-  --surface-base: #282828;
-  --surface-raised: #3c3836;
-  --surface-overlay: #504945;
-
-  --glass-bg: rgba(235, 219, 178, 0.04);
-  --glass-bg-hover: rgba(235, 219, 178, 0.07);
-  --glass-border: rgba(235, 219, 178, 0.08);
-  --glass-border-hover: rgba(235, 219, 178, 0.16);
-
-  --accent: #fabd2f;
-  --accent-hover: #ffd966;
-  --accent-glow: rgba(250, 189, 47, 0.3);
-  --accent-subtle: rgba(250, 189, 47, 0.1);
-
-  --text-primary: rgba(235, 219, 178, 0.95);
-  --text-secondary: rgba(213, 196, 161, 0.85);
-  --text-muted: rgba(168, 153, 132, 0.9);
-
-  --glass-bg-elevated: rgba(235, 219, 178, 0.08);
-  --nav-pill-bg: rgba(40, 40, 40, 0.85);
-
-  --accent-secondary: #d3869b;
-  --color-info: #83a598;
-  --color-warning: #fe8019;
-  --color-success: #b8bb26;
-  --error: #fb4934;
-  --error-subtle: rgba(251, 73, 52, 0.14);
-
-  --scrollbar-thumb: rgba(235, 219, 178, 0.14);
-  --scrollbar-thumb-hover: rgba(235, 219, 178, 0.24);
-
-  --icon-drop-shadow: drop-shadow(0 0 6px rgba(250, 189, 47, 0.18));
-  --grid-line-color: rgba(235, 219, 178, 0.025);
-
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-accent-glow: 0 0 24px var(--accent-glow);
-}
-
-/* === Gruvbox Light === */
-[data-theme='gruvbox-light'] {
-  --surface-void: #ebdbb2;
-  --surface-base: #fbf1c7;
-  --surface-raised: #ffffff;
-  --surface-overlay: #d5c4a1;
-
-  --glass-bg: rgba(60, 56, 54, 0.05);
-  --glass-bg-hover: rgba(60, 56, 54, 0.1);
-  --glass-border: rgba(60, 56, 54, 0.1);
-  --glass-border-hover: rgba(60, 56, 54, 0.2);
-
-  --accent: #b57614;
-  --accent-hover: #8e5d10;
-  --accent-glow: rgba(181, 118, 20, 0.22);
-  --accent-subtle: rgba(181, 118, 20, 0.08);
-
-  --text-primary: rgba(40, 40, 40, 0.92);
-  --text-secondary: rgba(60, 56, 54, 0.78);
-  --text-muted: rgba(102, 92, 84, 0.92);
-
-  --glass-bg-elevated: rgba(255, 255, 255, 0.75);
-  --nav-pill-bg: rgba(251, 241, 199, 0.82);
-
-  --accent-secondary: #8f3f71;
-  --color-info: #076678;
-  --color-warning: #af3a03;
-  --color-success: #79740e;
-  --error: #9d0006;
-  --error-subtle: rgba(157, 0, 6, 0.1);
-
-  --scrollbar-thumb: rgba(60, 56, 54, 0.18);
-  --scrollbar-thumb-hover: rgba(60, 56, 54, 0.28);
-
-  --icon-drop-shadow: drop-shadow(0 0 6px rgba(60, 56, 54, 0.08));
-  --grid-line-color: rgba(60, 56, 54, 0.04);
-
-  --shadow-glass: 0 4px 24px rgba(60, 56, 54, 0.12);
-  --shadow-accent-glow: 0 0 20px var(--accent-glow);
-}
-
 /* === Ayu Dark === */
 [data-theme='ayu-dark'] {
   --surface-void: #0b0e14;
@@ -470,6 +360,7 @@
   --accent-hover: #ffb454;
   --accent-glow: rgba(255, 153, 64, 0.3);
   --accent-subtle: rgba(255, 153, 64, 0.1);
+  --text-on-accent: #000000;
 
   --text-primary: rgba(191, 189, 182, 0.95);
   --text-secondary: rgba(191, 189, 182, 0.78);
@@ -516,6 +407,7 @@
   --accent-hover: #f18fa7;
   --accent-glow: rgba(235, 111, 146, 0.32);
   --accent-subtle: rgba(235, 111, 146, 0.1);
+  --text-on-accent: #000000;
 
   --text-primary: rgba(224, 222, 244, 0.95);
   --text-secondary: rgba(224, 222, 244, 0.78);
@@ -539,6 +431,142 @@
 
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
   --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Night Owl (Sarah Drasner) ===
+   Deep-navy surface with a mint/teal accent — fills the green/mint hue
+   gap that none of the other themes cover. */
+[data-theme='night-owl'] {
+  --surface-void: #011627;
+  --surface-base: #051e30;
+  --surface-raised: #0b2942;
+  --surface-overlay: #122d42;
+
+  --glass-bg: rgba(214, 222, 235, 0.04);
+  --glass-bg-hover: rgba(214, 222, 235, 0.07);
+  --glass-border: rgba(214, 222, 235, 0.09);
+  --glass-border-hover: rgba(214, 222, 235, 0.18);
+
+  --accent: #7fdbca;
+  --accent-hover: #a6f0e0;
+  --accent-glow: rgba(127, 219, 202, 0.32);
+  --accent-subtle: rgba(127, 219, 202, 0.1);
+  --text-on-accent: #000000;
+
+  --text-primary: rgba(214, 222, 235, 0.95);
+  --text-secondary: rgba(214, 222, 235, 0.78);
+  --text-muted: rgba(214, 222, 235, 0.6);
+
+  --glass-bg-elevated: rgba(214, 222, 235, 0.08);
+  --nav-pill-bg: rgba(5, 30, 48, 0.85);
+
+  --accent-secondary: #c792ea;
+  --color-info: #82aaff;
+  --color-warning: #ecc48d;
+  --color-success: #addb67;
+  --error: #ef5350;
+  --error-subtle: rgba(239, 83, 80, 0.14);
+
+  --scrollbar-thumb: rgba(214, 222, 235, 0.14);
+  --scrollbar-thumb-hover: rgba(214, 222, 235, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(127, 219, 202, 0.2));
+  --grid-line-color: rgba(214, 222, 235, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.7);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === Horizon ===
+   Cool dark neutral surface with a warm peach accent — signature Horizon
+   aesthetic. Accent uses the canonical peach (#fab795) rather than the
+   rose-coral #e95678 to stay visually distinct from Rose Pine's pink. */
+[data-theme='horizon'] {
+  --surface-void: #1c1e26;
+  --surface-base: #21242b;
+  --surface-raised: #2a2d35;
+  --surface-overlay: #3b3f4b;
+
+  --glass-bg: rgba(224, 224, 224, 0.04);
+  --glass-bg-hover: rgba(224, 224, 224, 0.07);
+  --glass-border: rgba(224, 224, 224, 0.08);
+  --glass-border-hover: rgba(224, 224, 224, 0.16);
+
+  --accent: #fab795;
+  --accent-hover: #fdc8a9;
+  --accent-glow: rgba(250, 183, 149, 0.3);
+  --accent-subtle: rgba(250, 183, 149, 0.1);
+  --text-on-accent: #000000;
+
+  --text-primary: rgba(224, 224, 224, 0.95);
+  --text-secondary: rgba(224, 224, 224, 0.78);
+  --text-muted: rgba(224, 224, 224, 0.62);
+
+  --glass-bg-elevated: rgba(224, 224, 224, 0.08);
+  --nav-pill-bg: rgba(33, 36, 43, 0.85);
+
+  --accent-secondary: #b877db;
+  --color-info: #26bbd9;
+  --color-warning: #fac29a;
+  --color-success: #29d398;
+  /* Lifted from canonical Horizon rose #e95678 (4.49, one hundredth under
+     AA) to #ec5e80 so error text clears 4.5:1 against --surface-base. */
+  --error: #ec5e80;
+  --error-subtle: rgba(236, 94, 128, 0.14);
+
+  --scrollbar-thumb: rgba(224, 224, 224, 0.14);
+  --scrollbar-thumb-hover: rgba(224, 224, 224, 0.24);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(250, 183, 149, 0.2));
+  --grid-line-color: rgba(224, 224, 224, 0.025);
+
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent-glow: 0 0 24px var(--accent-glow);
+}
+
+/* === GitHub Light ===
+   Clean white neutral surface — the first non-cream light option. Uses
+   GitHub's canonical interaction palette (blue-600 accent, orange-700
+   warning, green-600 success). */
+[data-theme='github-light'] {
+  --surface-void: #ffffff;
+  --surface-base: #ffffff;
+  --surface-raised: #f6f8fa;
+  --surface-overlay: #eaeef2;
+
+  --glass-bg: rgba(31, 35, 40, 0.04);
+  --glass-bg-hover: rgba(31, 35, 40, 0.07);
+  --glass-border: rgba(31, 35, 40, 0.12);
+  --glass-border-hover: rgba(31, 35, 40, 0.2);
+
+  --accent: #0969da;
+  --accent-hover: #0550ae;
+  --accent-glow: rgba(9, 105, 218, 0.22);
+  --accent-subtle: rgba(9, 105, 218, 0.08);
+  --text-on-accent: #ffffff;
+
+  --text-primary: rgba(31, 35, 40, 0.92);
+  --text-secondary: rgba(31, 35, 40, 0.7);
+  --text-muted: rgba(31, 35, 40, 0.65);
+
+  --glass-bg-elevated: rgba(246, 248, 250, 0.85);
+  --nav-pill-bg: rgba(255, 255, 255, 0.85);
+
+  --accent-secondary: #8250df;
+  --color-info: #0969da;
+  --color-warning: #9a6700;
+  --color-success: #1a7f37;
+  --error: #cf222e;
+  --error-subtle: rgba(207, 34, 46, 0.1);
+
+  --scrollbar-thumb: rgba(31, 35, 40, 0.18);
+  --scrollbar-thumb-hover: rgba(31, 35, 40, 0.28);
+
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(31, 35, 40, 0.08));
+  --grid-line-color: rgba(31, 35, 40, 0.04);
+
+  --shadow-glass: 0 4px 24px rgba(31, 35, 40, 0.08);
+  --shadow-accent-glow: 0 0 20px var(--accent-glow);
 }
 
 *,
@@ -1414,70 +1442,6 @@ p {
   text-decoration: underline;
 }
 
-/* === Highlight.js — Dracula === */
-[data-theme='dracula'] .hljs {
-  color: #f8f8f2;
-}
-[data-theme='dracula'] .hljs-comment,
-[data-theme='dracula'] .hljs-quote {
-  color: #8591b8;
-  font-style: italic;
-}
-[data-theme='dracula'] .hljs-doctag,
-[data-theme='dracula'] .hljs-formula,
-[data-theme='dracula'] .hljs-keyword {
-  color: #ff79c6;
-}
-[data-theme='dracula'] .hljs-deletion,
-[data-theme='dracula'] .hljs-name,
-[data-theme='dracula'] .hljs-section,
-[data-theme='dracula'] .hljs-selector-tag,
-[data-theme='dracula'] .hljs-subst {
-  color: #ff5555;
-}
-[data-theme='dracula'] .hljs-literal {
-  color: #bd93f9;
-}
-[data-theme='dracula'] .hljs-addition,
-[data-theme='dracula'] .hljs-attribute,
-[data-theme='dracula'] .hljs-meta .hljs-string,
-[data-theme='dracula'] .hljs-regexp,
-[data-theme='dracula'] .hljs-string {
-  color: #f1fa8c;
-}
-[data-theme='dracula'] .hljs-attr,
-[data-theme='dracula'] .hljs-number,
-[data-theme='dracula'] .hljs-selector-attr,
-[data-theme='dracula'] .hljs-selector-class,
-[data-theme='dracula'] .hljs-selector-pseudo,
-[data-theme='dracula'] .hljs-template-variable,
-[data-theme='dracula'] .hljs-type,
-[data-theme='dracula'] .hljs-variable {
-  color: #ffb86c;
-}
-[data-theme='dracula'] .hljs-bullet,
-[data-theme='dracula'] .hljs-link,
-[data-theme='dracula'] .hljs-meta,
-[data-theme='dracula'] .hljs-selector-id,
-[data-theme='dracula'] .hljs-symbol,
-[data-theme='dracula'] .hljs-title {
-  color: #8be9fd;
-}
-[data-theme='dracula'] .hljs-built_in,
-[data-theme='dracula'] .hljs-class .hljs-title,
-[data-theme='dracula'] .hljs-title.class_ {
-  color: #50fa7b;
-}
-[data-theme='dracula'] .hljs-emphasis {
-  font-style: italic;
-}
-[data-theme='dracula'] .hljs-strong {
-  font-weight: 700;
-}
-[data-theme='dracula'] .hljs-link {
-  text-decoration: underline;
-}
-
 /* === Highlight.js — Nord === */
 [data-theme='nord'] .hljs {
   color: #d8dee9;
@@ -1539,134 +1503,6 @@ p {
   font-weight: 700;
 }
 [data-theme='nord'] .hljs-link {
-  text-decoration: underline;
-}
-
-/* === Highlight.js — Gruvbox Dark === */
-[data-theme='gruvbox-dark'] .hljs {
-  color: #ebdbb2;
-}
-[data-theme='gruvbox-dark'] .hljs-comment,
-[data-theme='gruvbox-dark'] .hljs-quote {
-  color: #9a8d7f;
-  font-style: italic;
-}
-[data-theme='gruvbox-dark'] .hljs-doctag,
-[data-theme='gruvbox-dark'] .hljs-formula,
-[data-theme='gruvbox-dark'] .hljs-keyword {
-  color: #fb4934;
-}
-[data-theme='gruvbox-dark'] .hljs-deletion,
-[data-theme='gruvbox-dark'] .hljs-name,
-[data-theme='gruvbox-dark'] .hljs-section,
-[data-theme='gruvbox-dark'] .hljs-selector-tag,
-[data-theme='gruvbox-dark'] .hljs-subst {
-  color: #fe8019;
-}
-[data-theme='gruvbox-dark'] .hljs-literal {
-  color: #d3869b;
-}
-[data-theme='gruvbox-dark'] .hljs-addition,
-[data-theme='gruvbox-dark'] .hljs-attribute,
-[data-theme='gruvbox-dark'] .hljs-meta .hljs-string,
-[data-theme='gruvbox-dark'] .hljs-regexp,
-[data-theme='gruvbox-dark'] .hljs-string {
-  color: #b8bb26;
-}
-[data-theme='gruvbox-dark'] .hljs-attr,
-[data-theme='gruvbox-dark'] .hljs-number,
-[data-theme='gruvbox-dark'] .hljs-selector-attr,
-[data-theme='gruvbox-dark'] .hljs-selector-class,
-[data-theme='gruvbox-dark'] .hljs-selector-pseudo,
-[data-theme='gruvbox-dark'] .hljs-template-variable,
-[data-theme='gruvbox-dark'] .hljs-type,
-[data-theme='gruvbox-dark'] .hljs-variable {
-  color: #fabd2f;
-}
-[data-theme='gruvbox-dark'] .hljs-bullet,
-[data-theme='gruvbox-dark'] .hljs-link,
-[data-theme='gruvbox-dark'] .hljs-meta,
-[data-theme='gruvbox-dark'] .hljs-selector-id,
-[data-theme='gruvbox-dark'] .hljs-symbol,
-[data-theme='gruvbox-dark'] .hljs-title {
-  color: #83a598;
-}
-[data-theme='gruvbox-dark'] .hljs-built_in,
-[data-theme='gruvbox-dark'] .hljs-class .hljs-title,
-[data-theme='gruvbox-dark'] .hljs-title.class_ {
-  color: #8ec07c;
-}
-[data-theme='gruvbox-dark'] .hljs-emphasis {
-  font-style: italic;
-}
-[data-theme='gruvbox-dark'] .hljs-strong {
-  font-weight: 700;
-}
-[data-theme='gruvbox-dark'] .hljs-link {
-  text-decoration: underline;
-}
-
-/* === Highlight.js — Gruvbox Light === */
-[data-theme='gruvbox-light'] .hljs {
-  color: #3c3836;
-}
-[data-theme='gruvbox-light'] .hljs-comment,
-[data-theme='gruvbox-light'] .hljs-quote {
-  color: #76695c;
-  font-style: italic;
-}
-[data-theme='gruvbox-light'] .hljs-doctag,
-[data-theme='gruvbox-light'] .hljs-formula,
-[data-theme='gruvbox-light'] .hljs-keyword {
-  color: #9d0006;
-}
-[data-theme='gruvbox-light'] .hljs-deletion,
-[data-theme='gruvbox-light'] .hljs-name,
-[data-theme='gruvbox-light'] .hljs-section,
-[data-theme='gruvbox-light'] .hljs-selector-tag,
-[data-theme='gruvbox-light'] .hljs-subst {
-  color: #af3a03;
-}
-[data-theme='gruvbox-light'] .hljs-literal {
-  color: #8f3f71;
-}
-[data-theme='gruvbox-light'] .hljs-addition,
-[data-theme='gruvbox-light'] .hljs-attribute,
-[data-theme='gruvbox-light'] .hljs-meta .hljs-string,
-[data-theme='gruvbox-light'] .hljs-regexp,
-[data-theme='gruvbox-light'] .hljs-string {
-  color: #79740e;
-}
-[data-theme='gruvbox-light'] .hljs-attr,
-[data-theme='gruvbox-light'] .hljs-number,
-[data-theme='gruvbox-light'] .hljs-selector-attr,
-[data-theme='gruvbox-light'] .hljs-selector-class,
-[data-theme='gruvbox-light'] .hljs-selector-pseudo,
-[data-theme='gruvbox-light'] .hljs-template-variable,
-[data-theme='gruvbox-light'] .hljs-type,
-[data-theme='gruvbox-light'] .hljs-variable {
-  color: #b57614;
-}
-[data-theme='gruvbox-light'] .hljs-bullet,
-[data-theme='gruvbox-light'] .hljs-link,
-[data-theme='gruvbox-light'] .hljs-meta,
-[data-theme='gruvbox-light'] .hljs-selector-id,
-[data-theme='gruvbox-light'] .hljs-symbol,
-[data-theme='gruvbox-light'] .hljs-title {
-  color: #076678;
-}
-[data-theme='gruvbox-light'] .hljs-built_in,
-[data-theme='gruvbox-light'] .hljs-class .hljs-title,
-[data-theme='gruvbox-light'] .hljs-title.class_ {
-  color: #427b58;
-}
-[data-theme='gruvbox-light'] .hljs-emphasis {
-  font-style: italic;
-}
-[data-theme='gruvbox-light'] .hljs-strong {
-  font-weight: 700;
-}
-[data-theme='gruvbox-light'] .hljs-link {
   text-decoration: underline;
 }
 
@@ -1795,6 +1631,198 @@ p {
   font-weight: 700;
 }
 [data-theme='rose-pine'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Night Owl === */
+[data-theme='night-owl'] .hljs {
+  color: #d6deeb;
+}
+[data-theme='night-owl'] .hljs-comment,
+[data-theme='night-owl'] .hljs-quote {
+  color: #8997aa;
+  font-style: italic;
+}
+[data-theme='night-owl'] .hljs-doctag,
+[data-theme='night-owl'] .hljs-formula,
+[data-theme='night-owl'] .hljs-keyword {
+  color: #c792ea;
+}
+[data-theme='night-owl'] .hljs-deletion,
+[data-theme='night-owl'] .hljs-name,
+[data-theme='night-owl'] .hljs-section,
+[data-theme='night-owl'] .hljs-selector-tag,
+[data-theme='night-owl'] .hljs-subst {
+  color: #ef5350;
+}
+[data-theme='night-owl'] .hljs-literal {
+  color: #f78c6c;
+}
+[data-theme='night-owl'] .hljs-addition,
+[data-theme='night-owl'] .hljs-attribute,
+[data-theme='night-owl'] .hljs-meta .hljs-string,
+[data-theme='night-owl'] .hljs-regexp,
+[data-theme='night-owl'] .hljs-string {
+  color: #addb67;
+}
+[data-theme='night-owl'] .hljs-attr,
+[data-theme='night-owl'] .hljs-number,
+[data-theme='night-owl'] .hljs-selector-attr,
+[data-theme='night-owl'] .hljs-selector-class,
+[data-theme='night-owl'] .hljs-selector-pseudo,
+[data-theme='night-owl'] .hljs-template-variable,
+[data-theme='night-owl'] .hljs-type,
+[data-theme='night-owl'] .hljs-variable {
+  color: #ecc48d;
+}
+[data-theme='night-owl'] .hljs-bullet,
+[data-theme='night-owl'] .hljs-link,
+[data-theme='night-owl'] .hljs-meta,
+[data-theme='night-owl'] .hljs-selector-id,
+[data-theme='night-owl'] .hljs-symbol,
+[data-theme='night-owl'] .hljs-title {
+  color: #82aaff;
+}
+[data-theme='night-owl'] .hljs-built_in,
+[data-theme='night-owl'] .hljs-class .hljs-title,
+[data-theme='night-owl'] .hljs-title.class_ {
+  color: #7fdbca;
+}
+[data-theme='night-owl'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='night-owl'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='night-owl'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — Horizon === */
+[data-theme='horizon'] .hljs {
+  color: #e0e0e0;
+}
+[data-theme='horizon'] .hljs-comment,
+[data-theme='horizon'] .hljs-quote {
+  color: #9a9bb3;
+  font-style: italic;
+}
+[data-theme='horizon'] .hljs-doctag,
+[data-theme='horizon'] .hljs-formula,
+[data-theme='horizon'] .hljs-keyword {
+  color: #b877db;
+}
+[data-theme='horizon'] .hljs-deletion,
+[data-theme='horizon'] .hljs-name,
+[data-theme='horizon'] .hljs-section,
+[data-theme='horizon'] .hljs-selector-tag,
+[data-theme='horizon'] .hljs-subst {
+  color: #ec5e80;
+}
+[data-theme='horizon'] .hljs-literal {
+  color: #fac29a;
+}
+[data-theme='horizon'] .hljs-addition,
+[data-theme='horizon'] .hljs-attribute,
+[data-theme='horizon'] .hljs-meta .hljs-string,
+[data-theme='horizon'] .hljs-regexp,
+[data-theme='horizon'] .hljs-string {
+  color: #29d398;
+}
+[data-theme='horizon'] .hljs-attr,
+[data-theme='horizon'] .hljs-number,
+[data-theme='horizon'] .hljs-selector-attr,
+[data-theme='horizon'] .hljs-selector-class,
+[data-theme='horizon'] .hljs-selector-pseudo,
+[data-theme='horizon'] .hljs-template-variable,
+[data-theme='horizon'] .hljs-type,
+[data-theme='horizon'] .hljs-variable {
+  color: #fab795;
+}
+[data-theme='horizon'] .hljs-bullet,
+[data-theme='horizon'] .hljs-link,
+[data-theme='horizon'] .hljs-meta,
+[data-theme='horizon'] .hljs-selector-id,
+[data-theme='horizon'] .hljs-symbol,
+[data-theme='horizon'] .hljs-title {
+  color: #26bbd9;
+}
+[data-theme='horizon'] .hljs-built_in,
+[data-theme='horizon'] .hljs-class .hljs-title,
+[data-theme='horizon'] .hljs-title.class_ {
+  color: #25b2bc;
+}
+[data-theme='horizon'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='horizon'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='horizon'] .hljs-link {
+  text-decoration: underline;
+}
+
+/* === Highlight.js — GitHub Light === */
+[data-theme='github-light'] .hljs {
+  color: #1f2328;
+}
+[data-theme='github-light'] .hljs-comment,
+[data-theme='github-light'] .hljs-quote {
+  color: #6e7781;
+  font-style: italic;
+}
+[data-theme='github-light'] .hljs-doctag,
+[data-theme='github-light'] .hljs-formula,
+[data-theme='github-light'] .hljs-keyword {
+  color: #cf222e;
+}
+[data-theme='github-light'] .hljs-deletion,
+[data-theme='github-light'] .hljs-name,
+[data-theme='github-light'] .hljs-section,
+[data-theme='github-light'] .hljs-selector-tag,
+[data-theme='github-light'] .hljs-subst {
+  color: #953800;
+}
+[data-theme='github-light'] .hljs-literal {
+  color: #0550ae;
+}
+[data-theme='github-light'] .hljs-addition,
+[data-theme='github-light'] .hljs-attribute,
+[data-theme='github-light'] .hljs-meta .hljs-string,
+[data-theme='github-light'] .hljs-regexp,
+[data-theme='github-light'] .hljs-string {
+  color: #0a3069;
+}
+[data-theme='github-light'] .hljs-attr,
+[data-theme='github-light'] .hljs-number,
+[data-theme='github-light'] .hljs-selector-attr,
+[data-theme='github-light'] .hljs-selector-class,
+[data-theme='github-light'] .hljs-selector-pseudo,
+[data-theme='github-light'] .hljs-template-variable,
+[data-theme='github-light'] .hljs-type,
+[data-theme='github-light'] .hljs-variable {
+  color: #953800;
+}
+[data-theme='github-light'] .hljs-bullet,
+[data-theme='github-light'] .hljs-link,
+[data-theme='github-light'] .hljs-meta,
+[data-theme='github-light'] .hljs-selector-id,
+[data-theme='github-light'] .hljs-symbol,
+[data-theme='github-light'] .hljs-title {
+  color: #0969da;
+}
+[data-theme='github-light'] .hljs-built_in,
+[data-theme='github-light'] .hljs-class .hljs-title,
+[data-theme='github-light'] .hljs-title.class_ {
+  color: #8250df;
+}
+[data-theme='github-light'] .hljs-emphasis {
+  font-style: italic;
+}
+[data-theme='github-light'] .hljs-strong {
+  font-weight: 700;
+}
+[data-theme='github-light'] .hljs-link {
   text-decoration: underline;
 }
 

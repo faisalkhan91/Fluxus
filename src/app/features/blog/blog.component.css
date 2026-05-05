@@ -299,7 +299,7 @@
 .tag--link:hover,
 .tag--link:focus-visible {
   background: var(--accent);
-  color: #fff;
+  color: var(--text-on-accent);
 }
 
 .post-grid-hint {
