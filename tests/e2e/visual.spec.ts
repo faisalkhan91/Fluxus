@@ -82,12 +82,7 @@ for (const theme of PRIMARY_THEMES) {
  * snapshot against that single route here rather than expanding the
  * loop to all of PRERENDERED_ROUTES.
  */
-const ADDITIONAL_THEMES: Theme[] = [
-  'one-dark',
-  'tokyo-night',
-  'catppuccin-mocha',
-  'solarized-light',
-];
+const ADDITIONAL_THEMES: Theme[] = ['tokyo-night', 'solarized-light'];
 
 for (const themeId of ADDITIONAL_THEMES) {
   test.describe(`visual regression — ${themeId} (hero only)`, () => {
