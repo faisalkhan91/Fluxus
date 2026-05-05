@@ -67,15 +67,6 @@
   opacity: 0.85;
 }
 
-.detail-language-stripe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--language-stripe, transparent);
-}
-
 .detail-hero-image {
   /* `position: relative` anchors `NgOptimizedImage`'s `fill`-mode
      absolute-positioned <img>. */

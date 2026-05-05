@@ -203,10 +203,12 @@ describe('ProjectsComponent', () => {
     expect(betaCard.querySelector('.gh-languages-bar')).toBeNull();
   });
 
-  it('paints a language-color stripe on cards with a githubColor and hides it otherwise', () => {
-    const cards = el.querySelectorAll('.project-card');
-    expect(cards[0].querySelector('.project-language-stripe')).toBeTruthy();
-    expect(cards[1].querySelector('.project-language-stripe')).toBeNull();
+  it('does not render a language-color stripe on any card', () => {
+    // The Linguist-palette stripe used to sit on the card top edge but
+    // clashed with the site theme. Language identity is still carried by
+    // the language dot + distribution bar inside <ui-github-meta>.
+    expect(el.querySelectorAll('.project-language-stripe').length).toBe(0);
+    expect(el.querySelectorAll('.projects-list-hero-stripe').length).toBe(0);
   });
 
   it('hides the archived badge and .archived class when the repo is live', () => {

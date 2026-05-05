@@ -16,14 +16,7 @@
       </p>
     }
 
-    <ui-glass-card
-      class="detail-hero"
-      [class.archived]="p.github?.archived"
-      [style.--language-stripe]="p.github?.languageColor || 'transparent'"
-    >
-      @if (p.github?.languageColor) {
-        <div class="detail-language-stripe" aria-hidden="true"></div>
-      }
+    <ui-glass-card class="detail-hero" [class.archived]="p.github?.archived">
       <div class="detail-hero-image">
         <img
           [ngSrc]="p.image"
