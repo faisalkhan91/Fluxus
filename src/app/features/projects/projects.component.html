@@ -47,13 +47,9 @@
           [glow]="!!project.featured"
           [attr.id]="'project-' + slugify(project.title)"
           [class.archived]="project.github?.archived"
-          [style.--language-stripe]="project.github?.languageColor || 'transparent'"
           animate.enter="enter-fade-up"
           [style.--enter-delay]="i * 60 + 'ms'"
         >
-          @if (project.github?.languageColor) {
-            <div class="projects-list-hero-stripe" aria-hidden="true"></div>
-          }
           <div class="projects-list-hero-media">
             <!--
               `priority` is gated via `@if` rather than a `[priority]` input
@@ -217,11 +213,7 @@
           [class.archived]="project.github?.archived"
           animate.enter="enter-fade-up"
           [style.--enter-delay]="i * 60 + 'ms'"
-          [style.--language-stripe]="project.github?.languageColor || 'transparent'"
         >
-          @if (project.github?.languageColor) {
-            <div class="project-language-stripe" aria-hidden="true"></div>
-          }
           <div class="project-image-wrapper">
             <!-- See the list-hero media block above for why `priority` is
                  gated by `@if` instead of a dynamic input binding. -->

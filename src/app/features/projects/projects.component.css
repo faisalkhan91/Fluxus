@@ -143,16 +143,6 @@
   opacity: 1;
 }
 
-.projects-list-hero-stripe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--language-stripe, transparent);
-  z-index: 1;
-}
-
 .projects-list-hero-media {
   position: relative;
   aspect-ratio: 16 / 10;
@@ -414,19 +404,6 @@
      Matches the pattern at src/styles.css:500. */
   scroll-margin-top: var(--space-8);
   position: relative;
-}
-
-/* Language-color stripe runs along the top of the card — a 2px cue from
-   GitHub's Linguist palette. Only rendered when the enrichment script
-   found a primary language (see template guard). */
-.project-language-stripe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--language-stripe, transparent);
-  z-index: 1;
 }
 
 /* Archived repos get dulled slightly so the eye filters them out of a
