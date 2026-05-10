@@ -10,10 +10,28 @@
   gap: var(--space-12);
 }
 
+/*
+  Cap each cell between 110 – 140 px instead of letting 1fr stretch
+  badges to ~180 px on a 900 px container. With topN = 5 the grid
+  resolves to five 140 px columns and any remaining gutter splits
+  evenly via `justify-content: center`, so partial rows (e.g. an
+  expanded 7-skill category wrapping to a row of 2) sit centred
+  rather than hugging the left edge.
+*/
 .badge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(110px, 140px));
+  justify-content: center;
   gap: var(--space-4);
+}
+
+/* Centred wrapper for the "+N more" / "Show less" toggle — left-aligned
+   below the grid it read as a stray pill on the left while the right side
+   sat empty. Centring anchors the toggle to the grid's optical midline. */
+.expand-toggle-row {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-3);
 }
 
 .expand-toggle {
@@ -25,7 +43,6 @@
   font-size: 0.75rem;
   padding: var(--space-2) var(--space-4);
   cursor: pointer;
-  margin-top: var(--space-3);
   transition:
     color var(--transition-base),
     border-color var(--transition-base);
@@ -38,7 +55,7 @@
 
 @media (max-width: 768px) {
   .badge-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(80px, 120px));
     gap: var(--space-3);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -7,9 +7,11 @@ import { RouterLink } from '@angular/router';
  *
  * Rendering rules:
  * - `iconSrc` (optional) and `name` (required) are always shown.
- * - `level` (optional) renders the existing under-bar with proper
+ * - `level` (optional) renders the under-bar with proper
  *   `role="progressbar"` semantics. Reserved for the lead skills per
- *   category so the page hints at depth without becoming a chart.
+ *   category so the page hints at depth without becoming a chart. When
+ *   absent, a transparent 3 px spacer takes its place so every badge
+ *   keeps the same internal vertical rhythm across a row.
  * - When `href` is set, the badge becomes a "card link": the projects
  *   anchor is inside the card and uses a stretched ::after overlay so
  *   the entire card area is clickable / middle-clickable. The whole
@@ -19,6 +21,9 @@ import { RouterLink } from '@angular/router';
  *   card link, sitting above the overlay via z-index). Anchors are
  *   never nested — the card-link uses ::after, the posts pill uses a
  *   normal anchor on top.
+ * - The captions wrapper is always rendered (content conditional on
+ *   the counts above) so a badge with no mapped usage keeps the same
+ *   footer y-position as a peer with pills — avoids uneven-card feel.
  *
  * The "N projects" pill (always rendered when `projectsCount > 0`)
  * doubles as the visible label for the card-wide link, so screen
@@ -44,41 +49,41 @@ import { RouterLink } from '@angular/router';
         >
           <div class="badge-fill" [style.--badge-fill-scale]="level()! / 100"></div>
         </div>
+      } @else {
+        <div class="badge-bar-spacer" aria-hidden="true"></div>
       }
-      @if (hasCaptions()) {
-        <div class="badge-captions">
-          @if (projectsCount() > 0) {
-            @if (href(); as link) {
-              <a
-                class="badge-caption badge-caption-link badge-card-link"
-                [routerLink]="link"
-                [attr.aria-label]="projectsAriaLabel()"
-              >
-                {{ projectsCount() }} {{ projectsCount() === 1 ? 'project' : 'projects' }}
-              </a>
-            } @else {
-              <span class="badge-caption">
-                {{ projectsCount() }} {{ projectsCount() === 1 ? 'project' : 'projects' }}
-              </span>
-            }
+      <div class="badge-captions">
+        @if (projectsCount() > 0) {
+          @if (href(); as link) {
+            <a
+              class="badge-caption badge-caption-link badge-card-link"
+              [routerLink]="link"
+              [attr.aria-label]="projectsAriaLabel()"
+            >
+              {{ projectsCount() }} {{ projectsCount() === 1 ? 'project' : 'projects' }}
+            </a>
+          } @else {
+            <span class="badge-caption">
+              {{ projectsCount() }} {{ projectsCount() === 1 ? 'project' : 'projects' }}
+            </span>
           }
-          @if (postsCount() > 0) {
-            @if (postsHref(); as plink) {
-              <a
-                class="badge-caption badge-caption-link"
-                [routerLink]="plink"
-                [attr.aria-label]="postsAriaLabel()"
-              >
-                {{ postsCount() }} {{ postsCount() === 1 ? 'post' : 'posts' }}
-              </a>
-            } @else {
-              <span class="badge-caption">
-                {{ postsCount() }} {{ postsCount() === 1 ? 'post' : 'posts' }}
-              </span>
-            }
+        }
+        @if (postsCount() > 0) {
+          @if (postsHref(); as plink) {
+            <a
+              class="badge-caption badge-caption-link"
+              [routerLink]="plink"
+              [attr.aria-label]="postsAriaLabel()"
+            >
+              {{ postsCount() }} {{ postsCount() === 1 ? 'post' : 'posts' }}
+            </a>
+          } @else {
+            <span class="badge-caption">
+              {{ postsCount() }} {{ postsCount() === 1 ? 'post' : 'posts' }}
+            </span>
           }
-        </div>
-      }
+        }
+      </div>
     </div>
   `,
   styleUrl: './skill-badge.component.css',
@@ -105,8 +110,6 @@ export class SkillBadgeComponent {
    * `/blog/tag/<slug>`. Omitted means we render the count as plain text.
    */
   postsHref = input<string>();
-
-  protected hasCaptions = computed(() => this.projectsCount() > 0 || this.postsCount() > 0);
 
   /**
    * SR-friendly label for the card-wide projects link. Reads as
