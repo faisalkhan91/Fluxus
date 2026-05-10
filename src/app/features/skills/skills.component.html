@@ -32,18 +32,20 @@
       </div>
 
       @if (hiddenCount(category) > 0) {
-        <button
-          class="expand-toggle"
-          (click)="toggleCategory(category.title)"
-          [attr.aria-expanded]="isExpanded(category.title)"
-          [attr.aria-controls]="'skill-grid-' + slugify(category.title)"
-        >
-          @if (isExpanded(category.title)) {
-            Show less
-          } @else {
-            + {{ hiddenCount(category) }} more
-          }
-        </button>
+        <div class="expand-toggle-row">
+          <button
+            class="expand-toggle"
+            (click)="toggleCategory(category.title)"
+            [attr.aria-expanded]="isExpanded(category.title)"
+            [attr.aria-controls]="'skill-grid-' + slugify(category.title)"
+          >
+            @if (isExpanded(category.title)) {
+              Show less
+            } @else {
+              + {{ hiddenCount(category) }} more
+            }
+          </button>
+        </div>
       }
     </section>
   }
