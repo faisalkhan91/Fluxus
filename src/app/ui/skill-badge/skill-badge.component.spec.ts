@@ -124,10 +124,16 @@ describe('SkillBadgeComponent', () => {
       expect(el.querySelector('a.badge-card-link')?.textContent?.trim()).toBe('1 project');
     });
 
-    it('skips the captions row entirely when both counts are 0', () => {
+    it('renders an empty captions wrapper when both counts are 0 so cards align vertically', () => {
       fixture.componentRef.setInput('name', 'Quiet');
       fixture.detectChanges();
-      expect(el.querySelector('.badge-captions')).toBeNull();
+      // The wrapper always renders so its reserved `min-height` keeps a
+      // usage-less badge the same height as its bar-ful / caption-ful
+      // row peers; the pill content is still conditionally rendered.
+      const captions = el.querySelector('.badge-captions');
+      expect(captions).not.toBeNull();
+      expect(captions?.querySelector('.badge-caption')).toBeNull();
+      expect(captions?.querySelector('.badge-caption-link')).toBeNull();
     });
 
     it('renders the posts caption as a separate anchor when postsHref is set', () => {

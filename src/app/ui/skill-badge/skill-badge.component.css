@@ -5,6 +5,12 @@
      declaration against future grid-item CSS changes that might switch
      `align-items` off `stretch`. */
   height: 100%;
+  /* `min-width: 0` defeats the CSS Grid default `min-width: auto` on items,
+     which would otherwise let the badge's min-content (a long unwrapped
+     name like "GitHub Actions") push its column wider than its `1fr`
+     share. With this set + names allowed to wrap, every cell in a row
+     honours the grid track width exactly. */
+  min-width: 0;
   /* When the badge is the target of a `#skill-<slug>` hash link (from the
      command palette, a blog post, or a project detail page), offset the
      scroll so it doesn't tuck under sticky chrome. Matches the pattern at
@@ -97,7 +103,18 @@
   font-weight: 500;
   color: var(--text-secondary);
   text-align: center;
-  white-space: nowrap;
+  /* Names wrap up to 2 lines. Was `white-space: nowrap`, but labels like
+     "GitHub Actions" / "OpenTelemetry" were wider than a 115 px grid
+     track at this font size, so their cell's min-content pushed the
+     column past its `1fr` share and rows lost uniform widths. Paired
+     with `min-width: 0` on :host, the grid track now wins. */
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .badge-bar {
@@ -106,6 +123,19 @@
   background: var(--surface-overlay);
   border-radius: var(--radius-pill);
   overflow: hidden;
+  margin-top: var(--space-1);
+}
+
+/*
+  Phantom slot for badges without a proficiency level. Reserves the same
+  3 px + margin vertical space as `.badge-bar` without painting a visible
+  rail — painting a zero-fill rail would misread as "0 % proficiency".
+  Keeping the slot consistent pulls the caption row to the same baseline
+  across a mixed row of bar-ful and bar-less badges.
+*/
+.badge-bar-spacer {
+  width: 100%;
+  height: 3px;
   margin-top: var(--space-1);
 }
 
@@ -137,7 +167,10 @@
    level). Centred, mono-cased, and quieter than the name so it reads as
    metadata rather than primary content. `margin-top: auto` shoves the
    row to the bottom of the flex column so badges of different heights
-   still align their captions along a shared baseline. */
+   still align their captions along a shared baseline. The wrapper is
+   always rendered (content gated per pill) + `min-height` reserves the
+   pill's rendered height so a badge with no mapped usage keeps the same
+   footer y-position as a peer with "N projects · M posts" pills. */
 .badge-captions {
   display: flex;
   flex-wrap: wrap;
@@ -145,6 +178,7 @@
   gap: var(--space-2);
   margin-top: auto;
   padding-top: var(--space-1);
+  min-height: 20px;
 }
 
 .badge-caption {
