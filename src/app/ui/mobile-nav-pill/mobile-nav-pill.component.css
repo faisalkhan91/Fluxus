@@ -80,7 +80,7 @@
 .menu-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--modal-overlay);
   z-index: calc(var(--z-nav-pill) + 10);
   animation: fadeIn var(--transition-enter-base) forwards;
 }
