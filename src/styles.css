@@ -164,6 +164,35 @@
   --z-sidebar: 100;
   --z-nav-pill: 200;
   --z-overlay: 400;
+
+  /*
+    === Semantic aliases ============================================
+    Named tokens for widely-used roles so future elements have a clear
+    hook to theme against instead of reaching for the underlying
+    primitive. Defaults chain through `var(--primitive)` so themes
+    only have to override a role when it needs to diverge from the
+    underlying default (see the light-theme `--modal-overlay`
+    override below).
+  */
+  --modal-overlay: rgba(0, 0, 0, 0.55);
+  --selection-bg: var(--accent-subtle);
+  --selection-color: var(--text-primary);
+  --focus-ring: var(--accent);
+  --divider: var(--glass-border);
+}
+
+/*
+  Light themes soften the modal scrim — a solid 55 %-black overlay on
+  top of a bright page reads as harsh and fights the glass aesthetic.
+  Slate at ~28 % opacity dims the background enough to focus attention
+  on the open modal without blacking out the surrounding chrome. Kept
+  as a single attribute-list selector so new light themes only need
+  to be added once (after their individual theme block below).
+*/
+[data-theme='crimson-light'],
+[data-theme='solarized-light'],
+[data-theme='github-light'] {
+  --modal-overlay: rgba(15, 23, 42, 0.28);
 }
 
 /* === Crimson Light (default light theme) ===
@@ -227,8 +256,11 @@
 
   --glass-bg: rgba(192, 202, 245, 0.04);
   --glass-bg-hover: rgba(192, 202, 245, 0.07);
-  --glass-border: rgba(192, 202, 245, 0.08);
-  --glass-border-hover: rgba(192, 202, 245, 0.16);
+  /* Glass borders lifted from 0.08 / 0.16 so cards have visible edges
+     against the deep-navy surfaces — the original values let tiles
+     dissolve into `--surface-base` at rest. */
+  --glass-border: rgba(192, 202, 245, 0.11);
+  --glass-border-hover: rgba(192, 202, 245, 0.22);
 
   --accent: #7aa2f7;
   --accent-hover: #9bb8ff;
@@ -237,8 +269,11 @@
   --text-on-accent: #000000;
 
   --text-primary: rgba(192, 202, 245, 0.95);
-  --text-secondary: rgba(169, 177, 214, 0.85);
-  --text-muted: rgba(169, 177, 214, 0.75);
+  --text-secondary: rgba(169, 177, 214, 0.82);
+  /* Pushed from 0.75 → 0.6 so text-muted sits clearly below
+     text-secondary (was compressing the hierarchy). Still well
+     above WCAG AA against --surface-base (#24283b). */
+  --text-muted: rgba(169, 177, 214, 0.6);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.08);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
@@ -307,12 +342,21 @@
   --surface-void: #242933;
   --surface-base: #2e3440;
   --surface-raised: #3b4252;
-  --surface-overlay: #434c5e;
+  /* Overlay pulled from nord2 (#434c5e) to nord3 (#4c566a) so modals
+     and nav-pill surfaces sit one step further up the Polar Night
+     ramp than the raised cards below. Nord's four polar-night levels
+     (nord0 → nord3) are the same tonal family on purpose; using
+     three of them (base / raised / overlay) gives the app a clean
+     elevation story without leaving the palette. */
+  --surface-overlay: #4c566a;
 
+  /* Crisper card edges — Nord's identity is geometric precision, not
+     glass diffusion. Bumped 0.08/0.16 → 0.13/0.25 so tiles and panels
+     read as structured surfaces even at rest. */
   --glass-bg: rgba(216, 222, 233, 0.04);
   --glass-bg-hover: rgba(216, 222, 233, 0.07);
-  --glass-border: rgba(216, 222, 233, 0.08);
-  --glass-border-hover: rgba(216, 222, 233, 0.16);
+  --glass-border: rgba(216, 222, 233, 0.13);
+  --glass-border-hover: rgba(216, 222, 233, 0.25);
 
   --accent: #88c0d0;
   --accent-hover: #8fbcbb;
@@ -320,16 +364,32 @@
   --accent-subtle: rgba(136, 192, 208, 0.1);
   --text-on-accent: #000000;
 
-  --text-primary: rgba(236, 239, 244, 0.95);
+  /* Pulled text-primary from 0.95 → 0.98 opacity of Snow Storm nord6
+     (#eceff4). Nord is a low-contrast palette by design, but primary
+     body copy was reading as soft against nord0 surface; the extra
+     three points firm up headings and code without crossing into
+     "bright white" territory that Nord explicitly avoids. */
+  --text-primary: rgba(236, 239, 244, 0.98);
   --text-secondary: rgba(216, 222, 233, 0.82);
-  --text-muted: rgba(216, 222, 233, 0.68);
+  /* Widened the muted→secondary gap (0.68 → 0.55) so metadata reads
+     as clearly subordinate. Safe against --surface-base #2e3440. */
+  --text-muted: rgba(216, 222, 233, 0.55);
 
   --glass-bg-elevated: rgba(216, 222, 233, 0.08);
   --nav-pill-bg: rgba(46, 52, 64, 0.85);
 
-  --accent-secondary: #81a1c1;
+  /* Hue variety: --accent-secondary crosses the Frost→Aurora divide
+     and lands on aurora-purple #b48ead. Previous values (frost-2
+     #88c0d0 → frost-3 #81a1c1 → frost-4 #5e81ac) were all blue
+     siblings of --accent and read as "the same colour, slightly
+     darker". Aurora-purple reintroduces a second hue family so
+     callouts, kbd, and sort chips carry their own identity.
+     --color-warning moves from the pale aurora-yellow #ebcb8b
+     (which failed as a "stop and notice" signal) to aurora-orange
+     #d08770 — same palette, stronger voice. */
+  --accent-secondary: #b48ead;
   --color-info: #81a1c1;
-  --color-warning: #ebcb8b;
+  --color-warning: #d08770;
   --color-success: #a3be8c;
   --error: #bf616a;
   --error-subtle: rgba(191, 97, 106, 0.14);
@@ -482,45 +542,73 @@
    aesthetic. Accent uses the canonical peach (#fab795) rather than the
    rose-coral #e95678 to stay visually distinct from Rose Pine's pink. */
 [data-theme='horizon'] {
-  --surface-void: #1c1e26;
-  --surface-base: #21242b;
-  --surface-raised: #2a2d35;
-  --surface-overlay: #3b3f4b;
+  /* Surface ramp pushed darker at the bottom + wider elevation gaps.
+     Previous values compressed the whole app into ~25 luminance
+     points base → overlay, which made cards dissolve into the page
+     and modals not pop. The new ramp spans ~40 points so cards, nav
+     pill, and modal scrim each sit on their own plane. */
+  --surface-void: #181a22;
+  --surface-base: #1e2028;
+  --surface-raised: #2a2d3a;
+  --surface-overlay: #3f4355;
 
+  /* Glass borders lifted 0.08 → 0.11 so the peach accent reads off
+     a lightly defined card rim rather than a hairline. */
   --glass-bg: rgba(224, 224, 224, 0.04);
   --glass-bg-hover: rgba(224, 224, 224, 0.07);
-  --glass-border: rgba(224, 224, 224, 0.08);
-  --glass-border-hover: rgba(224, 224, 224, 0.16);
+  --glass-border: rgba(224, 224, 224, 0.11);
+  --glass-border-hover: rgba(224, 224, 224, 0.2);
 
-  --accent: #fab795;
-  --accent-hover: #fdc8a9;
-  --accent-glow: rgba(250, 183, 149, 0.3);
-  --accent-subtle: rgba(250, 183, 149, 0.1);
+  /* Accent pushed from #fab795 → #fcb08b — a more saturated peach.
+     The prior value sat one hue-step away from Horizon's canonical
+     warning #fac29a, so a callout's "warning" border was visually
+     indistinguishable from its CTA button. New accent + the warning
+     shift below restore a real peach-vs-amber split. */
+  --accent: #fcb08b;
+  --accent-hover: #ffc0a0;
+  --accent-glow: rgba(252, 176, 139, 0.32);
+  --accent-subtle: rgba(252, 176, 139, 0.1);
   --text-on-accent: #000000;
 
-  --text-primary: rgba(224, 224, 224, 0.95);
+  /* Text-primary lifted from 0.95 → 0.98 for sharper reading against
+     the darker new surface-base. */
+  --text-primary: rgba(224, 224, 224, 0.98);
   --text-secondary: rgba(224, 224, 224, 0.78);
-  --text-muted: rgba(224, 224, 224, 0.62);
+  --text-muted: rgba(224, 224, 224, 0.55);
 
   --glass-bg-elevated: rgba(224, 224, 224, 0.08);
-  --nav-pill-bg: rgba(33, 36, 43, 0.85);
+  --nav-pill-bg: rgba(30, 32, 40, 0.85);
 
+  /*
+    Hue-family spread (was compressed — accent peach, warning peach,
+    info cyan, success mint — two of four tokens shared a hue and
+    read as a peach-family blur). New mapping pulls six distinct
+    hues across the six accent / status tokens so callouts, chips,
+    and badges each read as their own thing:
+      accent             peach        #fcb08b  (above)
+      accent-secondary   purple       #b877db
+      color-info         cyan-mint    #59e1e3  (was #26bbd9, muted)
+      color-warning      amber / gold #e6c07b  (was #fac29a peach)
+      color-success      mint-green   #29d398
+      error              magenta-pink #ee64ae  (was #ec5e80 rose,
+                                                 too close to warning)
+  */
   --accent-secondary: #b877db;
-  --color-info: #26bbd9;
-  --color-warning: #fac29a;
+  --color-info: #59e1e3;
+  --color-warning: #e6c07b;
   --color-success: #29d398;
-  /* Lifted from canonical Horizon rose #e95678 (4.49, one hundredth under
-     AA) to #ec5e80 so error text clears 4.5:1 against --surface-base. */
-  --error: #ec5e80;
-  --error-subtle: rgba(236, 94, 128, 0.14);
+  --error: #ee64ae;
+  --error-subtle: rgba(238, 100, 174, 0.14);
 
   --scrollbar-thumb: rgba(224, 224, 224, 0.14);
   --scrollbar-thumb-hover: rgba(224, 224, 224, 0.24);
 
-  --icon-drop-shadow: drop-shadow(0 0 6px rgba(250, 183, 149, 0.2));
+  /* Drop-shadow tint updated to the new peach #fcb08b so skill icons
+     glow in the same hue family as the accent. */
+  --icon-drop-shadow: drop-shadow(0 0 6px rgba(252, 176, 139, 0.22));
   --grid-line-color: rgba(224, 224, 224, 0.025);
 
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.65);
   --shadow-accent-glow: 0 0 24px var(--accent-glow);
 }
 
@@ -623,13 +711,13 @@ a:hover {
     pierces transform/clip stacks on glass cards and never gets clipped.
 */
 a:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
 button:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
@@ -662,8 +750,8 @@ p {
 }
 
 ::selection {
-  background-color: var(--accent-subtle);
-  color: var(--text-primary);
+  background-color: var(--selection-bg);
+  color: var(--selection-color);
 }
 
 .visually-hidden {
@@ -694,6 +782,46 @@ p {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+}
+
+/* === Skill-icon filter overrides ===
+   Three components render the same skills catalog at three different
+   sizes (`ui-skill-badge` 48 px, `app-skill-feature-card` 56 px,
+   `app-skills-list-view` 24 px). Each used to host an identical copy
+   of these `img[src*='...']` filters. Lifted into a global block so
+   the rules live in one place and any new skill component picks them
+   up automatically. Selector keys off `src*=` rather than a class, so
+   no component-side coordination is needed.
+
+   Two corrections live here:
+
+   - Cursor / GitHub Copilot / AWS-wordmark are dark-fill brand SVGs
+     that disappear on dark themes — the `invert + hue-rotate` pair
+     flips the foreground while preserving any internal colour. Light
+     themes drop the invert.
+   - TypeScript / Ansible / Anthropic are light-fill brand SVGs that
+     disappear on light themes — a faint dark drop-shadow gives the
+     inner shapes an edge to read against the surface.
+
+   Both rules layer on top of the per-theme `--icon-drop-shadow`
+   token so the glow tint still tracks the active palette.
+*/
+img[src*='cursor-original'],
+img[src*='githubcopilot-original'],
+img[src*='amazonwebservices-original-wordmark'] {
+  filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
+}
+
+[data-theme$='-light'] img[src*='cursor-original'],
+[data-theme$='-light'] img[src*='githubcopilot-original'],
+[data-theme$='-light'] img[src*='amazonwebservices-original-wordmark'] {
+  filter: var(--icon-drop-shadow);
+}
+
+[data-theme$='-light'] img[src*='typescript-original'],
+[data-theme$='-light'] img[src*='icons8-ansible'],
+[data-theme$='-light'] img[src*='anthropic-original'] {
+  filter: var(--icon-drop-shadow) drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
 }
 
 /* === Prose (rendered markdown via innerHTML) === */
@@ -2071,10 +2199,20 @@ p {
    Progressive enhancements that newer browsers pick up; everything stays
    functional in older engines via the existing fallbacks above. */
 
-/* Re-derive the accent palette from one OKLCH base so hover/subtle stay
-   perceptually uniform without hand-tuning hex variants. */
+/*
+  Re-derive the accent palette from one OKLCH base so hover/subtle
+  stay perceptually uniform without hand-tuning hex variants.
+
+  Scoped to `[data-theme='crimson-dark']` — not `:root` — because the
+  Crimson hue (25°) is specific to that theme. Earlier this block hit
+  `:root` and its `--accent` leaked up into every other theme via the
+  cascade (both `:root` and `[data-theme='…']` are specificity 0,1,0,
+  so the later rule in source order wins), turning Nord / Horizon /
+  Tokyo Night / etc. red. The scoped selector fixes that; every other
+  theme's hex accents resolve normally.
+*/
 @supports (color: oklch(54% 0.2 25)) {
-  :root {
+  [data-theme='crimson-dark'] {
     --accent: oklch(54% 0.2 25);
     --accent-hover: oklch(60% 0.22 25);
     --accent-glow: oklch(54% 0.2 25 / 0.35);
