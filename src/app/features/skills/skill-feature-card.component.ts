@@ -20,6 +20,12 @@ import { RouterLink } from '@angular/router';
  *
  * Card-link pattern matches the badge: stretched `::after` on the
  * projects anchor — single interactive zone, middle-click preserved.
+ *
+ * Footer pills follow the same hover-reveal contract as
+ * `ui-skill-badge`'s `.badge-captions` — invisible at rest, fade in
+ * on hover / focus-within / touch — so the feature strip's
+ * `grid-auto-rows: 1fr` doesn't let a two-pill card (e.g. TypeScript)
+ * stretch a zero-pill peer (e.g. Go) into a much taller silhouette.
  */
 @Component({
   selector: 'app-skill-feature-card',
@@ -129,24 +135,11 @@ import { RouterLink } from '@angular/router';
         object-fit: contain;
         filter: var(--icon-drop-shadow);
         flex-shrink: 0;
-      }
-
-      .feature-icon[src*='cursor-original'],
-      .feature-icon[src*='githubcopilot-original'],
-      .feature-icon[src*='amazonwebservices-original-wordmark'] {
-        filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
-      }
-
-      [data-theme$='-light'] .feature-icon[src*='cursor-original'],
-      [data-theme$='-light'] .feature-icon[src*='githubcopilot-original'],
-      [data-theme$='-light'] .feature-icon[src*='amazonwebservices-original-wordmark'] {
-        filter: var(--icon-drop-shadow);
-      }
-
-      [data-theme$='-light'] .feature-icon[src*='typescript-original'],
-      [data-theme$='-light'] .feature-icon[src*='icons8-ansible'],
-      [data-theme$='-light'] .feature-icon[src*='anthropic-original'] {
-        filter: var(--icon-drop-shadow) drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
+        /* Per-icon filter overrides for brand assets that vanish
+           under one polarity (e.g. dark Cursor on dark themes, light
+           TypeScript on light themes) live in src/styles.css under
+           the "Skill-icon filter overrides" block and apply globally
+           to every skill img. */
       }
 
       .feature-title-block {
@@ -188,7 +181,7 @@ import { RouterLink } from '@angular/router';
 
       .feature-foot {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
         gap: var(--space-3);
         margin-top: auto;
@@ -198,6 +191,31 @@ import { RouterLink } from '@angular/router';
            footer y-position as their peers that do. Matches the
            padding-bottom + line-height of a single pill. */
         min-height: 1.25rem;
+        /* Hidden at rest, revealed on hover / focus-within — same
+           contract as ui-skill-badge's .badge-captions row. The
+           feature strip uses grid-auto-rows: 1fr, so the tallest
+           card dictates row height; collapsing the resting visual
+           variance to zero keeps every card in a row equal-height
+           regardless of how many of them carry counts. */
+        opacity: 0;
+        transition: opacity var(--transition-base);
+      }
+
+      .feature-card:hover .feature-foot,
+      .feature-card:focus-within .feature-foot {
+        opacity: 1;
+      }
+
+      @media (hover: none) {
+        .feature-foot {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .feature-foot {
+          transition: none;
+        }
       }
 
       .feature-link {

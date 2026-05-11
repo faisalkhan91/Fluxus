@@ -19,10 +19,18 @@
   }
 }
 
-/* Header row: H1 on the left (with its own accent-line), view toggle
-   on the right. `align-items: flex-start` keeps the toggle from
-   aligning to the H1's invisible baseline and jittering when the
-   accent-line appears. */
+/*
+  Page header layout: lede (H1 + accent-line + intro paragraph) on the
+  left, view-mode toggle on the right. `align-items: flex-start` keeps
+  the toggle from aligning to the lede's invisible baseline, which
+  used to jitter as the accent-line painted in.
+
+  The intro paragraph used to live as a sibling of `.skills-header`
+  with a `margin: calc(-1 * var(--space-6)) 0 0` hack pulling it back
+  under the H1 — that worked but was brittle (any flex-gap change on
+  `.skills-layout` would re-orphan it). Nesting it inside the lede
+  block lets us drop the negative margin and use a flow-driven gap.
+*/
 .skills-header {
   display: flex;
   align-items: flex-start;
@@ -31,9 +39,21 @@
   flex-wrap: wrap;
 }
 
-.skills-header ui-section-header {
+.skills-header-lede {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
   flex: 1 1 auto;
   min-width: 0;
+}
+
+/* `section-header` paints its own bottom-margin (`var(--space-8)`) so
+   the H2 it usually flanks doesn't crowd the body below. On this
+   page the intro paragraph fills that slot — kill the legacy margin
+   so the gap between H1 and intro is the lede's own `var(--space-3)`
+   instead of a stack of two competing values. */
+.skills-header-lede ui-section-header {
+  margin-bottom: 0;
 }
 
 .skills-intro {
@@ -41,7 +61,7 @@
   font-size: 0.95rem;
   line-height: 1.55;
   color: var(--text-secondary);
-  margin: calc(-1 * var(--space-6)) 0 0;
+  margin: 0;
   max-width: 60ch;
 }
 
@@ -102,12 +122,23 @@
   gap: var(--space-3);
 }
 
+/*
+  Caption above the feature strip. Mirrors the `.decoration` rule in
+  `section-header.component.css` (mono / 12 px / muted / 0.05em) so
+  "// core stack" reads as the same family of metadata that the H2
+  decorations below it use ("// languages-frameworks.json" et al.) —
+  rather than two near-identical implementations with subtly
+  different letter-spacing. Kept as its own selector instead of
+  routing the strip through `<ui-section-header>` because the strip
+  has no title (the page H1 fills that role) and `section-header`'s
+  title is `input.required<string>()`.
+*/
 .feature-label {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-muted);
+  letter-spacing: 0.05em;
   margin: 0;
-  letter-spacing: 0.04em;
 }
 
 /*
@@ -158,96 +189,106 @@
 /* ------------------------------ Per-category grid ------------------------------ */
 
 /*
-  Explicit column count per breakpoint, kept in lock-step with
-  `visibleLimit` in `skills.component.ts` so collapsed grids resolve
-  to a single clean row at every viewport — never `N + 1` lonely-tile
-  partials.
+  Skill tiles live in a left-aligned flex-wrap row that runs from
+  the section's H2 left edge to the layout container's right edge —
+  the same horizontal extent the feature strip occupies at the top
+  of the page, so the per-category rows pick up the strip's rhythm
+  rather than floating in a centred 864 px island.
 
-  The earlier `repeat(auto-fill, minmax(120px, 1fr))` rule let the
-  browser pick a track count from the container width, which produced
-  two visible bugs:
-
-  - At 1440 px (1120 px container) the browser fit six 160 px tracks
-    but `visibleLimit = 5` only ever rendered five tiles. The sixth
-    track was reserved-but-empty, pushing every collapsed row left of
-    centre and orphaning the "+ N more" toggle to the far right.
-  - At 768 px (4 tracks) and 412 px (3 tracks) with a 5- or 4-tile
-    limit, the last tile sat alone on a second row.
+  Children carry an explicit flex basis sized for a 5-up row + a
+  `max-width: 160px` cap, so tiles never stretch past the design
+  intent on wide viewports while still shrinking proportionally on
+  tablet (700 px container → ~127 px tiles). Mobile overrides bring
+  the basis to a 3-up row; tiles flex-shrink to fit the narrow
+  container.
 
   Breakpoint boundary (767 px) matches `MOBILE_MAX` in
-  MediaQueryService so the CSS column count and the TS visible cut
+  `MediaQueryService` so the CSS line count and the TS `visibleLimit`
   never disagree by a stray pixel.
 */
 .skill-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: var(--space-4);
 }
 
-@media (min-width: 1280px) {
-  /* Cap cell widths so the grid doesn't stretch tiles to ~200 px on a
-     1120 px container. 5 tiles × 160 px + 4 × 16 px gap = 864 px;
-     the remaining slack splits via `justify-content: center` so the
-     row stays anchored to the column's optical midline. */
-  .skill-grid {
-    grid-template-columns: repeat(5, minmax(120px, 160px));
-    justify-content: center;
-  }
+.skill-grid > * {
+  /* 5 tiles per row: basis = (container - 4 × gap) / 5. `max-width`
+     caps each tile at 160 px so a 1116 px container doesn't stretch
+     them, with the `.expand-toggle` trigger card below picking up
+     the same basis so it sits flush in the row as one more slot. */
+  flex: 0 1 calc((100% - 4 * var(--space-4)) / 5);
+  min-width: 0;
+  max-width: 160px;
 }
 
 @media (max-width: 767px) {
-  /* Phone: 3 tracks. `visibleLimit` drops to 3 in this band so the
-     collapsed grid is a single uncluttered row; expansion preserves
-     the 3-up wrap (e.g. 9 tiles → 3 rows of 3). */
+  /* Phone: 3 tiles per row. `visibleLimit` drops to 3 in this band
+     so the collapsed grid is a single uncluttered row; expansion
+     preserves the 3-up wrap (e.g. 9 tiles → 3 rows of 3). */
   .skill-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-3);
+  }
+
+  .skill-grid > * {
+    flex: 0 1 calc((100% - 2 * var(--space-3)) / 3);
+    max-width: none;
   }
 }
 
 /*
-  Expand-toggle row mirrors the grid's column width so its right
-  edge sits flush with the last tile (rather than the layout
-  container, which used to leave the pill orphaned ~200 px past the
-  trailing tile at 1280 px+). `max-width: max-content` would clip
-  too aggressively on partial rows, so we copy the desktop cap.
+  Expand trigger — sits as the LAST child of `.skill-grid` (not in
+  a separate strip below) so the "+ N more" / "Show less" action
+  reads as a continuation of the row rather than a detached footer.
+  Mirrors `.badge-inner` geometry (same flex basis, same 104 px min
+  height, same border radius) so the trigger occupies one slot in
+  the row exactly like a tile. The dashed border distinguishes it
+  from real content tiles — same family, different role.
+
+  At viewports where the natural row count equals `visibleLimit`
+  exactly (1280 px / ~956 px container fits 5 slots), the trigger
+  wraps to a second row on its own. That's acceptable: it's still
+  left-aligned and reads as the row's continuation. Don't try to
+  "fix" this by re-introducing a max-width cap — that's what we
+  came from, and it left a 252 px gulf on 1440 px viewports.
 */
-.expand-toggle-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--space-3);
-}
-
-@media (min-width: 1280px) {
-  .expand-toggle-row {
-    /* Match the grid's 5-track × 160 px + 4 × 16 px gap width so the
-       toggle sits below the last tile, not the layout column. */
-    max-width: calc(5 * 160px + 4 * var(--space-4));
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-  }
-}
-
 .expand-toggle {
-  background: none;
-  border: none;
+  flex: 0 1 calc((100% - 4 * var(--space-4)) / 5);
+  min-width: 0;
+  max-width: 160px;
+  min-height: 104px;
+  padding: var(--space-4) var(--space-3);
+  background: transparent;
+  border: 1px dashed var(--glass-border-hover);
+  border-radius: var(--radius-md);
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  padding: var(--space-2) 0;
+  letter-spacing: 0.04em;
   cursor: pointer;
-  transition: color var(--transition-base);
-  letter-spacing: 0.02em;
+  box-sizing: border-box;
+  transition:
+    color var(--transition-base),
+    border-color var(--transition-base),
+    background-color var(--transition-base);
 }
 
 .expand-toggle:hover,
 .expand-toggle:focus-visible {
   color: var(--accent);
+  border-color: var(--accent);
+  background: var(--glass-bg-hover);
 }
 
 .expand-toggle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 767px) {
+  .expand-toggle {
+    flex: 0 1 calc((100% - 2 * var(--space-3)) / 3);
+    max-width: none;
+  }
 }

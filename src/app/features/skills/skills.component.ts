@@ -2,10 +2,10 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { SkillBadgeComponent } from '@ui/skill-badge/skill-badge.component';
-import { SkillsDataService, deriveTier } from '@core/services/skills-data.service';
+import { SkillsDataService } from '@core/services/skills-data.service';
 import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.service';
 import { MediaQueryService } from '@core/services/media-query.service';
-import { SkillCategory, Skill, SkillTier } from '@shared/models/skill.model';
+import { SkillCategory, Skill } from '@shared/models/skill.model';
 import { slugify } from '@shared/utils/string.utils';
 import { SkillFeatureCardComponent } from './skill-feature-card.component';
 import { SkillsListViewComponent } from './skills-list-view.component';
@@ -132,10 +132,6 @@ export class SkillsComponent {
 
   protected usageFor(skill: Skill): SkillUsage | undefined {
     return this.usage.usageFor(skill);
-  }
-
-  protected tierFor(skill: Skill, usage: SkillUsage | undefined): SkillTier {
-    return deriveTier(skill, usage);
   }
 
   protected projectsHref(usage: SkillUsage | undefined): string | undefined {

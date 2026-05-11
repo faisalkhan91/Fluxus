@@ -65,21 +65,24 @@ test.describe('/skills connective tissue', () => {
     await expect(htmlBadge).toBeVisible();
     const link = htmlBadge.locator('a.badge-card-link');
     await expect(link).toHaveAttribute('href', '/projects/tag/html');
-    // The anchor is visually empty in iteration 4 — the tile itself
-    // is the visible target. Semantics live on the aria-label.
-    await expect(link).toHaveAttribute('aria-label', /HTML5/);
   });
 
-  test('learning-tier grid tiles get the dimmed class (0 linked projects)', async ({ page }) => {
+  test('every tile renders at the same visual weight (no dimming, no tier borders)', async ({
+    page,
+  }) => {
     await page.goto('/skills', { waitUntil: 'networkidle' });
 
-    // Grid tiles stay uniform — no coloured borders, no caption pills.
-    // The only differentiation is that tiles with zero linked projects
-    // render at `opacity: 0.62` via the `.dimmed` class. Pick a known
-    // orphan skill that consistently has no matching project tags.
-    const rustTile = page.locator('ui-skill-badge', { hasText: 'Rust' }).first();
-    await expect(rustTile).toBeVisible();
-    await expect(rustTile.locator('.dimmed')).toBeVisible();
+    // Iteration 5: the grid is deliberately uniform. No `.dimmed` /
+    // `.core-accent` classes per tile — the tier signal lives in the
+    // feature strip (curated narrative) and the list view (Core /
+    // Working / Learning pill column). Sanity-check a few tiles so a
+    // future "subtle tier cue" regression trips this assertion.
+    for (const label of ['Python', 'Rust', 'Datadog']) {
+      const tile = page.locator('ui-skill-badge', { hasText: label }).first();
+      await expect(tile).toBeVisible();
+      await expect(tile.locator('.dimmed')).toHaveCount(0);
+      await expect(tile.locator('.core-accent')).toHaveCount(0);
+    }
   });
 
   test('skills with zero project matches render as static (non-link) tiles', async ({ page }) => {

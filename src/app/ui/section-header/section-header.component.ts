@@ -18,7 +18,7 @@ export type HeadingLevel = 1 | 2;
         <span class="decoration">{{ decoration() }}</span>
       }
     </div>
-    <div class="accent-line"></div>
+    <div class="accent-line" [class.accent-line--page]="level() === 1"></div>
   `,
   styleUrl: './section-header.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
