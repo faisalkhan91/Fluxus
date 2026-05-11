@@ -18,6 +18,22 @@
   letter-spacing: -0.02em;
 }
 
+/*
+  Page-level H1 (level=1) sits one step up the modular scale from
+  section H2s — a ~1.25× bump (major third) is the lightest hierarchy
+  signal that still reads as "page title vs section title" at a
+  glance. Earlier both rendered at 1.75 rem and visual scanning
+  collapsed: on `/skills` the user's eye treated "Languages &
+  Frameworks" with the same weight as the page H1 "Skills".
+
+  Fluid via `clamp()` so the bump appears on desktop without giving
+  phones a 36 px headline that would crowd the small viewport.
+*/
+.title--page {
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  letter-spacing: -0.025em;
+}
+
 .subtitle {
   font-size: 0.9rem;
   color: var(--text-secondary);

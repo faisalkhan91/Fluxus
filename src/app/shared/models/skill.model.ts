@@ -1,12 +1,27 @@
+export type SkillTier = 'core' | 'working' | 'learning';
+
 export interface Skill {
   name: string;
   iconSrc?: string;
   /**
-   * 0–100 self-rated proficiency. Only set on a category's lead skills so
-   * the page hints at depth without turning into a noisy chart of bars.
-   * Consumed by `ui-skill-badge` as a thin under-bar (no numeric label).
+   * Optional tier override. Without this the skill's tier is derived
+   * from its project count (see `deriveTier` in `skills-data.service`):
+   * ≥3 projects = core, 1–2 = working, 0 = learning. Set explicitly
+   * when a skill is depth-of-practice core but has no public projects
+   * (e.g., team-internal work) and the derived tier would under-sell it.
    */
-  level?: number;
+  tier?: SkillTier;
+  /**
+   * Short one-line descriptor shown only on the hero tile of a bento
+   * category. Leave undefined on satellite skills — they render icon +
+   * name only.
+   */
+  tagline?: string;
+  /**
+   * Year the skill was first put into production use. Shown as a
+   * `since YYYY` chip on hero tiles. Hero-only; satellites ignore it.
+   */
+  since?: number;
   /**
    * Extra match terms used by `SkillUsageService` when joining against
    * project / blog tags. Populate when the canonical `slugify(name)` would
