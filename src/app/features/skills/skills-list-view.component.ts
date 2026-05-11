@@ -24,12 +24,20 @@ interface Row {
 
 /**
  * Dense, scannable alternative to the bento grid. One row per skill,
- * sorted by category (preserving catalog order) — sticky thead stays
- * visible while scrolling long category groups.
+ * sorted by category (preserving catalog order).
  *
  * The same card-link pattern used on `ui-skill-badge` applies per row:
  * the skill-name cell hosts a stretched anchor that makes the whole
  * row clickable without nesting anchors.
+ *
+ * The thead used to be `position: sticky; top: 0`, but the page body
+ * scrolls the document — not the table — so the sticky thead was
+ * anchored to the viewport, not the table's scroll container. That
+ * either did nothing useful (when the chrome already pinned the
+ * mobile nav above) or collided with the chrome header. Dropped in
+ * favour of the document's native scroll: the table is short enough
+ * (≤ 43 rows × ~40 px ≈ 1700 px) that re-reading the header from the
+ * top is the cheaper interaction.
  */
 @Component({
   selector: 'app-skills-list-view',
@@ -49,7 +57,6 @@ interface Row {
           <tr
             class="skills-row"
             [class.skills-row--link]="!!row.href"
-            [class.skills-row--learning]="row.tier === 'learning'"
             [class.skills-row--group-start]="row.groupStart"
             [id]="row.anchorId"
           >
@@ -102,10 +109,6 @@ interface Row {
       }
 
       thead th {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-        background: var(--surface-base);
         font-family: var(--font-mono);
         font-size: 0.7rem;
         font-weight: 600;
@@ -118,9 +121,7 @@ interface Row {
       }
 
       tbody .skills-row {
-        transition:
-          background-color var(--transition-base),
-          opacity var(--transition-base);
+        transition: background-color var(--transition-base);
       }
 
       tbody td {
@@ -131,23 +132,6 @@ interface Row {
 
       tbody .skills-row:hover {
         background: var(--glass-bg-hover);
-      }
-
-      /*
-        Learning-tier rows step back at 0.62 opacity so the list and
-        grid views express the same hierarchy. Without this, the grid
-        dims orphan skills but the list rendered them at full
-        prominence — the same skill (e.g. Rust) read as a faded tile
-        in grid mode and a regular row in list mode. Hover restores
-        full opacity so users still get a clear "interactive" cue.
-      */
-      tbody .skills-row--learning {
-        opacity: 0.62;
-      }
-
-      tbody .skills-row--learning:hover,
-      tbody .skills-row--learning:focus-within {
-        opacity: 1;
       }
 
       /*
@@ -183,24 +167,11 @@ interface Row {
         object-fit: contain;
         filter: var(--icon-drop-shadow);
         flex-shrink: 0;
-      }
-
-      [data-theme$='-light'] .row-icon[src*='cursor-original'],
-      [data-theme$='-light'] .row-icon[src*='githubcopilot-original'],
-      [data-theme$='-light'] .row-icon[src*='amazonwebservices-original-wordmark'] {
-        filter: var(--icon-drop-shadow);
-      }
-
-      .row-icon[src*='cursor-original'],
-      .row-icon[src*='githubcopilot-original'],
-      .row-icon[src*='amazonwebservices-original-wordmark'] {
-        filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
-      }
-
-      [data-theme$='-light'] .row-icon[src*='typescript-original'],
-      [data-theme$='-light'] .row-icon[src*='icons8-ansible'],
-      [data-theme$='-light'] .row-icon[src*='anthropic-original'] {
-        filter: var(--icon-drop-shadow) drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
+        /* Per-icon filter overrides for brand assets that vanish
+           under one polarity (e.g. dark Cursor on dark themes, light
+           TypeScript on light themes) live in src/styles.css under
+           the "Skill-icon filter overrides" block and apply globally
+           to every skill img. */
       }
 
       .row-name {

@@ -1,10 +1,14 @@
 :host {
   display: block;
-  /* Grid-item default stretch does the vertical work; `height: 100%`
-     defends against any parent that turns stretch off, so the tile
-     always fills its cell and the row's bottom edge stays level. */
   height: 100%;
+  /* `min-width: 0` defeats the grid's default `min-width: auto` on
+     items, so long names like "GitHub Actions" / "OpenTelemetry"
+     honour the column width via the name's 2-line clamp instead of
+     pushing the column wider. */
   min-width: 0;
+  /* Hash-link targets (`#skill-python` from the palette / posts /
+     project detail) land offset from sticky chrome. Matches
+     src/styles.css:500. */
   scroll-margin-top: var(--space-8);
 }
 
@@ -13,13 +17,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: var(--space-2);
-  /* Fixed tile height so every card in the grid measures the same,
-     regardless of icon width or how many lines the name wraps to. 104
-     fits a 48 px icon + 1- or 2-line name + padding without crowding
-     either. Any shorter and the two-line names ("GitHub Actions",
-     "OpenTelemetry") push the edge. */
+  /* Fixed min-height so every tile in a row measures the same even
+     when tiles differ by caption content. 104 holds a 48 px icon +
+     one-line name + captions row without crowding; two-line names
+     grow the tile uniformly via the flex column. */
   min-height: 104px;
   padding: var(--space-4) var(--space-3);
   background: var(--glass-bg);
@@ -30,8 +32,7 @@
   transition:
     background-color var(--transition-base),
     border-color var(--transition-base),
-    transform var(--transition-base),
-    opacity var(--transition-base);
+    transform var(--transition-base);
 }
 
 .badge-inner:hover {
@@ -41,25 +42,11 @@
 }
 
 /*
-  Learning-tier tiles (0 linked projects) step back from the page's
-  visual hierarchy at 0.62 opacity — a single, consistent rule. Hover
-  lifts opacity back to 1 so the tile signals "still interactive" on
-  approach.
-*/
-.dimmed {
-  opacity: 0.62;
-}
-
-.dimmed:hover,
-.dimmed:focus-within {
-  opacity: 1;
-}
-
-/*
-  `href` tiles promote the card to a link. Hover / focus-within paints
-  the border in `--accent` — same affordance the project cards and
-  glass cards across the site use. The stretched empty anchor below
-  captures clicks across the whole tile.
+  `href` tiles promote to card-links. Hover / focus-within paints the
+  border in `--accent` to match the card-hover affordance used on
+  project cards and glass cards across the site. The stretched
+  `::after` on `.badge-card-link` below captures clicks across the
+  whole tile.
 */
 .badge-inner-link:hover,
 .badge-inner-link:focus-within {
@@ -78,15 +65,17 @@
   filter: var(--icon-drop-shadow);
 }
 
-/* Mono / dark-fill brand icons vanish on dark mode — invert so the
-   foreground stays visible. */
+/* Mono / dark-fill brand icons vanish on dark themes — invert so the
+   foreground stays visible against the dark glass surface. */
 .badge-icon[src*='cursor-original'],
 .badge-icon[src*='githubcopilot-original'],
 .badge-icon[src*='amazonwebservices-original-wordmark'] {
   filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
 }
 
-/* Undo the dark invert on light themes. */
+/* Undo the dark invert on light themes. `[data-theme$='-light']`
+   matches every light-scheme id (crimson-light, solarized-light, …)
+   without enumerating them. */
 [data-theme$='-light'] .badge-icon[src*='cursor-original'],
 [data-theme$='-light'] .badge-icon[src*='githubcopilot-original'],
 [data-theme$='-light'] .badge-icon[src*='amazonwebservices-original-wordmark'] {
@@ -94,7 +83,7 @@
 }
 
 /* White / very-light-fill brand icons vanish on light mode — darken
-   their alpha layer so the inner shapes pick up edges. */
+   their alpha so inner shapes pick up edges. */
 [data-theme$='-light'] .badge-icon[src*='typescript-original'],
 [data-theme$='-light'] .badge-icon[src*='icons8-ansible'],
 [data-theme$='-light'] .badge-icon[src*='anthropic-original'] {
@@ -117,21 +106,110 @@
 }
 
 /*
-  Card-link overlay — an empty anchor stretched across the tile via
-  `inset: 0`. Visually invisible, accessibility-labelled. Clicking
-  anywhere in the card routes; keyboard focus lands on this anchor
-  and the parent `.badge-inner` shows the focus ring via
-  `:focus-within`.
+  Captions row — always rendered, but invisible at rest. Tiles read
+  as a uniform field of icon + name when the user scans the grid;
+  the projects / posts pills fade in on hover, focus-within, and on
+  touch devices (which can't hover). `min-height` keeps the same
+  reserved slot at rest and on hover so the reveal never reflows
+  the row. `flex-wrap: nowrap` guarantees that even when both pills
+  are present, the row stays one line — so two-pill skills can't
+  stretch the row back up the moment the user hovers.
 */
-.badge-card-link {
+.badge-captions {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  /* Lock the reserved slot to the exact height a populated row would
+     take (padding-top + pill height = 8 + 18 = 26px) so a tile with
+     zero pills and a tile with two pills measure the same at rest.
+     Pill height is deterministic — 10px font + 6px padding + 2px
+     border via `.badge-caption` below — so this floor is stable. */
+  min-height: 26px;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+/* Reveal pills when the user signals intent on the tile — either by
+   hovering with a pointer or by focusing a child anchor via keyboard
+   tab. The whole-tile `::after` overlay on the projects pill stays
+   hit-testable at `opacity: 0` (default `pointer-events: auto`), so
+   the card-link click contract is preserved at rest. */
+.badge-inner:hover .badge-captions,
+.badge-inner:focus-within .badge-captions {
+  opacity: 1;
+}
+
+/* Touch / coarse-pointer fallback: there is no hover gesture, so we
+   show the pills at all times to keep the counts discoverable. */
+@media (hover: none) {
+  .badge-captions {
+    opacity: 1;
+  }
+}
+
+/* Reduced-motion users get the same visibility states without the
+   fade — instant swap rather than a 200ms tween. */
+@media (prefers-reduced-motion: reduce) {
+  .badge-captions {
+    transition: none;
+  }
+}
+
+.badge-caption {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  color: var(--text-tertiary, var(--text-secondary));
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  white-space: nowrap;
+}
+
+.badge-caption-link {
+  text-decoration: none;
+  /* Sits above the stretched `::after` card-link overlay. Without
+     `position: relative; z-index: 1`, the posts pill would be buried
+     under the projects-caption overlay and lose its click. */
+  position: relative;
+  z-index: 1;
+  transition:
+    color var(--transition-base),
+    border-color var(--transition-base);
+}
+
+.badge-caption-link:hover,
+.badge-caption-link:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.badge-caption-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/*
+  Card-link overlay — the projects caption anchor stretches a
+  transparent `::after` across the whole tile so clicking anywhere
+  routes. The posts pill sits on top via its own `z-index: 1` so it
+  stays individually clickable. Single anchor per interactive zone,
+  middle-click and open-in-new-tab both preserved.
+*/
+.badge-card-link::after {
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  text-decoration: none;
+  z-index: 0;
 }
 
 .badge-card-link:focus-visible {
-  /* Parent wrapper shows the outline via :focus-within; suppress the
-     anchor's own ring so there's no double outline. */
+  /* The parent wrapper already shows the outline via `:focus-within`;
+     suppress the pill's own ring so we don't stack two outlines. */
   outline: none;
 }

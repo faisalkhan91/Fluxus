@@ -1,11 +1,16 @@
 <div class="skills-layout" animate.enter="enter-fade-up">
-  <div class="skills-header">
-    <ui-section-header
-      title="Skills"
-      headingId="skills-title"
-      decoration="// stack.json"
-      [level]="1"
-    />
+  <header class="skills-header">
+    <div class="skills-header-lede">
+      <ui-section-header
+        title="Skills"
+        headingId="skills-title"
+        decoration="// stack.json"
+        [level]="1"
+      />
+      <p class="skills-intro">
+        Tools I reach for day-to-day, grouped by where they live in the stack.
+      </p>
+    </div>
     <div class="skills-view-row" role="radiogroup" aria-label="View mode">
       @for (opt of viewOptions; track opt.key) {
         <button
@@ -22,9 +27,7 @@
         </button>
       }
     </div>
-  </div>
-
-  <p class="skills-intro">Tools I reach for day-to-day, grouped by where they live in the stack.</p>
+  </header>
 
   @if (viewMode() === 'list') {
     <app-skills-list-view />
@@ -64,24 +67,22 @@
         <div class="skill-grid" [id]="'skill-grid-' + slugify(category.title)">
           @for (skill of visibleSkills(category); track skill.name; let i = $index) {
             @let u = usageFor(skill);
-            @let tier = tierFor(skill, u);
             <ui-skill-badge
               [attr.id]="'skill-' + slugify(skill.name)"
               [name]="skill.name"
               [iconSrc]="skill.iconSrc"
               [href]="projectsHref(u)"
               [projectsCount]="u?.projects?.length ?? 0"
-              [dimmed]="tier === 'learning'"
+              [postsCount]="u?.posts?.length ?? 0"
+              [postsHref]="postsHref(u)"
               [tagline]="skill.tagline"
               animate.enter="enter-fade-up"
               [style.--enter-delay]="i * 40 + 'ms'"
             />
           }
-        </div>
-
-        @if (hiddenCount(category) > 0) {
-          <div class="expand-toggle-row">
+          @if (hiddenCount(category) > 0) {
             <button
+              type="button"
               class="expand-toggle"
               (click)="toggleCategory(category.title)"
               [attr.aria-expanded]="isExpanded(category.title)"
@@ -93,8 +94,8 @@
                 + {{ hiddenCount(category) }} more
               }
             </button>
-          </div>
-        }
+          }
+        </div>
       </section>
     }
   }

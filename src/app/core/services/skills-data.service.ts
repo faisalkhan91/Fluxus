@@ -136,13 +136,18 @@ export class SkillsDataService {
 
 /**
  * Resolve a skill's tier. Explicit `skill.tier` wins so depth-of-practice
- * skills without public projects (e.g., team-internal work) aren't
- * down-ranked by the count threshold alone. Otherwise derive from the
- * number of linked projects: ≥3 = core, 1–2 = working, 0 = learning.
+ * skills without public projects (e.g., team-internal work, or
+ * daily-driver tools like Git / Cursor / Docker whose footprint isn't
+ * a public artefact) aren't down-ranked by the count threshold alone.
+ * Otherwise derive from the number of linked projects: ≥3 = core, 1–2 =
+ * working, 0 = learning.
  *
- * Used by the hero tile to render a "Core / Working / Learning" pill
- * and by the list view's tier column. Satellites don't consume this —
- * they stay quiet.
+ * The tier surfaces in the list view's tier column and the grid's
+ * "dimmed" learning state. The compact `ui-skill-badge` tile is
+ * deliberately uniform across tiers (the row of tiles stays
+ * scannable; the list view is the place where rank is expressed),
+ * so an explicit `tier: 'core'` on a grid-only skill is meaningful
+ * even though it doesn't visually distinguish the tile.
  */
 export function deriveTier(skill: Skill, usage: SkillUsage | undefined): SkillTier {
   if (skill.tier) return skill.tier;
