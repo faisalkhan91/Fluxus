@@ -10,9 +10,17 @@
   flex-wrap: wrap;
 }
 
+/*
+  Section H2 size scales down on phones so multi-word headings like
+  "Languages & Frameworks" don't wrap to a second line in a 360-412 px
+  viewport (live inspection showed a 72 px tall H2 on `/skills` at
+  mobile widths, the title taking two 36 px lines). The clamp keeps
+  the 1.75 rem (28 px) target on tablet-and-up and shrinks to 1.25 rem
+  (20 px) on the smallest phones.
+*/
 .title {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -54,6 +62,13 @@
   border-radius: var(--radius-pill);
   margin-top: var(--space-3);
   box-shadow: var(--shadow-accent-glow);
+}
+
+/* H1 wears a longer accent-line so the additional hierarchy signal
+   below the page title isn't a mirror of every section H2's
+   ornament. 64 px tracks the H1's ~1.25× font bump (48 × 1.33). */
+.accent-line--page {
+  width: 64px;
 }
 
 @media (max-width: 768px) {
