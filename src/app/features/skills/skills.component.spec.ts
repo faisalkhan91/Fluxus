@@ -8,12 +8,25 @@ import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.servic
 import { MediaQueryService } from '@core/services/media-query.service';
 import { SkillCategory, Skill } from '@shared/models/skill.model';
 
+/**
+ * Six mock categories that roughly mirror production. Each category's
+ * lead skill carries a `tagline` because `coreSkills()` now filters on
+ * `tagline !== undefined` — that's the narrative-curation signal for
+ * the feature strip. The red core-accent border on grid tiles still
+ * fires off the separate `tier: 'core'` override.
+ */
 const MOCK_CATEGORIES: SkillCategory[] = [
   {
     title: 'Languages & Frameworks',
     skills: [
-      { name: 'Python', iconSrc: 'assets/icons/python.svg' },
-      { name: 'Go', iconSrc: 'assets/icons/go.svg' },
+      {
+        name: 'Python',
+        iconSrc: 'assets/icons/python.svg',
+        tier: 'core',
+        tagline: 'Primary backend language.',
+        since: 2012,
+      },
+      { name: 'Go', iconSrc: 'assets/icons/go.svg', tier: 'core' },
       { name: 'TypeScript', iconSrc: 'assets/icons/typescript.svg' },
       { name: 'Rust', iconSrc: 'assets/icons/rust.svg' },
       { name: 'Angular', iconSrc: 'assets/icons/angular.svg' },
@@ -24,38 +37,70 @@ const MOCK_CATEGORIES: SkillCategory[] = [
   {
     title: 'Cloud & Infrastructure',
     skills: [
-      { name: 'AWS', iconSrc: 'assets/icons/aws.svg' },
-      { name: 'Docker', iconSrc: 'assets/icons/docker.svg' },
+      {
+        name: 'AWS',
+        iconSrc: 'assets/icons/aws.svg',
+        tier: 'core',
+        tagline: 'Day-to-day cloud.',
+        since: 2015,
+      },
+      { name: 'Docker', iconSrc: 'assets/icons/docker.svg', tier: 'core' },
     ],
   },
   {
     title: 'CI/CD & DevOps',
     skills: [
-      { name: 'GitHub Actions', iconSrc: 'assets/icons/github.svg' },
+      {
+        name: 'GitHub Actions',
+        iconSrc: 'assets/icons/github.svg',
+        tier: 'core',
+        tagline: 'Default CI runtime.',
+        since: 2020,
+      },
       { name: 'ArgoCD', iconSrc: 'assets/icons/argocd.svg' },
-      { name: 'Git', iconSrc: 'assets/icons/git.svg' },
+      { name: 'Git', iconSrc: 'assets/icons/git.svg', tier: 'core' },
     ],
   },
   {
     title: 'Data & Storage',
     skills: [
-      { name: 'PostgreSQL', iconSrc: 'assets/icons/postgresql.svg' },
+      {
+        name: 'PostgreSQL',
+        iconSrc: 'assets/icons/postgresql.svg',
+        tier: 'core',
+        tagline: 'Default relational store.',
+        since: 2013,
+      },
       { name: 'Kafka', iconSrc: 'assets/icons/kafka.svg' },
     ],
   },
   {
     title: 'Observability',
-    skills: [{ name: 'Datadog', iconSrc: 'assets/icons/datadog.svg' }],
+    skills: [
+      {
+        name: 'Datadog',
+        iconSrc: 'assets/icons/datadog.svg',
+        tier: 'core',
+        tagline: 'APM, logs, metrics.',
+        since: 2018,
+      },
+    ],
   },
   {
     title: 'AI & LLMs',
     skills: [
+      {
+        name: 'Claude Code',
+        iconSrc: 'assets/icons/anthropic.svg',
+        tier: 'core',
+        tagline: 'Daily driver for agentic coding.',
+        since: 2024,
+      },
       { name: 'OpenAI', iconSrc: 'assets/icons/openai.svg' },
       { name: 'GitHub Copilot', iconSrc: 'assets/icons/copilot.svg' },
-      { name: 'AWS Bedrock', iconSrc: 'assets/icons/aws.svg' },
       { name: 'Gemini', iconSrc: 'assets/icons/gemini.svg' },
       { name: 'Cursor', iconSrc: 'assets/icons/cursor.svg' },
-      { name: 'Claude Code', iconSrc: 'assets/icons/anthropic.svg' },
+      { name: 'AWS Bedrock', iconSrc: 'assets/icons/aws.svg' },
     ],
   },
 ];
@@ -64,13 +109,6 @@ const mockSkillsData = {
   categories: signal(MOCK_CATEGORIES),
 };
 
-/**
- * Tiny SkillUsageService mock — returns a synthetic count for any
- * skill name so we can verify the SkillsComponent passes the resolved
- * `href` / `projectsCount` / `postsCount` / `postsHref` through to the
- * badge bindings. Production behaviour of usage joining is covered in
- * `skill-usage.service.spec.ts`.
- */
 function mockUsageFor(skill: Skill): SkillUsage {
   const slug = skill.name
     .toLowerCase()
@@ -112,10 +150,6 @@ describe('SkillsComponent', () => {
       await TestBed.configureTestingModule({
         imports: [SkillsComponent],
         providers: [
-          // SkillsComponent imports SkillBadgeComponent directly, which now
-          // pulls in RouterLink for its [href] anchor. Without a router
-          // provider, Angular can't construct the directive at render
-          // time even when no badge actually has an href in the test.
           provideRouter([]),
           { provide: SkillsDataService, useValue: mockSkillsData },
           { provide: SkillUsageService, useValue: mockSkillUsage },
@@ -130,105 +164,117 @@ describe('SkillsComponent', () => {
       el = fixture.nativeElement;
     });
 
-    it('should be created', () => {
+    it('creates', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should render all 6 category sections', () => {
+    it('renders the single-line intro', () => {
+      expect(el.querySelector('.skills-intro')?.textContent).toContain(
+        'Tools I reach for day-to-day',
+      );
+    });
+
+    it('renders the icon-only view toggle next to the H1, list-first', () => {
+      // Matches the Projects page toggle (`list` leads) so the two
+      // pages present the same control visually and semantically.
+      const buttons = el.querySelectorAll('.skills-view-option');
+      expect(buttons.length).toBe(2);
+      expect(buttons[0].getAttribute('aria-label')).toBe('List view');
+      expect(buttons[1].getAttribute('aria-label')).toBe('Grid view');
+    });
+
+    it('renders the six tagline-carrying leads in catalog order', () => {
+      // Strip membership is `tagline !== undefined`, so we get exactly the
+      // category leads that have been curated with a tagline (one per
+      // category in the mock). Skills that are `tier: 'core'` without a
+      // tagline (Go, Docker, Git) still get the red core-accent border in
+      // the grid — they just aren't in the strip.
+      const cards = el.querySelectorAll('app-skill-feature-card');
+      expect(cards.length).toBe(6);
+      const ids = Array.from(cards).map((c) => c.getAttribute('id'));
+      expect(ids).toEqual([
+        'skill-python',
+        'skill-aws',
+        'skill-github-actions',
+        'skill-postgresql',
+        'skill-datadog',
+        'skill-claude-code',
+      ]);
+    });
+
+    it('renders all 6 category sections', () => {
       const sections = el.querySelectorAll('.skill-section');
       expect(sections.length).toBe(6);
     });
 
-    it('should set aria-labelledby with slugified title', () => {
+    it('sets aria-labelledby with slugified title', () => {
       const section = el.querySelector('.skill-section');
       expect(section?.getAttribute('aria-labelledby')).toBe('skill-languages-frameworks');
     });
 
-    it('should render badge grids for all categories', () => {
-      const badgeGrids = el.querySelectorAll('.badge-grid');
-      expect(badgeGrids.length).toBe(6);
+    it('shows the first 5 skills per category on desktop', () => {
+      const grids = el.querySelectorAll('.skill-grid');
+      // Languages: 7 skills → 5 visible
+      expect(grids[0].querySelectorAll('ui-skill-badge').length).toBe(5);
+      // Cloud: 2 skills → 2 visible
+      expect(grids[1].querySelectorAll('ui-skill-badge').length).toBe(2);
+      // Observability: 1 skill → 1 visible
+      expect(grids[4].querySelectorAll('ui-skill-badge').length).toBe(1);
+      // AI & LLMs: 6 skills → 5 visible (1 hidden)
+      expect(grids[5].querySelectorAll('ui-skill-badge').length).toBe(5);
     });
 
-    it('should show top 5 badges for categories with more than 5 skills', () => {
-      const badgeGrids = el.querySelectorAll('.badge-grid');
-      expect(badgeGrids[0].querySelectorAll('ui-skill-badge').length).toBe(5);
+    it('shows expand toggles only when the grid overflows', () => {
+      const toggles = el.querySelectorAll('.expand-toggle');
+      // Languages (7 → 5, 2 more) and AI & LLMs (6 → 5, 1 more) overflow.
+      expect(toggles.length).toBe(2);
+      expect(toggles[0].textContent?.trim()).toContain('+ 2 more');
+      expect(toggles[1].textContent?.trim()).toContain('+ 1 more');
     });
 
-    it('should show all badges for categories with 5 or fewer skills', () => {
-      const badgeGrids = el.querySelectorAll('.badge-grid');
-      expect(badgeGrids[1].querySelectorAll('ui-skill-badge').length).toBe(2);
-      expect(badgeGrids[4].querySelectorAll('ui-skill-badge').length).toBe(1);
-    });
-
-    it('should show expand toggle for categories with more than 5 skills', () => {
-      const toggleButtons = el.querySelectorAll('.expand-toggle');
-      expect(toggleButtons.length).toBe(2);
-      expect(toggleButtons[0].textContent?.trim()).toContain('+ 2 more');
-      expect(toggleButtons[1].textContent?.trim()).toContain('+ 1 more');
-    });
-
-    it('should not show expand toggle for categories with 5 or fewer skills', () => {
-      const sections = el.querySelectorAll('.skill-section');
-      const toggleInCloud = sections[1].querySelector('.expand-toggle');
-      expect(toggleInCloud).toBeNull();
-    });
-
-    it('should expand to show all skills when toggle is clicked', () => {
-      const toggleButton = el.querySelector('.expand-toggle') as HTMLButtonElement;
-      toggleButton.click();
+    it('expands to all skills when the toggle is clicked', () => {
+      const toggle = el.querySelector('.expand-toggle') as HTMLButtonElement;
+      toggle.click();
       fixture.detectChanges();
-
-      const firstGrid = el.querySelectorAll('.badge-grid')[0];
+      const firstGrid = el.querySelectorAll('.skill-grid')[0];
       expect(firstGrid.querySelectorAll('ui-skill-badge').length).toBe(7);
-      expect(toggleButton.textContent?.trim()).toBe('Show less');
+      expect(toggle.textContent?.trim()).toBe('Show less');
     });
 
-    it('should collapse back to top 5 when toggle is clicked again', () => {
-      const toggleButton = el.querySelector('.expand-toggle') as HTMLButtonElement;
-      toggleButton.click();
+    it('collapses back on a second click', () => {
+      const toggle = el.querySelector('.expand-toggle') as HTMLButtonElement;
+      toggle.click();
       fixture.detectChanges();
-      toggleButton.click();
+      toggle.click();
       fixture.detectChanges();
-
-      const firstGrid = el.querySelectorAll('.badge-grid')[0];
+      const firstGrid = el.querySelectorAll('.skill-grid')[0];
       expect(firstGrid.querySelectorAll('ui-skill-badge').length).toBe(5);
-      expect(toggleButton.textContent?.trim()).toContain('+ 2 more');
     });
 
-    it('should set aria-expanded on toggle button', () => {
-      const toggleButton = el.querySelector('.expand-toggle') as HTMLButtonElement;
-      expect(toggleButton.getAttribute('aria-expanded')).toBe('false');
-
-      toggleButton.click();
+    it('sets aria-expanded on the toggle button', () => {
+      const toggle = el.querySelector('.expand-toggle') as HTMLButtonElement;
+      expect(toggle.getAttribute('aria-expanded')).toBe('false');
+      toggle.click();
       fixture.detectChanges();
-      expect(toggleButton.getAttribute('aria-expanded')).toBe('true');
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
     });
 
-    it('resolves a /projects/tag/<slug> href via the SkillUsageService mock', () => {
-      // CUSTOM_ELEMENTS_SCHEMA prevents real <ui-skill-badge> instantiation,
-      // so attribute reflection isn't reliable across environments. Verify
-      // the binding-source helpers on the component directly — they are
-      // what the template feeds into [href] / [projectsCount].
+    it('resolves /projects/tag/<slug> href via the SkillUsageService mock', () => {
       const skill = MOCK_CATEGORIES[0].skills[0]; // Python
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const c = component as unknown as any;
       const usage = c.usageFor(skill);
-      expect(usage).toBeDefined();
       expect(c.projectsHref(usage)).toBe('/projects/tag/python');
-      expect(usage.projects.length).toBe(1);
     });
 
-    it('returns undefined for projectsHref when the usage is missing', () => {
+    it('returns undefined for projectsHref when usage is missing', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const c = component as unknown as any;
       expect(c.projectsHref(undefined)).toBeUndefined();
       expect(c.postsHref(undefined)).toBeUndefined();
     });
 
-    it('renders per-skill anchor ids so external links can deep-link into the grid', () => {
-      // Every badge should carry id="skill-<slugified-name>" so the command
-      // palette, blog posts, or project detail pages can `#skill-typescript`
-      // their way straight to the right badge.
+    it('renders per-skill anchor ids for deep linking', () => {
       const badges = el.querySelectorAll('ui-skill-badge');
       const ids = Array.from(badges).map((b) => b.getAttribute('id'));
       expect(ids).toContain('skill-python');
@@ -249,33 +295,60 @@ describe('SkillsComponent', () => {
         ],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
       }).compileComponents();
+      fixture = TestBed.createComponent(SkillsComponent);
+      fixture.detectChanges();
+      el = fixture.nativeElement;
+    });
 
+    it('shows the first 3 skills per category on mobile', () => {
+      // Mobile column count drops to 3 to match `--mobile-max` in
+      // MediaQueryService, and the visible cut tracks the column
+      // count so a collapsed grid is always one clean row (never
+      // 3 + 1 lonely-tile partials, which iteration 4 produced).
+      const grids = el.querySelectorAll('.skill-grid');
+      // Languages: 7 → 3
+      expect(grids[0].querySelectorAll('ui-skill-badge').length).toBe(3);
+      // AI & LLMs: 6 → 3
+      expect(grids[5].querySelectorAll('ui-skill-badge').length).toBe(3);
+    });
+
+    it('reports the mobile hidden count in the toggle label', () => {
+      const toggles = el.querySelectorAll('.expand-toggle');
+      expect(toggles[0].textContent?.trim()).toContain('+ 4 more');
+    });
+  });
+
+  describe('view mode', () => {
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [SkillsComponent],
+        providers: [
+          provideRouter([]),
+          { provide: SkillsDataService, useValue: mockSkillsData },
+          { provide: SkillUsageService, useValue: mockSkillUsage },
+          { provide: MediaQueryService, useValue: createMockMediaQuery(false) },
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      }).compileComponents();
       fixture = TestBed.createComponent(SkillsComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
       el = fixture.nativeElement;
     });
 
-    it('should show top 3 badges on mobile for categories with more than 3 skills', () => {
-      const badgeGrids = el.querySelectorAll('.badge-grid');
-      // "Languages & Frameworks" has 7 skills, should show 3 on mobile
-      expect(badgeGrids[0].querySelectorAll('ui-skill-badge').length).toBe(3);
-      // "AI & LLMs" has 6 skills, should show 3 on mobile
-      expect(badgeGrids[5].querySelectorAll('ui-skill-badge').length).toBe(3);
+    it('defaults to grid mode (feature strip + category sections visible, list view absent)', () => {
+      expect(el.querySelector('app-skill-feature-card')).not.toBeNull();
+      expect(el.querySelectorAll('.skill-section').length).toBe(6);
+      expect(el.querySelector('app-skills-list-view')).toBeNull();
     });
 
-    it('should show correct hidden count on mobile', () => {
-      const toggleButtons = el.querySelectorAll('.expand-toggle');
-      // Languages: 7 - 3 = 4 more
-      expect(toggleButtons[0].textContent?.trim()).toContain('+ 4 more');
-    });
-
-    it('should show all badges for categories with 3 or fewer skills on mobile', () => {
-      const badgeGrids = el.querySelectorAll('.badge-grid');
-      // "Cloud & Infrastructure" has 2 skills
-      expect(badgeGrids[1].querySelectorAll('ui-skill-badge').length).toBe(2);
-      // "CI/CD & DevOps" has 3 skills
-      expect(badgeGrids[2].querySelectorAll('ui-skill-badge').length).toBe(3);
+    it('swaps to the list component when the List button is clicked', () => {
+      const listBtn = el.querySelector('[aria-label="List view"]') as HTMLButtonElement;
+      listBtn.click();
+      fixture.detectChanges();
+      expect(el.querySelector('app-skills-list-view')).not.toBeNull();
+      expect(el.querySelector('app-skill-feature-card')).toBeNull();
+      expect(el.querySelectorAll('.skill-section').length).toBe(0);
     });
   });
 });

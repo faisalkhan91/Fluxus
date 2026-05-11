@@ -1,0 +1,271 @@
+import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
+
+/**
+ * Rich "featured" card used in the `// core stack` strip above the
+ * per-category grids on `/skills`. Renders the full hero affordance
+ * (large icon, display-font name, tagline, since chip, projects link)
+ * for the five skills that `/skills` wants to surface as headline depth.
+ *
+ * Kept separate from `ui-skill-badge` on purpose:
+ *
+ * - The badge is a compact tile tuned for a dense grid where every
+ *   variant pays in vertical rhythm. Packing hero logic back into it
+ *   (as we did in iteration one) conflated two use cases and produced
+ *   a grid with ragged empty cells around 2×2 heroes.
+ * - This card runs its own flex-grow layout, its own typography
+ *   scale, and its own side-scroll behaviour on mobile. None of that
+ *   belongs inside a grid-item component.
+ *
+ * Card-link pattern matches the badge: stretched `::after` on the
+ * projects anchor — single interactive zone, middle-click preserved.
+ */
+@Component({
+  selector: 'app-skill-feature-card',
+  template: `
+    <article class="feature-card" [class.feature-card-link]="!!href()">
+      <header class="feature-head">
+        @if (iconSrc()) {
+          <img [ngSrc]="iconSrc()!" [alt]="name()" width="56" height="56" class="feature-icon" />
+        }
+        <div class="feature-title-block">
+          <h3 class="feature-name">{{ name() }}</h3>
+          @if (since(); as s) {
+            <span class="feature-since">since {{ s }}</span>
+          }
+        </div>
+      </header>
+
+      @if (tagline()) {
+        <p class="feature-tagline">{{ tagline() }}</p>
+      }
+
+      <footer class="feature-foot">
+        @if (projectsCount() > 0) {
+          @if (href(); as link) {
+            <a
+              class="feature-link feature-card-anchor"
+              [routerLink]="link"
+              [attr.aria-label]="projectsAriaLabel()"
+            >
+              {{ projectsCount() }} {{ projectsCount() === 1 ? 'project' : 'projects' }} →
+            </a>
+          } @else {
+            <span class="feature-count">
+              {{ projectsCount() }} {{ projectsCount() === 1 ? 'project' : 'projects' }}
+            </span>
+          }
+        }
+        @if (postsCount() > 0) {
+          @if (postsHref(); as plink) {
+            <a
+              class="feature-link feature-posts"
+              [routerLink]="plink"
+              [attr.aria-label]="postsAriaLabel()"
+            >
+              {{ postsCount() }} {{ postsCount() === 1 ? 'post' : 'posts' }}
+            </a>
+          } @else {
+            <span class="feature-count feature-posts">
+              {{ postsCount() }} {{ postsCount() === 1 ? 'post' : 'posts' }}
+            </span>
+          }
+        }
+      </footer>
+    </article>
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+        /* The strip container sets track widths via CSS grid. This
+           keeps cards equal-width at rest on desktop and equal-minmax
+           on mobile's scroll rail. */
+        min-width: 0;
+        height: 100%;
+      }
+
+      .feature-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        padding: var(--space-5);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        height: 100%;
+        box-sizing: border-box;
+        transition:
+          background-color var(--transition-base),
+          border-color var(--transition-base),
+          transform var(--transition-base);
+      }
+
+      .feature-card:hover {
+        background: var(--glass-bg-hover);
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .feature-card-link {
+        position: relative;
+      }
+
+      .feature-card-link:focus-within {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .feature-head {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .feature-icon {
+        width: 56px;
+        height: 56px;
+        object-fit: contain;
+        filter: var(--icon-drop-shadow);
+        flex-shrink: 0;
+      }
+
+      .feature-icon[src*='cursor-original'],
+      .feature-icon[src*='githubcopilot-original'],
+      .feature-icon[src*='amazonwebservices-original-wordmark'] {
+        filter: var(--icon-drop-shadow) invert(1) hue-rotate(180deg);
+      }
+
+      [data-theme$='-light'] .feature-icon[src*='cursor-original'],
+      [data-theme$='-light'] .feature-icon[src*='githubcopilot-original'],
+      [data-theme$='-light'] .feature-icon[src*='amazonwebservices-original-wordmark'] {
+        filter: var(--icon-drop-shadow);
+      }
+
+      [data-theme$='-light'] .feature-icon[src*='typescript-original'],
+      [data-theme$='-light'] .feature-icon[src*='icons8-ansible'],
+      [data-theme$='-light'] .feature-icon[src*='anthropic-original'] {
+        filter: var(--icon-drop-shadow) drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
+      }
+
+      .feature-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        min-width: 0;
+      }
+
+      .feature-name {
+        font-family: var(--font-display);
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .feature-since {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+      }
+
+      .feature-tagline {
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        line-height: 1.45;
+        color: var(--text-secondary);
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .feature-foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-3);
+        margin-top: auto;
+        padding-top: var(--space-1);
+        /* Reserve a consistent slot for the projects / posts line so
+           cards with zero linked work still align along the same
+           footer y-position as their peers that do. Matches the
+           padding-bottom + line-height of a single pill. */
+        min-height: 1.25rem;
+      }
+
+      .feature-link {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        position: relative;
+        z-index: 1;
+        transition: color var(--transition-base);
+      }
+
+      .feature-count {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .feature-link:hover,
+      .feature-link:focus-visible {
+        color: var(--accent);
+      }
+
+      .feature-link:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .feature-posts {
+        color: var(--text-muted);
+      }
+
+      /* Card-link overlay: stretched ::after on the projects anchor so
+         the whole card routes on click. Posts anchor sits above via its
+         own z-index so it remains individually clickable. */
+      .feature-card-anchor::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        z-index: 0;
+      }
+
+      .feature-card-anchor:focus-visible {
+        outline: none;
+      }
+    `,
+  ],
+  imports: [NgOptimizedImage, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SkillFeatureCardComponent {
+  name = input.required<string>();
+  iconSrc = input<string>();
+  tagline = input<string>();
+  since = input<number>();
+  href = input<string>();
+  projectsCount = input<number>(0);
+  postsCount = input<number>(0);
+  postsHref = input<string>();
+
+  protected projectsAriaLabel = computed(() => {
+    const n = this.projectsCount();
+    return `${this.name()} — view ${n} ${n === 1 ? 'project' : 'projects'}`;
+  });
+
+  protected postsAriaLabel = computed(() => {
+    const n = this.postsCount();
+    return `${n} ${n === 1 ? 'post' : 'posts'} tagged ${this.name()}`;
+  });
+}

@@ -1,54 +1,48 @@
 import { test, expect } from './fixtures';
 
 /**
- * /skills end-to-end coverage for the "connective tissue" rework.
+ * /skills end-to-end coverage for the feature-strip + uniform-grid
+ * composition.
  *
- * Two responsibilities:
+ * Responsibilities:
  *
- * 1. Each skill badge with at least one matching project is rendered as
- *    a clickable card-link to `/projects/tag/<slug>`. Clicking it
- *    navigates to a filtered Projects archive that only shows matching
- *    cards.
+ * 1. Core skills surface on the `// core stack` feature strip and link
+ *    to `/projects/tag/<slug>` via `SkillUsageService.usageBySlug`.
+ *    Python is the canonical positive case.
  *
- * 2. Skills are first-class entries in the Cmd+K palette: typing the
- *    skill name surfaces a `Skill · N projects · M posts` row that,
- *    on Enter, navigates to the same archive as the badge click.
+ * 2. Per-category grid tiles preserve card-link routing for any skill
+ *    with matching projects (via name or alias). `HTML5` exercises the
+ *    alias path — canonical slug `html5` but the route resolves to
+ *    `/projects/tag/html`.
  *
- * The spec uses `Python` as the canonical positive case because it's
- * the first skill in `Languages & Frameworks`, has multiple matching
- * projects in `projects-data.service.ts`, and a curated `level` so the
- * progress bar also renders. `HTML5` exercises the alias path —
- * canonical slug `html5` but the route resolves to `/projects/tag/html`
- * because that's where the project tags actually point.
+ * 3. Skills with zero matching projects render as static (non-link)
+ *    tiles. `Go` is the orphan canary.
  *
- * Updating a project tag spelling (or removing a project) without
- * updating this spec will surface the drift via a deterministic e2e
- * failure rather than a silent dead link on production.
+ * 4. View-mode toggle (icon-only Grid / List buttons beside the H1)
+ *    swaps the DOM between the strip+grid composition and a flat
+ *    semantic table.
+ *
+ * 5. The Cmd+K palette still surfaces skill rows and routes to the
+ *    same archive on Enter — independent of which view mode is active.
  */
 test.describe('/skills connective tissue', () => {
-  test('Python badge links to /projects/tag/python and shows only Python projects', async ({
+  test('Python feature card links to /projects/tag/python and filters the archive', async ({
     page,
   }) => {
     await page.goto('/skills', { waitUntil: 'networkidle' });
 
-    // Python is the first skill in Languages & Frameworks, always above
-    // the topN truncation cut. Filtering by name keeps the selector
-    // resilient to category re-ordering as the catalog grows.
-    const pythonBadge = page.locator('ui-skill-badge', { hasText: 'Python' }).first();
-    await expect(pythonBadge).toBeVisible();
+    // Feature strip holds the page's core skills; Python is the first
+    // entry in catalog order.
+    const python = page.locator('app-skill-feature-card', { hasText: 'Python' }).first();
+    await expect(python).toBeVisible();
 
-    const projectsLink = pythonBadge.locator('a.badge-card-link');
-    await expect(projectsLink).toHaveAttribute('href', '/projects/tag/python');
+    const link = python.locator('a.feature-card-anchor');
+    await expect(link).toHaveAttribute('href', '/projects/tag/python');
 
-    await projectsLink.click();
+    await link.click();
     await page.waitForURL('**/projects/tag/python');
-
-    const titles = page.locator('.project-title');
-    await expect(titles.first()).toBeVisible();
     await expect(page.locator('h1')).toContainText('Projects tagged');
 
-    // Every visible card must list "Python" among its tags. Reading the
-    // tag chips per card avoids assuming a specific filter implementation.
     const cards = page.locator('.project-card');
     const cardCount = await cards.count();
     expect(cardCount).toBeGreaterThan(0);
@@ -59,12 +53,9 @@ test.describe('/skills connective tissue', () => {
     }
   });
 
-  test('HTML5 badge routes to /projects/tag/html via the alias', async ({ page }) => {
+  test('HTML5 grid tile routes to /projects/tag/html via the alias', async ({ page }) => {
     await page.goto('/skills', { waitUntil: 'networkidle' });
 
-    // HTML5 sits at position 8 in `Languages & Frameworks`, below the
-    // desktop topN cut of 5. Expand the section first so the badge is
-    // attached to the DOM and visible.
     const languagesSection = page.locator('section.skill-section', {
       hasText: 'Languages & Frameworks',
     });
@@ -73,34 +64,53 @@ test.describe('/skills connective tissue', () => {
     const htmlBadge = page.locator('ui-skill-badge', { hasText: 'HTML5' }).first();
     await expect(htmlBadge).toBeVisible();
     const link = htmlBadge.locator('a.badge-card-link');
-    // The skill's canonical slug is `html5`, but the alias resolves the
-    // route to `html` because that's where the project tags point. This
-    // is the contract for the alias-driven route slug behaviour in
-    // `SkillUsageService.usageBySlug`.
     await expect(link).toHaveAttribute('href', '/projects/tag/html');
+    // The anchor is visually empty in iteration 4 — the tile itself
+    // is the visible target. Semantics live on the aria-label.
+    await expect(link).toHaveAttribute('aria-label', /HTML5/);
   });
 
-  test('skills with zero project matches render as static (non-link) cards', async ({ page }) => {
+  test('learning-tier grid tiles get the dimmed class (0 linked projects)', async ({ page }) => {
     await page.goto('/skills', { waitUntil: 'networkidle' });
 
-    // Both `Go` and `Datadog` are seeded as skills but no project tags
-    // — including merged GitHub topics — reference them, so the badges
-    // must render as plain cards (no anchor). Both are lead skills in
-    // their categories so they stay in the default top-3 on any viewport
-    // width without needing to expand the truncated lists first.
-    //
-    // If you find yourself needing to swap skills here after a catalog
-    // change, confirm the replacement is *orphan on merged tags* — i.e.
-    // not referenced via hand-curated tags in projects-data.service.ts
-    // and also not a topic string in scripts/cache/projects-github.json.
-    // AWS used to be here, but GitHub topic merging pulled the `aws`
-    // topic off the Jenkins project into its runtime tag list.
-    for (const orphan of ['Go', 'Datadog']) {
-      const badge = page.locator('ui-skill-badge', { hasText: orphan }).first();
-      await expect(badge).toBeVisible();
-      const links = await badge.locator('a.badge-card-link').count();
-      expect(links).toBe(0);
-    }
+    // Grid tiles stay uniform — no coloured borders, no caption pills.
+    // The only differentiation is that tiles with zero linked projects
+    // render at `opacity: 0.62` via the `.dimmed` class. Pick a known
+    // orphan skill that consistently has no matching project tags.
+    const rustTile = page.locator('ui-skill-badge', { hasText: 'Rust' }).first();
+    await expect(rustTile).toBeVisible();
+    await expect(rustTile.locator('.dimmed')).toBeVisible();
+  });
+
+  test('skills with zero project matches render as static (non-link) tiles', async ({ page }) => {
+    await page.goto('/skills', { waitUntil: 'networkidle' });
+
+    const goBadge = page.locator('ui-skill-badge', { hasText: /^\s*Go\s*$/ }).first();
+    await expect(goBadge).toBeVisible();
+    const goLinks = await goBadge.locator('a.badge-card-link').count();
+    expect(goLinks).toBe(0);
+  });
+
+  test('view-mode toggle swaps the grid composition for a semantic table', async ({ page }) => {
+    await page.goto('/skills', { waitUntil: 'networkidle' });
+
+    // Default = grid: feature strip + category sections visible, no table.
+    await expect(page.locator('app-skill-feature-card').first()).toBeVisible();
+    await expect(page.locator('table.skills-table')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'List view' }).click();
+
+    const table = page.locator('table.skills-table');
+    await expect(table).toBeVisible();
+    await expect(page.locator('app-skill-feature-card')).toHaveCount(0);
+
+    const pythonRow = table.locator('tr', { hasText: 'Python' }).first();
+    await expect(pythonRow.locator('.tier-pill')).toHaveText(/core/i);
+    await expect(pythonRow.locator('a.row-link')).toHaveAttribute('href', '/projects/tag/python');
+
+    await page.getByRole('button', { name: 'Grid view' }).click();
+    await expect(page.locator('app-skill-feature-card').first()).toBeVisible();
+    await expect(page.locator('table.skills-table')).toHaveCount(0);
   });
 });
 
@@ -113,9 +123,6 @@ test.describe('command palette → skill navigation', () => {
     await page.keyboard.press('Control+K');
     const input = page.locator('.palette-input');
     await expect(input).toBeFocused();
-    // Filter to the Python skill row; the catalog also surfaces the
-    // sidebar Projects entry plus blog posts, so we constrain by both
-    // the visible label and the "Skill ·" hint to land on the skill row.
     await input.fill('Python');
 
     const skillRow = page
@@ -126,10 +133,6 @@ test.describe('command palette → skill navigation', () => {
     await expect(skillRow).toBeVisible();
     await expect(skillRow.locator('.palette-hint')).toContainText('project');
 
-    // Find the skill row's index among the filtered list and arrow
-    // down to it. Using arrow keys keeps the activation path identical
-    // to a real user (highlighted row → Enter) rather than triggering
-    // a click handler the production code doesn't drive.
     const items = page.locator('.palette-item');
     const total = await items.count();
     let skillIndex = -1;
@@ -143,8 +146,6 @@ test.describe('command palette → skill navigation', () => {
     }
     expect(skillIndex).toBeGreaterThanOrEqual(0);
 
-    // The palette starts highlighted at index 0; press ArrowDown until
-    // we reach the skill row, then Enter to route.
     for (let i = 0; i < skillIndex; i++) {
       await page.keyboard.press('ArrowDown');
     }

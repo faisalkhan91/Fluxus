@@ -7,55 +7,247 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  gap: var(--space-10);
+}
+
+/* Wider monitors get a slightly roomier column so the 5-card feature
+   strip sits comfortably in one row. Below 1280 px the strip scrolls
+   horizontally on its own. */
+@media (min-width: 1280px) {
+  .skills-layout {
+    max-width: 1120px;
+  }
+}
+
+/* Header row: H1 on the left (with its own accent-line), view toggle
+   on the right. `align-items: flex-start` keeps the toggle from
+   aligning to the H1's invisible baseline and jittering when the
+   accent-line appears. */
+.skills-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.skills-header ui-section-header {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.skills-intro {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: calc(-1 * var(--space-6)) 0 0;
+  max-width: 60ch;
 }
 
 /*
-  Cap each cell between 110 – 140 px instead of letting 1fr stretch
-  badges to ~180 px on a 900 px container. With topN = 5 the grid
-  resolves to five 140 px columns and any remaining gutter splits
-  evenly via `justify-content: center`, so partial rows (e.g. an
-  expanded 7-skill category wrapping to a row of 2) sit centred
-  rather than hugging the left edge.
+  View-mode toggle — lifted 1:1 from `projects.component.css`
+  (.projects-view-row / .projects-view-option) so the Skills and
+  Projects pages carry the same control visually. Two 32 px square
+  buttons with a 1 px glass border, subtle surface-overlay fill on
+  active, never a red filled pill.
 */
-.badge-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 140px));
-  justify-content: center;
-  gap: var(--space-4);
-}
-
-/* Centred wrapper for the "+N more" / "Show less" toggle — left-aligned
-   below the grid it read as a stray pill on the left while the right side
-   sat empty. Centring anchors the toggle to the grid's optical midline. */
-.expand-toggle-row {
+.skills-view-row {
   display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.skills-view-option {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  margin-top: var(--space-3);
-}
-
-.expand-toggle {
-  background: none;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  color: var(--text-muted);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-pill);
-  color: var(--text-secondary);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  padding: 0;
   transition:
-    color var(--transition-base),
-    border-color var(--transition-base);
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
 }
 
-.expand-toggle:hover {
+.skills-view-option:hover,
+.skills-view-option:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
 }
 
-@media (max-width: 768px) {
-  .badge-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 120px));
+.skills-view-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.skills-view-option.active {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--surface-overlay);
+}
+
+/* ------------------------------ Feature strip ------------------------------ */
+
+.feature-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.feature-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/*
+  Desktop: 5 equal columns. Narrow tablets: one fewer column. Phones:
+  the strip switches to a horizontal scroll rail — each card gets a
+  minimum width via `grid-auto-columns` on an inline-grid so the user
+  swipes through them rather than getting cards that compress to 80 px
+  wide and lose the tagline.
+*/
+/*
+  3 cards × 2 rows is the default composition. It lets each card hold
+  its icon + name + tagline + since chip + projects link without
+  truncating anything at typical laptop widths (≥ 768 px). Tried a
+  6-wide single-row strip at 1280 px: names wrapped mid-word
+  ("PostgreSQ…", "GitHub\nActions") and taglines clipped at 2 words.
+
+  `grid-auto-rows: 1fr` + `align-items: stretch` (the default) forces
+  every row to share the height of its tallest card, and both rows to
+  match each other — without this, row 2 cards with no linked projects
+  (no "N projects →" line) came out visibly shorter than row 1.
+*/
+.feature-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .feature-strip {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(240px, 260px);
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* Padding rails so the first/last card aren't flush against the
+       viewport edges when the user scrolls to either end. */
+    padding: 0 var(--space-4);
+    margin: 0 calc(-1 * var(--space-4));
+    scrollbar-width: thin;
+  }
+
+  .feature-strip > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* ------------------------------ Per-category grid ------------------------------ */
+
+/*
+  Explicit column count per breakpoint, kept in lock-step with
+  `visibleLimit` in `skills.component.ts` so collapsed grids resolve
+  to a single clean row at every viewport — never `N + 1` lonely-tile
+  partials.
+
+  The earlier `repeat(auto-fill, minmax(120px, 1fr))` rule let the
+  browser pick a track count from the container width, which produced
+  two visible bugs:
+
+  - At 1440 px (1120 px container) the browser fit six 160 px tracks
+    but `visibleLimit = 5` only ever rendered five tiles. The sixth
+    track was reserved-but-empty, pushing every collapsed row left of
+    centre and orphaning the "+ N more" toggle to the far right.
+  - At 768 px (4 tracks) and 412 px (3 tracks) with a 5- or 4-tile
+    limit, the last tile sat alone on a second row.
+
+  Breakpoint boundary (767 px) matches `MOBILE_MAX` in
+  MediaQueryService so the CSS column count and the TS visible cut
+  never disagree by a stray pixel.
+*/
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+@media (min-width: 1280px) {
+  /* Cap cell widths so the grid doesn't stretch tiles to ~200 px on a
+     1120 px container. 5 tiles × 160 px + 4 × 16 px gap = 864 px;
+     the remaining slack splits via `justify-content: center` so the
+     row stays anchored to the column's optical midline. */
+  .skill-grid {
+    grid-template-columns: repeat(5, minmax(120px, 160px));
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Phone: 3 tracks. `visibleLimit` drops to 3 in this band so the
+     collapsed grid is a single uncluttered row; expansion preserves
+     the 3-up wrap (e.g. 9 tiles → 3 rows of 3). */
+  .skill-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-3);
   }
+}
+
+/*
+  Expand-toggle row mirrors the grid's column width so its right
+  edge sits flush with the last tile (rather than the layout
+  container, which used to leave the pill orphaned ~200 px past the
+  trailing tile at 1280 px+). `max-width: max-content` would clip
+  too aggressively on partial rows, so we copy the desktop cap.
+*/
+.expand-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-3);
+}
+
+@media (min-width: 1280px) {
+  .expand-toggle-row {
+    /* Match the grid's 5-track × 160 px + 4 × 16 px gap width so the
+       toggle sits below the last tile, not the layout column. */
+    max-width: calc(5 * 160px + 4 * var(--space-4));
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+}
+
+.expand-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: var(--space-2) 0;
+  cursor: pointer;
+  transition: color var(--transition-base);
+  letter-spacing: 0.02em;
+}
+
+.expand-toggle:hover,
+.expand-toggle:focus-visible {
+  color: var(--accent);
+}
+
+.expand-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }

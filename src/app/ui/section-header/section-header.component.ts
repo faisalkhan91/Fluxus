@@ -7,7 +7,7 @@ export type HeadingLevel = 1 | 2;
   template: `
     <div class="header-content">
       @if (level() === 1) {
-        <h1 class="title" [attr.id]="headingId() ?? null">{{ title() }}</h1>
+        <h1 class="title title--page" [attr.id]="headingId() ?? null">{{ title() }}</h1>
       } @else {
         <h2 class="title" [attr.id]="headingId() ?? null">{{ title() }}</h2>
       }
