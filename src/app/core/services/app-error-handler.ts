@@ -36,7 +36,14 @@ interface SentryShape {
 export class AppErrorHandler implements ErrorHandler {
   private toasts = inject(ErrorToastService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private sentryReady = false;
+  /**
+   * Lazy-loaded Sentry module. Declared as a typed optional field so
+   * the assignment at the end of `initSentry()` doesn't need a
+   * `(this as unknown as { sentry })` double cast — the previous shape
+   * sidestepped TypeScript's class-member checking and would silently
+   * accept a divergent `SentryShape` definition.
+   */
+  private sentry?: SentryShape;
 
   constructor() {
     // Sentry is loaded lazily so the bundle stays clean for visitors who
@@ -61,9 +68,7 @@ export class AppErrorHandler implements ErrorHandler {
         environment: 'production',
         tracesSampleRate: 0.1,
       });
-      this.sentryReady = true;
-      // Keep the reference for handleError().
-      (this as unknown as { sentry: SentryShape }).sentry = sentryModule;
+      this.sentry = sentryModule;
     } catch {
       // @sentry/browser isn't installed — degrade silently. Console + toast
       // still work; only remote reporting is skipped.
@@ -77,10 +82,7 @@ export class AppErrorHandler implements ErrorHandler {
 
     if (!this.isBrowser) return;
 
-    if (this.sentryReady) {
-      const sentry = (this as unknown as { sentry?: SentryShape }).sentry;
-      sentry?.captureException(error);
-    }
+    this.sentry?.captureException(error);
 
     if (isChunkLoadFailure(error)) {
       this.toasts.push({
