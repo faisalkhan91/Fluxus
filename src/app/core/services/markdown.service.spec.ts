@@ -166,4 +166,33 @@ describe('MarkdownService renderer', () => {
     expect(html).not.toContain('alt="alt"x"');
     expect(html).toContain('alt="alt&quot;x"');
   });
+
+  describe('link href sanitisation', () => {
+    it('neutralises javascript: hrefs to # so clicks are inert', () => {
+      const html = service.render('[click](javascript:alert(1))');
+      expect(html).not.toContain('href="javascript:');
+      expect(html).toContain('href="#"');
+    });
+
+    it('neutralises data:, vbscript:, file: hrefs', () => {
+      for (const href of ['data:text/html,<script>1</script>', 'vbscript:msgbox', 'file:///etc/passwd']) {
+        const html = service.render(`[x](${href})`);
+        expect(html, `href ${href}`).toContain('href="#"');
+        expect(html, `href ${href}`).not.toContain(href.split(':')[0] + ':');
+      }
+    });
+
+    it('passes http(s), mailto, tel through unchanged', () => {
+      for (const href of ['https://example.com/x', 'http://example.com', 'mailto:a@b', 'tel:+1234']) {
+        const html = service.render(`[x](${href})`);
+        expect(html, `href ${href}`).toContain(`href="${href}"`);
+      }
+    });
+
+    it('preserves fragment and relative hrefs', () => {
+      expect(service.render('[x](#section)')).toContain('href="#section"');
+      expect(service.render('[x](/about)')).toContain('href="/about"');
+      expect(service.render('[x](./post)')).toContain('href="./post"');
+    });
+  });
 });
