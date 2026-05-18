@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
@@ -92,5 +92,69 @@ describe('SeoService', () => {
     await router.navigate(['/']);
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     expect(canonical?.getAttribute('href')).toBe(`${environment.siteUrl}/`);
+  });
+
+  describe('setLinkRel / removeLinkRel', () => {
+    afterEach(() => {
+      // Each test inserts <link rel="..."> tags into the live document
+      // head; clean them out so they don't leak across cases.
+      for (const rel of ['prev', 'next', 'alternate']) {
+        document.head.querySelector(`link[rel="${rel}"]`)?.remove();
+      }
+    });
+
+    it('inserts a new <link rel="..."> when none is present', () => {
+      service.setLinkRel('prev', 'https://example.com/a');
+      const link = document.head.querySelector<HTMLLinkElement>('link[rel="prev"]');
+      expect(link).not.toBeNull();
+      expect(link?.getAttribute('href')).toBe('https://example.com/a');
+    });
+
+    it('overwrites the existing href when called twice with the same rel', () => {
+      service.setLinkRel('prev', 'https://example.com/a');
+      service.setLinkRel('prev', 'https://example.com/b');
+      const links = document.head.querySelectorAll<HTMLLinkElement>('link[rel="prev"]');
+      // No duplicate <link> emitted — same node, updated href.
+      expect(links).toHaveLength(1);
+      expect(links[0].getAttribute('href')).toBe('https://example.com/b');
+    });
+
+    it('removes the link when href is null', () => {
+      service.setLinkRel('prev', 'https://example.com/a');
+      service.setLinkRel('prev', null);
+      expect(document.head.querySelector('link[rel="prev"]')).toBeNull();
+    });
+
+    it('removeLinkRel deletes the matching link if present', () => {
+      service.setLinkRel('next', 'https://example.com/b');
+      service.removeLinkRel('next');
+      expect(document.head.querySelector('link[rel="next"]')).toBeNull();
+    });
+
+    it('removeLinkRel is a no-op when the link is absent', () => {
+      // Sanity: starting state has no rel="alternate" link.
+      expect(document.head.querySelector('link[rel="alternate"]')).toBeNull();
+      // Should not throw, should not insert anything.
+      expect(() => service.removeLinkRel('alternate')).not.toThrow();
+      expect(document.head.querySelector('link[rel="alternate"]')).toBeNull();
+    });
+
+    it('manages the prev / next pair independently', () => {
+      service.setLinkRel('prev', 'https://example.com/a');
+      service.setLinkRel('next', 'https://example.com/c');
+      expect(document.head.querySelector('link[rel="prev"]')?.getAttribute('href')).toBe(
+        'https://example.com/a',
+      );
+      expect(document.head.querySelector('link[rel="next"]')?.getAttribute('href')).toBe(
+        'https://example.com/c',
+      );
+
+      // Clearing prev leaves next intact.
+      service.setLinkRel('prev', null);
+      expect(document.head.querySelector('link[rel="prev"]')).toBeNull();
+      expect(document.head.querySelector('link[rel="next"]')?.getAttribute('href')).toBe(
+        'https://example.com/c',
+      );
+    });
   });
 });
