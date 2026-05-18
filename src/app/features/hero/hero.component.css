@@ -137,13 +137,17 @@
   opacity: 0.55;
 }
 
-[data-theme='light'] .hero-spotlight {
-  /* The screen blend over a light canvas is too subtle — bump opacity and
-     drop screen back to normal so the accent reads as a watercolour wash. */
+/* `[data-theme='light']` was the legacy id for the only light theme at
+   the time these rules were written. The registry renamed it to
+   `'crimson-light'`; the spotlight tweak still targets just that theme
+   to match the original behaviour. The other light themes
+   (`solarized-light`, `github-light`) keep the default screen blend —
+   their accents are already sufficiently saturated to read as a wash. */
+[data-theme='crimson-light'] .hero-spotlight {
   mix-blend-mode: normal;
 }
 
-[data-theme='light'] .hero[data-pointer-active='true'] .hero-spotlight {
+[data-theme='crimson-light'] .hero[data-pointer-active='true'] .hero-spotlight {
   opacity: 0.35;
 }
 
@@ -441,7 +445,7 @@
 */
 @media (forced-colors: active) {
   .hero-name,
-  [data-theme='light'] .hero-name,
+  [data-theme='crimson-light'] .hero-name,
   .highlight {
     background: none;
     -webkit-text-fill-color: CanvasText;
