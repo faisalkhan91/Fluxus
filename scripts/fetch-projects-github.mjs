@@ -509,6 +509,21 @@ async function main() {
   // hint, not a runtime property on `Project`.
   const emitted = merged.map(({ order: _order, ...rest }) => rest);
 
+  // Fail loudly if we got nothing — no GraphQL hits, no cache rows, no
+  // manual entries — rather than silently overwrite a previously-good
+  // generated file with an empty list. The previous guard checked
+  // `!existsSync(CACHE_JSON)` *after* writing the cache, so it could
+  // never fire (the write had just created the file). Checking
+  // `merged.length` before any write covers every "nothing to emit"
+  // path: cold cache + no token, cache + allowlist drift, deleted
+  // overrides, etc.
+  if (merged.length === 0) {
+    console.error(
+      'fetch-projects-github: FATAL no graphql data, no cache rows, and no manual entries — refusing to overwrite outputs with an empty project list.',
+    );
+    process.exit(1);
+  }
+
   await writeJson(CACHE_JSON, {
     fetchedAt: new Date().toISOString(),
     topic: overrides.topic ?? null,
@@ -516,13 +531,6 @@ async function main() {
   });
   await writeGeneratedTs(emitted);
   await writeJson(GENERATED_JSON, emitted);
-
-  if (fetched === 0 && fromCache === 0 && !existsSync(CACHE_JSON)) {
-    console.error(
-      'fetch-projects-github: FATAL no graphql data and no cache — cannot bootstrap an empty list.',
-    );
-    process.exit(1);
-  }
 
   console.log(
     `fetch-projects-github: selected=${selected.size} fetched=${fetched} from-cache=${fromCache} missing=${missing} manual=${fromManual.length} total=${merged.length}`,
