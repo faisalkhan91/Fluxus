@@ -18,6 +18,19 @@ const { siteUrl: SITE_URL } = require('../site.config.json');
 const DIST_SITEMAP = join(process.cwd(), 'dist/fluxus/browser/sitemap.xml');
 const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
 
+// Fail fast if the dist directory is missing so an out-of-order
+// invocation (e.g. someone running `node scripts/build-sitemap.mjs`
+// without a prior `ng build`) doesn't waste time parsing posts.json,
+// loading the project catalog, and building the full XML before
+// discovering it has nowhere to write. The previous shape ran the
+// whole pipeline first and threw away the result.
+try {
+  await stat(join(process.cwd(), 'dist/fluxus/browser'));
+} catch {
+  console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
+  process.exit(1);
+}
+
 // Tuple of [path, priority]. Order is the order they appear in the sitemap.
 // Keep in sync with src/app/app.routes.ts. Verified by the contract test in
 // src/app/core/services/navigation.service.spec.ts.
@@ -83,13 +96,6 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 ${entries.join('\n')}
 </urlset>
 `;
-
-try {
-  await stat(join(process.cwd(), 'dist/fluxus/browser'));
-} catch {
-  console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
-  process.exit(1);
-}
 
 await writeFile(DIST_SITEMAP, xml, 'utf-8');
 console.log(
