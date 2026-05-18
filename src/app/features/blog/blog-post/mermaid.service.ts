@@ -26,27 +26,66 @@ import { ThemeService } from '@core/services/theme.service';
  * reused by any future component that wants mermaid in its rendered
  * markdown.
  */
+type IdleHandle = { kind: 'idle'; id: number } | { kind: 'timeout'; id: ReturnType<typeof setTimeout> };
+
 @Injectable({ providedIn: 'root' })
 export class MermaidService {
   private theme = inject(ThemeService);
+
+  /**
+   * Pending idle/timeout handle from the most recent `scheduleRender`.
+   * Stored so the next `scheduleRender` can cancel a not-yet-fired
+   * deferred run rather than letting both fire (e.g. on rapid blog-post
+   * navigation, where the previous post's idle render would otherwise
+   * burn a wasted dynamic import against a detached DOM).
+   */
+  private pendingHandle: IdleHandle | null = null;
+
+  /**
+   * In-flight render guard. `renderIfNeeded` sets this for the duration
+   * of its async work. While true, a fresh `scheduleRender` flips
+   * `restartRequested` instead of kicking off a parallel render — the
+   * current pass finishes, then re-runs once with the new theme.
+   *
+   * Without this, a theme toggle during an in-flight render races: the
+   * old render finishes after `revertIfRendered` already rebuilt the
+   * placeholders, leaving stale-palette `<figure class="mermaid">`
+   * elements in the new-theme document until the next navigation.
+   */
+  private rendering = false;
+  private restartRequested = false;
 
   /**
    * Defer the render until the browser is idle. Uses `requestIdleCallback`
    * when available, falls back to a 200 ms `setTimeout` on Safari (which
    * still ships no idle callback) so the lazy import never blocks the
    * first paint or the first input. No-op on the server.
+   *
+   * Coalesces with prior pending schedules: a still-deferred handle is
+   * cancelled, and a call made while a render is in flight queues a
+   * single restart via `restartRequested` rather than running a second
+   * render in parallel.
    */
   scheduleRender(root: HTMLElement): void {
     if (typeof window === 'undefined') return;
+    if (this.rendering) {
+      this.restartRequested = true;
+      return;
+    }
+    this.cancelPending();
     type IdleWindow = Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
     };
     const w = window as IdleWindow;
-    const run = () => void this.renderIfNeeded(root);
+    const run = () => {
+      this.pendingHandle = null;
+      void this.runRender(root);
+    };
     if (typeof w.requestIdleCallback === 'function') {
-      w.requestIdleCallback(run, { timeout: 1500 });
+      this.pendingHandle = { kind: 'idle', id: w.requestIdleCallback(run, { timeout: 1500 }) };
     } else {
-      setTimeout(run, 200);
+      this.pendingHandle = { kind: 'timeout', id: setTimeout(run, 200) };
     }
   }
 
@@ -72,6 +111,38 @@ export class MermaidService {
       figure.replaceWith(placeholder);
     }
     return true;
+  }
+
+  private cancelPending(): void {
+    if (!this.pendingHandle) return;
+    if (typeof window === 'undefined') {
+      this.pendingHandle = null;
+      return;
+    }
+    if (this.pendingHandle.kind === 'idle') {
+      const w = window as Window & { cancelIdleCallback?: (id: number) => void };
+      w.cancelIdleCallback?.(this.pendingHandle.id);
+    } else {
+      clearTimeout(this.pendingHandle.id);
+    }
+    this.pendingHandle = null;
+  }
+
+  /**
+   * Wrapper that toggles `rendering` around `renderIfNeeded` and replays
+   * a single deferred restart if `scheduleRender` was called mid-render.
+   */
+  private async runRender(root: HTMLElement): Promise<void> {
+    this.rendering = true;
+    try {
+      await this.renderIfNeeded(root);
+    } finally {
+      this.rendering = false;
+    }
+    if (this.restartRequested) {
+      this.restartRequested = false;
+      this.scheduleRender(root);
+    }
   }
 
   /**
