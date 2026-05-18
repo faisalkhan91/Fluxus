@@ -111,8 +111,11 @@
   overflow: hidden;
 }
 
-.project-card ::ng-deep > * {
-  padding: 0;
+/* Same token-override pattern as projects.component.css — see the
+   inline rationale there. Replaces the deprecated `::ng-deep`
+   selector. */
+.project-card {
+  --glass-card-padding: 0;
 }
 
 .project-image-wrapper {
