@@ -12,16 +12,21 @@
       </p>
     </div>
     <div class="skills-view-row" role="radiogroup" aria-label="View mode">
-      @for (opt of viewOptions; track opt.key) {
+      @for (opt of viewOptions; track opt.key; let i = $index) {
         <button
           type="button"
           class="skills-view-option"
           role="radio"
           [attr.aria-checked]="viewMode() === opt.key"
+          [tabindex]="viewMode() === opt.key ? 0 : -1"
           [attr.aria-label]="opt.label"
           [attr.title]="opt.label"
           [class.active]="viewMode() === opt.key"
           (click)="setViewMode(opt.key)"
+          (keydown.arrowleft)="onViewKey($event, i, -1)"
+          (keydown.arrowright)="onViewKey($event, i, 1)"
+          (keydown.arrowup)="onViewKey($event, i, -1)"
+          (keydown.arrowdown)="onViewKey($event, i, 1)"
         >
           <ui-icon [name]="opt.icon" [size]="14" />
         </button>

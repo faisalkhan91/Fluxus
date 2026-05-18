@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -54,6 +61,7 @@ export class ProjectsComponent {
   protected projectsData = inject(ProjectsDataService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected slugify = slugify;
 
   private expandedSet = signal(new Set<string>());
@@ -169,6 +177,37 @@ export class ProjectsComponent {
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
+  }
+
+  /**
+   * Roving tabindex + selection move for the sort radiogroup. ARIA's
+   * `radiogroup` pattern wants arrow keys (not Tab) to traverse the
+   * options, with the focused option becoming the new selection. We
+   * `.focus()` the next button explicitly even though its tabindex
+   * is `-1` until the next render — `.focus()` ignores tabindex and
+   * the attribute will catch up on the next change-detection pass.
+   */
+  protected onSortKey(event: Event, currentIndex: number, dir: -1 | 1): void {
+    event.preventDefault();
+    const opts = this.sortOptions;
+    const next = (currentIndex + dir + opts.length) % opts.length;
+    this.setSort(opts[next].key);
+    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>(
+      '.projects-sort-option',
+    );
+    buttons[next]?.focus();
+  }
+
+  /** Roving tabindex + selection move for the view radiogroup. */
+  protected onViewKey(event: Event, currentIndex: number, dir: -1 | 1): void {
+    event.preventDefault();
+    const opts = this.viewOptions;
+    const next = (currentIndex + dir + opts.length) % opts.length;
+    this.setView(opts[next].key);
+    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>(
+      '.projects-view-option',
+    );
+    buttons[next]?.focus();
   }
 
   protected isExpanded(title: string): boolean {
