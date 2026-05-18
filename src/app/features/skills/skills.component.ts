@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ElementRef,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { SkillBadgeComponent } from '@ui/skill-badge/skill-badge.component';
@@ -47,6 +54,7 @@ export class SkillsComponent {
   protected slugify = slugify;
 
   private readonly media = inject(MediaQueryService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly expandedCategories = signal<Record<string, boolean>>({});
   protected readonly viewMode = signal<ViewMode>('grid');
 
@@ -128,6 +136,23 @@ export class SkillsComponent {
 
   protected setViewMode(mode: ViewMode): void {
     this.viewMode.set(mode);
+  }
+
+  /**
+   * Roving tabindex + selection move for the view radiogroup. ARIA's
+   * `radiogroup` pattern wants arrow keys to traverse + select; pairs
+   * with `[tabindex]` bindings on the buttons so Tab lands on the
+   * active option only. Mirrors `ProjectsComponent.onViewKey`.
+   */
+  protected onViewKey(event: Event, currentIndex: number, dir: -1 | 1): void {
+    event.preventDefault();
+    const opts = this.viewOptions;
+    const next = (currentIndex + dir + opts.length) % opts.length;
+    this.setViewMode(opts[next].key);
+    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>(
+      '.skills-view-option',
+    );
+    buttons[next]?.focus();
   }
 
   protected usageFor(skill: Skill): SkillUsage | undefined {
