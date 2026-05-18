@@ -7,30 +7,40 @@
   />
   <div class="projects-toolbar">
     <div class="projects-sort-row" role="radiogroup" aria-label="Sort projects">
-      @for (opt of sortOptions; track opt.key) {
+      @for (opt of sortOptions; track opt.key; let i = $index) {
         <button
           type="button"
           class="projects-sort-option"
           role="radio"
           [attr.aria-checked]="sort() === opt.key"
+          [tabindex]="sort() === opt.key ? 0 : -1"
           [class.active]="sort() === opt.key"
           (click)="setSort(opt.key)"
+          (keydown.arrowleft)="onSortKey($event, i, -1)"
+          (keydown.arrowright)="onSortKey($event, i, 1)"
+          (keydown.arrowup)="onSortKey($event, i, -1)"
+          (keydown.arrowdown)="onSortKey($event, i, 1)"
         >
           {{ opt.label }}
         </button>
       }
     </div>
     <div class="projects-view-row" role="radiogroup" aria-label="View mode">
-      @for (opt of viewOptions; track opt.key) {
+      @for (opt of viewOptions; track opt.key; let i = $index) {
         <button
           type="button"
           class="projects-view-option"
           role="radio"
           [attr.aria-checked]="view() === opt.key"
+          [tabindex]="view() === opt.key ? 0 : -1"
           [attr.aria-label]="opt.label"
           [attr.title]="opt.label"
           [class.active]="view() === opt.key"
           (click)="setView(opt.key)"
+          (keydown.arrowleft)="onViewKey($event, i, -1)"
+          (keydown.arrowright)="onViewKey($event, i, 1)"
+          (keydown.arrowup)="onViewKey($event, i, -1)"
+          (keydown.arrowdown)="onViewKey($event, i, 1)"
         >
           <ui-icon [name]="opt.icon" [size]="14" />
         </button>
