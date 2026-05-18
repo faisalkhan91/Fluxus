@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 
 import { APP_VERSION } from './app-version.generated';
 import { AppUpdateService } from './app-update.service';
+import { ErrorToastService } from './error-toast.service';
 
 @Component({ template: '' })
 class HomeComponent {}
@@ -155,6 +156,37 @@ describe('AppUpdateService', () => {
 
       await router.navigate(['/about']);
       expect(reload).toHaveBeenCalledOnce();
+    });
+
+    it('pushes a sticky "Update available" toast with a Reload action when deferring', async () => {
+      const { service, sw } = await setup({ scrollY: 500 });
+      const toasts = TestBed.inject(ErrorToastService);
+      service.init();
+      await flushMicrotasks();
+
+      expect(toasts.toasts()).toHaveLength(0);
+
+      sw.versionUpdates.next({ type: 'VERSION_READY' });
+      await flushMicrotasks();
+
+      const items = toasts.toasts();
+      expect(items).toHaveLength(1);
+      expect(items[0].title).toBe('Update available');
+      expect(items[0].severity).toBe('error');
+      expect(items[0].actionLabel).toBe('Reload');
+      expect(typeof items[0].action).toBe('function');
+    });
+
+    it('does not push a toast when the user is idle (silent reload covers it)', async () => {
+      const { service, sw } = await setup({ scrollY: 0 });
+      const toasts = TestBed.inject(ErrorToastService);
+      service.init();
+      await flushMicrotasks();
+
+      sw.versionUpdates.next({ type: 'VERSION_READY' });
+      await flushMicrotasks();
+
+      expect(toasts.toasts()).toHaveLength(0);
     });
 
     it('ignores non-VERSION_READY events (e.g. VERSION_DETECTED)', async () => {
