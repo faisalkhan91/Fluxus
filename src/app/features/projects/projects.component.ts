@@ -43,6 +43,14 @@ export type ProjectView = 'grid' | 'list';
 const ALLOWED_VIEWS: readonly ProjectView[] = ['grid', 'list'];
 const DEFAULT_VIEW: ProjectView = 'list';
 
+/** Coerce a GitHub `pushedAt` ISO string to a sortable timestamp;
+ *  missing or malformed values fall to 0 so they sort to the bottom. */
+function parsePushedAt(pushedAt: string | null | undefined): number {
+  if (!pushedAt) return 0;
+  const ms = Date.parse(pushedAt);
+  return Number.isFinite(ms) ? ms : 0;
+}
+
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
@@ -97,8 +105,14 @@ export class ProjectsComponent {
         });
       case 'updated':
         return base.sort((a, b) => {
-          const ta = a.github?.pushedAt ? Date.parse(a.github.pushedAt) : 0;
-          const tb = b.github?.pushedAt ? Date.parse(b.github.pushedAt) : 0;
+          // `Date.parse` returns NaN for malformed strings; without an
+          // explicit isNaN check `(NaN - 0)` is NaN, which is *neither*
+          // `> 0` nor `< 0`, leaving JS's stable sort to float the bad
+          // entry to an unpredictable position. Coerce missing/invalid
+          // dates to 0 so they sort to the bottom (and ties fall through
+          // to the featured tiebreak).
+          const ta = parsePushedAt(a.github?.pushedAt);
+          const tb = parsePushedAt(b.github?.pushedAt);
           if (tb !== ta) return tb - ta;
           return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
         });
