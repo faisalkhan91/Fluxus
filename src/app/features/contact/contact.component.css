@@ -219,7 +219,7 @@
   color: var(--text-primary);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .contact-grid {
     grid-template-columns: 1fr;
   }

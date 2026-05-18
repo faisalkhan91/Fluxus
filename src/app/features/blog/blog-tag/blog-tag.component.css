@@ -161,7 +161,7 @@
   padding-right: var(--space-1);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .post-grid {
     grid-template-columns: 1fr;
   }

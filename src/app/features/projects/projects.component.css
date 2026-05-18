@@ -382,7 +382,7 @@
   overflow: hidden;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .projects-list-hero {
     grid-template-columns: 1fr;
     gap: var(--space-4);
@@ -583,7 +583,7 @@ a.tag:focus-visible {
   color: var(--accent-hover);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .projects-grid {
     display: flex;
     overflow-x: auto;
