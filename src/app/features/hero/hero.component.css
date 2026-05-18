@@ -661,7 +661,7 @@
   color: var(--accent);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .hero {
     min-height: calc(100vh - var(--nav-pill-height) - var(--space-12));
     padding: var(--space-6);

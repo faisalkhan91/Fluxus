@@ -1307,7 +1307,7 @@ img[src*='amazonwebservices-original-wordmark'] {
   margin-right: var(--space-2);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .prose h1 {
     font-size: 1.6rem;
   }

@@ -238,7 +238,7 @@
 
 /* === Mobile === */
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .not-found {
     padding: var(--space-4);
     gap: var(--space-4);

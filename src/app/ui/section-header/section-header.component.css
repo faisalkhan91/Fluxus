@@ -71,7 +71,7 @@
   width: 64px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .header-content {
     padding-right: calc(var(--mobile-toggle-size) + var(--space-3));
   }
