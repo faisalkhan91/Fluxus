@@ -213,3 +213,11 @@
      suppress the pill's own ring so we don't stack two outlines. */
   outline: none;
 }
+
+/* Single-colour monochrome icons (Kafka, Cursor, Splunk, …) vanish
+   against dark surfaces because their fills are near-black. The
+   token `--icon-mono-filter` is `none` on light themes and an
+   invert() on dark themes (defined in styles.css). */
+.badge-icon--mono {
+  filter: var(--icon-mono-filter, none);
+}

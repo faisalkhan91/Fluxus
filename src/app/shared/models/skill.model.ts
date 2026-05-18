@@ -32,6 +32,13 @@ export interface Skill {
    * whichever variant has live matches.
    */
   aliases?: string[];
+  /**
+   * Flag this skill's icon as single-colour monochrome (e.g. Kafka,
+   * Cursor, Splunk). Enables a CSS filter on dark themes so the icon
+   * stays visible against dark surfaces without touching coloured
+   * logos. No-op on light themes.
+   */
+  mono?: boolean;
 }
 
 export interface SkillCategory {
