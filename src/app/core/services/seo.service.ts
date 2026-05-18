@@ -37,9 +37,19 @@ export class SeoService {
           ? `${seo['title']} - ${environment.siteName}`
           : environment.siteName;
         const description = seo?.['description'] ?? DEFAULT_DESCRIPTION;
+        // Canonical URL contract: root keeps its trailing slash, every
+        // other route is normalised without one. This matches what
+        // `scripts/inject-meta.mjs` bakes into the prerendered HTML at
+        // build time, so the SSG canonical and the post-hydration
+        // canonical agree exactly. The previous shape stripped the
+        // trailing slash on every path (root included), producing two
+        // competing canonical signals on the home route across a single
+        // session.
+        const path = event.urlAfterRedirects;
         const url =
-          `${environment.siteUrl}${event.urlAfterRedirects}`.replace(/\/$/, '') ||
-          environment.siteUrl;
+          path === '/' || path === ''
+            ? `${environment.siteUrl}/`
+            : `${environment.siteUrl}${path}`.replace(/\/$/, '');
 
         this.title.setTitle(pageTitle);
         this.meta.updateTag({ name: 'description', content: description });

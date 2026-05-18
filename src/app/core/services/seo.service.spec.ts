@@ -88,9 +88,9 @@ describe('SeoService', () => {
     expect(metaService.getTag('name="twitter:image"')?.content).toContain('og-image');
   });
 
-  it('should update canonical when navigating to root', async () => {
+  it('preserves the trailing slash on the root canonical (matches the prerendered HTML)', async () => {
     await router.navigate(['/']);
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    expect(canonical?.getAttribute('href')).toBe(environment.siteUrl);
+    expect(canonical?.getAttribute('href')).toBe(`${environment.siteUrl}/`);
   });
 });
