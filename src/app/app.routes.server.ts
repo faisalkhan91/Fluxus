@@ -1,5 +1,29 @@
 import { RenderMode, PrerenderFallback, ServerRoute } from '@angular/ssr';
 
+/**
+ * Read + parse `src/assets/blog/posts.json` with a descriptive error
+ * surface for the SSG prerender pass.
+ *
+ * Bare `JSON.parse(raw)` rethrows a generic `SyntaxError: Unexpected
+ * token …` that points at the parser internals, not the source file.
+ * That made build failures painful to triage when posts.json was
+ * malformed (an unclosed quote in a recent commit could halt the
+ * entire deploy with no breadcrumb). Wrapping here means a bad file
+ * fails fast with both the path and the original parser message.
+ */
+async function readPostsJson<T>(): Promise<T[]> {
+  const { readFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  const path = join(process.cwd(), 'src/assets/blog/posts.json');
+  const raw = await readFile(path, 'utf-8');
+  try {
+    return JSON.parse(raw) as T[];
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to parse ${path}: ${message}`);
+  }
+}
+
 export const serverRoutes: ServerRoute[] = [
   { path: '', renderMode: RenderMode.Prerender },
   { path: 'about', renderMode: RenderMode.Prerender },
@@ -14,10 +38,7 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,
     async getPrerenderParams() {
-      const { readFile } = await import('node:fs/promises');
-      const { join } = await import('node:path');
-      const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
-      const posts: { tags: string[]; draft?: boolean; date: string }[] = JSON.parse(raw);
+      const posts = await readPostsJson<{ tags: string[]; draft?: boolean; date: string }>();
       const tags = new Set<string>();
       // Drafts and future-dated (scheduled) posts are excluded so we don't
       // prerender (or sitemap) a tag page whose only contributing post isn't
@@ -85,13 +106,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,
     async getPrerenderParams() {
-      const { readFile } = await import('node:fs/promises');
-      const { join } = await import('node:path');
-      const raw = await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8');
       // Drafts are still prerendered at /blog/<slug> so the author can review
       // the page in production form before publishing — they're just hidden
       // from the listing surfaces and the sitemap/feed.
-      const posts: { slug: string }[] = JSON.parse(raw);
+      const posts = await readPostsJson<{ slug: string }>();
       return posts.map((p) => ({ slug: p.slug }));
     },
   },
