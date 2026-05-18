@@ -152,6 +152,9 @@ export class BlogService {
   }
 
   private sortByDateDesc(posts: BlogPost[]): BlogPost[] {
-    return [...posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // ISO `YYYY-MM-DD` is lexicographically monotone with calendar order,
+    // so a string compare gives the same result as `new Date(...).getTime()`
+    // without allocating two Date objects per comparison.
+    return [...posts].sort((a, b) => b.date.localeCompare(a.date));
   }
 }
