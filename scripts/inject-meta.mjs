@@ -1,7 +1,7 @@
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { join, relative, sep, posix } from 'node:path';
 import { createRequire } from 'node:module';
-import { loadProjectTagSlugs, loadProjectEntries } from './lib/projects.mjs';
+import { loadProjectTagSlugs, loadProjectEntries, slugify } from './lib/projects.mjs';
 
 const require = createRequire(import.meta.url);
 const config = require('../site.config.json');
@@ -26,17 +26,6 @@ const blogManifest = JSON.parse(
 );
 const blogBySlug = new Map(blogManifest.map((p) => [p.slug, p]));
 
-// Tag slug helper (must match `slugify` in src/app/shared/utils/string.utils.ts).
-function tagSlug(value) {
-  return String(value)
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 // Map of tag slug -> { label, posts: [] } across published posts (non-draft
 // AND publish date today-or-earlier). Future-dated posts are excluded so the
 // CollectionPage JSON-LD and tag-page <head> metadata stay aligned with the
@@ -47,7 +36,7 @@ for (const post of blogManifest) {
   if (post.draft) continue;
   if (post.date > todayYmd) continue;
   for (const tag of post.tags ?? []) {
-    const slug = tagSlug(tag);
+    const slug = slugify(tag);
     if (!slug) continue;
     if (!tagsBySlug.has(slug)) tagsBySlug.set(slug, { label: tag, posts: [] });
     tagsBySlug.get(slug).posts.push(post);
