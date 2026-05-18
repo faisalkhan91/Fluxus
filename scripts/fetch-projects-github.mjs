@@ -324,14 +324,49 @@ export const PROJECTS: readonly Project[] = ${JSON.stringify(projects, null, 2)}
   await writeFile(GENERATED_TS, serialized, 'utf-8');
 }
 
+/**
+ * Map of incoming tag forms (case-insensitive lookup, after trim) to a
+ * canonical surface label. Both repos' GitHub topics and hand-written
+ * `overrides.tags` flow through this — so an alias appearing on one
+ * project as "amazon-web-services" and on another as "AWS" collapses
+ * to a single canonical label, and therefore a single sitemap /
+ * `/projects/tag/<slug>` URL. Without this, semantic duplicates dilute
+ * crawl budget and link equity across near-identical archive pages.
+ *
+ * Add an entry whenever a duplicate `/projects/tag/<slug>` URL shows
+ * up in the sitemap. Keys are lowercased / trimmed; values are the
+ * exact label that should appear in the project's tag list.
+ */
+const TAG_ALIAS_MAP = new Map([
+  ['amazon-web-services', 'AWS'],
+  ['amazon web services', 'AWS'],
+  ['artificial-intelligence', 'AI'],
+  ['artificial intelligence', 'AI'],
+  ['bigdata', 'Big Data'],
+  ['big-data', 'Big Data'],
+]);
+
+function canonicalTag(tag) {
+  const key = String(tag).toLowerCase().trim();
+  return TAG_ALIAS_MAP.get(key) ?? tag;
+}
+
+/**
+ * Combine hand-written `tags` and GitHub `topics` into a single ordered
+ * list with no slug duplicates. Hand tags lead so author intent wins on
+ * ties; topics fill in the rest. Every entry is normalised through
+ * `canonicalTag` before slug-deduping so semantic aliases collapse to
+ * one canonical label / URL.
+ */
 function mergeTagsWithTopics(tags, topics) {
-  const seen = new Set((tags ?? []).map((t) => slugify(t)).filter(Boolean));
-  const out = [...(tags ?? [])];
-  for (const topic of topics ?? []) {
-    const s = slugify(topic);
-    if (!s || seen.has(s)) continue;
-    seen.add(s);
-    out.push(topic);
+  const seen = new Set();
+  const out = [];
+  for (const raw of [...(tags ?? []), ...(topics ?? [])]) {
+    const canonical = canonicalTag(raw);
+    const slug = slugify(canonical);
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push(canonical);
   }
   return out;
 }
