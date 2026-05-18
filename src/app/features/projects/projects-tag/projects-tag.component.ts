@@ -103,11 +103,17 @@ export class ProjectsTagComponent {
       const slug = this.tagSlug();
       const label = this.tagLabel();
       if (!slug || !label) return;
-      untracked(() => this.updateMetaTags(slug, label));
+      untracked(() => this.updateMetaTags({ slug, label }));
     });
   }
 
-  private updateMetaTags(slug: string, label: string): void {
+  /**
+   * Named-args shape so the slug and label can never be swapped at the
+   * call site — both are plain strings, and a positional
+   * `updateMetaTags(label, slug)` mistake would compile cleanly while
+   * producing a wrong canonical URL like `/projects/tag/TypeScript`.
+   */
+  private updateMetaTags({ slug, label }: { slug: string; label: string }): void {
     const url = `${environment.siteUrl}/projects/tag/${slug}`;
     const title = `Projects tagged "${label}" - ${environment.siteName}`;
     const description = `Every project in Faisal Khan's portfolio tagged with "${label}".`;
