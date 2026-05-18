@@ -232,7 +232,7 @@ export class MarkdownService {
 
   render(md: string): string {
     this.currentToc = [];
-    return this.marked.parse(md) as string;
+    return this.parseSafely(md);
   }
 
   /**
@@ -242,7 +242,30 @@ export class MarkdownService {
    */
   renderWithToc(md: string): { html: string; toc: TocEntry[] } {
     this.currentToc = [];
-    const html = this.marked.parse(md) as string;
+    const html = this.parseSafely(md);
     return { html, toc: [...this.currentToc] };
+  }
+
+  /**
+   * Wraps `marked.parse(md)` so a parser exception doesn't bubble up and
+   * leave the post page blank. Without the guard, an unexpected token in
+   * a post (or a future marked / extension regression) would throw out
+   * of the consumer's `computed()` and skip the component's error
+   * branch — the user sees a blank frame with only a console error.
+   * Returning a small fallback HTML keeps the post route in its `ready`
+   * view-state while making the failure visible to the reader.
+   */
+  private parseSafely(md: string): string {
+    try {
+      return this.marked.parse(md) as string;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown parser error';
+      return (
+        `<aside class="callout callout--warning" role="note">` +
+        `<p class="callout-title">Could not render this post</p>` +
+        `<p>The Markdown parser failed: ${escapeHtml(message)}.</p>` +
+        `</aside>`
+      );
+    }
   }
 }
