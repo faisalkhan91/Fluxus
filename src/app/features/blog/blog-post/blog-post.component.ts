@@ -27,6 +27,7 @@ import { ThemeService } from '@core/services/theme.service';
 import { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
 import { BlogPostSeoService } from './blog-post-seo.service';
+import { MermaidService } from './mermaid.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
@@ -81,6 +82,7 @@ export class BlogPostComponent {
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
   private blogSeo = inject(BlogPostSeoService);
+  private mermaid = inject(MermaidService);
   private document = inject(DOCUMENT);
 
   /**
@@ -372,26 +374,24 @@ export class BlogPostComponent {
       const layout = this.postLayout();
       this.content();
       if (!layout) return;
-      untracked(() => this.scheduleMermaidRender(layout));
+      untracked(() => this.mermaid.scheduleRender(layout));
     });
 
     /*
-      Mermaid is initialised with the *current* `data-theme` attribute,
-      which means already-rendered SVGs keep their original palette after
-      a theme toggle. Watch the `ThemeService.theme` signal and re-render
-      the diagrams in place when the user flips themes — `revertMermaid`
-      restores the original source placeholders (we stash the source as
-      `data-mermaid-source` on the rendered figure for exactly this
-      reason) and `scheduleMermaidRender` then re-runs the lazy import +
-      render path with the new theme baked in.
+      Mermaid is initialised with the *current* theme scheme, so already-
+      rendered SVGs keep their original palette after a theme toggle.
+      Watch `ThemeService.theme` and re-render in place when the scheme
+      flips — `revertIfRendered` rebuilds the source placeholders and
+      `scheduleRender` re-runs the lazy import + render with the new
+      palette baked in.
     */
     effect(() => {
       const themeName = this.theme.theme();
       const layout = this.postLayout();
       if (!layout) return;
       untracked(() => {
-        if (this.revertMermaidIfRendered(layout)) {
-          this.scheduleMermaidRender(layout);
+        if (this.mermaid.revertIfRendered(layout)) {
+          this.mermaid.scheduleRender(layout);
         }
         // Reference `themeName` so the linter and future readers see why
         // this effect exists. The signal subscription is what wires it.
@@ -591,99 +591,6 @@ export class BlogPostComponent {
       fn();
     }, ms);
     this.timers.add(id);
-  }
-
-  /**
-   * Defer the actual mermaid render until the browser is idle. Falls back
-   * to a 200 ms `setTimeout` on Safari (which still ships no
-   * `requestIdleCallback`) so the import never blocks the first paint or
-   * the first input.
-   */
-  private scheduleMermaidRender(root: HTMLElement): void {
-    if (typeof window === 'undefined') return;
-    type IdleWindow = Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
-    };
-    const w = window as IdleWindow;
-    const run = () => void this.renderMermaidIfNeeded(root);
-    if (typeof w.requestIdleCallback === 'function') {
-      w.requestIdleCallback(run, { timeout: 1500 });
-    } else {
-      setTimeout(run, 200);
-    }
-  }
-
-  /**
-   * Finds every `.mermaid-source` placeholder emitted by MarkdownService
-   * and replaces it with rendered SVG via the mermaid lib. Lazy import +
-   * one initialisation per page; no-ops on the server. The original
-   * source is stashed on the rendered `<figure>` as
-   * `data-mermaid-source` so a subsequent theme toggle can revert and
-   * re-render with the new palette (see `revertMermaidIfRendered`).
-   */
-  private async renderMermaidIfNeeded(root: HTMLElement): Promise<void> {
-    if (typeof window === 'undefined') return;
-    const placeholders = Array.from(
-      root.querySelectorAll<HTMLElement>('.mermaid-source[data-mermaid-source]'),
-    );
-    if (placeholders.length === 0) return;
-    try {
-      const mermaid = (await import('mermaid')).default;
-      mermaid.initialize({
-        startOnLoad: false,
-        // Drive Mermaid's coarse palette from the active theme's scheme,
-        // not the literal `data-theme` value. The latter used to be the
-        // string `'light'` or unset; with the multi-theme registry it can
-        // be any registered id (`solarized-light`, `tokyo-night`, …),
-        // so we ask the ThemeService for the scheme directly.
-        theme: this.theme.scheme() === 'light' ? 'default' : 'dark',
-        securityLevel: 'strict',
-      });
-      let id = 0;
-      for (const node of placeholders) {
-        const source = node.textContent ?? '';
-        try {
-          const { svg } = await mermaid.render(`mermaid-${Date.now()}-${id++}`, source);
-          const wrapper = document.createElement('figure');
-          wrapper.className = 'mermaid';
-          wrapper.innerHTML = svg;
-          // Preserve the source so theme toggles can re-render in place.
-          wrapper.setAttribute('data-mermaid-source', source);
-          node.replaceWith(wrapper);
-        } catch {
-          // On failure, leave the source visible so the reader can still see
-          // the diagram intent (matches the no-JS prerender behaviour).
-          node.removeAttribute('data-mermaid-source');
-        }
-      }
-    } catch {
-      // mermaid lib failed to load — leave placeholders intact.
-    }
-  }
-
-  /**
-   * Inverse of `renderMermaidIfNeeded`: walks every `<figure class="mermaid"
-   * data-mermaid-source>` already in the DOM and rewrites it back to the
-   * `<div class="mermaid-source">…source…</div>` placeholder shape that
-   * `renderMermaidIfNeeded` knows how to consume. Returns `true` when
-   * any nodes were reverted (so the caller knows whether to schedule a
-   * re-render).
-   */
-  private revertMermaidIfRendered(root: HTMLElement): boolean {
-    if (typeof document === 'undefined') return false;
-    const rendered = Array.from(
-      root.querySelectorAll<HTMLElement>('figure.mermaid[data-mermaid-source]'),
-    );
-    if (rendered.length === 0) return false;
-    for (const figure of rendered) {
-      const source = figure.getAttribute('data-mermaid-source') ?? '';
-      const placeholder = document.createElement('div');
-      placeholder.className = 'mermaid-source';
-      placeholder.setAttribute('data-mermaid-source', '');
-      placeholder.textContent = source;
-      figure.replaceWith(placeholder);
-    }
-    return true;
   }
 
 }
