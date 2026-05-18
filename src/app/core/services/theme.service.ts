@@ -96,9 +96,9 @@ export class ThemeService {
         this.syncMetaThemeColor(def);
       });
 
-      if (this.mediaQuery && !localStorage.getItem(STORAGE_KEY)) {
+      if (this.mediaQuery && !this.safeGetItem(STORAGE_KEY)) {
         const onChange = (e: MediaQueryListEvent) => {
-          if (!localStorage.getItem(STORAGE_KEY)) {
+          if (!this.safeGetItem(STORAGE_KEY)) {
             this.theme.set(e.matches ? DEFAULT_LIGHT_ID : DEFAULT_DARK_ID);
           }
         };
@@ -137,7 +137,7 @@ export class ThemeService {
     }
 
     if (this.isBrowser) {
-      localStorage.setItem(STORAGE_KEY, id);
+      this.safeSetItem(STORAGE_KEY, id);
       this.rememberByScheme(id);
     }
   }
@@ -160,14 +160,14 @@ export class ThemeService {
 
   private resolveInitial(): ThemeId {
     if (!this.isBrowser) return DEFAULT_DARK_ID;
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = this.safeGetItem(STORAGE_KEY);
     if (stored !== null) {
       if (isThemeId(stored)) return stored;
       const migrated = LEGACY_TO_ID[stored];
       if (migrated) {
         // Rewrite the legacy value so subsequent loads (and the inline
         // pre-paint script's allowlist) take the fast path.
-        localStorage.setItem(STORAGE_KEY, migrated);
+        this.safeSetItem(STORAGE_KEY, migrated);
         return migrated;
       }
     }
@@ -190,15 +190,16 @@ export class ThemeService {
   private readLastByScheme(): LastByScheme {
     const fallback: LastByScheme = { dark: DEFAULT_DARK_ID, light: DEFAULT_LIGHT_ID };
     if (!this.isBrowser) return fallback;
+    const raw = this.safeGetItem(LAST_BY_SCHEME_KEY);
+    if (!raw) return fallback;
     try {
-      const raw = localStorage.getItem(LAST_BY_SCHEME_KEY);
-      if (!raw) return fallback;
       const parsed = JSON.parse(raw) as Partial<LastByScheme>;
       return {
         dark: isThemeId(parsed.dark) ? parsed.dark : DEFAULT_DARK_ID,
         light: isThemeId(parsed.light) ? parsed.light : DEFAULT_LIGHT_ID,
       };
     } catch {
+      // JSON.parse failure (corrupted entry, future schema change).
       return fallback;
     }
   }
@@ -208,11 +209,32 @@ export class ThemeService {
     const def = getThemeDef(id);
     const current = this.readLastByScheme();
     const next: LastByScheme = { ...current, [def.scheme]: id };
+    this.safeSetItem(LAST_BY_SCHEME_KEY, JSON.stringify(next));
+  }
+
+  /**
+   * Defensive wrappers around `localStorage`. Safari in private browsing
+   * throws `SecurityError` on every access; quota-exceeded throws on
+   * write; the storage API itself can be missing in sandboxed iframes.
+   * Bare reads/writes propagating up through the service constructor
+   * crashed the entire app bootstrap on those platforms — swallowing
+   * here turns the loss into a silent no-op (theme falls back to the
+   * registry default and the user can still pick one for the session).
+   */
+  private safeGetItem(key: string): string | null {
     try {
-      localStorage.setItem(LAST_BY_SCHEME_KEY, JSON.stringify(next));
+      return localStorage.getItem(key);
     } catch {
-      // localStorage can throw in private mode / quota-exceeded; the
-      // visible signal swap has already happened, so swallow.
+      return null;
+    }
+  }
+
+  private safeSetItem(key: string, value: string): void {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // private mode / quota-exceeded / disabled storage — the runtime
+      // swap has already taken effect, so persistence is best-effort.
     }
   }
 }
