@@ -77,6 +77,32 @@ export class SeoService {
   }
 
   /**
+   * Upsert a `<link rel="<rel>" href="<href>">` entry on the document
+   * head, or remove it when `href` is null. Domain-neutral so callers
+   * own the rel string ('prev', 'next', 'alternate', etc.) rather than
+   * baking blog-specific knowledge into the SEO layer.
+   */
+  setLinkRel(rel: string, href: string | null): void {
+    if (!href) {
+      this.removeLinkRel(rel);
+      return;
+    }
+    const head = this.document.head;
+    let link = head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+    if (!link) {
+      link = this.document.createElement('link');
+      link.rel = rel;
+      head.appendChild(link);
+    }
+    link.href = href;
+  }
+
+  /** Remove a `<link rel="...">` entry if present; no-op otherwise. */
+  removeLinkRel(rel: string): void {
+    this.document.head.querySelector(`link[rel="${rel}"]`)?.remove();
+  }
+
+  /**
    * Applies the full dynamic-meta tag set for a `seo: { dynamicMeta: true }`
    * route: page title plus nine `<meta>` tags covering OpenGraph, Twitter
    * Cards, and the basic `name="description"`. Consolidates the same

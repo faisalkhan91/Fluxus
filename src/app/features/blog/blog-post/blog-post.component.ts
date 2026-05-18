@@ -23,10 +23,10 @@ import { BlogService } from '@core/services/blog.service';
 import { MarkdownService } from '@core/services/markdown.service';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import { ErrorToastService } from '@core/services/error-toast.service';
-import { SeoService } from '@core/services/seo.service';
 import { ThemeService } from '@core/services/theme.service';
 import { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
+import { BlogPostSeoService } from './blog-post-seo.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
@@ -80,7 +80,7 @@ export class BlogPostComponent {
   private theme = inject(ThemeService);
   private destroyRef = inject(DestroyRef);
   private elRef = inject(ElementRef);
-  private seo = inject(SeoService);
+  private blogSeo = inject(BlogPostSeoService);
   private document = inject(DOCUMENT);
 
   /**
@@ -344,7 +344,7 @@ export class BlogPostComponent {
     // Update <title> + meta tags as the post resolves.
     effect(() => {
       const post = this.meta();
-      if (post) untracked(() => this.updateMetaTags(post));
+      if (post) untracked(() => this.blogSeo.updateMetaTags(post));
     });
 
     // Sync `<link rel="prev|next">` to the current post's series neighbours.
@@ -353,7 +353,7 @@ export class BlogPostComponent {
     effect(() => {
       const series = this.series();
       const slug = this.slug();
-      untracked(() => this.updateSeriesLinkRels(slug, series));
+      untracked(() => this.blogSeo.updateSeriesLinkRels(slug, series));
     });
 
     // Re-apply post-render side effects (anchor href rewrite, lazy mermaid
@@ -400,8 +400,7 @@ export class BlogPostComponent {
     });
 
     this.destroyRef.onDestroy(() => {
-      this.removeLinkRel('prev');
-      this.removeLinkRel('next');
+      this.blogSeo.clearSeriesLinkRels();
     });
 
     afterNextRender(() => {
@@ -687,63 +686,4 @@ export class BlogPostComponent {
     return true;
   }
 
-  /**
-   * Mirror the post's series neighbours onto `<link rel="prev|next">` in
-   * the document head. Search engines and reading-mode UIs use these
-   * hints to stitch a multi-part article into a single logical document.
-   * Renders nothing for one-off posts and clears stale entries the moment
-   * the route changes.
-   */
-  private updateSeriesLinkRels(
-    slug: string,
-    series: { posts: BlogPost[]; index: number } | undefined,
-  ): void {
-    if (!slug || !series || series.posts.length < 2) {
-      this.removeLinkRel('prev');
-      this.removeLinkRel('next');
-      return;
-    }
-    const prev = series.posts[series.index - 1];
-    const next = series.posts[series.index + 1];
-    this.setLinkRel('prev', prev ? `${environment.siteUrl}/blog/${prev.slug}` : null);
-    this.setLinkRel('next', next ? `${environment.siteUrl}/blog/${next.slug}` : null);
-  }
-
-  /** Upsert a `<link rel="…">` entry, or remove it when `href` is null. */
-  private setLinkRel(rel: 'prev' | 'next', href: string | null): void {
-    if (!href) {
-      this.removeLinkRel(rel);
-      return;
-    }
-    const head = this.document.head;
-    let link = head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
-    if (!link) {
-      link = this.document.createElement('link');
-      link.rel = rel;
-      head.appendChild(link);
-    }
-    link.href = href;
-  }
-
-  private removeLinkRel(rel: 'prev' | 'next'): void {
-    this.document.head.querySelector(`link[rel="${rel}"]`)?.remove();
-  }
-
-  private updateMetaTags(post: BlogPost): void {
-    const url = `${environment.siteUrl}/blog/${post.slug}`;
-    const title = `${post.title} - ${environment.siteName}`;
-    const cover = post.cover
-      ? post.cover.startsWith('http')
-        ? post.cover
-        : `${environment.siteUrl}${post.cover.startsWith('/') ? '' : '/'}${post.cover}`
-      : `${environment.siteUrl}/og/${post.slug}.png`;
-
-    this.seo.updateDynamicMeta({
-      title,
-      description: post.excerpt,
-      url,
-      type: 'article',
-      image: cover,
-    });
-  }
 }
