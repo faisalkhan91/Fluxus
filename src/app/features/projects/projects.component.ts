@@ -17,6 +17,7 @@ import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { Project } from '@shared/models/project.model';
 import { slugify } from '@shared/utils/string.utils';
+import { assertNever } from '@shared/utils/exhaustive.utils';
 
 /**
  * Sort key for the projects grid. Mirrored in the `?sort=` query
@@ -93,7 +94,12 @@ export class ProjectsComponent {
    */
   protected readonly visibleProjects = computed<Project[]>(() => {
     const base = [...this.projectsData.projects()];
-    switch (this.sort()) {
+    // Capture the signal value in a local so TypeScript can narrow it
+    // across cases and recognise it as `never` in the default arm —
+    // calling `this.sort()` again would defeat the narrowing because
+    // signals are opaque to flow analysis.
+    const mode = this.sort();
+    switch (mode) {
       case 'alpha':
         return base.sort((a, b) => a.title.localeCompare(b.title));
       case 'stars':
@@ -117,8 +123,12 @@ export class ProjectsComponent {
           return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
         });
       case 'featured':
-      default:
         return base;
+      default:
+        // Exhaustive guard: a future ProjectSort value added to the
+        // union surfaces here as a compile error so the switch can't
+        // silently fall through to the catalog order.
+        return assertNever(mode);
     }
   });
 

@@ -13,6 +13,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
+import { assertNever } from '@shared/utils/exhaustive.utils';
 import { CommandCatalogService, type CommandItem } from './command-catalog.service';
 
 @Component({
@@ -141,16 +142,23 @@ export class CommandPaletteComponent {
 
   protected select(item: CommandItem): void {
     this.close();
-    if (item.kind === 'action') {
-      item.run?.();
-      return;
-    }
-    if (item.route) {
-      if (item.fragment) {
-        this.router.navigate([item.route], { fragment: item.fragment });
-      } else {
-        this.router.navigate([item.route]);
-      }
+    switch (item.kind) {
+      case 'action':
+        item.run?.();
+        return;
+      case 'route':
+        if (!item.route) return;
+        if (item.fragment) {
+          this.router.navigate([item.route], { fragment: item.fragment });
+        } else {
+          this.router.navigate([item.route]);
+        }
+        return;
+      default:
+        // Exhaustive guard — adding a new CommandKind member surfaces
+        // here as a compile error so an unhandled kind can't silently
+        // close the palette without dispatching anything.
+        return assertNever(item.kind);
     }
   }
 }
