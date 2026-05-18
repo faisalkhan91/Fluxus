@@ -233,3 +233,155 @@ describe('BlogService — publish-date gating', () => {
     expect(newest.next?.slug).toBe('past-post');
   });
 });
+
+describe('BlogService — draft filtering', () => {
+  let service: BlogService;
+  let httpTesting: HttpTestingController;
+
+  /*
+    Two past-dated posts, one of them flagged `draft: true`. The publish-date
+    branch of `isPublished()` would let both through, so this fixture isolates
+    the draft branch — accidentally deleting `if (post.draft) return false`
+    from the helper would make this spec fail while every other spec stayed
+    green.
+  */
+  const POSTS: BlogPost[] = [
+    {
+      slug: 'visible-post',
+      title: 'Visible',
+      date: '2025-01-01',
+      excerpt: 'visible',
+      tags: ['angular'],
+      readingTime: '1 min',
+    },
+    {
+      slug: 'hidden-draft',
+      title: 'Draft',
+      date: '2025-02-01',
+      excerpt: 'draft',
+      tags: ['angular'],
+      readingTime: '1 min',
+      draft: true,
+    },
+  ];
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ErrorHandler, useValue: { handleError: () => undefined } },
+      ],
+    });
+    service = TestBed.inject(BlogService);
+    httpTesting = TestBed.inject(HttpTestingController);
+  });
+
+  it('hides draft:true posts from posts() even when their date is past', async () => {
+    await flushPosts(httpTesting, POSTS);
+    expect(service.posts().map((p) => p.slug)).toEqual(['visible-post']);
+  });
+
+  it('keeps draft posts in allPosts() so author tooling can still see them', async () => {
+    await flushPosts(httpTesting, POSTS);
+    expect(service.allPosts().map((p) => p.slug)).toEqual(['hidden-draft', 'visible-post']);
+  });
+
+  it('omits drafts from latestPosts() and from getAdjacentPosts() chains', async () => {
+    await flushPosts(httpTesting, POSTS);
+    expect(service.latestPosts().map((p) => p.slug)).toEqual(['visible-post']);
+    // Walking from `visible-post` finds no neighbours — the draft sat
+    // between visible-post and the start of the list but is invisible
+    // to the gate.
+    expect(service.getAdjacentPosts('visible-post')).toEqual({
+      prev: undefined,
+      next: undefined,
+    });
+  });
+});
+
+describe('BlogService — visibility change refresh', () => {
+  let service: BlogService;
+  let httpTesting: HttpTestingController;
+
+  const PRE = '2026-04-29';
+  const PUBLISH = '2026-04-30';
+
+  const POSTS: BlogPost[] = [
+    {
+      slug: 'tomorrow',
+      title: 'Tomorrow',
+      date: PUBLISH,
+      excerpt: 'tomorrow',
+      tags: ['angular'],
+      readingTime: '1 min',
+    },
+    {
+      slug: 'past',
+      title: 'Past',
+      date: '2025-01-01',
+      excerpt: 'past',
+      tags: ['angular'],
+      readingTime: '1 min',
+    },
+  ];
+
+  beforeEach(() => {
+    // Lock the clock at one calendar day before `PUBLISH` so the
+    // service constructs with a "today" that hides `tomorrow`.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(`${PRE}T12:00:00Z`));
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ErrorHandler, useValue: { handleError: () => undefined } },
+      ],
+    });
+    service = TestBed.inject(BlogService);
+    httpTesting = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('refreshes the published-post gate on visibilitychange when the tab returns to foreground', async () => {
+    await flushPosts(httpTesting, POSTS);
+
+    // Pre-publish: tomorrow's post is filtered out by the date gate.
+    expect(service.posts().map((p) => p.slug)).toEqual(['past']);
+
+    // Advance the clock past the publish boundary and fire the same
+    // visibilitychange event the runtime listens to. The captured
+    // service constructor wires this up against `document` directly.
+    vi.setSystemTime(new Date(`${PUBLISH}T00:00:05Z`));
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'visible',
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+    await waitForEffects();
+
+    // The signal flip propagates: `tomorrow` now satisfies the gate
+    // without any HTTP refetch and without requiring a manual reload.
+    expect(service.posts().map((p) => p.slug)).toEqual(['tomorrow', 'past']);
+  });
+
+  it('does not refresh on visibilitychange while the tab is hidden', async () => {
+    await flushPosts(httpTesting, POSTS);
+
+    vi.setSystemTime(new Date(`${PUBLISH}T00:00:05Z`));
+    Object.defineProperty(document, 'visibilityState', {
+      configurable: true,
+      get: () => 'hidden',
+    });
+    document.dispatchEvent(new Event('visibilitychange'));
+    await waitForEffects();
+
+    // Same set as before — the listener gates on `visibilityState ===
+    // 'visible'` so a tab going to background doesn't burn a recompute.
+    expect(service.posts().map((p) => p.slug)).toEqual(['past']);
+  });
+});
