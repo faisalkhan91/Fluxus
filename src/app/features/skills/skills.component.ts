@@ -116,10 +116,33 @@ export class SkillsComponent {
    */
   protected readonly visibleLimit = computed(() => (this.media.isMobile() ? 3 : 5));
 
-  protected visibleSkills(category: SkillCategory): Skill[] {
+  /**
+   * Per-category truncated skill list, indexed by category title.
+   *
+   * A plain `visibleSkills(cat)` method (the previous shape) returned a
+   * fresh `.slice()` on every change-detection pass for every category
+   * in the `@for` — defeating the `@for` differ's identity check and
+   * forcing it to re-render every tile every tick. Memoising as a single
+   * `computed()` over (`categories`, `visibleLimit`, `expandedCategories`)
+   * means each entry's array reference is stable until one of those
+   * three signals actually changes.
+   */
+  protected readonly visibleSkillsByCategory = computed<Map<string, Skill[]>>(() => {
     const limit = this.visibleLimit();
-    if (category.skills.length <= limit) return category.skills;
-    return this.isExpanded(category.title) ? category.skills : category.skills.slice(0, limit);
+    const expanded = this.expandedCategories();
+    const map = new Map<string, Skill[]>();
+    for (const cat of this.skillsData.categories()) {
+      if (cat.skills.length <= limit || expanded[cat.title]) {
+        map.set(cat.title, cat.skills);
+      } else {
+        map.set(cat.title, cat.skills.slice(0, limit));
+      }
+    }
+    return map;
+  });
+
+  protected visibleSkills(category: SkillCategory): Skill[] {
+    return this.visibleSkillsByCategory().get(category.title) ?? category.skills;
   }
 
   protected hiddenCount(category: SkillCategory): number {
