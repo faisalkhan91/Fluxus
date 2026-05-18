@@ -104,6 +104,20 @@ describe('ThemeService', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('crimson-dark');
   });
 
+  it('writes color-scheme to :root so native controls track the active theme', () => {
+    // Start at the dark default — scheme should be 'dark'.
+    TestBed.tick();
+    expect(document.documentElement.style.colorScheme).toBe('dark');
+
+    service.setTheme('crimson-light');
+    TestBed.tick();
+    expect(document.documentElement.style.colorScheme).toBe('light');
+
+    service.setTheme('tokyo-night');
+    TestBed.tick();
+    expect(document.documentElement.style.colorScheme).toBe('dark');
+  });
+
   it('rewrites <meta name="theme-color"> for the active scheme', () => {
     service.setTheme('tokyo-night');
     TestBed.tick();
