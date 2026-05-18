@@ -105,16 +105,24 @@ function renderSvg(post) {
 </svg>`;
 }
 
-let generated = 0;
-for (const post of posts) {
-  // Per-post `cover` field wins; auto-generation only fills missing covers.
-  if (post.cover) continue;
-  const svg = renderSvg(post);
-  const out = join(OUT_DIR, `${post.slug}.png`);
-  // sharp can rasterize SVG natively via librsvg.
-  await sharp(Buffer.from(svg)).png({ compressionLevel: 9, quality: 90 }).toFile(out);
-  console.log(`  OG ${post.slug}.png`);
-  generated++;
-}
+// Per-post `cover` field wins; auto-generation only fills missing covers.
+const targets = posts.filter((post) => !post.cover);
 
-console.log(`Wrote ${generated} OG card${generated === 1 ? '' : 's'} to ${OUT_DIR}.`);
+// Rasterize in parallel — sharp's encoder releases the JS thread while
+// librsvg + libpng do the CPU work, so a `Promise.all` lets the OS
+// schedule multiple posts concurrently. Build-time savings scale with
+// the post count; with 20+ missing-cover posts this collapses ~10–30 s
+// of serial wait into one parallel wave.
+await Promise.all(
+  targets.map(async (post) => {
+    const svg = renderSvg(post);
+    const out = join(OUT_DIR, `${post.slug}.png`);
+    // sharp can rasterize SVG natively via librsvg.
+    await sharp(Buffer.from(svg)).png({ compressionLevel: 9, quality: 90 }).toFile(out);
+    console.log(`  OG ${post.slug}.png`);
+  }),
+);
+
+console.log(
+  `Wrote ${targets.length} OG card${targets.length === 1 ? '' : 's'} to ${OUT_DIR}.`,
+);
