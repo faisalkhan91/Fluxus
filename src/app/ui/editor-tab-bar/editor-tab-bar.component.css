@@ -131,12 +131,16 @@
   color: var(--text-muted);
 }
 
+/* 24×24 to clear WCAG 2.2 SC 2.5.8 (Target Size — Minimum). The icon
+   inside stays at 12 px so the visual weight matches the rest of the
+   tab chrome; the extra padding is dead-zone hit area for touch users
+   and pointer users with reduced motor precision. */
 .tab-close {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
   border-radius: var(--radius-sm);

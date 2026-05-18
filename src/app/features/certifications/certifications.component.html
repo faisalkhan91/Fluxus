@@ -7,14 +7,18 @@
       [level]="1"
     />
     <!--
-      `role="list"` is the announcement we actually want for this grid —
-      "list of N certifications" lets a SR user know how big the surface
-      is before they tab through it. `tabindex="0"` was previously set on
-      this <div>, but the grid has no inherent action (the per-card link
-      is the interactive target), so a Tab stop on the wrapper was a WCAG
-      2.4.3 (Focus Order) smell — keyboard users landing on a non-actionable
-      element. The label is already provided by the <ui-section-header>'s
-      <h1>, so an explicit aria-label here would duplicate the announcement.
+      `role="list"` gives screen readers the "list of N certifications"
+      announcement so they know the surface size before tabbing through.
+
+      `tabindex="0"` is load-bearing despite looking like a focus-order
+      smell: at ≤768 px the `.cert-grid` becomes a horizontal scroll-snap
+      rail (see `overflow-x: auto` in the mobile media query), and axe's
+      `scrollable-region-focusable` rule (WCAG 2.1.1 Keyboard) requires
+      scrollable regions to be reachable so keyboard users can scroll
+      with arrow keys. Removing it triggers a serious axe violation on
+      mobile. The matching `aria-label` exists so the SR knows what the
+      Tab stop is — `<section aria-labelledby="certs-title">` labels the
+      region but not this inner scroll-rail target specifically.
     -->
     <div class="cert-grid" role="list" tabindex="0" aria-label="Certifications grid">
       @for (cert of certsData.certifications(); track cert.name; let i = $index) {
