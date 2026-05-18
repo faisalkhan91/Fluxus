@@ -341,3 +341,75 @@ describe('ThemeService (SSR)', () => {
     expect(svc.theme()).toBe('tokyo-night');
   });
 });
+
+describe('ThemeService — Safari private mode', () => {
+  /*
+    Safari throws SecurityError on every `localStorage.getItem` /
+    `localStorage.setItem` call when the tab is in private browsing.
+    Sandboxed iframes can also have storage disabled entirely. The
+    `safeGetItem` / `safeSetItem` wrappers in the service catch
+    those throws so the constructor doesn't bubble the error and
+    crash app bootstrap. This block exercises that recovery path.
+  */
+  let originalMatchMedia: typeof window.matchMedia;
+  let originalGetItem: typeof Storage.prototype.getItem;
+  let originalSetItem: typeof Storage.prototype.setItem;
+
+  beforeEach(() => {
+    clearThemeColorMetas();
+    installThemeColorMetas();
+    originalMatchMedia = window.matchMedia;
+    window.matchMedia = matchMediaMock;
+    originalGetItem = Storage.prototype.getItem;
+    originalSetItem = Storage.prototype.setItem;
+    // Stub both reads and writes to throw the same shape Safari
+    // produces in private mode.
+    Storage.prototype.getItem = vi.fn(() => {
+      throw new DOMException('access denied', 'SecurityError');
+    });
+    Storage.prototype.setItem = vi.fn(() => {
+      throw new DOMException('access denied', 'SecurityError');
+    });
+  });
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+    Storage.prototype.getItem = originalGetItem;
+    Storage.prototype.setItem = originalSetItem;
+    clearThemeColorMetas();
+  });
+
+  it('constructs without throwing when localStorage.getItem is denied', () => {
+    expect(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+      });
+      TestBed.inject(ThemeService);
+    }).not.toThrow();
+  });
+
+  it('falls back to the registry default theme when storage is unreadable', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    // No stored value visible → resolveInitial falls through to the
+    // matchMedia branch. The shared mock reports prefers-color-scheme:
+    // dark (matches: false), so the dark default is selected.
+    expect(svc.theme()).toBe('crimson-dark');
+  });
+
+  it('setTheme does not throw even though the persistence write fails silently', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
+    });
+    const svc = TestBed.inject(ThemeService);
+    expect(() => svc.setTheme('tokyo-night')).not.toThrow();
+    // Runtime swap still propagates — the user can still pick a
+    // theme for the session even though the choice won't persist.
+    expect(svc.theme()).toBe('tokyo-night');
+  });
+});
