@@ -431,6 +431,13 @@
   .glow-wrapper--1,
   .glow-wrapper--2 {
     transform: none;
+    /* The global reduced-motion rule zeroes animation-duration but
+       NOT animation-delay. Without this, `.glow-wrapper--2`'s 4 s
+       delay survives — reduced-motion users see a 4-second flash of
+       the pre-animation state before the snap-to-end. Setting delay
+       to 0 collapses the wait so the final state is reached
+       immediately. */
+    animation-delay: 0ms;
   }
 }
 
