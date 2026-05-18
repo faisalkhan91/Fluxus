@@ -460,17 +460,17 @@ async function main() {
   let missing = 0;
   const freshRepos = { ...cache.repos };
 
+  // Pass 1: classify selected repos into needs-fetch / cache-only / missing.
+  // Participation stats aren't in GraphQL — they need a separate REST call
+  // per repo with a GraphQL row. Collecting them up-front so the next
+  // pass can dispatch them in parallel rather than awaiting each in
+  // sequence (the previous shape was 1 round-trip × N repos serially).
+  const participationWork = [];
   for (const [key, { nameWithOwner }] of selected) {
     const node = nodeMap.get(key);
     if (node) {
       const row = repoNodeToCacheRow(node);
-      // Participation stats aren't in GraphQL — tag one REST call onto
-      // every repo we have a node for. Empty result (cold cache) falls
-      // through to whatever the old cache had.
-      const [owner, repo] = nameWithOwner.split('/');
-      const commits = await fetchParticipation(owner, repo);
-      row.commitsPerWeek = commits ?? cache.repos?.[key]?.commitsPerWeek ?? null;
-      freshRepos[key] = row;
+      participationWork.push({ key, nameWithOwner, row });
       fetched++;
     } else if (cache.repos?.[key]) {
       fromCache++;
@@ -481,6 +481,34 @@ async function main() {
       missing++;
       selected.delete(key);
     }
+  }
+
+  // Pass 2: fetch participation in capped-concurrency batches. The cap
+  // protects against GitHub's secondary rate-limit (Octokit's throttle
+  // plugin is wired to NOT retry on rate-limit hits), and 5 in flight
+  // fits comfortably under the limit while still cutting wall-clock
+  // by ~5x for typical repo counts.
+  const CONCURRENCY = 5;
+  for (let i = 0; i < participationWork.length; i += CONCURRENCY) {
+    const batch = participationWork.slice(i, i + CONCURRENCY);
+    await Promise.all(
+      batch.map(async (item) => {
+        const [owner, repo] = item.nameWithOwner.split('/');
+        const commits = await fetchParticipation(owner, repo);
+        // Empty result (cold cache, missing repo, rate-limited) falls
+        // through to whatever the old cache had — same semantic as
+        // before the parallel refactor.
+        item.row.commitsPerWeek =
+          commits ?? cache.repos?.[item.key]?.commitsPerWeek ?? null;
+      }),
+    );
+  }
+
+  // Pass 3: apply the updated rows to freshRepos in deterministic
+  // selected-iteration order so the cache file diff stays stable
+  // across re-runs that don't change the set of repos.
+  for (const { key, row } of participationWork) {
+    freshRepos[key] = row;
   }
 
   // Build Project[] from the selected repos.
