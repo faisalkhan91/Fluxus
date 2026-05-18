@@ -416,8 +416,16 @@
   opacity: 1;
 }
 
-.project-card ::ng-deep > * {
-  padding: 0;
+/* Zero out the glass-card padding for project cards. The card's image
+   wrapper paints edge-to-edge and the inner body element manages its
+   own spacing — we want the card frame, not the default
+   `var(--glass-card-padding)`. Driving it via the token override
+   cascades through Angular view encapsulation cleanly; the previous
+   shape used `.project-card ::ng-deep > * { padding: 0 }` which
+   relied on a deprecated combinator and (now) targeted nothing
+   useful since neither child carries default padding. */
+.project-card {
+  --glass-card-padding: 0;
 }
 
 .project-image-wrapper {
