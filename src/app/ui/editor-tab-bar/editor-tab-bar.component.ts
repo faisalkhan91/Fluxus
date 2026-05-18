@@ -110,7 +110,7 @@ export class EditorTabBarComponent {
     });
   }
 
-  protected updateIndicator(): void {
+  private updateIndicator(): void {
     const scroller = this.scrollContainer()?.nativeElement;
     if (!scroller) return;
     const active = scroller.querySelector<HTMLElement>('.tab.active');
@@ -122,7 +122,7 @@ export class EditorTabBarComponent {
     this.indicatorWidth.set(active.offsetWidth);
   }
 
-  protected updateFades(): void {
+  private updateFades(): void {
     const el = this.scrollContainer()?.nativeElement;
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
