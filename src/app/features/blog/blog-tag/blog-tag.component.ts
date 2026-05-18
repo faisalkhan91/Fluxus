@@ -66,11 +66,16 @@ export class BlogTagComponent {
       const slug = this.tagSlug();
       const label = this.tagLabel();
       if (!slug || !label) return;
-      untracked(() => this.updateMetaTags(slug, label));
+      untracked(() => this.updateMetaTags({ slug, label }));
     });
   }
 
-  private updateMetaTags(slug: string, label: string): void {
+  /**
+   * Named-args shape — see the same method in projects-tag.component.ts
+   * for the rationale (prevents a silent slug/label swap at the call
+   * site since both are plain strings).
+   */
+  private updateMetaTags({ slug, label }: { slug: string; label: string }): void {
     const url = `${environment.siteUrl}/blog/tag/${slug}`;
     const title = `Posts tagged "${label}" - ${environment.siteName}`;
     const description = `Every post on Faisal Khan's blog tagged with "${label}".`;
