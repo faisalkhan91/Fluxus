@@ -826,7 +826,7 @@
   line-height: 1.3;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .post-content {
     padding: var(--space-4);
   }

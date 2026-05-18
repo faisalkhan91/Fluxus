@@ -129,7 +129,7 @@
   color: var(--text-secondary);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .bio-grid {
     grid-template-columns: 1fr;
     justify-items: center;
