@@ -94,6 +94,15 @@ export class BlogPostComponent {
    */
   private postLayout = signal<HTMLElement | null>(null);
 
+  /**
+   * Tracks every fire-and-forget `setTimeout` scheduled by the component
+   * (link-copied badge reset, code-block copy-button reset) so they all
+   * cancel cleanly on destroy. Without this, a timer that fires after
+   * teardown would touch a detached DOM node or a now-orphan signal —
+   * the calls are harmless but wasteful, and the Set is cheap.
+   */
+  private timers = new Set<ReturnType<typeof setTimeout>>();
+
   protected slug = toSignal(this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')), {
     initialValue: '',
   });
@@ -302,7 +311,7 @@ export class BlogPostComponent {
 
     if (await copyToClipboard(url)) {
       this.linkCopied.set(true);
-      setTimeout(() => this.linkCopied.set(false), 1500);
+      this.scheduleTimeout(() => this.linkCopied.set(false), 1500);
     } else {
       this.toasts.push({
         title: 'Could not copy the link',
@@ -325,6 +334,13 @@ export class BlogPostComponent {
   readonly readingProgressLabel = computed(() => Math.round(this.scrollProgress()));
 
   constructor() {
+    // Cancel any in-flight `setTimeout`s so the badge / button-reset
+    // closures don't fire on a torn-down view.
+    this.destroyRef.onDestroy(() => {
+      for (const id of this.timers) clearTimeout(id);
+      this.timers.clear();
+    });
+
     // Update <title> + meta tags as the post resolves.
     effect(() => {
       const post = this.meta();
@@ -493,7 +509,7 @@ export class BlogPostComponent {
         button.textContent = 'Copied!';
         button.setAttribute('aria-label', 'Code copied to clipboard');
         button.classList.add('copy-btn--copied');
-        setTimeout(() => {
+        this.scheduleTimeout(() => {
           button.textContent = originalText;
           if (originalLabel !== null) button.setAttribute('aria-label', originalLabel);
           button.classList.remove('copy-btn--copied');
@@ -561,6 +577,21 @@ export class BlogPostComponent {
         detail: 'A link to this section is now on your clipboard.',
       });
     }
+  }
+
+  /**
+   * Cancellable `setTimeout` wrapper. The id is added to `timers` and
+   * removed when the callback fires; the destroy hook above clears any
+   * still-pending ids so we never run handlers on a torn-down view.
+   * Use this in place of bare `setTimeout` for any fire-and-forget UI
+   * reset (badge state, button label revert, etc.).
+   */
+  private scheduleTimeout(fn: () => void, ms: number): void {
+    const id = setTimeout(() => {
+      this.timers.delete(id);
+      fn();
+    }, ms);
+    this.timers.add(id);
   }
 
   /**
