@@ -5,6 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
 import { APP_VERSION } from './app-version.generated';
+import { ErrorToastService } from './error-toast.service';
 
 /**
  * Frequency of the build-stamp poll while the tab is open. Five minutes
@@ -51,6 +52,7 @@ export class AppUpdateService {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly toasts = inject(ErrorToastService);
 
   private pending = false;
   private pollHandle: ReturnType<typeof setInterval> | null = null;
@@ -160,7 +162,24 @@ export class AppUpdateService {
   private markPending(): void {
     if (this.pending) return;
     this.pending = true;
-    if (this.userIsIdle()) this.reload();
+    if (this.userIsIdle()) {
+      // Reader hasn't started engaging — invisible swap.
+      this.reload();
+      return;
+    }
+    // Active reader — warn before the next navigation / visibility-flip
+    // triggers the deferred reload. The previous shape silently
+    // hard-reloaded mid-click, which read as a broken link rather than
+    // an intentional update. Sticky `error`-severity toast (no auto-
+    // dismiss) with a `Reload` action so the user can apply now or wait.
+    this.toasts.push({
+      severity: 'error',
+      title: 'Update available',
+      detail:
+        'A new version of the site is ready. The page will reload on your next navigation, or click Reload to apply now.',
+      actionLabel: 'Reload',
+      action: () => this.reload(),
+    });
   }
 
   /**
