@@ -137,6 +137,21 @@ function setMetaDescription(html, description) {
 }
 
 /**
+ * Upsert `<meta name="robots" content="...">`. Used to mark draft and
+ * future-dated blog posts as `noindex,nofollow` so a direct-URL crawl
+ * (Googlebot, archive.org, etc.) doesn't surface unpublished content.
+ * Drafts are excluded from sitemap and feed already, but the
+ * prerendered HTML is still on disk + served at its canonical URL —
+ * a `noindex` meta is the only thing that tells crawlers to skip it.
+ */
+function setMetaRobots(html, content) {
+  const tag = `<meta name="robots" content="${escapeAttr(content)}">`;
+  return /<meta\s+name="robots"[^>]*>/i.test(html)
+    ? html.replace(/<meta\s+name="robots"[^>]*>/i, tag)
+    : html.replace('</head>', `    ${tag}\n  </head>`);
+}
+
+/**
  * Strip any previously-injected per-route JSON-LD blocks (matched by id) and
  * append fresh ones. The site-wide JSON-LD authored in src/index.html is
  * untouched — it has no id attribute on its <script>.
@@ -376,8 +391,18 @@ for await (const htmlPath of walk(DIST)) {
     const post = blogBySlug.get(blogMatch[1]);
     const cover = resolveCover(post);
     const title = `${post.title} — ${SITE_NAME}`;
+    // Drafts and future-dated posts are still prerendered at their
+    // /blog/<slug> URL so the author can review them, but they need to
+    // be invisible to crawlers — sitemap + feed already exclude them.
+    // Robots meta is the missing piece; without it, Googlebot can index
+    // a guessed URL and the JSON-LD BlogPosting block makes the page
+    // look fully published.
+    const isHidden = post.draft === true || post.date > todayYmd;
     html = setTitle(html, title);
     html = setMetaDescription(html, post.excerpt);
+    if (isHidden) {
+      html = setMetaRobots(html, 'noindex,nofollow');
+    }
     html = setMetaProperty(html, 'og:title', title);
     html = setMetaProperty(html, 'og:description', post.excerpt);
     html = setMetaProperty(html, 'og:type', 'article');
@@ -393,9 +418,14 @@ for await (const htmlPath of walk(DIST)) {
       html = setMetaProperty(html, 'twitter:creator', TWITTER_HANDLE);
     }
     html = setLinkCanonical(html, url);
-    html = setBlogJsonLd(html, post, url);
+    // Skip BlogPosting JSON-LD for hidden posts — the structured-data
+    // signal is the most aggressive index hint we emit, and it'd be
+    // counterproductive on a page we just told crawlers to skip.
+    if (!isHidden) {
+      html = setBlogJsonLd(html, post, url);
+    }
     blogProcessed++;
-    console.log(`  BLOG ${post.slug} → "${post.title}"`);
+    console.log(`  BLOG ${post.slug}${isHidden ? ' [hidden]' : ''} → "${post.title}"`);
   } else {
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:type', 'website');
