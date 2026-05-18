@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
-  "index": "/index.html",
+  "index": "/index.csr.html",
   "navigationUrls": [
     "/**",
     "!/**/*.*",
@@ -20,8 +20,8 @@
           "/favicon.svg",
           "/apple-touch-icon.png",
           "/site.webmanifest",
-          "/manifest.webmanifest",
           "/index.html",
+          "/index.csr.html",
           "/*.css",
           "/*.js"
         ]
@@ -37,6 +37,14 @@
           "/assets/images/og-image.png",
           "/assets/blog/posts.json"
         ]
+      }
+    },
+    {
+      "name": "prerendered-routes",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": ["/**/index.html"]
       }
     },
     {
