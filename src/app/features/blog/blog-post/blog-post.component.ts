@@ -540,8 +540,12 @@ export class BlogPostComponent {
     const slug = this.slug();
     if (!id || !slug) return;
     const path = `/blog/${slug}#${id}`;
-    if (typeof window !== 'undefined') {
-      window.history.replaceState(window.history.state, '', path);
+    // Guard `window.history` independently of `window` itself: the outer
+    // `typeof window` check fails the SSR build, but exotic shells (e.g.
+    // some embedded webviews) expose `window` without `history`.
+    const history = typeof window !== 'undefined' ? window.history : undefined;
+    if (history) {
+      history.replaceState(history.state, '', path);
       const target = this.document.getElementById(id);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
