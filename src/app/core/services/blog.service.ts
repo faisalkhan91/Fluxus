@@ -79,7 +79,7 @@ export class BlogService {
    * omitted everywhere a casual visitor might bump into them — matching the
    * way build-feed.mjs and build-sitemap.mjs already filter.
    */
-  readonly posts = computed(() => {
+  readonly posts = computed<BlogPost[]>(() => {
     if (!this.postsResource.hasValue()) return [];
     const today = this.todaySignal();
     return this.sortByDateDesc(this.postsResource.value() ?? []).filter((p) =>
@@ -88,13 +88,13 @@ export class BlogService {
   });
 
   /** Includes drafts and scheduled posts. Useful for author-review tooling. */
-  readonly allPosts = computed(() =>
+  readonly allPosts = computed<BlogPost[]>(() =>
     this.postsResource.hasValue() ? this.sortByDateDesc(this.postsResource.value() ?? []) : [],
   );
 
-  readonly latestPosts = computed(() => this.posts().slice(0, 2));
-  readonly loading = computed(() => this.postsResource.isLoading());
-  readonly error = computed(() =>
+  readonly latestPosts = computed<BlogPost[]>(() => this.posts().slice(0, 2));
+  readonly loading = computed<boolean>(() => this.postsResource.isLoading());
+  readonly error = computed<string | null>(() =>
     this.postsResource.error() ? 'Failed to load blog posts' : null,
   );
 
