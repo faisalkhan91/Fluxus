@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { MobileNavPillComponent, MobileNavItem, MobileMenuItem } from './mobile-nav-pill.component';
+import { MobileNavPillComponent } from './mobile-nav-pill.component';
+import type { MobileNavItem, MobileMenuItem } from './mobile-nav-pill.component';
 
 const MOCK_ITEMS: MobileNavItem[] = [
   { label: 'Home', route: '/', icon: 'home' },

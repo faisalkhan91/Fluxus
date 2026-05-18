@@ -3,7 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SkillsDataService, deriveTier } from '@core/services/skills-data.service';
 import { SkillUsageService } from '@core/services/skill-usage.service';
-import { Skill, SkillTier } from '@shared/models/skill.model';
+import type { Skill, SkillTier } from '@shared/models/skill.model';
 import { slugify } from '@shared/utils/string.utils';
 
 interface Row {

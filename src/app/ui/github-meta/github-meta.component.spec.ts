@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { GithubMetaComponent } from './github-meta.component';
-import { GithubMeta } from '@shared/models/project.model';
+import type { GithubMeta } from '@shared/models/project.model';
 
 function baseMeta(overrides: Partial<GithubMeta> = {}): GithubMeta {
   return {

@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
-import { ICONS, IconShape } from './icons';
+import { ICONS } from './icons';
+import type { IconShape } from './icons';
 
 @Component({
   selector: 'ui-icon',

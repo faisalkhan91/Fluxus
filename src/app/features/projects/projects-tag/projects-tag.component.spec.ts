@@ -8,7 +8,7 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { ProjectsTagComponent } from './projects-tag.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
-import { Project } from '@shared/models/project.model';
+import type { Project } from '@shared/models/project.model';
 import { environment } from '@env/environment';
 
 const MOCK_PROJECTS: Project[] = [

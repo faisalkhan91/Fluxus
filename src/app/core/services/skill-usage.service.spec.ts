@@ -5,9 +5,9 @@ import { SkillUsageService } from './skill-usage.service';
 import { SkillsDataService } from './skills-data.service';
 import { ProjectsDataService } from './projects-data.service';
 import { BlogService } from './blog.service';
-import { Project } from '@shared/models/project.model';
-import { BlogPost } from '@shared/models/blog-post.model';
-import { SkillCategory } from '@shared/models/skill.model';
+import type { Project } from '@shared/models/project.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
+import type { SkillCategory } from '@shared/models/skill.model';
 
 /**
  * Why a fully-mocked TestBed instead of `inject(SkillsDataService)` etc.:

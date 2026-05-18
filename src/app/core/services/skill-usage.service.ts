@@ -1,7 +1,7 @@
 import { Injectable, inject, computed } from '@angular/core';
-import { Project } from '@shared/models/project.model';
-import { BlogPost } from '@shared/models/blog-post.model';
-import { Skill } from '@shared/models/skill.model';
+import type { Project } from '@shared/models/project.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
+import type { Skill } from '@shared/models/skill.model';
 import { ProjectsDataService } from './projects-data.service';
 import { BlogService } from './blog.service';
 import { SkillsDataService } from './skills-data.service';

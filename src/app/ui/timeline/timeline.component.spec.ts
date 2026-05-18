@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TimelineComponent, TimelineEntry } from './timeline.component';
+import { TimelineComponent } from './timeline.component';
+import type { TimelineEntry } from './timeline.component';
 
 describe('TimelineComponent', () => {
   let fixture: ComponentFixture<TimelineComponent>;

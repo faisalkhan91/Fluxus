@@ -6,7 +6,7 @@ import { HeroComponent } from './hero.component';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import { BlogService } from '@core/services/blog.service';
 import { ProjectsDataService } from '@core/services/projects-data.service';
-import { Project } from '@shared/models/project.model';
+import type { Project } from '@shared/models/project.model';
 import { createMockGithubMeta, createMockProject } from '@testing/project-mocks';
 
 const mockProfile = {

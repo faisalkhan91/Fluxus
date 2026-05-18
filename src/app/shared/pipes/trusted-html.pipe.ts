@@ -1,5 +1,7 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Pipe, inject } from '@angular/core';
+import type { PipeTransform } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import type { SafeHtml } from '@angular/platform-browser';
 
 /**
  * Identifier for the trust *source* of the HTML being passed in. Today

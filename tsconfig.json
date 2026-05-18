@@ -19,6 +19,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,

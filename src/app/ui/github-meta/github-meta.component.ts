@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
-import { GithubMeta } from '@shared/models/project.model';
+import type { GithubMeta } from '@shared/models/project.model';
 import {
   compactNumber,
   languagesBarLabel,

@@ -9,7 +9,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { BehaviorSubject } from 'rxjs';
 import { BlogPostComponent } from './blog-post.component';
 import { BlogService } from '@core/services/blog.service';
-import { BlogPost } from '@shared/models/blog-post.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
 import { MOCK_POSTS, flushMarkdown, failMarkdown } from '@testing/blog-mocks';
 
 describe('BlogPostComponent', () => {

@@ -4,9 +4,10 @@ import { CUSTOM_ELEMENTS_SCHEMA, computed, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { SkillsComponent } from './skills.component';
 import { SkillsDataService } from '@core/services/skills-data.service';
-import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.service';
+import { SkillUsageService } from '@core/services/skill-usage.service';
+import type { SkillUsage } from '@core/services/skill-usage.service';
 import { MediaQueryService } from '@core/services/media-query.service';
-import { SkillCategory, Skill } from '@shared/models/skill.model';
+import type { SkillCategory, Skill } from '@shared/models/skill.model';
 
 /**
  * Six mock categories that roughly mirror production. Each category's
