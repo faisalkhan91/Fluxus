@@ -186,6 +186,29 @@
   --selection-color: var(--text-primary);
   --focus-ring: var(--accent);
   --divider: var(--glass-border);
+
+  /*
+    Link text colour. Defaults to `--accent-hover` for every theme — the
+    accent is what readers expect a hyperlink to look like. Crimson Dark
+    overrides this below (the default red only clears ~3.6:1 against
+    `--surface-base` which is below the 4.5:1 threshold for body-copy
+    links); every other theme's accent already clears AA so the default
+    stands. Hover stays on `--accent` to preserve the existing rest→hover
+    contrast pattern.
+  */
+  --link-color: var(--accent-hover);
+  --link-color-hover: var(--accent);
+}
+
+/*
+  Crimson Dark default: bump the link colour clear of the accent so
+  body-copy links read at ≥ 5:1 against `--surface-base` (#0e0e14).
+  The accent itself stays untouched so saturated red still drives
+  buttons, focus rings, and selection chrome — 3:1 is the floor for
+  non-text UI and the existing accent meets that.
+*/
+[data-theme='crimson-dark'] {
+  --link-color: #ff5757;
 }
 
 /*
@@ -698,13 +721,13 @@ body {
 }
 
 a {
-  color: var(--accent-hover);
+  color: var(--link-color);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--accent);
+  color: var(--link-color-hover);
 }
 
 /*
@@ -1013,13 +1036,13 @@ img[src*='amazonwebservices-original-wordmark'] {
 }
 
 .prose a {
-  color: var(--accent-hover);
+  color: var(--link-color);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .prose a:hover {
-  color: var(--accent);
+  color: var(--link-color-hover);
 }
 
 .prose strong {
