@@ -93,6 +93,15 @@ export class ThemeService {
       effect(() => {
         const def = this.themeDef();
         this.document.documentElement.setAttribute('data-theme', def.id);
+        // Mirror the active theme's coarse scheme onto `:root` so native
+        // browser controls (form inputs, `<select>` chrome, scrollbars,
+        // date/file pickers) render with matching colours. Without this,
+        // a light app theme on a dark-mode OS shows dark scrollbars and
+        // dark-rendered date pickers — a jarring mismatch the inline
+        // pre-paint script also can't fix because it has no signal-graph
+        // hook. Setting both via `style.colorScheme` honours the spec
+        // (kebab-case `color-scheme` CSS property = camelCase JS API).
+        this.document.documentElement.style.colorScheme = def.scheme;
         this.syncMetaThemeColor(def);
       });
 
