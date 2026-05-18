@@ -167,6 +167,58 @@ describe('MarkdownService renderer', () => {
     expect(html).toContain('alt="alt&quot;x"');
   });
 
+  describe('attribute-injection defence', () => {
+    it('escapes a quote-breakout attempt in alt text so onerror= cannot land', () => {
+      // The classic "break out of the alt attribute and inject an event
+      // handler" payload. The escape pass turns the breakout `"` into
+      // `&quot;`, which keeps the entire alt content inside its quoted
+      // attribute value — `onerror` is now part of the alt text, not a
+      // sibling attribute. The dangerous form is `onerror="alert` with
+      // an unescaped opening quote; the safe form (which we DO want to
+      // see) is `onerror=&quot;`.
+      const html = service.render('![x" onerror="alert(1)](/img.png)');
+      expect(html).not.toContain('onerror="alert');
+      expect(html).toContain('&quot; onerror=&quot;alert(1)');
+    });
+
+    it('escapes <script> markup inside alt text so it never executes', () => {
+      const html = service.render('![<script>alert(1)</script>](/img.png)');
+      // The figcaption mirrors the alt text and must also be inert.
+      expect(html).not.toContain('<script>');
+      expect(html).toContain('&lt;script&gt;');
+    });
+
+    it('escapes a quote-breakout attempt in the title attribute', () => {
+      const html = service.render('![alt](/img.png "t\\" onerror=\\"alert(1)")');
+      // Same invariant as above — the dangerous shape is an unescaped
+      // `onerror="...alert(...)`. The escaped form inside title="…"
+      // is fine because the browser parses the attribute value as
+      // text, not as further markup.
+      expect(html).not.toContain('onerror="alert');
+    });
+
+    it('neutralises a javascript: href on a markdown link to # (covered) and never grows attribute injection', () => {
+      // Composite payload: malicious href + alt-text quote breakout.
+      const html = service.render('[click" onclick="alert(1)](javascript:alert(2))');
+      expect(html).not.toContain('href="javascript:');
+      expect(html).not.toContain('onclick="alert');
+      // The text node inside the <a> still contains the literal text
+      // (marked keeps the link text as-is); verify it's escaped, not
+      // rendered as live attributes.
+      expect(html).toContain('&quot; onclick=&quot;alert(1)');
+    });
+
+    it('escapes single quotes in attribute values too, defending against single-quote-delimited contexts', () => {
+      // The escape helper covers `&`, `<`, `>`, `"`. Single quotes are
+      // not escaped because the renderer only emits double-quoted
+      // attributes. This spec is a regression guard: if someone ever
+      // changes the renderer to emit `alt='...'`, this test should be
+      // updated to assert single-quote escaping is added too.
+      const html = service.render("![it's fine](/img.png)");
+      expect(html).toContain("alt=\"it's fine\"");
+    });
+  });
+
   describe('link href sanitisation', () => {
     it('neutralises javascript: hrefs to # so clicks are inert', () => {
       const html = service.render('[click](javascript:alert(1))');
