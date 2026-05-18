@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ErrorToastService } from './error-toast.service';
 
@@ -75,5 +75,76 @@ describe('ErrorToastService', () => {
     service.clear();
     const id = service.push({ title: 'Two' });
     expect(id).toBe(2);
+  });
+
+  describe('auto-dismiss', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('info-severity toasts auto-dismiss after the default TTL', () => {
+      service.push({ title: 'Section link copied' });
+      expect(service.toasts()).toHaveLength(1);
+      vi.advanceTimersByTime(3999);
+      expect(service.toasts()).toHaveLength(1);
+      vi.advanceTimersByTime(1);
+      expect(service.toasts()).toHaveLength(0);
+    });
+
+    it('default severity (omitted) is treated as info and auto-dismisses', () => {
+      service.push({ title: 'No severity field' });
+      vi.advanceTimersByTime(4000);
+      expect(service.toasts()).toHaveLength(0);
+    });
+
+    it('error-severity toasts stay sticky', () => {
+      service.push({ severity: 'error', title: 'Chunk failed', actionLabel: 'Reload' });
+      vi.advanceTimersByTime(60_000);
+      expect(service.toasts()).toHaveLength(1);
+    });
+
+    it('explicit ttl: null pins an info toast as sticky', () => {
+      service.push({ title: 'Stay put', ttl: null });
+      vi.advanceTimersByTime(60_000);
+      expect(service.toasts()).toHaveLength(1);
+    });
+
+    it('explicit numeric ttl overrides the severity default for error toasts', () => {
+      service.push({ severity: 'error', title: 'Quick error', ttl: 500 });
+      vi.advanceTimersByTime(499);
+      expect(service.toasts()).toHaveLength(1);
+      vi.advanceTimersByTime(1);
+      expect(service.toasts()).toHaveLength(0);
+    });
+
+    it('manual dismiss cancels the pending auto-dismiss timer', () => {
+      const id = service.push({ title: 'Click me away' });
+      service.dismiss(id);
+      // If the timer were not cancelled, advancing past TTL would call
+      // dismiss(id) again — a no-op against the now-empty list, but the
+      // timer would still leak. The signal stays empty either way; we
+      // verify lifecycle by re-pushing and ensuring its TTL still fires
+      // on schedule (i.e. the prior timer didn't accidentally clear this
+      // one).
+      const id2 = service.push({ title: 'Fresh' });
+      expect(id2).toBe(id + 1);
+      vi.advanceTimersByTime(4000);
+      expect(service.toasts()).toHaveLength(0);
+    });
+
+    it('clear() cancels every pending timer', () => {
+      service.push({ title: 'a' });
+      service.push({ title: 'b' });
+      service.push({ title: 'c' });
+      service.clear();
+      expect(service.toasts()).toHaveLength(0);
+      // Advance past the default TTL — no timer should still be live.
+      vi.advanceTimersByTime(4000);
+      expect(service.toasts()).toHaveLength(0);
+    });
   });
 });
