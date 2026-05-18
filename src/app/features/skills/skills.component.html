@@ -48,6 +48,7 @@
               [projectsCount]="u?.projects?.length ?? 0"
               [postsCount]="u?.posts?.length ?? 0"
               [postsHref]="postsHref(u)"
+              [mono]="skill.mono ?? false"
               animate.enter="enter-fade-up"
               [style.--enter-delay]="i * 40 + 'ms'"
             />
@@ -76,6 +77,7 @@
               [postsCount]="u?.posts?.length ?? 0"
               [postsHref]="postsHref(u)"
               [tagline]="skill.tagline"
+              [mono]="skill.mono ?? false"
               animate.enter="enter-fade-up"
               [style.--enter-delay]="i * 40 + 'ms'"
             />

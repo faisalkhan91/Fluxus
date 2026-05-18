@@ -108,6 +108,13 @@
 
   /* === Decorative === */
   --icon-drop-shadow: drop-shadow(0 0 6px rgba(255, 255, 255, 0.1));
+  /* Per-icon monochrome-brand filter. Applied by `.badge-icon--mono`,
+     `.feature-icon--mono`, and `.row-icon--mono` to single-colour
+     brand SVGs (Kafka, Cursor, Splunk, GitHub Copilot, Rust) whose
+     near-black fills disappear on dark surfaces. Each light theme
+     block below overrides this to `none` so the coloured-free logo
+     renders untouched on light backgrounds. */
+  --icon-mono-filter: invert(0.88) brightness(1.05);
   --grid-line-color: rgba(255, 255, 255, 0.02);
 
   /* === Shadows === */
@@ -237,6 +244,7 @@
   --scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
 
   --icon-drop-shadow: drop-shadow(0 0 6px rgba(0, 0, 0, 0.08));
+  --icon-mono-filter: none;
   --grid-line-color: rgba(0, 0, 0, 0.04);
 
   --shadow-glass: 0 4px 24px rgba(0, 0, 0, 0.08);
@@ -331,6 +339,7 @@
   --scrollbar-thumb-hover: rgba(7, 54, 66, 0.22);
 
   --icon-drop-shadow: drop-shadow(0 0 6px rgba(7, 54, 66, 0.08));
+  --icon-mono-filter: none;
   --grid-line-color: rgba(7, 54, 66, 0.04);
 
   --shadow-glass: 0 4px 24px rgba(7, 54, 66, 0.1);
@@ -651,6 +660,7 @@
   --scrollbar-thumb-hover: rgba(31, 35, 40, 0.28);
 
   --icon-drop-shadow: drop-shadow(0 0 6px rgba(31, 35, 40, 0.08));
+  --icon-mono-filter: none;
   --grid-line-color: rgba(31, 35, 40, 0.04);
 
   --shadow-glass: 0 4px 24px rgba(31, 35, 40, 0.08);

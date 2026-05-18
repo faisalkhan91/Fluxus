@@ -68,6 +68,7 @@ interface Row {
                   width="24"
                   height="24"
                   class="row-icon"
+                  [class.row-icon--mono]="row.skill.mono"
                 />
               }
               @if (row.href; as link) {
@@ -172,6 +173,14 @@ interface Row {
            TypeScript on light themes) live in src/styles.css under
            the "Skill-icon filter overrides" block and apply globally
            to every skill img. */
+      }
+
+      /* Single-colour monochrome icons (Kafka, Cursor, Splunk, …)
+         vanish against dark surfaces because their fills are
+         near-black. The --icon-mono-filter token is 'none' on light
+         themes and an invert() on dark themes (defined in styles.css). */
+      .row-icon--mono {
+        filter: var(--icon-mono-filter, none);
       }
 
       .row-name {
