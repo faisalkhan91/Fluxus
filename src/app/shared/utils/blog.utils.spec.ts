@@ -1,47 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeReadingTime, formatPostDate } from './blog.utils';
-
-describe('computeReadingTime', () => {
-  it('returns "0 min" for an empty body', () => {
-    expect(computeReadingTime('')).toBe('0 min');
-  });
-
-  it('floors a very short body at "1 min"', () => {
-    expect(computeReadingTime('A single sentence.')).toBe('1 min');
-  });
-
-  it('rounds word count divided by ~220 wpm to whole minutes', () => {
-    // 1100 words / 220 wpm = 5 minutes exactly.
-    const body = Array.from({ length: 1100 }, () => 'word').join(' ');
-    expect(computeReadingTime(body)).toBe('5 min');
-  });
-
-  it('ignores fenced code blocks so code samples do not inflate the estimate', () => {
-    const code = Array.from({ length: 2000 }, () => 'code').join(' ');
-    const body = '```js\n' + code + '\n```\n\nOne sentence of prose.';
-    expect(computeReadingTime(body)).toBe('1 min');
-  });
-
-  it('strips HTML tags before counting', () => {
-    const body = '<span>hello</span> <em>world</em>';
-    expect(computeReadingTime(body)).toBe('1 min');
-  });
-
-  it('strips markdown image syntax before counting', () => {
-    const body = '![alt text for an image](/path/to/image.png) ' + 'word '.repeat(20);
-    // Only the 20 "word" tokens should count — alt text and URL are stripped.
-    expect(computeReadingTime(body)).toBe('1 min');
-  });
-
-  it('strips entire markdown link markup (both label and url) from the count', () => {
-    // 440 words of prose plus a wall of "[label](url)" links. The link regex
-    // drops the whole `[...](...)` block — not just the URL — so the only
-    // tokens that survive are the 440 prose words. 440 / 220 wpm → 2 min.
-    const prose = 'word '.repeat(440);
-    const links = '[label](https://example.com) '.repeat(440);
-    expect(computeReadingTime(prose + links)).toBe('2 min');
-  });
-});
+import { formatPostDate } from './blog.utils';
 
 describe('formatPostDate', () => {
   it('formats a valid YYYY-MM-DD string in en-US without timezone drift', () => {

@@ -4,9 +4,11 @@
  * `src/assets/blog/posts.json` from the matching markdown body, so the value
  * the runtime renders (manifest) stays in sync with the actual prose.
  *
- * Mirrors `computeReadingTime` in `src/app/shared/utils/blog.utils.ts` (no
- * direct import — that file is part of the Angular bundle and we want this
- * script dependency-free for fast builds).
+ * This script owns the canonical implementation. The runtime no longer
+ * needs a parallel copy in blog.utils.ts — `BlogPostComponent` reads the
+ * authoritative `readingTime` straight from the manifest this script
+ * regenerates, so every surface (prerender, SPA, sitemap consumer) sees
+ * the same value by construction.
  *
  * Run via `npm run sync:reading-times` or implicitly via `prebuild` /
  * `prebuild:prod`. The script is a no-op when nothing changed so it can be
@@ -23,9 +25,11 @@ const POSTS_DIR = join(ROOT, 'src/assets/blog/posts');
 const WORDS_PER_MINUTE = 220;
 
 /**
- * 1:1 with `computeReadingTime` in src/app/shared/utils/blog.utils.ts.
- * Keep the two implementations identical so the prerender, the live SPA, and
- * the build script never disagree.
+ * Estimates a human-friendly reading time. Strips fenced code blocks,
+ * HTML tags, and markdown image / link markup so they don't inflate
+ * the count, then divides word count by ~220 wpm. Always returns at
+ * least "1 min" for a non-empty body. Canonical implementation lives
+ * here; the runtime reads the resulting field from posts.json.
  */
 function computeReadingTime(body) {
   if (!body) return '0 min';
