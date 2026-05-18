@@ -98,7 +98,7 @@ export class SidebarComponent implements AfterViewInit {
     queueMicrotask(() => this.updateIndicator());
   }
 
-  protected updateIndicator(): void {
+  private updateIndicator(): void {
     const active = this.host.nativeElement.querySelector<HTMLElement>('.nav-item.active');
     if (!active) {
       this.indicatorHeight.set(0);
