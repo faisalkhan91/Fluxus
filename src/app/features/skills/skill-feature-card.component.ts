@@ -33,7 +33,14 @@ import { RouterLink } from '@angular/router';
     <article class="feature-card" [class.feature-card-link]="!!href()">
       <header class="feature-head">
         @if (iconSrc()) {
-          <img [ngSrc]="iconSrc()!" [alt]="name()" width="56" height="56" class="feature-icon" />
+          <img
+            [ngSrc]="iconSrc()!"
+            [alt]="name()"
+            width="56"
+            height="56"
+            class="feature-icon"
+            [class.feature-icon--mono]="mono()"
+          />
         }
         <div class="feature-title-block">
           <h3 class="feature-name">{{ name() }}</h3>
@@ -140,6 +147,14 @@ import { RouterLink } from '@angular/router';
            TypeScript on light themes) live in src/styles.css under
            the "Skill-icon filter overrides" block and apply globally
            to every skill img. */
+      }
+
+      /* Single-colour monochrome icons (Kafka, Cursor, Splunk, …)
+         vanish against dark surfaces because their fills are
+         near-black. The --icon-mono-filter token is 'none' on light
+         themes and an invert() on dark themes (defined in styles.css). */
+      .feature-icon--mono {
+        filter: var(--icon-mono-filter, none);
       }
 
       .feature-title-block {
@@ -276,6 +291,11 @@ export class SkillFeatureCardComponent {
   projectsCount = input<number>(0);
   postsCount = input<number>(0);
   postsHref = input<string>();
+  /**
+   * When true, applies `--icon-mono-filter` to the icon so single-colour
+   * brand SVGs stay visible on dark themes. See `Skill.mono`.
+   */
+  mono = input<boolean>(false);
 
   protected projectsAriaLabel = computed(() => {
     const n = this.projectsCount();

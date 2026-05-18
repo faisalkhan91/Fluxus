@@ -39,7 +39,14 @@ import { RouterLink } from '@angular/router';
   template: `
     <div class="badge-inner" [class.badge-inner-link]="!!href()" [attr.title]="tagline() || null">
       @if (iconSrc()) {
-        <img [ngSrc]="iconSrc()!" [alt]="name()" width="48" height="48" class="badge-icon" />
+        <img
+          [ngSrc]="iconSrc()!"
+          [alt]="name()"
+          width="48"
+          height="48"
+          class="badge-icon"
+          [class.badge-icon--mono]="mono()"
+        />
       }
       <span class="badge-name">{{ name() }}</span>
       <div class="badge-captions">
@@ -102,6 +109,13 @@ export class SkillBadgeComponent {
   postsHref = input<string>();
   /** Surfaced via the native `title` attribute on hover. */
   tagline = input<string>();
+  /**
+   * When true, applies the `--icon-mono-filter` CSS token to the icon
+   * so single-colour brand SVGs (Kafka, Cursor, Splunk, …) stay
+   * visible against dark surfaces. The token is `none` on light
+   * themes so coloured logos are never touched.
+   */
+  mono = input<boolean>(false);
 
   protected projectsAriaLabel = computed(() => {
     const n = this.projectsCount();
