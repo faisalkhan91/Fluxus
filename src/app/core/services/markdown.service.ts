@@ -38,6 +38,38 @@ function escapeAttr(value: string): string {
 }
 
 /**
+ * Strip dangerous URL schemes from a markdown link href.
+ *
+ * `marked` does not sanitise href values — `[click](javascript:alert(1))`
+ * passes through verbatim. We bypass Angular's DOM sanitiser when
+ * rendering (`bypassSecurityTrustHtml` in the trusted-html pipe) because
+ * post markdown is author-controlled local content; this guard is the
+ * defence-in-depth check that keeps a future copy-paste mistake or a
+ * compromised commit from yielding a `javascript:` link that executes
+ * in the site origin.
+ *
+ * Allowed: `http(s):`, `mailto:`, `tel:`, fragment links (`#...`),
+ * relative paths (no scheme). Anything else (including `data:`, `vbscript:`,
+ * `file:`, and the `javascript:` case) collapses to `#` so the link still
+ * renders but does nothing on click.
+ */
+function sanitizeLinkHref(href: string | null | undefined): string {
+  const raw = (href ?? '').trim();
+  if (!raw) return '#';
+  if (raw.startsWith('#') || raw.startsWith('/') || raw.startsWith('./') || raw.startsWith('../')) {
+    return raw;
+  }
+  // Detect a leading scheme; if present and not allowed, neutralise.
+  const schemeMatch = /^([a-z][a-z0-9+.-]*):/i.exec(raw);
+  if (!schemeMatch) return raw; // no scheme → relative reference
+  const scheme = schemeMatch[1].toLowerCase();
+  if (scheme === 'http' || scheme === 'https' || scheme === 'mailto' || scheme === 'tel') {
+    return raw;
+  }
+  return '#';
+}
+
+/**
  * Looks up the intrinsic dimensions for an image referenced from markdown.
  * The map is generated from on-disk assets by `scripts/build-image-dims.mjs`.
  *
@@ -227,7 +259,25 @@ export class MarkdownService {
       },
     };
 
-    this.marked.use({ renderer, extensions: [calloutExtension] });
+    this.marked.use({
+      renderer,
+      extensions: [calloutExtension],
+      // Sanitise link hrefs before the default renderer emits the <a>.
+      // marked passes hrefs through verbatim — `[click](javascript:alert(1))`
+      // would otherwise become `<a href="javascript:…">` and survive the
+      // trust-bypass we use to inject post HTML. The site CSP blocks
+      // injected `<script>` tags but not `javascript:` URI clicks, so
+      // this is the necessary belt-and-braces guard alongside the bypass.
+      // Allowed schemes: http(s), mailto, tel. Fragments and relative refs
+      // pass through. Everything else (`javascript:`, `data:`, `vbscript:`,
+      // `file:`, …) collapses to `#` so the link still renders but does
+      // nothing on click.
+      walkTokens(token) {
+        if (token.type === 'link') {
+          (token as Tokens.Link).href = sanitizeLinkHref((token as Tokens.Link).href);
+        }
+      },
+    });
   }
 
   render(md: string): string {
