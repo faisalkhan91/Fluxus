@@ -224,7 +224,7 @@
           first thing a touch user sees. Falling back to the per-network
           links keeps desktop and unsupported browsers fully functional.
         -->
-        @if (canWebShare) {
+        @if (canWebShare()) {
           <button
             type="button"
             class="share-link share-link--native"
