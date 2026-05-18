@@ -268,16 +268,22 @@ export class BlogPostComponent {
 
   /**
    * Mirrors `'share' in navigator` so the template can render the native
-   * Share button only on platforms that support the Web Share API. Read
-   * once at construction (the value never changes for the lifetime of the
-   * tab) — wrapping it in `computed()` adds signal-graph overhead for a
-   * static environment check. `navigator` is undefined under SSR, so the
-   * button is omitted from the prerendered HTML and Angular hydrates it
-   * on first paint without a layout shift (the share row is a flex
-   * container with `flex-wrap`, so adding a button at the start doesn't
-   * affect siblings).
+   * Share button only on platforms that support the Web Share API.
+   *
+   * Starts `false` so the prerendered HTML and the first client render
+   * agree on "no Share button". A field initialiser of `typeof navigator
+   * !== 'undefined' && …` produced `false` on the server (no navigator)
+   * and `true` on the client (Web Share-capable browsers), which Angular
+   * flagged as a hydration mismatch — the structural delta forced a node
+   * re-creation and emitted a console error during hydration.
+   *
+   * Flipping to `true` inside `afterNextRender` (browser-only by
+   * contract) keeps SSG and first paint identical, then the signal
+   * update triggers a clean post-hydration render of the button. The
+   * share row is a flex `flex-wrap` container so the button materialising
+   * doesn't shift sibling layout.
    */
-  readonly canWebShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  readonly canWebShare = signal(false);
 
   /**
    * Invokes the native Share sheet (iOS/Android, Edge/Chrome on Windows,
@@ -404,6 +410,15 @@ export class BlogPostComponent {
     });
 
     afterNextRender(() => {
+      // Publish browser-only environment flags now that we're past
+      // hydration. SSG matched `false` for both; flipping here triggers
+      // a clean post-hydration render of any conditional UI (Share
+      // button, etc.) without the structural-mismatch warning that
+      // a field-initialiser-based `typeof navigator` check produces.
+      if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+        this.canWebShare.set(true);
+      }
+
       const root = this.elRef.nativeElement as HTMLElement;
       const postLayout = root.querySelector('.post-layout') as HTMLElement | null;
       if (!postLayout) return;
