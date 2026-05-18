@@ -1,4 +1,5 @@
-import { Injectable, computed } from '@angular/core';
+import { Injectable, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { BlogPost } from '@shared/models/blog-post.model';
 
@@ -7,13 +8,6 @@ import { BlogPost } from '@shared/models/blog-post.model';
  * `YYYY-MM-DD` literal, so a lex comparison answers "has this post's calendar
  * day arrived yet?" without having to reason about timezones (matches the
  * technique already used in scripts/build-feed.mjs and scripts/build-sitemap.mjs).
- *
- * Re-evaluated on every `computed()` recomputation, which is whenever the
- * upstream `httpResource` value changes — fine for SSR (build-time date) and
- * fine for the live SPA, where the gate flips the moment a fresh evaluation
- * runs after midnight UTC. There is intentionally no live ticker; a visitor
- * who has the tab open across the publish boundary picks up the post on the
- * next route navigation, AppUpdateService reload, or visibility change.
  */
 function todayYmd(): string {
   return new Date().toISOString().slice(0, 10);
@@ -33,6 +27,10 @@ function isPublished(post: BlogPost, today: string): boolean {
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {
+  private platformId = inject(PLATFORM_ID);
+  private destroyRef = inject(DestroyRef);
+  private document = inject(DOCUMENT);
+
   // Reactive resource: kicks off eagerly, exposes value/isLoading/error as
   // signals, and stays in sync with HttpClient (interceptors, transfer cache).
   // Note: per-post markdown is fetched directly inside BlogPostComponent so
@@ -41,6 +39,37 @@ export class BlogService {
   private postsResource = httpResource<BlogPost[]>(() => 'assets/blog/posts.json', {
     defaultValue: [],
   });
+
+  /**
+   * "Today" in UTC, exposed as a signal so the published-post gate has a
+   * proper dep in the reactive graph. Without this, `todayYmd()` called
+   * inside the `computed()` body was invisible to the signal graph — and
+   * since the underlying `postsResource.value()` never changes once
+   * loaded, scheduled posts never appeared on a long-lived tab without
+   * a manual reload.
+   *
+   * Refreshed on `visibilitychange` when the tab becomes visible, which
+   * catches the common case (user leaves a tab open overnight, returns
+   * the next day, scheduled posts surface without a reload). Browser-
+   * only — SSR captures the build date and that becomes the prerendered
+   * filter; client hydration starts with the same value (a tab opened
+   * in the same UTC day as the build will agree exactly) and refreshes
+   * itself on the next visibility flip.
+   */
+  private todaySignal = signal(todayYmd());
+
+  constructor() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const onVisibility = () => {
+      if (this.document.visibilityState === 'visible') {
+        this.todaySignal.set(todayYmd());
+      }
+    };
+    this.document.addEventListener('visibilitychange', onVisibility);
+    this.destroyRef.onDestroy(() =>
+      this.document.removeEventListener('visibilitychange', onVisibility),
+    );
+  }
 
   /**
    * Public surfaces (blog list, hero "latest", tag archive, post page) only
@@ -52,7 +81,7 @@ export class BlogService {
    */
   readonly posts = computed(() => {
     if (!this.postsResource.hasValue()) return [];
-    const today = todayYmd();
+    const today = this.todaySignal();
     return this.sortByDateDesc(this.postsResource.value() ?? []).filter((p) =>
       isPublished(p, today),
     );
