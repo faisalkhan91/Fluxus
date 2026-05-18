@@ -8,12 +8,13 @@ import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
 import { ThemeService } from '@core/services/theme.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
-import { SkillUsageService, SkillUsage } from '@core/services/skill-usage.service';
+import { SkillUsageService } from '@core/services/skill-usage.service';
+import type { SkillUsage } from '@core/services/skill-usage.service';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { THEME_REGISTRY, getThemeDef, type ThemeId } from '@core/services/theme.registry';
-import { BlogPost } from '@shared/models/blog-post.model';
-import { Project } from '@shared/models/project.model';
-import { Skill, SkillCategory } from '@shared/models/skill.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
+import type { Project } from '@shared/models/project.model';
+import type { Skill, SkillCategory } from '@shared/models/skill.model';
 import { createMockProject } from '@testing/project-mocks';
 
 const SIDEBAR = [

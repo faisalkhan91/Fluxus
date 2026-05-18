@@ -19,8 +19,8 @@ import { SkillUsageService } from '@core/services/skill-usage.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
 import { SeoService } from '@core/services/seo.service';
 import { BlogService } from '@core/services/blog.service';
-import { Project } from '@shared/models/project.model';
-import { BlogPost } from '@shared/models/blog-post.model';
+import type { Project } from '@shared/models/project.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
 import { slugify } from '@shared/utils/string.utils';
 import { environment } from '@env/environment';
 

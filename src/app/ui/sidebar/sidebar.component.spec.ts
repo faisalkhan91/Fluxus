@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { SidebarComponent, SidebarItem } from './sidebar.component';
+import { SidebarComponent } from './sidebar.component';
+import type { SidebarItem } from './sidebar.component';
 import { THEME_REGISTRY, type ThemeDef, getThemeDef } from '@core/services/theme.registry';
 
 const MOCK_ITEMS: SidebarItem[] = [

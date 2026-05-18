@@ -1,4 +1,5 @@
-import { RenderMode, PrerenderFallback, ServerRoute } from '@angular/ssr';
+import { RenderMode, PrerenderFallback } from '@angular/ssr';
+import type { ServerRoute } from '@angular/ssr';
 
 /**
  * Read + parse `src/assets/blog/posts.json` with a descriptive error

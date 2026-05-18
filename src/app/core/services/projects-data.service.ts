@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Project } from '@shared/models/project.model';
+import type { Project } from '@shared/models/project.model';
 import { PROJECTS } from '@core/data/projects.generated';
 
 /**

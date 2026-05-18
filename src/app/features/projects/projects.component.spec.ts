@@ -5,7 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { ProjectsComponent } from './projects.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { createMockGithubMeta, createMockProject } from '@testing/project-mocks';
-import { Project } from '@shared/models/project.model';
+import type { Project } from '@shared/models/project.model';
 
 const MOCK_PROJECTS: Project[] = [
   createMockProject({

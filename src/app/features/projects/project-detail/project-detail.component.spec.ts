@@ -11,7 +11,7 @@ import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
 import { SkillUsageService } from '@core/services/skill-usage.service';
 import { BlogService } from '@core/services/blog.service';
-import { Project } from '@shared/models/project.model';
+import type { Project } from '@shared/models/project.model';
 import { environment } from '@env/environment';
 import { createMockGithubMeta, createMockProject } from '@testing/project-mocks';
 

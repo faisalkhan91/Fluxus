@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Skill, SkillCategory, SkillTier } from '@shared/models/skill.model';
+import type { Skill, SkillCategory, SkillTier } from '@shared/models/skill.model';
 /* Type-only import avoids a runtime circular dep — `skill-usage.service`
    already imports `SkillsDataService` at runtime. */
 import type { SkillUsage } from './skill-usage.service';

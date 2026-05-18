@@ -1,7 +1,7 @@
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { BlogPost } from '@shared/models/blog-post.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
 
 export const MOCK_POSTS: BlogPost[] = [
   {

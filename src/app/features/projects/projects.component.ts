@@ -15,7 +15,7 @@ import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
-import { Project } from '@shared/models/project.model';
+import type { Project } from '@shared/models/project.model';
 import { slugify } from '@shared/utils/string.utils';
 import { assertNever } from '@shared/utils/exhaustive.utils';
 
