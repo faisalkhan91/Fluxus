@@ -10,7 +10,7 @@
 import { readFile, writeFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
-import { loadProjectTagSlugs, loadProjectEntries } from './lib/projects.mjs';
+import { loadProjectTagSlugs, loadProjectEntries, slugify } from './lib/projects.mjs';
 
 const require = createRequire(import.meta.url);
 const { siteUrl: SITE_URL } = require('../site.config.json');
@@ -43,17 +43,6 @@ function urlEntry(loc, priority, lastmod) {
   return `  <url><loc>${escape(loc)}</loc>${lastmodTag}<priority>${priority}</priority></url>`;
 }
 
-// Tag-archive slug helper (must match `slugify` in src/app/shared/utils/string.utils.ts).
-function tagSlug(value) {
-  return String(value)
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 const today = new Date().toISOString().slice(0, 10);
 // Scheduled posts (date in the future) are excluded alongside drafts so the
 // sitemap only advertises URLs whose public metadata is also already live.
@@ -62,7 +51,7 @@ const today = new Date().toISOString().slice(0, 10);
 const livePosts = posts.filter((p) => !p.draft && p.date <= today);
 
 // Unique tag slugs across all non-draft posts (matches the prerender list).
-const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(tagSlug))))
+const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(slugify))))
   .filter(Boolean)
   .sort();
 
