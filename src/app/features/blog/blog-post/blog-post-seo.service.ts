@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { SeoService } from '@core/services/seo.service';
-import { BlogPost } from '@shared/models/blog-post.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
 
 /**

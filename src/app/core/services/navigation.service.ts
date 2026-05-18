@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { SidebarItem } from '@ui/sidebar/sidebar.component';
-import { MobileNavItem, MobileMenuItem } from '@ui/mobile-nav-pill/mobile-nav-pill.component';
+import type { SidebarItem } from '@ui/sidebar/sidebar.component';
+import type { MobileNavItem, MobileMenuItem } from '@ui/mobile-nav-pill/mobile-nav-pill.component';
 
 interface NavLink {
   label: string;

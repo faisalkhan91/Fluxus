@@ -1,4 +1,4 @@
-import { GithubMeta, Project } from '@shared/models/project.model';
+import type { GithubMeta, Project } from '@shared/models/project.model';
 
 /**
  * Factory helpers for Project / GithubMeta test fixtures. Every field

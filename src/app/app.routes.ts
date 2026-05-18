@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { yearsOfExperience } from './shared/utils/career.utils';
 
 export const routes: Routes = [

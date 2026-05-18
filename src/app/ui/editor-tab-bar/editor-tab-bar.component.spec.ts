@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { EditorTabBarComponent, EditorTab } from './editor-tab-bar.component';
+import { EditorTabBarComponent } from './editor-tab-bar.component';
+import type { EditorTab } from './editor-tab-bar.component';
 
 const MOCK_TABS: EditorTab[] = [
   { id: 'hero', label: 'Welcome', ext: '.tsx', color: '#61dafb', route: '/' },

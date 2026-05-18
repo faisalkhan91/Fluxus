@@ -1,5 +1,5 @@
+import type { ApplicationConfig } from '@angular/core';
 import {
-  ApplicationConfig,
   ErrorHandler,
   provideBrowserGlobalErrorListeners,
   provideAppInitializer,

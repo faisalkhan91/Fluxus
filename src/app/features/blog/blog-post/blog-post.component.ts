@@ -24,7 +24,7 @@ import { MarkdownService } from '@core/services/markdown.service';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import { ErrorToastService } from '@core/services/error-toast.service';
 import { ThemeService } from '@core/services/theme.service';
-import { BlogPost } from '@shared/models/blog-post.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
 import { BlogPostSeoService } from './blog-post-seo.service';
 import { MermaidService } from './mermaid.service';

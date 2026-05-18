@@ -1,7 +1,7 @@
 import { Injectable, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { BlogPost } from '@shared/models/blog-post.model';
+import type { BlogPost } from '@shared/models/blog-post.model';
 
 /**
  * `YYYY-MM-DD` for "today" in UTC. The `posts.json` `date` field is also a
