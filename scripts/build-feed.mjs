@@ -101,10 +101,18 @@ const entries = posts
       run an HTML parser over the (escaped) text and risks strict
       readers stripping curly quotes / apostrophes during sanitisation.
     */
+    // Every URL interpolation is escaped — slug values are author-
+    // controlled and pass through `slugify` (alphanumeric + `-`), so
+    // they are XML-safe today. Escaping defensively means a future
+    // slug containing `&` (or any XML-significant char) can't produce
+    // malformed feed XML and break every subscriber's reader. The
+    // `rel="alternate" type="text/html"` attributes on each entry
+    // <link> match the Atom spec defaults but are explicit so strict
+    // validators / readers don't have to assume.
     return `  <entry>
     <title>${escape(post.title)}</title>
-    <link href="${url}"/>
-    <id>${url}</id>
+    <link rel="alternate" type="text/html" href="${escape(url)}"/>
+    <id>${escape(url)}</id>
     <updated>${entryUpdated}</updated>
     <published>${published}</published>
     <author><name>Faisal Khan</name></author>
@@ -118,9 +126,9 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
   <title>${escape(SITE_NAME)}</title>
   <subtitle>Engineering blog</subtitle>
-  <link href="${SITE_URL}/"/>
-  <link rel="self" type="application/atom+xml" href="${SITE_URL}/feed.xml"/>
-  <id>${SITE_URL}/</id>
+  <link rel="alternate" type="text/html" href="${escape(`${SITE_URL}/`)}"/>
+  <link rel="self" type="application/atom+xml" href="${escape(`${SITE_URL}/feed.xml`)}"/>
+  <id>${escape(`${SITE_URL}/`)}</id>
   <updated>${updated}</updated>
   <author><name>Faisal Khan</name></author>
 ${entries}
