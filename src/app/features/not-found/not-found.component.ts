@@ -12,6 +12,7 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs/operators';
 import { IconComponent } from '@ui/icon/icon.component';
+import { SeoService } from '@core/services/seo.service';
 
 @Component({
   selector: 'app-not-found',
@@ -66,6 +67,15 @@ export class NotFoundComponent {
   protected readonly hasPath = computed(() => this.path().length > 0);
 
   constructor() {
+    // Match the prerendered 404 fingerprint — `scripts/inject-meta.mjs`
+    // bakes `<meta name="robots" content="noindex,nofollow">` into the
+    // static 404 page. Without this, a SPA-nav into a missing route (any
+    // wildcard match reached via in-app links) shipped without the tag,
+    // because `SeoService.init()` clears robots on every navigation and
+    // the static-SEO path doesn't re-set it. Crawlers reaching `/foo`
+    // through a bad in-app link could index the friendly 404 chrome.
+    inject(SeoService).setRobots('noindex,nofollow');
+
     afterNextRender(() => {
       if (!this.isBrowser) return;
       try {
