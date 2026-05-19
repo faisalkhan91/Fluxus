@@ -51,6 +51,20 @@
   background: var(--accent);
   box-shadow: var(--shadow-accent-glow);
   pointer-events: none;
+  /*
+    Transition stays off until the component sets
+    `.tabs-scroll--ready` (via `indicatorReady` after the first
+    geometry pass + a `requestAnimationFrame` to commit the
+    pre-hydration paint). Without this gate the indicator slides
+    from `width: 0` (the SSR / pre-paint default) to its first
+    computed position on the very first JS update — visible
+    teleport on every cold tab-bar mount. With the gate the
+    initial paint lands in-place and only subsequent moves
+    animate.
+  */
+}
+
+.tabs-scroll--ready::after {
   transition:
     transform var(--transition-tab),
     width var(--transition-tab);

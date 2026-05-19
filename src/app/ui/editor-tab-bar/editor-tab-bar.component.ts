@@ -58,6 +58,24 @@ export class EditorTabBarComponent {
   */
   protected indicatorX = signal(0);
   protected indicatorWidth = signal(0);
+  /*
+    Suppresses the indicator's `transition` until the first geometry
+    pass has committed. Without this, the SSR pre-hydration HTML
+    paints the bar at `width: 0` (the CSS-var default below), then
+    JS computes the active tab's `offsetLeft` / `offsetWidth` and
+    sets the vars — and the CSS transition animates from 0 →
+    computed-position in the first paint cycle. Visible teleport
+    on every cold tab-bar mount, especially noticeable on slow
+    devices where the gap between SSR paint and JS hydration is
+    long enough to see.
+
+    Flipped to `true` once `updateIndicator` has run via
+    `afterNextRender`, which is when the geometry first becomes
+    real. The CSS rule that consumes this class re-enables the
+    transition only after that point — so the very first render
+    is in-place, every subsequent move animates.
+  */
+  protected indicatorReady = signal(false);
 
   constructor() {
     /*
@@ -107,6 +125,18 @@ export class EditorTabBarComponent {
       // constructor effects above.
       this.updateFades();
       this.updateIndicator();
+
+      // Flip `indicatorReady` after the first geometry computation
+      // has painted, so the next paint frame re-enables the
+      // transition. Subsequent indicator moves animate; the very
+      // first one (the SSR-→-real-geometry hop) is in-place.
+      // requestAnimationFrame ensures the previous frame's
+      // `width: 0` paint commits before the transition turns on,
+      // otherwise the class flip would race the computed values
+      // and we'd get the same teleport we're trying to suppress.
+      if (this.isBrowser) {
+        requestAnimationFrame(() => this.indicatorReady.set(true));
+      }
     });
   }
 
