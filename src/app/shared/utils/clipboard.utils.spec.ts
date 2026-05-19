@@ -23,6 +23,10 @@ describe('copyToClipboard', () => {
   });
 
   afterEach(() => {
+    // Restore any vi.spyOn instances first so the underlying property is
+    // re-attached to jsdom's original (or our pre-test stub) before the
+    // descriptor swap below decides whether to restore or delete.
+    vi.restoreAllMocks();
     if (originalClipboard) {
       Object.defineProperty(navigator, 'clipboard', originalClipboard);
     } else {
@@ -56,11 +60,12 @@ describe('copyToClipboard', () => {
     });
     const exec = vi.spyOn(document, 'execCommand').mockImplementation(() => true);
 
+    // Spy is restored by `vi.restoreAllMocks()` in afterEach so a thrown
+    // assertion above can't skip the restore — leaking the mock would
+    // poison sibling tests that re-spy on the same property.
     const ok = await copyToClipboard('payload');
     expect(ok).toBe(true);
     expect(exec).toHaveBeenCalledWith('copy');
-
-    exec.mockRestore();
   });
 
   it('returns false when both paths fail', async () => {
@@ -70,9 +75,9 @@ describe('copyToClipboard', () => {
     });
     const exec = vi.spyOn(document, 'execCommand').mockImplementation(() => false);
 
+    // Spy restored uniformly via afterEach (see note above).
     const ok = await copyToClipboard('nope');
     expect(ok).toBe(false);
-
-    exec.mockRestore();
+    expect(exec).toHaveBeenCalledWith('copy');
   });
 });
