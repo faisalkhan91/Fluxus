@@ -49,6 +49,21 @@
   box-shadow: var(--shadow-glass);
   pointer-events: auto;
   animation: toast-in var(--transition-enter-base);
+  /*
+    Stagger toast entries by their stack index so multiple toasts
+    firing in quick succession cascade in instead of arriving as a
+    pile-on. The component sets `--toast-index` on each item from
+    the @for $index; we multiply by 60 ms to space the entries
+    just enough that the second toast lands as the first settles.
+    Existing toasts (index unchanged) re-apply with delay 0 since
+    `animation-delay` is non-cumulative — only newly-mounted toasts
+    pay the delay tax.
+
+    Reduced-motion users skip via the global rule (animation
+    duration → 0.01 ms; the staggered delays still apply but are
+    inconsequential against ~0 ms durations).
+  */
+  animation-delay: calc(var(--toast-index, 0) * 60ms);
 }
 
 @keyframes toast-in {
