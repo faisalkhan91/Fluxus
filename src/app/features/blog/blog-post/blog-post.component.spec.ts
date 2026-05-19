@@ -109,6 +109,29 @@ describe('BlogPostComponent', () => {
       expect(component.loading()).toBe(false);
     });
 
+    it('marks the post panel aria-busy while httpResource is loading and clears it on ready', async () => {
+      // Initial: loading is true (httpResource hasn't resolved). The
+      // glass-panel that wraps the article should advertise aria-busy
+      // so SR users know to wait — without this, the post pane was
+      // silent during the fetch and announced the full body in one
+      // burst when the request resolved.
+      paramMapSubject.next(convertToParamMap({ slug: 'second-post' }));
+      mockBlog.loading.set(true);
+      fixture.detectChanges();
+      const panel = el.querySelector('ui-glass-panel.post-content');
+      expect(panel?.getAttribute('aria-busy')).toBe('true');
+
+      // Loading hint also advertises itself to SR via role=status +
+      // aria-live=polite so the announcement happens without focus
+      // having to land in the busy region.
+      const loading = el.querySelector('.post-loading');
+      expect(loading?.getAttribute('role')).toBe('status');
+      expect(loading?.getAttribute('aria-live')).toBe('polite');
+
+      await load('second-post');
+      expect(panel?.getAttribute('aria-busy')).toBeNull();
+    });
+
     it('clears the rendered body when the slug changes (no stale flash)', async () => {
       await load('second-post', 'First body');
       expect(component.content()).toContain('First body');
