@@ -130,6 +130,6 @@ export class NavigationService {
   readonly mobileMenuItems: MobileMenuItem[] = NAV.filter((e) => e.inMobileMenu).map((e) =>
     e.type === 'divider'
       ? { type: 'divider', label: e.label }
-      : { type: 'link', label: e.label, route: e.route, icon: e.icon },
+      : { type: 'link', label: e.label, route: e.route, icon: e.icon, ext: e.ext },
   );
 }

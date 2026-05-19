@@ -21,7 +21,20 @@ export interface MobileNavItem {
 }
 
 export type MobileMenuItem =
-  | { type: 'link'; label: string; route: string; icon: string }
+  | {
+      type: 'link';
+      label: string;
+      route: string;
+      icon: string;
+      /**
+       * IDE-themed file-extension chip rendered to the right of the
+       * label (`.md`, `.rss`, `.ts`, `.json`, …). Matches the desktop
+       * sidebar's nav-ext column so the brand voice carries on phones.
+       * Optional because the home entry has `.tsx` while a few special
+       * entries omit it.
+       */
+      ext?: string;
+    }
   | { type: 'divider'; label: string };
 
 @Component({
