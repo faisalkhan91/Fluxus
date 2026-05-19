@@ -2213,6 +2213,26 @@ img[src*='amazonwebservices-original-wordmark'] {
   animation: simple-fade-in var(--duration-base) var(--ease-decelerate) both;
 }
 
+/*
+  Skills-page Grid↔List toggle. The skills component wraps the
+  signal swap in `document.startViewTransition` (see
+  `skills.component.ts`'s `setViewMode`); this `view-transition-name`
+  is what the browser pairs old/new snapshots against. Same
+  `--duration-base` + decelerate timing as the projects toggle so
+  both pages feel cohesive across the IDE-tab metaphor.
+*/
+.skills-results {
+  view-transition-name: skills-results;
+}
+
+::view-transition-old(skills-results) {
+  animation: simple-fade-out var(--duration-base) var(--ease-decelerate) both;
+}
+
+::view-transition-new(skills-results) {
+  animation: simple-fade-in var(--duration-base) var(--ease-decelerate) both;
+}
+
 /* WCAG 2.3.3 — honor user's reduced-motion preference. Collapses every
    animation, transition, and View Transitions pseudo-element animation to a
    near-zero duration so the UI remains static during motion-sensitive use. */
