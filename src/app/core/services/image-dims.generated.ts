@@ -67,6 +67,18 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 1600,
     h: 900,
   },
+  'assets/images/blog/observability-pipeline/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
+  'assets/images/blog/outcome-durability/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
+  'assets/images/blog/self-healing-guardrails/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
   'assets/images/og-image.png': {
     w: 1200,
     h: 630,
