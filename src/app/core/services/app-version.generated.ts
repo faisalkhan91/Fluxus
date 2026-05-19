@@ -2,7 +2,7 @@
 // Re-run via `npm run build:version-stamp`.
 
 /** Build identifier baked into the JS bundle at compile time. */
-export const APP_VERSION = '965783c9-1779182159251';
+export const APP_VERSION = 'f6bbc357-1779182457414';
 
 /** ISO-8601 timestamp of the build, surfaced for diagnostics only. */
-export const APP_BUILT_AT = '2026-05-19T09:15:59.250Z';
+export const APP_BUILT_AT = '2026-05-19T09:20:57.412Z';
