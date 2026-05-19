@@ -139,6 +139,156 @@
 }
 
 /*
+  Mobile collapsible TOC (< 1280 px). Sits at the top of the article so
+  readers can jump to a section without scrolling for it. Closed by
+  default; `<details>` handles keyboard / SR / open-state out of the
+  box so the only work here is presentational. Hidden at the breakpoint
+  where the sticky aside takes over.
+
+  Border + glass surface match `.callout` so the TOC reads as the same
+  family of in-article metadata as info/warning blocks.
+*/
+.post-toc-mobile {
+  margin: 0 0 var(--space-6);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 1280px) {
+  .post-toc-mobile {
+    display: none;
+  }
+}
+
+.post-toc-mobile-summary {
+  /*
+    `list-style: none` strips the default disclosure marker on Chromium /
+    Firefox; the `::-webkit-details-marker` rule below covers Safari ≤ 16.
+    The summary's open/closed state is conveyed by the chevron we paint
+    via `::after` so we don't lose the affordance.
+  */
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  /*
+    44 px target lines up with the rest of the mobile chrome — taps
+    register comfortably on a thumb. The visible padding renders the
+    summary at ~38 px, so the trailing `min-height` reserves the full
+    44 px without changing visual weight.
+  */
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.post-toc-mobile-summary::-webkit-details-marker {
+  display: none;
+}
+
+.post-toc-mobile-summary:hover,
+.post-toc-mobile-summary:focus-visible {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.post-toc-mobile-summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/*
+  Disclosure chevron. Rotates 180° when the `<details>` opens — pure CSS,
+  the parent attribute selector `[open]` does the work.
+*/
+.post-toc-mobile-summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transform-origin: 60% 60%;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.post-toc-mobile[open] > .post-toc-mobile-summary::after {
+  transform: rotate(-135deg);
+}
+
+.post-toc-mobile-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.post-toc-mobile-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 400;
+}
+
+.post-toc-mobile-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid var(--glass-border);
+  padding-top: var(--space-2);
+}
+
+.post-toc-mobile-list a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  /*
+    44 px hit target on every entry — long TOCs get tapped many times,
+    so cramping the rows would punish the reader.
+  */
+  min-height: 32px;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.post-toc-mobile-list a:hover,
+.post-toc-mobile-list a:focus-visible {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.post-toc-mobile-h3 a {
+  padding-left: var(--space-6);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-toc-mobile-summary::after {
+    transition: none;
+  }
+}
+
+/*
   Anchored from the right edge of the (fixed-position) sidebar to the right
   edge of the viewport so the visible portion isn't clipped by the sidebar's
   root-level stacking context. The bar lives inside `.content`, which has
@@ -151,7 +301,13 @@
 */
 .reading-progress {
   position: fixed;
-  top: 0;
+  /* Pull below the iPhone Dynamic Island / notch so the bar stays
+     visible in portrait. Without the inset, the 3 px bar paints
+     directly under the up-to-59 px top safe area on iPhone 14 Pro+.
+     The `0px` fallback preserves placement on non-notch devices and
+     on landscape orientations where the top inset reports 0. Pairs
+     with `viewport-fit=cover` in index.html. */
+  top: env(safe-area-inset-top, 0px);
   left: var(--sidebar-width);
   right: 0;
   height: 3px;
@@ -161,6 +317,9 @@
   z-index: 9999;
   transform: scaleX(0);
   transform-origin: left center;
+  /* 80 ms is intentionally sub-`--duration-fast` so the bar feels
+     real-time during scrubbing — 150 ms would read as laggy on a
+     fast-flick scroll. */
   transition: transform 80ms linear;
   pointer-events: none;
 }
