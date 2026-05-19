@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter, NavigationStart } from '@angular/router';
 import { MobileNavPillComponent } from './mobile-nav-pill.component';
 import type { MobileNavItem, MobileMenuItem } from './mobile-nav-pill.component';
 
@@ -146,6 +146,29 @@ describe('MobileNavPillComponent', () => {
     expect(exts.length).toBe(MOCK_MENU_ITEMS.filter((m) => m.type === 'link').length);
     const skills = Array.from(exts).find((e) => e.textContent?.trim() === '.json');
     expect(skills).toBeDefined();
+  });
+
+  it('closes the drawer when a NavigationStart fires (Android back button parity)', () => {
+    /*
+      Mobile users on Android expect the hardware back button to dismiss
+      any open modal/drawer before navigating. Browser back fires a
+      `popstate` which the router translates into a `NavigationStart`.
+      The component subscribes to that stream and closes `menuOpen` so
+      the drawer dismisses cleanly even when the user didn't tap one of
+      our own controls. Same listener also handles any external `<a>`
+      that might bypass `navigateTo` (defensive).
+    */
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    expect(component.menuOpen()).toBe(true);
+
+    // Synthesize a NavigationStart through the router's events stream.
+    const router = TestBed.inject(Router);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (router.events as any).next(new NavigationStart(1, '/about'));
+    fixture.detectChanges();
+
+    expect(component.menuOpen()).toBe(false);
   });
 
   it('should close menu when close button is clicked', () => {
