@@ -1,0 +1,19 @@
+# Browser support matrix consumed by:
+#   - @angular/build (output target features, polyfill set)
+#   - autoprefixer (CSS vendor prefixes)
+#   - postcss-preset-env / sass embedded autoprefixer (where applicable)
+#
+# Angular ships a default browserslist when this file is absent, but the
+# default tracks caniuse-lite releases and drifts each upgrade. Pinning
+# the matrix here makes any change to support semantics show up as an
+# explicit edit to this file rather than a silent CSS-output diff.
+#
+# Current target: "modern evergreen" — every release channel's last two
+# majors, plus Firefox ESR, with IE / dead browsers explicitly excluded.
+
+> 0.5%
+last 2 versions
+Firefox ESR
+not dead
+not IE 11
+not op_mini all
