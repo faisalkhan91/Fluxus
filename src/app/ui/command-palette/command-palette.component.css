@@ -215,3 +215,27 @@
   border-top: 1px solid var(--glass-border);
   background: var(--surface-base);
 }
+
+/*
+  Pointer-aware footer swap. `(hover: hover)` is the canonical
+  "this device has a real pointer that can hover" query — true on
+  laptops + desktop touch screens with attached keyboards, false on
+  phones / tablets without a paired keyboard. We use it to pick
+  which footer paints rather than `(max-width)` because viewport
+  width isn't a reliable proxy for input modality (an iPad in
+  desktop-mode reports a wide viewport but no hover).
+
+  Default state (above) keeps both variants in the DOM with
+  `display: block`; the rules below disable the off-modality one.
+*/
+@media (hover: hover) {
+  .palette-footer--touch {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  .palette-footer--keyboard {
+    display: none;
+  }
+}
