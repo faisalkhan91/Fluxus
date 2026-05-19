@@ -25,4 +25,24 @@ export class CertificationsComponent {
   toggleProvider(name: string): void {
     this.expandedProvider.update((current) => (current === name ? null : name));
   }
+
+  /**
+   * Home / End scroll handlers for the focused `.cert-grid` rail.
+   * Native browser default for these keys is to scroll the *page*,
+   * not the focused scroll container — so without an explicit
+   * handler, pressing End from inside the rail jumps to the page
+   * footer instead of the last cert card. Arrow keys + PageUp /
+   * PageDown work natively, so we only need to override the two
+   * boundary keys.
+   */
+  protected scrollToStart(event: Event): void {
+    event.preventDefault();
+    (event.currentTarget as HTMLElement).scrollLeft = 0;
+  }
+
+  protected scrollToEnd(event: Event): void {
+    event.preventDefault();
+    const el = event.currentTarget as HTMLElement;
+    el.scrollLeft = el.scrollWidth;
+  }
 }
