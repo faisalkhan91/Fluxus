@@ -171,7 +171,14 @@ if (failed) {
     `\nFix: regenerate dist/fluxus/security-headers.conf via scripts/build-csp.mjs, ` +
       `or add the missing token(s) to the script-src template there.`,
   );
+  console.error(
+    `✗ csp-audit: fail (${handlerMisses.length} handler miss${handlerMisses.length === 1 ? '' : 'es'}, ${scriptMisses.length} script miss${scriptMisses.length === 1 ? '' : 'es'})`,
+  );
   process.exit(1);
 }
 
-console.log(`OK — every inline handler and inline <script> has a matching script-src entry.`);
+// Greppable summary line for CI logs (`grep '✓ csp-audit'`) — the prose
+// "OK — …" line above stays for human readers.
+console.log(
+  `OK — every inline handler and inline <script> has a matching script-src entry.\n✓ csp-audit: pass (${handlerCount} handlers, ${scriptCount} scripts)`,
+);
