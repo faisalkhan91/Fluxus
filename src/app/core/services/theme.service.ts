@@ -8,6 +8,7 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { prefersReducedMotion } from '@shared/utils/motion.utils';
 import {
   DEFAULT_DARK_ID,
   DEFAULT_LIGHT_ID,
@@ -132,12 +133,8 @@ export class ThemeService {
       'startViewTransition' in this.document &&
       typeof (this.document as Document & { startViewTransition?: unknown }).startViewTransition ===
         'function';
-    const prefersReducedMotion =
-      this.isBrowser &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (supportsViewTransition && !prefersReducedMotion) {
+    if (supportsViewTransition && !prefersReducedMotion()) {
       (
         this.document as Document & { startViewTransition: (cb: () => void) => unknown }
       ).startViewTransition(() => this.theme.set(id));

@@ -17,6 +17,7 @@ import type { SkillUsage } from '@core/services/skill-usage.service';
 import { MediaQueryService } from '@core/services/media-query.service';
 import type { SkillCategory, Skill } from '@shared/models/skill.model';
 import { slugify } from '@shared/utils/string.utils';
+import { prefersReducedMotion } from '@shared/utils/motion.utils';
 import { SkillFeatureCardComponent } from './skill-feature-card.component';
 import { SkillsListViewComponent } from './skills-list-view.component';
 
@@ -183,12 +184,8 @@ export class SkillsComponent {
       'startViewTransition' in this.document &&
       typeof (this.document as Document & { startViewTransition?: unknown })
         .startViewTransition === 'function';
-    const prefersReducedMotion =
-      this.isBrowser &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (supportsViewTransition && !prefersReducedMotion) {
+    if (supportsViewTransition && !prefersReducedMotion()) {
       (
         this.document as Document & { startViewTransition: (cb: () => void) => unknown }
       ).startViewTransition(() => this.viewMode.set(mode));
