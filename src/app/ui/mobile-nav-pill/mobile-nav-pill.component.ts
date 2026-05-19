@@ -10,7 +10,7 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgOptimizedImage } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 
@@ -41,7 +41,7 @@ export type MobileMenuItem =
   selector: 'ui-mobile-nav-pill',
   templateUrl: './mobile-nav-pill.component.html',
   styleUrl: './mobile-nav-pill.component.css',
-  imports: [RouterLink, RouterLinkActive, IconComponent],
+  imports: [RouterLink, RouterLinkActive, IconComponent, NgOptimizedImage],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     role: 'navigation',
