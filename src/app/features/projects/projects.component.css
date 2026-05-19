@@ -153,7 +153,14 @@
 
 .projects-list-hero-image {
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  /*
+    250 ms (`--transition-base`), not 400 ms (`--transition-slow`).
+    Hovers should feel snappy — the slow tier is for page-level
+    choreography. Same fix applied to the row-image and grid-card
+    image rules below so all three project surfaces respond at the
+    same cadence.
+  */
+  transition: transform var(--transition-base);
 }
 
 .projects-list-hero:hover .projects-list-hero-image {
@@ -305,7 +312,7 @@
 
 .projects-list-row-image {
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  transition: transform var(--transition-base);
 }
 
 .projects-list-row:hover .projects-list-row-image {
@@ -447,7 +454,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  transition: transform var(--transition-base);
 }
 
 .project-card:hover .project-image {
