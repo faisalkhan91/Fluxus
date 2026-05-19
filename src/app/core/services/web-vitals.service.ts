@@ -64,12 +64,10 @@ export class WebVitalsService {
   private config = DEFAULT_CONFIG;
   private started = false;
   /**
-   * Pending idle / timeout handle from `scheduleIdle`. Stored so a
-   * subsequent `start()` call (rare — only an HMR re-init or a
-   * test-bed reset would land here, since `started` already guards
-   * the normal path) can cancel the not-yet-fired registration
-   * before kicking a new one. Without this, an HMR cycle could
-   * register the web-vitals observers twice and double every beacon.
+   * Pending idle / timeout handle from `scheduleIdle`. The public
+   * `cancel()` method below uses this to drop a not-yet-fired
+   * registration so a test fixture or HMR re-init can replay
+   * `start()` without doubling the `PerformanceObserver` setup.
    */
   private idleHandle: ScheduleHandle = null;
 
@@ -93,6 +91,33 @@ export class WebVitalsService {
       this.idleHandle = null;
       void this.register();
     });
+  }
+
+  /**
+   * Drop any pending idle / timeout registration and reset the
+   * `started` guard so a subsequent `start()` call can re-schedule.
+   * Intended for test setups that re-create the singleton between
+   * cases and for HMR cycles in dev — production code should never
+   * call this. After `register()` has actually fired the
+   * PerformanceObservers cannot be unregistered through this path
+   * (web-vitals doesn't expose a `disable` API); the cancel only
+   * affects the not-yet-started bring-up window.
+   */
+  cancel(): void {
+    if (this.idleHandle === null) {
+      this.started = false;
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      if (this.idleHandle.kind === 'idle') {
+        const w = window as Window & { cancelIdleCallback?: (id: number) => void };
+        w.cancelIdleCallback?.(this.idleHandle.id);
+      } else {
+        clearTimeout(this.idleHandle.id);
+      }
+    }
+    this.idleHandle = null;
+    this.started = false;
   }
 
   private async register(): Promise<void> {
