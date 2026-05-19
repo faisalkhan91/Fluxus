@@ -21,6 +21,8 @@
     "audit:csp": "node scripts/audit-csp.mjs",
     "optimize:images": "node scripts/optimize-blog-images.mjs",
     "build:image-dims": "node scripts/build-image-dims.mjs",
+    "generate:favicon": "node scripts/generate-favicon-assets.mjs",
+    "generate:resume": "node scripts/generate-resume.mjs",
     "analyze": "ng build --configuration production --source-map && npx --yes source-map-explorer 'dist/fluxus/browser/main-*.js' 'dist/fluxus/browser/chunk-*.js' --no-border-checks",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
