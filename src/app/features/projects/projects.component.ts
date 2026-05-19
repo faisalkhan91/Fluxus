@@ -1,12 +1,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
+  PLATFORM_ID,
+  afterNextRender,
   computed,
+  effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -71,7 +76,24 @@ export class ProjectsComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private destroyRef = inject(DestroyRef);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   protected slugify = slugify;
+
+  /*
+    Sliding active-sort indicator. Mirrors the pattern in
+    `editor-tab-bar.component.ts` so the IDE-tab metaphor is
+    consistent across the app: a single 2 px bar that translates +
+    resizes between the active sort chip's `offsetLeft` /
+    `offsetWidth`. The component sets `--sort-indicator-x` /
+    `--sort-indicator-width` on the row; CSS does the slide via
+    `--transition-tab` (120 ms). When no chip is active (initial
+    SSR render before signal hydrates), `width: 0` keeps the bar
+    hidden — matches the tab-bar contract.
+  */
+  protected sortIndicatorX = signal(0);
+  protected sortIndicatorWidth = signal(0);
+  protected sortRow = viewChild<ElementRef<HTMLElement>>('sortRow');
 
   private expandedSet = signal(new Set<string>());
 
@@ -138,6 +160,55 @@ export class ProjectsComponent {
     { key: 'stars', label: 'Most starred' },
     { key: 'updated', label: 'Recently updated' },
   ];
+
+  constructor() {
+    /*
+      Recompute the sliding-indicator position whenever the active
+      sort changes. Wrapped in `queueMicrotask` so the new
+      `.projects-sort-option.active` class has actually painted before
+      we read `offsetLeft` / `offsetWidth` — otherwise the first
+      paint reads stale geometry from the previous active chip.
+      Browser-only so SSR doesn't try to read DOM offsets.
+    */
+    effect(() => {
+      this.sort();
+      if (this.isBrowser) {
+        queueMicrotask(() => this.updateSortIndicator());
+      }
+    });
+
+    afterNextRender(() => {
+      // Initial pass once the view has been committed and the row's
+      // geometry is real. Layout shifts (e.g. font-loading, viewport
+      // resize) re-fire via the listener below.
+      this.updateSortIndicator();
+
+      const onResize = () => this.updateSortIndicator();
+      window.addEventListener('resize', onResize, { passive: true });
+      this.destroyRef.onDestroy(() => window.removeEventListener('resize', onResize));
+    });
+  }
+
+  /**
+   * Read the active chip's `offsetLeft` + `offsetWidth` and publish
+   * them as CSS custom properties on the row. The CSS `::after`
+   * pseudo (see `projects.component.css`) reads those vars and
+   * slides via `--transition-tab`. No-op when the row hasn't
+   * mounted (initial render path) or no chip is active — sets
+   * width to 0 so the indicator stays hidden until valid geometry
+   * arrives. Mirrors `EditorTabBarComponent.updateIndicator`.
+   */
+  private updateSortIndicator(): void {
+    const row = this.sortRow()?.nativeElement;
+    if (!row) return;
+    const active = row.querySelector<HTMLElement>('.projects-sort-option.active');
+    if (!active) {
+      this.sortIndicatorWidth.set(0);
+      return;
+    }
+    this.sortIndicatorX.set(active.offsetLeft);
+    this.sortIndicatorWidth.set(active.offsetWidth);
+  }
 
   protected setSort(key: ProjectSort): void {
     this.router.navigate([], {
