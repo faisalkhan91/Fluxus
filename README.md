@@ -43,7 +43,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 - **Modern CSS** — OKLCH accent palette, container queries on the content shell, scroll-driven reading-progress animation (zero-JS where supported)
 - **Print stylesheet** — Resume / blog post print-friendly view (chrome hidden, black-on-white, prose expanded)
 - **Security Headers** — CSP (script-src hashed at build time, no `'unsafe-inline'` for scripts), HSTS preload, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-- **Comprehensive Test Suite** — 540+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
+- **Comprehensive Test Suite** — 600+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
 - **Automated CI/CD** — single-check CI gate, CodeQL SAST, Release Please semver, multi-arch Docker publish, GitOps PR to Homelab, Trivy gate plus weekly drift re-scan, scheduled smoke probe, weekly GHCR retention
 
 ---
@@ -61,7 +61,7 @@ Open `http://localhost:4300/` in your browser.
 
 ### Prerequisites
 
-- Node.js 22+ (or 24 LTS)
+- Node.js 24 (LTS) — `package.json` declares `engines.node: ">=24 <25"`
 - npm
 - Angular CLI 21+ (`npm install -g @angular/cli@latest`)
 - Docker (for containerized builds)
@@ -134,7 +134,7 @@ Six layered checks guard the build. The CI workflow runs lint, typecheck, audit,
 
 | Gate                         | Command                                                | What it catches                                                                                    |
 | ---------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Unit tests                   | `npm test -- --watch=false`                            | 250+ Vitest specs (components, services, blog content + nav-routes contract tests)                 |
+| Unit tests                   | `npm test -- --watch=false`                            | 600+ Vitest specs (components, services, blog content + nav-routes contract tests)                 |
 | Static analysis              | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`       | ESLint, Angular template rules, strict TypeScript                                                  |
 | Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`) | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script |
 | Live a11y / behaviour        | `npm run e2e` (after `npm run build:prod`)             | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`             |
