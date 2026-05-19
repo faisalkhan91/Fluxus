@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -197,5 +197,62 @@ describe('MobileNavPillComponent', () => {
     await new Promise((r) => queueMicrotask(() => r(undefined)));
 
     expect(document.activeElement).toBe(trigger);
+  });
+
+  describe('background inert (modal isolation)', () => {
+    let banner: HTMLElement;
+    let mainArea: HTMLElement;
+    let themeToggle: HTMLElement;
+
+    beforeEach(() => {
+      // Stand up the three shell siblings the component looks for so
+      // the inert toggle has something to flip. Real shell uses
+      // <header role="banner">, <div class="main-area">, and the
+      // mobile-theme-toggle FAB.
+      banner = document.createElement('header');
+      banner.setAttribute('role', 'banner');
+      mainArea = document.createElement('div');
+      mainArea.className = 'main-area';
+      themeToggle = document.createElement('button');
+      themeToggle.className = 'mobile-theme-toggle';
+      document.body.append(banner, mainArea, themeToggle);
+    });
+
+    afterEach(() => {
+      banner.remove();
+      mainArea.remove();
+      themeToggle.remove();
+    });
+
+    it('sets inert on banner / main-area / theme toggle when the menu opens', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+
+      expect(banner.hasAttribute('inert')).toBe(true);
+      expect(mainArea.hasAttribute('inert')).toBe(true);
+      expect(themeToggle.hasAttribute('inert')).toBe(true);
+    });
+
+    it('removes inert when the menu closes', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      component.menuOpen.set(false);
+      fixture.detectChanges();
+
+      expect(banner.hasAttribute('inert')).toBe(false);
+      expect(mainArea.hasAttribute('inert')).toBe(false);
+      expect(themeToggle.hasAttribute('inert')).toBe(false);
+    });
+
+    it('strips inert on destroy so a route change mid-modal leaves the next page interactive', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      // Tear down the component while the menu is "open".
+      fixture.destroy();
+
+      expect(banner.hasAttribute('inert')).toBe(false);
+      expect(mainArea.hasAttribute('inert')).toBe(false);
+      expect(themeToggle.hasAttribute('inert')).toBe(false);
+    });
   });
 });

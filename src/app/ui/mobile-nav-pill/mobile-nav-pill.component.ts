@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  DestroyRef,
   ElementRef,
   effect,
   input,
@@ -8,6 +9,7 @@ import {
   inject,
   viewChild,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 
@@ -34,6 +36,8 @@ export type MobileMenuItem =
 })
 export class MobileNavPillComponent {
   private router = inject(Router);
+  private document = inject(DOCUMENT);
+  private destroyRef = inject(DestroyRef);
 
   items = input.required<MobileNavItem[]>();
   menuItems = input.required<MobileMenuItem[]>();
@@ -50,7 +54,39 @@ export class MobileNavPillComponent {
       if (open && panel) {
         queueMicrotask(() => panel.nativeElement.focus());
       }
+      this.toggleBackgroundInert(open);
     });
+    // Defensive cleanup: if the component is destroyed while the menu
+    // is open (route change cancelling the modal mid-flow), strip the
+    // inert attributes so the rest of the app stays interactive on
+    // the next page.
+    this.destroyRef.onDestroy(() => this.toggleBackgroundInert(false));
+  }
+
+  /**
+   * Block AT / keyboard from reaching site chrome while the menu modal
+   * is open. `aria-modal="true"` on the dialog is technically sufficient
+   * per ARIA spec, but its enforcement varies across SR + browser
+   * combinations — `inert` is the unambiguous belt-and-braces guard.
+   *
+   * Targets the three top-level shell containers that aren't the modal:
+   * the site banner (sidebar), the main-area (editor tab bar + content
+   * + router outlet), and the mobile theme FAB. The toast region stays
+   * reachable so a toast action ("Update available — Reload") still
+   * works with the menu open. The command palette manages its own
+   * modal state.
+   */
+  private toggleBackgroundInert(inert: boolean): void {
+    const targets = [
+      this.document.querySelector('header[role="banner"]'),
+      this.document.querySelector('.main-area'),
+      this.document.querySelector('.mobile-theme-toggle'),
+    ];
+    for (const el of targets) {
+      if (!el) continue;
+      if (inert) el.setAttribute('inert', '');
+      else el.removeAttribute('inert');
+    }
   }
 
   openMenu(): void {
