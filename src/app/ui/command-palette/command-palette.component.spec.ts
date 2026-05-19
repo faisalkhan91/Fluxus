@@ -357,6 +357,40 @@ describe('CommandPaletteComponent', () => {
       inner().onKey(new KeyboardEvent('keydown', { key: 'Enter' }));
       expect(router.navigate).toHaveBeenCalledWith(['/about']);
     });
+
+    it('arrow-key navigation scrolls the active option into view', async () => {
+      // The catalog routinely tops 40 entries (routes + posts + themes +
+      // skills + projects), so the highlighted option can scroll past
+      // the listbox viewport. Without scrollIntoView, aria-activedescendant
+      // points at an element the user can't see.
+      //
+      // jsdom doesn't implement scrollIntoView (or scroll boxes at all),
+      // so the property is genuinely missing — `vi.spyOn` rejects a
+      // missing property by design. Install a no-op stub on the
+      // prototype first, then wrap it; restore both at the end.
+      const dialog = fixture.nativeElement.querySelector('dialog');
+      const original = (Element.prototype as Element & { scrollIntoView?: unknown })
+        .scrollIntoView;
+      (Element.prototype as Element & { scrollIntoView: () => void }).scrollIntoView = () => {};
+      const spy = vi.spyOn(Element.prototype, 'scrollIntoView');
+      try {
+        inner().onKey(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+        // queueMicrotask drain — the scroll fires after the highlight
+        // signal's recompute settles.
+        await Promise.resolve();
+        expect(spy).toHaveBeenCalledWith({ block: 'nearest' });
+        const target = spy.mock.contexts[0] as HTMLElement;
+        expect(dialog?.contains(target)).toBe(true);
+        expect(target.getAttribute('role')).toBe('option');
+      } finally {
+        spy.mockRestore();
+        if (original === undefined) {
+          delete (Element.prototype as unknown as Record<string, unknown>)['scrollIntoView'];
+        } else {
+          (Element.prototype as Element & { scrollIntoView: unknown }).scrollIntoView = original;
+        }
+      }
+    });
   });
 
   describe('theme actions', () => {
