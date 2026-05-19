@@ -1,5 +1,38 @@
 [
   {
+    "slug": "six-things-i-learned-observability-pipeline-2026-05",
+    "title": "Six Things I Learned Migrating an Observability Pipeline",
+    "date": "2026-05-19",
+    "excerpt": "Six failure modes from a recent project moving 30-day SLA reporting off Splunk Summary Indexing onto a Lambda pipeline that aggregates in Coralogix and emits to Datadog. Each lesson is a symptom that didn't say what it meant, a root cause that took longer than it should have, and a fix small enough to be embarrassing in retrospect.",
+    "tags": ["Observability", "SRE", "Architecture", "Datadog", "Coralogix", "Lambda"],
+    "readingTime": "9 min",
+    "wordCount": 1660,
+    "series": "Reporting Pipeline Notes",
+    "seriesOrder": 1
+  },
+  {
+    "slug": "why-we-didnt-use-kafka-2026-05",
+    "title": "Why We Didn't Use Kafka",
+    "date": "2026-06-02",
+    "excerpt": "A teammate asked if we'd considered Kafka for a reporting pipeline. The short answer is that queues solve message durability while we needed outcome durability, a different problem with a differently-shaped answer. Here's the 1:1 mapping that resolved the conversation.",
+    "tags": ["Observability", "SRE", "Architecture", "Kafka", "S3", "AWS"],
+    "readingTime": "7 min",
+    "wordCount": 1378,
+    "series": "Reporting Pipeline Notes",
+    "seriesOrder": 2
+  },
+  {
+    "slug": "self-healing-needs-a-human-in-the-loop-2026-05",
+    "title": "Why Self-Healing Pipelines Need a Human in the Loop",
+    "date": "2026-06-16",
+    "excerpt": "Auto-recovering every gap sounds great until the auto-recoverer cascades into retry storms against a sick downstream. Three failure classes (transient, deterministic, systemic) each need a different response. The boundary between 'auto-recover' and 'page someone' is the hardest design problem.",
+    "tags": ["Observability", "SRE", "Architecture", "Self-Healing", "Operations"],
+    "readingTime": "7 min",
+    "wordCount": 1389,
+    "series": "Reporting Pipeline Notes",
+    "seriesOrder": 3
+  },
+  {
     "slug": "shipping-fresh-css-after-deploy-2026-04",
     "title": "Shipping fresh CSS after deploy: lessons from a stale-client debugging session",
     "date": "2026-04-30",
