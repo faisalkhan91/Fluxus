@@ -64,7 +64,14 @@ function postIsoTimestamp(date) {
 const todayYmd = new Date().toISOString().slice(0, 10);
 const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'))
   .filter((p) => !p.draft && p.date <= todayYmd)
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  // Date-descending; secondary slug-ascending so two posts dated the same
+  // day always emit in the same order. Without the tiebreaker, equal-date
+  // entries swap order across runs and the committed feed.xml diff churns
+  // even when no post content changed.
+  .sort(
+    (a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime() || a.slug.localeCompare(b.slug),
+  );
 
 /*
   Feed-level <updated> per Atom RFC 4287 §4.2.15: "the most recent instant
