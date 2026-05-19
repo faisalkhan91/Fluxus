@@ -69,6 +69,46 @@
   background: var(--surface-overlay);
 }
 
+/*
+  Sliding active indicator. The component computes the active chip's
+  `offsetLeft` / `offsetWidth` and publishes them as
+  `--sort-indicator-x` / `--sort-indicator-width` on the row; the
+  `::after` below positions the bar via `translateX` + `width` and
+  `--transition-tab` (120 ms) animates between sort changes. Same
+  pattern + same timing as the editor tab bar's active indicator,
+  so the IDE-tab metaphor is consistent across the app.
+
+  `position: relative` + the `::after` are scoped to the row so the
+  bar sits at the row's bottom edge regardless of chip wrap (rare —
+  4 chips fit comfortably above 480 px). On the SSR / pre-hydrate
+  pass `--sort-indicator-width` is 0, so the bar is hidden until
+  the first paint cycle reads real geometry.
+*/
+.projects-sort-row {
+  --sort-indicator-x: 0;
+  --sort-indicator-width: 0;
+  position: relative;
+}
+
+.projects-sort-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  /* Tucked just under the chip's rounded-bottom edge so the bar
+     reads as attached to the active chip rather than a detached
+     stripe. -2px sits flush with the chip's border line. */
+  bottom: -2px;
+  height: 2px;
+  width: var(--sort-indicator-width);
+  transform: translateX(var(--sort-indicator-x));
+  background: var(--accent);
+  border-radius: 2px;
+  pointer-events: none;
+  transition:
+    transform var(--transition-tab),
+    width var(--transition-tab);
+}
+
 .projects-sort-option {
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -95,10 +135,17 @@
   outline-offset: 2px;
 }
 
+/*
+  Active state shifts the chip's text colour to primary so the active
+  label reads firmer than the muted siblings. Border + background stay
+  on the inactive defaults (glass-border, transparent) so the *slide
+  bar below the row* is the only animated indicator — pairing the bar
+  with a coloured chip-fill or accent border made the row read as
+  "two indicators of the same thing" and broke the editor-tab metaphor
+  the bar pattern is meant to invoke.
+*/
 .projects-sort-option.active {
   color: var(--text-primary);
-  border-color: var(--accent);
-  background: var(--surface-overlay);
 }
 
 .projects-grid {
