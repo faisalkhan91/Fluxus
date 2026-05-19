@@ -171,14 +171,43 @@ export class CommandPaletteComponent {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
       this.highlighted.update((i) => Math.min(items.length - 1, i + 1));
+      this.scrollActiveIntoView();
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
       this.highlighted.update((i) => Math.max(0, i - 1));
+      this.scrollActiveIntoView();
     } else if (event.key === 'Enter') {
       event.preventDefault();
       const item = items[this.highlighted()];
       if (item) this.select(item);
     }
+  }
+
+  /**
+   * Keeps the option pointed at by `aria-activedescendant` visible inside
+   * the listbox after each arrow-key move. Without this, a long catalog
+   * (routes + blog posts + projects + skills + themes routinely tops 40
+   * entries) lets keyboard users scroll past the rendered viewport — the
+   * highlighted option is announced to screen readers but invisible to
+   * sighted users, and the relationship asserted by aria-activedescendant
+   * silently breaks. WCAG 2.4.8 (Focus Visible).
+   *
+   * Mirrors the same scrollIntoView({ block: 'nearest' }) pattern the
+   * mobile-nav-pill uses to centre the active route after the drawer
+   * opens. Async via queueMicrotask so the highlight signal's downstream
+   * recompute (active-descendant id) settles before we look it up.
+   */
+  private scrollActiveIntoView(): void {
+    if (!this.isBrowser) return;
+    queueMicrotask(() => {
+      const id = this.activeDescendantId();
+      if (!id) return;
+      const target = this.dialog()?.nativeElement.querySelector(`#${id}`);
+      // jsdom (and a handful of older webviews) don't implement
+      // scrollIntoView. Guard so the method is a no-op there rather
+      // than crashing the keystroke pipeline.
+      target?.scrollIntoView?.({ block: 'nearest' });
+    });
   }
 
   protected select(item: CommandItem): void {
