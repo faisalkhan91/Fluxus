@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  DestroyRef,
   PLATFORM_ID,
   computed,
   inject,
@@ -33,7 +34,17 @@ type SubmitStage = 'editing' | 'awaiting-confirmation' | 'sent';
 export class ContactComponent {
   protected profile = inject(ProfileDataService);
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  /**
+   * Tracks the pending `emailCopied` reset timer so a quick navigation
+   * after copying doesn't fire `emailCopied.set(false)` on a torn-down
+   * view. The signal write is benign (Angular doesn't throw for writes
+   * on detached signals) but it's wasted work and the lifecycle is
+   * cleaner if the timer cancels on destroy.
+   */
+  private emailCopiedTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected contactForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -45,6 +56,12 @@ export class ContactComponent {
   readonly stage = signal<SubmitStage>('editing');
   readonly emailCopied = signal(false);
   readonly submitted = computed(() => this.stage() === 'sent');
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.emailCopiedTimer !== null) clearTimeout(this.emailCopiedTimer);
+    });
+  }
 
   /**
    * Returns the matching error span id for `aria-describedby` only when that
@@ -100,7 +117,13 @@ export class ContactComponent {
     */
     if (ok) {
       this.emailCopied.set(true);
-      setTimeout(() => this.emailCopied.set(false), 2000);
+      // Cancel any in-flight reset before scheduling a new one — a
+      // double-tap copy resets the timer instead of compounding.
+      if (this.emailCopiedTimer !== null) clearTimeout(this.emailCopiedTimer);
+      this.emailCopiedTimer = setTimeout(() => {
+        this.emailCopiedTimer = null;
+        this.emailCopied.set(false);
+      }, 2000);
     } else {
       this.emailCopied.set(false);
     }
