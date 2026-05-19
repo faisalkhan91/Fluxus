@@ -2,6 +2,7 @@
   <div
     #scrollContainer
     class="tabs-scroll"
+    [class.tabs-scroll--ready]="indicatorReady()"
     role="tablist"
     aria-label="Open pages"
     [style.--tab-indicator-x.px]="indicatorX()"
