@@ -240,6 +240,53 @@ function escapeText(value) {
 }
 
 /**
+ * Inject Article + BreadcrumbList JSON-LD for a /projects/<slug> detail
+ * page. The header docstring promises "Project article schema" but the
+ * implementation lived only in the OG / Twitter side until now — without
+ * the JSON-LD block, project pages emitted no rich-snippet hints to
+ * crawlers and Google's structured-data inspector returned "no items"
+ * for this surface.
+ *
+ * `Article` is the closest schema.org match for a portfolio project
+ * detail (no first-class `Project` type). The author + publisher both
+ * fold back into the site-wide `Person` `@id` so the graph stays
+ * consistent across blog posts, tags, and projects. Idempotent — uses
+ * a `data-project-detail-jsonld` namespace so a re-run strips and
+ * re-emits cleanly without colliding with blog or tag blocks.
+ */
+function setProjectJsonLd(html, slug, projectTitle, description, imageUrl, url) {
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Projects', item: `${SITE_URL}/projects` },
+      { '@type': 'ListItem', position: 3, name: projectTitle, item: url },
+    ],
+  };
+  const article = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    headline: projectTitle,
+    description,
+    image: imageUrl,
+    url,
+    author: { '@id': `${SITE_URL}/#person` },
+    publisher: { '@id': `${SITE_URL}/#person` },
+    inLanguage: 'en',
+  };
+  const block =
+    `    <script type="application/ld+json" data-project-detail-jsonld="${escapeAttr(slug)}">${JSON.stringify(article)}</script>\n` +
+    `    <script type="application/ld+json" data-project-detail-breadcrumb-jsonld="${escapeAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+  const stripped = html.replace(
+    /\s*<script\s+type="application\/ld\+json"\s+data-project-detail(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
+    '',
+  );
+  return stripped.replace('</head>', `${block}  </head>`);
+}
+
+/**
  * Inject CollectionPage + BreadcrumbList JSON-LD for a /projects/tag/<slug>
  * route. Mirrors `setTagJsonLd` shape exactly so crawlers see the same
  * structured-data contract whether they land on a blog tag or a project
@@ -367,6 +414,14 @@ for await (const htmlPath of walk(DIST)) {
       html = setMetaProperty(html, 'twitter:creator', TWITTER_HANDLE);
     }
     html = setLinkCanonical(html, url);
+    html = setProjectJsonLd(
+      html,
+      projectDetailMatch[1],
+      projectTitle,
+      metaDescription,
+      imageUrl,
+      url,
+    );
     projectDetailsProcessed++;
     console.log(`  PROJ ${projectDetailMatch[1]} → "${projectTitle}"`);
     await writeFile(htmlPath, html, 'utf-8');
