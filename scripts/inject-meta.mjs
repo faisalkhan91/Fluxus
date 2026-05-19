@@ -1,3 +1,37 @@
+#!/usr/bin/env node
+/**
+ * Walks every `dist/fluxus/browser/**\/index.html` produced by the
+ * Angular SSG prerender and rewrites the per-route head metadata
+ * inline. The Angular shell can't author route-aware OG / Twitter /
+ * canonical / JSON-LD tags at prerender time without per-component
+ * coupling; this script is the single owner of that surface.
+ *
+ * Five branches keyed off the URL shape, each writing the same five
+ * head primitives (title, meta description, OG tags, Twitter Card
+ * tags, canonical link) plus a JSON-LD block:
+ *
+ *   /projects/<slug>             → Project article schema
+ *   /projects/tag/<slug>         → CollectionPage with project list
+ *   /blog/tag/<slug>             → CollectionPage with post list
+ *   /blog/<slug>                 → BlogPosting + BreadcrumbList
+ *   everything else (/, /about,  → website-type generic tags only
+ *    /experience, /skills, …)
+ *
+ * Crawler signal:
+ *   - Default OG image dimensions (1200x630 PNG) emitted whenever the
+ *     image is the build-time default or auto-generated /og/<slug>.png
+ *     so unfurl tools (Slack, iMessage, LinkedIn) skip the probe-fetch.
+ *   - Drafts and future-dated posts get `<meta name="robots"
+ *     content="noindex,nofollow">` so a guessed-URL crawl doesn't
+ *     index unpublished content. The runtime `BlogPostSeoService`
+ *     mirrors this predicate for SPA navigation.
+ *
+ * Build-chain position: runs after `ng build --configuration
+ * production` and before `build-sitemap.mjs` / `build-feed.mjs` /
+ * `build-og-cards.mjs`. Sources `site.config.json` for SITE_URL /
+ * SITE_NAME / TWITTER_HANDLE so a fork only needs to update one file
+ * to retarget the script suite.
+ */
 import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { join, relative, sep, posix } from 'node:path';
 import { createRequire } from 'node:module';

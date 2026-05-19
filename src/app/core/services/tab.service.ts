@@ -18,6 +18,19 @@ const HERO_TAB: EditorTab = {
   route: '/',
 };
 
+/**
+ * Stateful tab-bar model behind the editor-style chrome at the top of
+ * the main content area. Subscribes to `Router.events` and converts
+ * each `NavigationEnd` into an `openTab(...)` call: a unique tab per
+ * top-level route segment, opened on first visit and re-selected
+ * (with its `route` refreshed to the full latest URL) on subsequent
+ * visits to the same segment. The Welcome tab is pinned and cannot
+ * be closed; new tabs land to its right.
+ *
+ * The service is `providedIn: 'root'` so the tab list survives router
+ * changes and component teardowns. `editor-tab-bar.component` is the
+ * sole renderer.
+ */
 @Injectable({ providedIn: 'root' })
 export class TabService {
   private router = inject(Router);
@@ -25,7 +38,9 @@ export class TabService {
   private tabs = signal<EditorTab[]>([]);
   private activeId = signal<string>('');
 
+  /** Read-only view of the current tab list, in display order. */
   readonly openTabs = computed(() => this.tabs());
+  /** Id of the currently-active tab, or empty before the first navigation. */
   readonly activeTabId = computed(() => this.activeId());
 
   constructor() {
@@ -94,6 +109,13 @@ export class TabService {
     this.activeId.set(routePath);
   }
 
+  /**
+   * Remove `tab` from the open list. The Welcome tab is pinned and
+   * silently no-ops; closing a non-Welcome tab that is currently
+   * active navigates to the next-leftmost open tab (or to `/` if no
+   * tabs remain). Closing a non-active tab leaves the active route
+   * unchanged so the user keeps reading whatever they were on.
+   */
   closeTab(tab: EditorTab): void {
     if (tab.id === 'hero') return;
 
@@ -110,12 +132,24 @@ export class TabService {
     }
   }
 
+  /**
+   * Drop every non-pinned tab and navigate to `/`. Welcome stays
+   * because it's the home anchor — closing the very last tab in an
+   * editor-style UI would feel like a bug rather than a feature.
+   */
   closeAllTabs(): void {
     const hero = this.tabs().find((t) => t.id === 'hero');
     this.tabs.set(hero ? [hero] : []);
     this.router.navigate(['/']);
   }
 
+  /**
+   * Navigate to the tab's stored full URL (which includes any query
+   * params / fragment from the user's last visit to that segment).
+   * The router's `NavigationEnd` listener then flips `activeTabId`
+   * via `openTab(...)`, so this method has no signal-write side
+   * effects of its own.
+   */
   selectTab(tab: EditorTab): void {
     this.router.navigate([tab.route]);
   }
