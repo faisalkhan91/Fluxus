@@ -172,4 +172,24 @@ export class EditorTabBarComponent {
     const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.tab');
     buttons[nextIndex]?.focus();
   }
+
+  /**
+   * Middle-click closes a tab. Universal editor convention (VS Code,
+   * Sublime, Chrome tabs, Firefox tabs, IntelliJ) and a long-standing
+   * gap in this UI — users who muscle-memory'd the gesture from any of
+   * those found their tabs "stuck". Welcome is pinned, so the close
+   * silently no-ops on `hero` to match the close-button branch.
+   *
+   * `event.button === 1` is the middle button across spec'd UAs;
+   * touchpad three-finger tap also surfaces as a middle-click on
+   * macOS / Windows precision pointers, so the same handler covers
+   * trackpad gestures users associate with "kill the thing under
+   * the pointer".
+   */
+  protected onAuxClick(event: MouseEvent, tab: EditorTab): void {
+    if (event.button !== 1) return;
+    if (tab.id === 'hero') return;
+    event.preventDefault();
+    this.tabClosed.emit(tab);
+  }
 }
