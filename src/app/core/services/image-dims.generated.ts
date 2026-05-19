@@ -107,6 +107,10 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 945,
     h: 243,
   },
+  'assets/images/portfolio/LetterFrequencyAnalysis.PNG': {
+    w: 966,
+    h: 901,
+  },
   'assets/images/portfolio/StormEvents.gif': {
     w: 853,
     h: 480,
@@ -114,6 +118,10 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
   'assets/images/portfolio/TextAnalyzerAI.png': {
     w: 1200,
     h: 675,
+  },
+  'assets/images/profile/profile_picture_original.jpg': {
+    w: 2356,
+    h: 2355,
   },
   'assets/images/profile/profile_picture.jpg': {
     w: 512,

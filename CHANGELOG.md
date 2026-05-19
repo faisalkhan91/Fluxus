@@ -5,6 +5,84 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0](https://github.com/faisalkhan91/Fluxus/compare/v3.0.0...v3.1.0) (2026-05-19)
+
+Eleven audit rounds of accessibility, SEO, security, theme, and refactor work,
+plus four new blog posts and a connective Skills hub. No breaking changes —
+every public surface stays compatible with v3.0.0.
+
+### Features
+
+- **themes:** multi-theme registry with palette picker and last-by-scheme toggle; swap Dracula/Gruvbox for Night Owl, Horizon, GitHub Light, Ayu Dark, and Rose Pine; cross-fade body + html on switch; OKLCH scope plugged; pre-paint script keeps `data-theme` set before first paint
+- **projects:** GitHub becomes source-of-truth for the catalog; new `/projects/:slug` detail page with README excerpt + 52-week sparkline; `/projects/tag/:slug` archives; sort controls with sliding active indicator; list+grid views with shared card chrome; tag chips deep-link to skill anchors
+- **skills:** Skills page becomes a connective hub — per-skill `#skill-<slug>` anchors, tier + tagline metadata, feature strip + uniform grid + list view, view-transition between Grid↔List, monochrome brand SVGs render correctly on dark themes
+- **palette:** project entries scroll to the matching card; theme-prefix queries; pointer-modality-aware footer hints; arrow-key navigation scrolls the active option into view (WCAG 2.4.8)
+- **a11y:** focus moves to `#main-content` on every route nav; `aria-busy` + `role="status"` on async blog post fetch; `aria-disabled` mirrors `disabled` on every glow-button (iOS VoiceOver parity); `aria-live="assertive"` on contact form errors; WARNING / CAUTION callouts emit landmark regions; forced-colors safety net for icon chrome and focus rings; roving tabindex on radiogroup toggles; tag-pill targets ≥24 px (WCAG 2.2 SC 2.5.8); `inert` on background while modals are open
+- **seo:** Article + BreadcrumbList JSON-LD on `/projects/<slug>` (was missing entirely); CollectionPage on tag archives; BlogPosting enriched with `wordCount` + `articleSection`; `og:locale="en_US"` on every prerendered page; `og:image:width/height/type` for the default OG card; `twitter:image:alt` on every social-card branch
+- **mobile:** identity header in drawer with 44×44 close target; drawer footer with palette + theme picker + resume; collapsible TOC under 1280 px; iOS edge-to-edge viewport via `viewport-fit=cover`; `.ext` chips render in the drawer; 16 px input font kills iOS auto-zoom on focus
+- **pwa:** Apple PWA meta tags wired for iOS standalone mode; webmanifest gets `purpose: maskable`, `scope`, and `categories`
+- **tabs:** middle-click closes tabs (universal editor convention); `[attr.title]` surfaces the full label on truncation
+- **app-update:** sticky toast warns active readers before the deferred reload swap
+- **content:** Reporting Pipeline Notes 3-post series + Storage Foundation post; editorial pass on existing posts (catchier titles + readability); 96 px thumbnails on non-featured + tag-archive cards
+
+### Bug Fixes
+
+- **seo:** clear robots tag on every navigation (closes a real noindex-bleed bug); `noindex,nofollow` on SPA-nav 404s, project-detail invalid-slug fallback, draft + future-dated posts; canonical trailing-slash matches the prerendered HTML; preserve root canonical trailing slash
+- **csp:** tighten with `object-src 'none'`, `upgrade-insecure-requests`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`; markdown link walker neutralises `javascript:` URIs; attribute-injection defence on alt / title / href
+- **a11y / privacy:** `rel="noreferrer"` on every external `_blank` link; explicit `aria-live="assertive"` on form errors; tab-pill targets ≥24 px; `--link-color` token clears AA on dark crimson; respect `prefers-reduced-motion` in heading-permalink scroll
+- **prose:** inline code wraps inside the token on narrow viewports (`overflow-wrap: anywhere`)
+- **print:** explicitly disable all animation + transition
+- **theme:** `scrollbar-color` + `scrollbar-width` for Firefox parity; mirror active theme scheme to `:root color-scheme`; guard every localStorage call against Safari private mode
+- **mobile:** close drawer on `NavigationStart` (Android back parity); drawer footer flex-shrink + active-route auto-scroll; copy button visible on touch with 24×44 hit area; toast region above the floating nav pill; clear iPhone safe areas on toast + reading-progress bar; standardise mobile breakpoint at 767 px to match `MOBILE_MAX`
+- **mermaid:** cross-fade placeholder → rendered SVG; coalesce concurrent renders + cancel deferred handles; expose `cancel()` for component destroy
+- **tab-bar / palette / hero:** indicator teleport suppressed on first hydration; palette restores focus to its trigger on close; hero cross-fades skeletons → cards on `@defer` hydration
+- **blog-post:** cover `sizes` uses viewport-relative units (fixes NG02952); reading-progress bar excluded from route view-transition
+- **contact:** guard `onSubmit` re-entry while stage transitions; cancel `emailCopied` reset on destroy + double-tap
+- **markdown:** catch `marked.parse()` exceptions instead of bubbling; emit literal `hljs` span markup for known languages
+- **sw:** cache prerendered routes + align index path + drop dead glob
+- Also: blog mobile non-featured cards stack like featured; certifications Home/End scroll on the cert rail; web-vitals `cancel()` actually used; SSR `posts.json` parse errors surfaced; `BlogService.posts` made signal-graph-aware of "today" gate
+
+### Refactoring
+
+- hoist `prefersReducedMotion()` to `motion.utils.ts` (4 callsites unified)
+- hoist URL shapes for blog/project routes to `url.utils.ts` (10 callsites unified)
+- extract `CommandCatalogService` from the palette; `MermaidService` owns diagram lifecycle; `BlogPostSeoService` owns head writes; `SeoService.updateDynamicMeta` deduped
+- enable `verbatimModuleSyntax` + 70 type-only import fixes
+- explicit return types on `BlogService` computed signals; `assertNever` guard on `ProjectSort` + `CommandKind` switches; typed sentry field replaces a double-cast; named-args for tag-page `updateMetaTags` so slug / label can't swap
+- sidebar manual unsubscribe → `takeUntilDestroyed`; `--glass-card-padding` override replaces `::ng-deep`
+- scripts dedupe `slugify` into `scripts/lib/projects.mjs`
+
+### Performance
+
+- memoize `visibleSkills` as a computed `Map`
+- ISO-string sort comparator beats `Date.getTime` for date sorts
+- avatar gets `priority` LCP hint
+- batch GitHub `fetchParticipation` (5-way concurrent); parallelise OG card rasterisation
+- add `anyScript` budget to gate lazy-chunk regressions
+
+### Documentation
+
+- README: "Notable implementation details" section (site.config, themes, `verbatimModuleSyntax`, mobile / iOS); align test count + Node version with `package.json` reality
+- `.ai/best-practices.md`: note `verbatimModuleSyntax` requirement
+- `inject-meta.mjs`: header docstring; `TabService`: JSDoc on public API
+- tabs: record why Cmd/Ctrl+W close cannot be implemented (browser reservation)
+
+### Build / Miscellaneous
+
+- pin `.browserslistrc` to a modern evergreen baseline
+- declare `"license": "MIT"` in `package.json`
+- surface favicon + resume generator scripts as npm tasks
+- `audit-csp` emits a CI-greppable `✓ csp-audit: pass` / `✗ csp-audit: fail` summary line
+- `build-feed` + `build-sitemap` byte-stable sort (slug tiebreaker, project tag/detail sorted)
+- escape URL interpolation in `build-feed`; fail-fast `dist/` check in `build-sitemap`
+- `sync-reading-times` exposes `wordCount` for `inject-meta` consumption
+
+### Tests
+
+- 665 specs pass (~600 baseline); 50+ new regression specs across the audit rounds
+- new coverage: attribute-injection defence, Safari private-mode storage recovery, mermaid revert path, web-vitals lifecycle, `BlogPostSeoService` URL builder, `SeoService.setLinkRel`, route-nav focus, command palette `scrollIntoView`, contact `onSubmit` re-entry guard
+- hygiene: `vi.restoreAllMocks()` discipline across `tab.service`, `clipboard.utils`, `app-update.service`; consolidated timer reset; e2e visual baselines refreshed for new themes + `/projects` + hero
+
 ## [3.0.0](https://github.com/faisalkhan91/Fluxus/compare/v2.4.0...v3.0.0) (2026-04-27)
 
 
