@@ -1191,6 +1191,16 @@ img[src*='amazonwebservices-original-wordmark'] {
   padding: 1px 6px;
   border-radius: var(--radius-sm);
   color: var(--accent-hover);
+  /*
+    Long inline identifiers (`UltraSpecificDomainEntityRepository`, kebab-
+    cased URLs, hex hashes) used to overflow the viewport on narrow
+    mobile screens because the default `word-break: normal` only breaks
+    on whitespace. `overflow-wrap: anywhere` allows the renderer to
+    break inside the token when no other wrap opportunity exists, while
+    still preferring whitespace breaks elsewhere — visually identical
+    on desktop, no horizontal scroll on mobile.
+  */
+  overflow-wrap: anywhere;
 }
 
 .prose pre {
