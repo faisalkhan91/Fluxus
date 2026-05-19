@@ -137,7 +137,7 @@ describe('ProjectsTagComponent', () => {
     expect(titles.length).toBe(0);
   });
 
-  it('matches "ci-cd" slug against tags spelled "CI/CD" via slugify normalisation', () => {
+  it('matches "cicd" slug against tags spelled "CI/CD" via slugify normalisation', () => {
     paramMapSubject.next(convertToParamMap({ tag: 'cicd' }));
     fixture.detectChanges();
     const titles = Array.from(
