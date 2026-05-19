@@ -432,20 +432,18 @@ export class BlogPostComponent {
       // declared above, which run their initial side-effect pass.
       this.postLayout.set(postLayout);
 
-      // Pick the element that is _actually_ scrolling. The shell gives
-      // `<main class="content">` `overflow-y: auto`, but the column-flex
-      // layout (`:host { min-height: 100vh }` + children with `flex: 1`)
-      // lets it grow with its content instead of constraining it — so
-      // under normal post lengths the document root is what scrolls and
-      // `.content` never fires a scroll event. We only treat `.content`
-      // as the scroller if it actually has a scrollable overflow; otherwise
-      // we fall through to the document root. The matching CSS path uses
-      // `animation-timeline: scroll(root)` for the same reason.
-      const contentEl = postLayout.closest('main.content') as HTMLElement | null;
-      const docScroller =
-        (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
+      // Pin the scroll source to the document root so the JS rAF
+      // fallback path matches the CSS `animation-timeline: scroll(root)`
+      // declaration in `styles.css`. The previous shape preferred
+      // `<main class="content">` if it had scrollable overflow, then
+      // fell through to the doc root — which works today (the column-
+      // flex shell makes the document the actual scroller) but would
+      // diverge from the CSS path if the layout ever switched `.content`
+      // to a fixed-height scroll container, leaving Firefox + older
+      // engines reporting a different progress fraction than every
+      // other browser. Same target, same math, same result everywhere.
       const scroller =
-        contentEl && contentEl.scrollHeight - contentEl.clientHeight > 1 ? contentEl : docScroller;
+        (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
 
       // Skip the JS scroll listener entirely on browsers that support
       // CSS scroll-driven animations — the `.reading-progress` bar is then
@@ -473,10 +471,13 @@ export class BlogPostComponent {
           }
           this.scrollProgress.set(Math.min(100, (scroller.scrollTop / total) * 100));
         };
-        // When the document is the scroller, scroll events fire on `window`
-        // (or `document`), not on `document.documentElement` — listening on
-        // the element itself would never receive them.
-        const target: EventTarget = scroller === docScroller ? window : scroller;
+        // The document root scroller fires scroll events on `window`,
+        // not on `document.documentElement` — listening on the element
+        // itself would never receive them. (When this branch supported
+        // `.content` as a fallback scroller, the target was that
+        // element directly; pinning to the doc root means `window`
+        // is always correct.)
+        const target: EventTarget = window;
         const onScroll = () => {
           if (scheduled) return;
           scheduled = true;
