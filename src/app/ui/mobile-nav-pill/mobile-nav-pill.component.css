@@ -319,6 +319,16 @@
   padding: var(--space-4) var(--space-3) max(env(safe-area-inset-bottom), var(--space-4));
   border-top: 1px solid var(--glass-border);
   margin-top: var(--space-2);
+  /*
+    Pin the footer's height so it doesn't shrink under flex pressure
+    on very short viewports — mobile landscape + the soft keyboard
+    can drop the visible drawer height to ~280 px, and a
+    `flex-shrink: 1` (default) footer would steal vertical space from
+    the Download Resume CTA before yielding to the scrollable
+    `.menu-list`. The header already has `flex-shrink: 0`; this
+    pairs with it so only the list scrolls.
+  */
+  flex-shrink: 0;
 }
 
 .menu-action {

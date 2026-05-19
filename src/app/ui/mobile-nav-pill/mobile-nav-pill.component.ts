@@ -79,7 +79,27 @@ export class MobileNavPillComponent {
       const open = this.menuOpen();
       const panel = this.menuPanel();
       if (open && panel) {
-        queueMicrotask(() => panel.nativeElement.focus());
+        queueMicrotask(() => {
+          panel.nativeElement.focus();
+          /*
+            Scroll the currently-active route into view so a drawer
+            with more entries than fit on screen (e.g. a future longer
+            mobile menu, or a phone in split-screen mode) doesn't bury
+            "where you are" below the fold. `block: 'nearest'` is the
+            no-op-when-already-visible variant — fires only when the
+            active row is offscreen, so it doesn't jitter the panel
+            on every open.
+          */
+          const active = panel.nativeElement.querySelector<HTMLElement>('.menu-link--active');
+          // `scrollIntoView` exists on every browser engine but JSDOM
+          // (used by the unit tests) doesn't ship it. Guard with a
+          // typeof check rather than try/catch so test runs stay clean
+          // and the call is a clean no-op in environments that don't
+          // implement it.
+          if (active && typeof active.scrollIntoView === 'function') {
+            active.scrollIntoView({ block: 'nearest' });
+          }
+        });
       }
       this.toggleBackgroundInert(open);
     });
