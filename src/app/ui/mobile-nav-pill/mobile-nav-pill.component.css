@@ -211,6 +211,89 @@
   letter-spacing: 0.1em;
 }
 
+/*
+  Drawer footer — the parity actions (search palette, theme picker,
+  resume). Sits below the nav list with a top divider so it reads as
+  a separate "actions" zone, not "more nav links". Padding matches the
+  menu-list block so the touch-target rhythm is consistent.
+
+  `padding-bottom: max(safe-area-bottom, space-4)` keeps the resume
+  CTA above the iPhone home indicator on full-screen iOS.
+*/
+.menu-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3) max(env(safe-area-inset-bottom), var(--space-4));
+  border-top: 1px solid var(--glass-border);
+  margin-top: var(--space-2);
+}
+
+.menu-action {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  /* 48 px clears WCAG 2.2 SC 2.5.8 (24×24) and Apple HIG 44×44 with
+     headroom — the ergonomic minimum for a thumb-driven phone bottom
+     sheet. Matches `.menu-link` so footer / list rows look uniform. */
+  min-height: 48px;
+  padding: var(--space-3) var(--space-4);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-tech);
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.menu-action:hover,
+.menu-action:focus-visible {
+  background: var(--glass-bg-hover);
+  color: var(--accent);
+}
+
+.menu-action:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.menu-action:active {
+  background: var(--glass-bg);
+}
+
+/*
+  Resume button = primary CTA. Filled accent surface with on-accent
+  text mirrors the desktop sidebar's red "Download Resume" — the same
+  end-of-funnel weight, just sized for a touch target. The override
+  uses `--accent` directly so every theme paints the CTA in its own
+  signature colour (Tokyo blue, Nord cyan, Horizon peach, etc.).
+*/
+.menu-action--cta {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
+  font-weight: 600;
+  margin-top: var(--space-1);
+}
+
+.menu-action--cta:hover,
+.menu-action--cta:focus-visible {
+  background: var(--accent-hover);
+  color: var(--text-on-accent);
+  border-color: var(--accent-hover);
+}
+
+.menu-action--cta:active {
+  background: var(--accent);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

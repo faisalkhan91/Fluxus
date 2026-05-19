@@ -63,6 +63,16 @@ export class ShellComponent {
   }
 
   /**
+   * Plain palette-open from the mobile drawer footer — empty query so
+   * the user lands on the unfiltered catalog (routes / blog / projects
+   * / skills / themes). Closing-the-drawer responsibility lives in the
+   * pill component itself so the modal stack stays clean.
+   */
+  onPaletteRequested(): void {
+    this.palette().openWith('');
+  }
+
+  /**
    * Mobile FAB handler. Default click toggles between the user's last
    * dark / light pick; Shift / Alt + click opens the picker so the
    * single round button still surfaces both intents (matching the

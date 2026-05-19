@@ -117,6 +117,10 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'polyline', points: '16 6 12 2 8 6' },
     { tag: 'line', x1: '12', y1: '2', x2: '12', y2: '15' },
   ],
+  search: [
+    { tag: 'circle', cx: '11', cy: '11', r: '8' },
+    { tag: 'path', d: 'm21 21-4.3-4.3' },
+  ],
   sparkles: [
     {
       tag: 'path',

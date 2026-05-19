@@ -5,6 +5,7 @@ import {
   ElementRef,
   effect,
   input,
+  output,
   signal,
   inject,
   viewChild,
@@ -41,6 +42,17 @@ export class MobileNavPillComponent {
 
   items = input.required<MobileNavItem[]>();
   menuItems = input.required<MobileMenuItem[]>();
+
+  /**
+   * Drawer-footer parity actions. These exist on the desktop sidebar
+   * (Cmd+K palette, theme picker chevron, "Download Resume" CTA) but
+   * have no on-screen entry point on phones today — the shell wires
+   * each output to the same handler the desktop sidebar uses, so the
+   * two surfaces stay behaviour-equivalent.
+   */
+  paletteRequested = output<void>();
+  themePickerRequested = output<void>();
+  resumeRequested = output<void>();
 
   menuOpen = signal(false);
 
@@ -101,6 +113,28 @@ export class MobileNavPillComponent {
   navigateTo(route: string): void {
     this.menuOpen.set(false);
     this.router.navigate([route]);
+  }
+
+  /**
+   * Emit a footer-action and close the drawer. Closing first matters
+   * for the palette + theme-picker actions because the palette is also
+   * a `<dialog>` modal — leaving the drawer open would stack two
+   * overlays + two `inert` regions on top of each other and trap focus
+   * in the wrong layer.
+   */
+  protected emitPalette(): void {
+    this.menuOpen.set(false);
+    this.paletteRequested.emit();
+  }
+
+  protected emitThemePicker(): void {
+    this.menuOpen.set(false);
+    this.themePickerRequested.emit();
+  }
+
+  protected emitResume(): void {
+    this.menuOpen.set(false);
+    this.resumeRequested.emit();
   }
 
   isActive(route: string): boolean {
