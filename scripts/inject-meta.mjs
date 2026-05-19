@@ -220,6 +220,13 @@ function setBlogJsonLd(html, post, url) {
     author: { '@id': `${SITE_URL}/#person` },
     publisher: { '@id': `${SITE_URL}/#person` },
     inLanguage: 'en',
+    // articleSection mirrors the post's tags so Google can group
+    // related articles by topic in Discover-style surfaces. wordCount
+    // is sourced from posts.json (written by sync-reading-times.mjs)
+    // so JSON-LD doesn't re-tokenise the markdown — single source of
+    // truth, no drift.
+    articleSection: post.tags || [],
+    ...(typeof post.wordCount === 'number' ? { wordCount: post.wordCount } : {}),
   };
   const block =
     `    <script type="application/ld+json" data-blog-jsonld="${escapeAttr(post.slug)}">${JSON.stringify(blogPosting)}</script>\n` +

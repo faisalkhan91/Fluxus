@@ -25,21 +25,40 @@ const POSTS_DIR = join(ROOT, 'src/assets/blog/posts');
 const WORDS_PER_MINUTE = 220;
 
 /**
- * Estimates a human-friendly reading time. Strips fenced code blocks,
- * HTML tags, and markdown image / link markup so they don't inflate
- * the count, then divides word count by ~220 wpm. Always returns at
- * least "1 min" for a non-empty body. Canonical implementation lives
- * here; the runtime reads the resulting field from posts.json.
+ * Strips a markdown body to plain prose so word counts and reading-time
+ * estimates aren't inflated by code blocks, HTML markup, or image
+ * descriptors. Returns the cleaned text — callers reduce it further.
  */
-function computeReadingTime(body) {
-  if (!body) return '0 min';
-  const text = body
+function stripToProse(body) {
+  return body
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/!\[[^\]]*\]\([^)]+\)/g, ' ')
     .replace(/\[[^\]]*\]\([^)]+\)/g, ' ')
     .replace(/[#*_`>~|-]+/g, ' ');
-  const words = text.split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * Word count of the prose-only body. Exposed via posts.json so
+ * downstream consumers (inject-meta.mjs's BlogPosting JSON-LD,
+ * potential Twitter Card data labels) can read it without re-deriving
+ * from the markdown file. Always returns 0 for an empty body.
+ */
+function computeWordCount(body) {
+  if (!body) return 0;
+  return stripToProse(body).split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * Estimates a human-friendly reading time. Reuses the prose-strip
+ * helper so word-counting logic stays consistent with computeWordCount.
+ * Always returns at least "1 min" for a non-empty body. Canonical
+ * implementation lives here; the runtime reads the resulting field
+ * from posts.json.
+ */
+function computeReadingTime(body) {
+  if (!body) return '0 min';
+  const words = computeWordCount(body);
   const minutes = Math.max(1, Math.round(words / WORDS_PER_MINUTE));
   return `${minutes} min`;
 }
@@ -55,9 +74,11 @@ for (const post of manifest) {
     continue;
   }
   const body = await readFile(file, 'utf-8');
-  const next = computeReadingTime(body);
-  if (post.readingTime !== next) {
-    post.readingTime = next;
+  const nextReadingTime = computeReadingTime(body);
+  const nextWordCount = computeWordCount(body);
+  if (post.readingTime !== nextReadingTime || post.wordCount !== nextWordCount) {
+    post.readingTime = nextReadingTime;
+    post.wordCount = nextWordCount;
     changed++;
   }
 }
