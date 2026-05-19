@@ -23,6 +23,7 @@ import type { Project } from '@shared/models/project.model';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { slugify } from '@shared/utils/string.utils';
 import { environment } from '@env/environment';
+import { projectUrl } from '@shared/utils/url.utils';
 
 /**
  * `/projects/:slug` — per-project detail page.
@@ -213,7 +214,7 @@ export class ProjectDetailComponent {
           this.seo.updateDynamicMeta({
             title: `Project not found — ${environment.siteName}`,
             description: 'The project you are looking for does not exist.',
-            url: `${environment.siteUrl}/projects/${slug}`,
+            url: projectUrl(slug),
             type: 'website',
           });
         }
@@ -223,7 +224,7 @@ export class ProjectDetailComponent {
 
   private updateMetaTags(project: Project): void {
     const slug = project.slug ?? slugify(project.title);
-    const url = `${environment.siteUrl}/projects/${slug}`;
+    const url = projectUrl(slug);
     const title = `${project.title} — ${environment.siteName}`;
     const description = project.github?.readmeExcerpt ?? project.description;
     const image = `${environment.siteUrl}/${project.image.replace(/^\/+/, '')}`;

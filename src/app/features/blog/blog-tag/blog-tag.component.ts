@@ -17,6 +17,7 @@ import { SeoService } from '@core/services/seo.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { environment } from '@env/environment';
+import { blogTagUrl } from '@shared/utils/url.utils';
 
 @Component({
   selector: 'app-blog-tag',
@@ -76,7 +77,7 @@ export class BlogTagComponent {
    * site since both are plain strings).
    */
   private updateMetaTags({ slug, label }: { slug: string; label: string }): void {
-    const url = `${environment.siteUrl}/blog/tag/${slug}`;
+    const url = blogTagUrl(slug);
     const title = `Posts tagged "${label}" - ${environment.siteName}`;
     const description = `Every post on Faisal Khan's blog tagged with "${label}".`;
 
