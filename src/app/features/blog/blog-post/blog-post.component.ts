@@ -31,6 +31,7 @@ import { MermaidService } from './mermaid.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
+import { prefersReducedMotion } from '@shared/utils/motion.utils';
 import { IMAGE_DIMS } from '@core/services/image-dims.generated';
 
 /**
@@ -600,12 +601,8 @@ export class BlogPostComponent {
         // Check the preference at click time and pass `'instant'` to
         // skip the smooth-scroll animation for motion-sensitive users
         // (WCAG 2.3.3).
-        const prefersReducedMotion =
-          typeof window !== 'undefined' &&
-          typeof window.matchMedia === 'function' &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         target.scrollIntoView({
-          behavior: prefersReducedMotion ? 'instant' : 'smooth',
+          behavior: prefersReducedMotion() ? 'instant' : 'smooth',
           block: 'start',
         });
         // Move keyboard focus to the heading itself so the next Tab
