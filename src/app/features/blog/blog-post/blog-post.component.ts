@@ -584,7 +584,20 @@ export class BlogPostComponent {
       history.replaceState(history.state, '', path);
       const target = this.document.getElementById(id);
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // `scrollIntoView({ behavior: 'smooth' })` is a JS-side option
+        // and the browser honours it over the global `scroll-behavior:
+        // auto` CSS rule that the reduced-motion `@media` block sets.
+        // Check the preference at click time and pass `'instant'` to
+        // skip the smooth-scroll animation for motion-sensitive users
+        // (WCAG 2.3.3).
+        const prefersReducedMotion =
+          typeof window !== 'undefined' &&
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView({
+          behavior: prefersReducedMotion ? 'instant' : 'smooth',
+          block: 'start',
+        });
         // Move keyboard focus to the heading itself so the next Tab
         // continues from the section the reader just navigated to.
         if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
