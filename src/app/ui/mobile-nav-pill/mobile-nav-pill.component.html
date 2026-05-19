@@ -68,7 +68,10 @@
               (click)="navigateTo(item.route)"
             >
               <ui-icon [name]="item.icon" [size]="20" />
-              <span>{{ item.label }}</span>
+              <span class="menu-link-label">{{ item.label }}</span>
+              @if (item.ext) {
+                <span class="menu-link-ext">{{ item.ext }}</span>
+              }
               @if (isActive(item.route)) {
                 <ui-icon name="chevron-right" [size]="14" class="menu-link-indicator" />
               }
