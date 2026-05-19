@@ -30,17 +30,19 @@ describe('BlogPostSeoService', () => {
   const updateDynamicMeta = vi.fn();
   const setLinkRel = vi.fn();
   const removeLinkRel = vi.fn();
+  const setRobots = vi.fn();
 
   beforeEach(() => {
     updateDynamicMeta.mockReset();
     setLinkRel.mockReset();
     removeLinkRel.mockReset();
+    setRobots.mockReset();
     TestBed.configureTestingModule({
       providers: [
         BlogPostSeoService,
         {
           provide: SeoService,
-          useValue: { updateDynamicMeta, setLinkRel, removeLinkRel },
+          useValue: { updateDynamicMeta, setLinkRel, removeLinkRel, setRobots },
         },
       ],
     });
@@ -98,6 +100,37 @@ describe('BlogPostSeoService', () => {
         url: `${environment.siteUrl}/blog/detailed-post`,
         type: 'article',
       });
+    });
+  });
+
+  describe('updateMetaTags — robots crawler signal', () => {
+    /*
+      `inject-meta.mjs` sets `noindex,nofollow` on prerendered draft /
+      future-dated posts at build time. SPA navigation into the same
+      URL after the shell loads bypasses that — the service must
+      mirror the predicate and write / clear the robots tag itself
+      so crawlers indexing the live SPA see the same signal as
+      crawlers fetching the prerendered HTML.
+    */
+    it('marks drafts as noindex,nofollow', () => {
+      service.updateMetaTags(makePost({ draft: true, date: '2025-01-01' }));
+      expect(setRobots).toHaveBeenCalledWith('noindex,nofollow');
+    });
+
+    it('marks future-dated posts as noindex,nofollow', () => {
+      // Date well past today's ISO string — string compare is
+      // monotone with the calendar so this is reliable in tests.
+      const farFuture = '9999-12-31';
+      service.updateMetaTags(makePost({ date: farFuture }));
+      expect(setRobots).toHaveBeenCalledWith('noindex,nofollow');
+    });
+
+    it('clears the robots tag for published past-dated posts', () => {
+      service.updateMetaTags(makePost({ draft: false, date: '2024-01-01' }));
+      // Passing null tells SeoService to remove any existing tag —
+      // critical because navigating *from* a draft *to* a published
+      // post would otherwise inherit the noindex.
+      expect(setRobots).toHaveBeenCalledWith(null);
     });
   });
 

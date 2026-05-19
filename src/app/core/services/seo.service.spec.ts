@@ -157,4 +157,36 @@ describe('SeoService', () => {
       );
     });
   });
+
+  describe('setRobots', () => {
+    afterEach(() => {
+      document.head.querySelector('meta[name="robots"]')?.remove();
+    });
+
+    it('inserts a new <meta name="robots"> when called with a content string', () => {
+      service.setRobots('noindex,nofollow');
+      const meta = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+      expect(meta?.getAttribute('content')).toBe('noindex,nofollow');
+    });
+
+    it('overwrites the content when called twice', () => {
+      service.setRobots('noindex');
+      service.setRobots('noindex,nofollow,noarchive');
+      const metas = document.head.querySelectorAll<HTMLMetaElement>('meta[name="robots"]');
+      expect(metas).toHaveLength(1);
+      expect(metas[0].getAttribute('content')).toBe('noindex,nofollow,noarchive');
+    });
+
+    it('removes the tag when called with null', () => {
+      service.setRobots('noindex');
+      service.setRobots(null);
+      expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
+    });
+
+    it('null is a no-op when no robots tag exists', () => {
+      expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
+      expect(() => service.setRobots(null)).not.toThrow();
+      expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
+    });
+  });
 });
