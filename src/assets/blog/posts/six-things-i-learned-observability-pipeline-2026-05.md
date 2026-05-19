@@ -1,10 +1,10 @@
-# Six things that bit me migrating an observability pipeline
+# Six layers that lied
 
 The first backfill of the new pipeline returned `rows_emitted: 200` to its caller, no error, no 4xx, no DLQ activity, and zero metrics in Datadog. The Lambda logs looked clean end-to-end. The window we were trying to recover was eighteen hours old.
 
 That ended up being the cheapest of the six bugs in this post, and it's still a half-day I want back. The project was a fairly ordinary observability migration: thirty-day SLA reporting moving off Splunk Summary Indexing onto a Lambda pipeline that aggregates inside Coralogix and emits to Datadog. The shape of the pipeline is roughly what you'd guess: per-asset YAML, an EventBridge cron firing the submit handler every minute, a reconciler polling for terminal states, a publisher fanning aggregated rows out to Datadog metrics, an audit job catching gaps, and a backfill handler for the rare case the audit can't auto-resolve.
 
-What follows is six things in that pipeline that didn't say what they actually meant.
+Here are six layers that lied to me, and the small assertions that caught them.
 
 ## Datadog drops historical metrics silently unless you opt in
 
@@ -65,7 +65,7 @@ The downstream alert rule then knows: a `MAX_RESULTS` signal is a YAML edit, not
 
 ## Self-healing pipelines need guardrails
 
-The audit job in this pipeline runs every fifteen minutes, diffs expected cron ticks against `completed/` markers, and emits an ERROR per missing window. The natural next step, the one I almost shipped, is to wire the audit directly to backfill: gap detected, backfill invoked, on-call never paged. Self-healing infrastructure.
+The audit job in this pipeline runs every fifteen minutes, diffs expected cron ticks against `completed/` markers, and emits an ERROR per missing window. The natural next step, the one I almost shipped, is to wire the audit directly to backfill: gap detected, backfill invoked, on-call never paged. Self-healing infrastructure, the way the cloud-vendor pitches always promise.
 
 Don't ship that until you've thought through what it does on a deterministic failure or a systemic outage.
 

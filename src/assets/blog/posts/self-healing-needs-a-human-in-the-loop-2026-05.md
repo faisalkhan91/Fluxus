@@ -1,10 +1,10 @@
-# Self-healing pipelines need a human in the loop
+# Self-healing isn't a default
 
 The audit Lambda in the pipeline I've been writing about runs every fifteen minutes. Its job is to enumerate every cron tick that should have produced an aggregated window over the last few hours, diff that set against the `completed/` markers actually present in S3, and emit a structured ERROR log for every gap. On-call gets the alert, runs an `aws lambda invoke` command from a runbook, and the backfill Lambda picks up the missed window, replays it, writes the marker, closes the gap.
 
 Looking at that flow, the obvious question is: *why isn't the audit Lambda just calling the backfill Lambda directly?* The audit knows the asset, the window, and the remediation command. The backfill function is right there. We could skip the page, skip the runbook, and let the system heal itself.
 
-I held the position that we should for a while, then changed my mind once I started enumerating the failure modes the audit would actually be reacting to. This post is the version of the argument that survived.
+I almost shipped that design. What stopped me was sitting down and writing out the failure modes the audit would actually be reacting to.
 
 ## The seductive default
 
@@ -65,9 +65,9 @@ The attempt cap of three was chosen from gut feel. If real-world transient failu
 
 Every dial in that list is a guess that wants real data. The design needs to be tunable from configuration, the counters need enough observability that you can audit when they fired, and the team needs to be willing to revisit the numbers once incidents start landing in their actual distribution rather than the imagined one.
 
-The thing I'd push back on hardest is the framing that this kind of design is *complicated*. It's three small primitives wired into the audit handler: a `failed/` marker prefix, a per-window counter with a TTL semantic, and a per-tick cap. The complexity isn't in the code; it's in the willingness to admit that "self-healing" is a property of a *subset* of failure modes and that the remaining subsets need to escalate. Once you accept that, the implementation more or less writes itself.
+The thing I'd push back on hardest is the framing that this kind of design is *complicated*. It's three small primitives wired into the audit handler: a `failed/` marker prefix, a per-window counter with a TTL semantic, and a per-tick cap. The complexity isn't in the code; it's in admitting that "self-healing" is a property of a *subset* of failure modes and that the rest need to escalate. Once you accept that, the implementation more or less writes itself.
 
-The version of this argument I'd want to leave you with: full automation is fine as a goal, and bad as a default. Auto-heal transient failures with bounded attempts. Escalate deterministic failures immediately, with no retries. Escalate systemic failures eagerly, ideally before the auto-heal would have made things worse. The classification isn't free, and the categories don't announce themselves; you have to build the classification machinery and then accept that it'll be wrong sometimes. When it's wrong toward escalation you wake on-call up unnecessarily. When it's wrong toward auto-heal you generate retry storms that mask the signal you needed. Of the two, the first is a much cheaper bug.
+Full automation is fine as a goal, and bad as a default. Auto-heal transient failures with bounded attempts. Escalate deterministic failures immediately. Escalate systemic failures eagerly, ideally before the auto-heal would have made things worse. The classification will be wrong sometimes. When it's wrong toward escalation you wake on-call up unnecessarily; when it's wrong toward auto-heal you generate retry storms that mask the signal you needed. The first is a much cheaper bug.
 
 ---
 
