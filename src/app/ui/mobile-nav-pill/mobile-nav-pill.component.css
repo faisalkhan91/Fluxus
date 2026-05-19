@@ -1,6 +1,11 @@
 :host {
   position: fixed;
-  bottom: var(--space-4);
+  /* Add the iPhone home-indicator inset so the pill clears the swipe
+     zone on devices with `viewport-fit: cover` (Dynamic Island / home
+     indicator phones). The fallback `0px` keeps spacing identical on
+     legacy browsers / non-notch devices. Pair with `viewport-fit=cover`
+     in index.html so `safe-area-inset-bottom` is non-zero when needed. */
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   display: flex;
