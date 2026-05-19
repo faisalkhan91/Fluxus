@@ -58,6 +58,23 @@ describe('GlowButtonComponent', () => {
     expect(button.disabled).toBe(true);
   });
 
+  it('mirrors disabled state onto aria-disabled for screen readers', () => {
+    // The HTML `disabled` attribute alone is enough for keyboard / mouse
+    // (the button is unreachable + non-clickable), but several screen
+    // readers — notably iOS VoiceOver swipe navigation — announce the
+    // state more reliably when `aria-disabled` is also present. Keep
+    // the attribute null when enabled so DOM doesn't carry an `aria-
+    // disabled="false"` (which would falsely advertise the state to AT
+    // that scans only for attribute presence).
+    expect(button.getAttribute('aria-disabled')).toBeNull();
+    fixture.componentRef.setInput('disabled', true);
+    fixture.detectChanges();
+    expect(button.getAttribute('aria-disabled')).toBe('true');
+    fixture.componentRef.setInput('disabled', false);
+    fixture.detectChanges();
+    expect(button.getAttribute('aria-disabled')).toBeNull();
+  });
+
   it('should emit clicked on click', () => {
     let emitted: MouseEvent | undefined;
     component.clicked.subscribe((e: MouseEvent) => (emitted = e));

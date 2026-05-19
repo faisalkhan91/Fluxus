@@ -7,6 +7,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
       [type]="type()"
       [class]="'btn btn--' + variant()"
       [disabled]="disabled()"
+      [attr.aria-disabled]="disabled() ? 'true' : null"
       (click)="clicked.emit($event)"
     >
       <ng-content />
