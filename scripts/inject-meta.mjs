@@ -141,6 +141,22 @@ function setMetaRobots(html, content) {
 }
 
 /**
+ * Append the canonical OG image dimensions (1200x630, PNG). Slack /
+ * iMessage / LinkedIn unfurls render faster when the image type and
+ * dimensions are pre-declared — without these, the crawler has to
+ * fetch and probe the image before rendering the unfurl card.
+ *
+ * Only called at sites where the OG image is the build-time default
+ * (or the auto-generated `/og/<slug>.png` for cover-less blog posts),
+ * both of which are 1200x630 PNG by construction. Sites with a
+ * post-supplied `cover` field skip this — dimensions vary and the
+ * crawler probe-fetch is the safer path than a wrong declaration.
+ */
+function setDefaultOgImageDimensions(html) {
+  return setMetaProperty(setMetaProperty(setMetaProperty(html, 'og:image:width', '1200'), 'og:image:height', '630'), 'og:image:type', 'image/png');
+}
+
+/**
  * Strip any previously-injected per-route JSON-LD blocks (matched by id) and
  * append fresh ones. The site-wide JSON-LD authored in src/index.html is
  * untouched — it has no id attribute on its <script>.
@@ -306,6 +322,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:type', 'article');
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:image', imageUrl);
+    if (!image) html = setDefaultOgImageDimensions(html);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:title', title);
@@ -333,6 +350,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:type', 'website');
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:image', DEFAULT_OG_IMAGE);
+    html = setDefaultOgImageDimensions(html);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:title', title);
@@ -360,6 +378,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:type', 'website');
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:image', DEFAULT_OG_IMAGE);
+    html = setDefaultOgImageDimensions(html);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:title', title);
@@ -397,6 +416,11 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:type', 'article');
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:image', cover);
+    // Posts without an explicit `cover` field fall back to the
+    // generated /og/<slug>.png card, which is always 1200x630 PNG.
+    // Posts with a custom cover have variable dimensions; let the
+    // crawler probe-fetch those.
+    if (!post.cover) html = setDefaultOgImageDimensions(html);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:title', title);
@@ -419,6 +443,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:url', url);
     html = setMetaProperty(html, 'og:type', 'website');
     html = setMetaProperty(html, 'og:image', DEFAULT_OG_IMAGE);
+    html = setDefaultOgImageDimensions(html);
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
