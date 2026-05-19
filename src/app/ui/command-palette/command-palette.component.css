@@ -238,4 +238,16 @@
   .palette-footer--keyboard {
     display: none;
   }
+
+  /*
+    Drop the Esc-key chip inside the search input on touch devices.
+    Phones don't have an Esc key, and tap-outside-to-close already
+    dismisses the palette via the native `<dialog>` close behaviour;
+    the chip was leftover desktop chrome that displayed a glyph for
+    a key the user doesn't own. Same pointer-modality split we use
+    for the footer hint above.
+  */
+  .palette-kbd {
+    display: none;
+  }
 }
