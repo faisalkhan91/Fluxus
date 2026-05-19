@@ -45,8 +45,35 @@
     (keydown)="trapFocus($event)"
     animate.leave="menu-panel-out"
   >
+    <!--
+      Identity header — mirrors the desktop sidebar's avatar + name +
+      role block. Tapping the identity area routes to "/" (the same
+      anchor the desktop sidebar's logo carries) so the action is
+      discoverable on phones too. Close button stays at the top-right.
+      Identity values are hardcoded here on purpose to match the
+      sidebar's template, which also embeds the same literals — a
+      single ProfileDataService source-of-truth refactor would be a
+      separate cross-component pass.
+    -->
     <div class="menu-header">
-      <span class="menu-title">Navigate</span>
+      <a
+        class="menu-identity"
+        routerLink="/"
+        (click)="closeMenu()"
+        aria-label="Go to Welcome page"
+      >
+        <img
+          ngSrc="assets/images/profile/profile_picture.jpg"
+          width="48"
+          height="48"
+          alt="Faisal Khan"
+          class="menu-identity-avatar"
+        />
+        <span class="menu-identity-text">
+          <span class="menu-identity-name">Faisal Khan</span>
+          <span class="menu-identity-role">Software Engineer</span>
+        </span>
+      </a>
       <button class="menu-close" (click)="closeMenu()" aria-label="Close menu">
         <ui-icon name="x" [size]="20" />
       </button>
