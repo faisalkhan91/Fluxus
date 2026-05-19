@@ -104,11 +104,15 @@ async function flushMicrotasks(): Promise<void> {
 }
 
 describe('AppUpdateService', () => {
-  beforeEach(() => {
-    vi.useRealTimers();
-  });
-
   afterEach(() => {
+    // Move the timer reset alongside the other cleanup primitives so all
+    // three (timers, globals, spies) are restored in afterEach. The
+    // previous shape kept `useRealTimers()` in beforeEach as a "next-
+    // test paranoia" call, but the conventional pattern is to leave the
+    // describe in a clean state on exit so a leak from a fake-timers
+    // test inside `it(...)` can't be observed by tooling that inspects
+    // post-suite state.
+    vi.useRealTimers();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
