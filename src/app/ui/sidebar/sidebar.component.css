@@ -233,7 +233,8 @@
 :host(.collapsed) .divider-label,
 :host(.collapsed) .theme-toggle-label,
 :host(.collapsed) .theme-picker-btn,
-:host(.collapsed) .resume-btn > span {
+:host(.collapsed) .resume-btn > span,
+:host(.collapsed) .source-link-label {
   display: none;
 }
 
@@ -267,7 +268,8 @@
 */
 :host(.collapsed) .theme-toggle-group,
 :host(.collapsed) .theme-toggle,
-:host(.collapsed) .resume-btn {
+:host(.collapsed) .resume-btn,
+:host(.collapsed) .source-link {
   justify-content: flex-start;
   width: auto;
   padding: 0;
@@ -285,6 +287,11 @@
 
 :host(.collapsed) .resume-btn {
   padding: var(--space-3);
+}
+
+:host(.collapsed) .source-link {
+  padding: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 :host(.collapsed) .theme-toggle-group {
@@ -465,6 +472,43 @@
 }
 
 /*
+  Secondary affordance — the Resume button stays the primary CTA, so this
+  text-link sits below it with reduced visual weight: muted color, smaller
+  type, no chrome. Hover lifts it to the same hover state as theme-toggle
+  / theme-picker so the whole footer reads as one row of related controls.
+*/
+.source-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.source-link:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.source-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/*
   CSS-driven responsive layout (instead of signal-bound classes) so the SSR
   markup is identical for every viewport. The [collapsed] input keeps applying
   the .collapsed host class for runtime reactivity; this @media query handles
@@ -498,7 +542,8 @@
   .divider-label,
   .theme-toggle-label,
   .theme-picker-btn,
-  .resume-btn > span {
+  .resume-btn > span,
+  .source-link-label {
     display: none;
   }
 
@@ -509,7 +554,8 @@
 
   .theme-toggle-group,
   .theme-toggle,
-  .resume-btn {
+  .resume-btn,
+  .source-link {
     justify-content: flex-start;
     width: auto;
     padding: 0;
@@ -524,6 +570,11 @@
 
   .resume-btn {
     padding: var(--space-3);
+  }
+
+  .source-link {
+    padding: var(--space-3);
+    margin-top: var(--space-2);
   }
 
   .theme-toggle-group {

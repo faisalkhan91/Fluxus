@@ -188,15 +188,16 @@ describe('MobileNavPillComponent', () => {
       drawer (drawer-close ordering is what keeps the palette modal
       from stacking under the menu modal).
     */
-    it('renders three footer actions: Search, Choose theme, Download resume', () => {
+    it('renders four footer actions: Search, Choose theme, View source, Download resume', () => {
       component.menuOpen.set(true);
       fixture.detectChanges();
       const actions = el.querySelectorAll('.menu-footer .menu-action');
-      expect(actions.length).toBe(3);
+      expect(actions.length).toBe(4);
       const labels = Array.from(actions).map((b) => b.textContent?.trim());
       expect(labels[0]).toContain('Search');
       expect(labels[1]).toContain('Choose theme');
-      expect(labels[2]).toContain('Download resume');
+      expect(labels[2]).toContain('View source');
+      expect(labels[3]).toContain('Download resume');
     });
 
     it('marks the resume action as the primary CTA', () => {
@@ -236,10 +237,32 @@ describe('MobileNavPillComponent', () => {
       fixture.detectChanges();
       const spy = vi.fn();
       component.resumeRequested.subscribe(spy);
-      const btn = el.querySelectorAll('.menu-footer .menu-action')[2] as HTMLButtonElement;
+      const btn = el.querySelector('.menu-footer .menu-action--cta') as HTMLButtonElement;
       btn.click();
       fixture.detectChanges();
       expect(spy).toHaveBeenCalledTimes(1);
+      expect(component.menuOpen()).toBe(false);
+    });
+
+    it('renders View source as an external link to the project repo', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const link = el.querySelectorAll('.menu-footer .menu-action')[2] as HTMLAnchorElement;
+      expect(link.tagName).toBe('A');
+      expect(link.getAttribute('href')).toBe('https://github.com/faisalkhan91/Fluxus');
+      expect(link.getAttribute('target')).toBe('_blank');
+      expect(link.getAttribute('rel')).toContain('noopener');
+    });
+
+    it('closes the drawer when View source is clicked', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const link = el.querySelectorAll('.menu-footer .menu-action')[2] as HTMLAnchorElement;
+      // Cancel the default navigation in the test environment so JSDOM
+      // doesn't try to actually open the external repo URL.
+      link.addEventListener('click', (e) => e.preventDefault(), { once: true });
+      link.click();
+      fixture.detectChanges();
       expect(component.menuOpen()).toBe(false);
     });
   });
