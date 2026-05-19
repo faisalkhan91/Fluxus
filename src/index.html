@@ -57,6 +57,17 @@
     </script>
     <meta name="theme-color" content="#07070b" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#f0f0f3" media="(prefers-color-scheme: light)" />
+    <!--
+      iOS PWA standalone-mode opt-in. Without `apple-mobile-web-app-
+      capable=yes`, iOS ignores the manifest's `display: standalone`
+      and the installed PWA still renders inside Safari chrome,
+      defeating the entire installable-app value proposition. The
+      status-bar style overlays the iOS status bar on the page's
+      dark background instead of painting a separate gray strip.
+    -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Faisal Khan" />
     <link rel="canonical" href="https://faisalkhan.dpdns.org/" />
     <link
       rel="alternate"
