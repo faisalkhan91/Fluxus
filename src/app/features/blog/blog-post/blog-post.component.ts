@@ -524,13 +524,22 @@ export class BlogPostComponent {
           });
           return;
         }
-        const originalText = button.textContent;
+        // Mutate the inner `.copy-btn-label` span (which carries the
+        // `aria-live="polite"` attribute) rather than the button's
+        // own textContent. Live regions are most reliably announced
+        // when the live element existed in the DOM *before* the
+        // mutation and only its text node changes — toggling the
+        // button's own text was being silently dropped by some
+        // SR + browser combinations on touch devices.
+        const label = button.querySelector<HTMLSpanElement>('.copy-btn-label');
+        if (!label) return;
+        const originalText = label.textContent;
         const originalLabel = button.getAttribute('aria-label');
-        button.textContent = 'Copied!';
+        label.textContent = 'Copied!';
         button.setAttribute('aria-label', 'Code copied to clipboard');
         button.classList.add('copy-btn--copied');
         this.scheduleTimeout(() => {
-          button.textContent = originalText;
+          label.textContent = originalText;
           if (originalLabel !== null) button.setAttribute('aria-label', originalLabel);
           button.classList.remove('copy-btn--copied');
         }, 1500);
