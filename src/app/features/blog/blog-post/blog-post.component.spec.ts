@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 import { BlogPostComponent } from './blog-post.component';
 import { BlogService } from '@core/services/blog.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
-import { MOCK_POSTS, flushMarkdown, failMarkdown } from '@testing/blog-mocks';
+import { MOCK_POSTS, createMockBlogPost, flushMarkdown, failMarkdown } from '@testing/blog-mocks';
 
 describe('BlogPostComponent', () => {
   let fixture: ComponentFixture<BlogPostComponent>;
@@ -326,8 +326,13 @@ describe('BlogPostComponent', () => {
         index: 0,
         posts: [MOCK_POSTS[0]],
       });
-      mockBlog.posts.set([{ ...MOCK_POSTS[0], series: 'Solo Series', seriesOrder: 1 }]);
-      mockBlog.allPosts.set([{ ...MOCK_POSTS[0], series: 'Solo Series', seriesOrder: 1 }]);
+      const soloPost = createMockBlogPost({
+        ...MOCK_POSTS[0],
+        series: 'Solo Series',
+        seriesOrder: 1,
+      });
+      mockBlog.posts.set([soloPost]);
+      mockBlog.allPosts.set([soloPost]);
       paramMapSubject.next(convertToParamMap({ slug: 'first-post' }));
       fixture.detectChanges();
       await load('first-post', 'Body');
