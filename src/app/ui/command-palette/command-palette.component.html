@@ -83,8 +83,17 @@
       </ul>
     }
 
-    <p class="palette-footer">
+    <!--
+      Two footer variants: the keyboard hint row for desktop (↵ open ·
+      ↑↓ navigate · ⌘K toggle) and a tap-friendly hint for touch
+      devices. CSS swaps which one paints based on `(hover: hover)` —
+      glyphs like `⌘K` and `↑↓` are noise on a phone where none of
+      them apply, and were a small but real "what do I do here?"
+      moment for mobile users on every palette open.
+    -->
+    <p class="palette-footer palette-footer--keyboard">
       <kbd>↵</kbd> open · <kbd>↑</kbd> <kbd>↓</kbd> navigate · <kbd>⌘K</kbd> toggle
     </p>
+    <p class="palette-footer palette-footer--touch">Tap a result to open · tap outside to close</p>
   </div>
 </dialog>
