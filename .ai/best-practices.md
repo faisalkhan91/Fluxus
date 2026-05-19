@@ -5,6 +5,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use strict type checking
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
+- `verbatimModuleSyntax` is enabled — pure-interface imports must use `import type { X }` (or `import { type X, fn }` for mixed). Violations fail compile with TS1484.
 
 ## Angular Best Practices
 
