@@ -113,6 +113,25 @@ export class SeoService {
   }
 
   /**
+   * Upsert (or remove, when `content` is null) the `<meta name="robots">`
+   * tag. Used by `BlogPostSeoService` to mark draft / future-dated
+   * posts as `noindex,nofollow` on SPA navigation — the prerendered
+   * HTML carries the tag from `inject-meta.mjs` at build time, but a
+   * client-side route into the same URL bypasses that and would
+   * otherwise expose the post to crawlers indexing the live SPA.
+   *
+   * Domain-neutral so callers own the content string ('noindex',
+   * 'noindex,nofollow', 'noindex,nofollow,noarchive', etc.).
+   */
+  setRobots(content: string | null): void {
+    if (content === null) {
+      this.meta.removeTag('name="robots"');
+      return;
+    }
+    this.meta.updateTag({ name: 'robots', content });
+  }
+
+  /**
    * Applies the full dynamic-meta tag set for a `seo: { dynamicMeta: true }`
    * route: page title plus nine `<meta>` tags covering OpenGraph, Twitter
    * Cards, and the basic `name="description"`. Consolidates the same

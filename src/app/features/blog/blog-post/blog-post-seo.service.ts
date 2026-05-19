@@ -29,6 +29,13 @@ export class BlogPostSeoService {
    * pass through, repo-relative covers get the site origin prefixed,
    * and posts with no cover fall back to the prerendered `/og/<slug>.png`
    * card baked at build time.
+   *
+   * Also writes / removes `<meta name="robots">`. `inject-meta.mjs`
+   * sets `noindex,nofollow` on the prerendered HTML for drafts and
+   * future-dated posts, but a *SPA navigation* into the same URL
+   * (after the shell already loaded a published post) would otherwise
+   * leave the new post fully indexable. Mirroring the inject-meta
+   * predicate here keeps the two surfaces aligned.
    */
   updateMetaTags(post: BlogPost): void {
     const url = `${environment.siteUrl}/blog/${post.slug}`;
@@ -46,6 +53,13 @@ export class BlogPostSeoService {
       type: 'article',
       image: cover,
     });
+
+    // Same `isHidden` predicate as `scripts/inject-meta.mjs` — drafts
+    // OR posts whose calendar day hasn't arrived yet. Crawler signal
+    // is identical across the SPA and prerender paths.
+    const today = new Date().toISOString().slice(0, 10);
+    const isHidden = post.draft === true || post.date > today;
+    this.seo.setRobots(isHidden ? 'noindex,nofollow' : null);
   }
 
   /**
