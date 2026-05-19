@@ -220,7 +220,8 @@ describe('ProjectDetailComponent', () => {
     expect(robots?.getAttribute('content')).toBe('noindex,nofollow');
     // And the title should reflect the failure rather than leaking the
     // previous valid project's title.
-    expect((titleService.setTitle as unknown as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[0])
-      .toBe(`Project not found — ${environment.siteName}`);
+    expect(
+      (titleService.setTitle as unknown as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[0],
+    ).toBe(`Project not found — ${environment.siteName}`);
   });
 });

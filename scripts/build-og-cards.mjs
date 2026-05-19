@@ -123,6 +123,4 @@ await Promise.all(
   }),
 );
 
-console.log(
-  `Wrote ${targets.length} OG card${targets.length === 1 ? '' : 's'} to ${OUT_DIR}.`,
-);
+console.log(`Wrote ${targets.length} OG card${targets.length === 1 ? '' : 's'} to ${OUT_DIR}.`);

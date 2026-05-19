@@ -369,11 +369,10 @@ describe('CommandPaletteComponent', () => {
       // missing property by design. Install a no-op stub on the
       // prototype first, then wrap it; restore both at the end.
       const dialog = fixture.nativeElement.querySelector('dialog');
-      const original = (Element.prototype as Element & { scrollIntoView?: unknown })
-        .scrollIntoView;
+      const original = (Element.prototype as Element & { scrollIntoView?: unknown }).scrollIntoView;
       // No-op stub: JSDOM doesn't ship `scrollIntoView`; we just need
-       // the property to exist so the component's call doesn't throw,
-       // and the spyOn below intercepts every invocation anyway.
+      // the property to exist so the component's call doesn't throw,
+      // and the spyOn below intercepts every invocation anyway.
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       (Element.prototype as Element & { scrollIntoView: () => void }).scrollIntoView = () => {};
       const spy = vi.spyOn(Element.prototype, 'scrollIntoView');

@@ -287,9 +287,8 @@ export class ProjectsComponent {
     const opts = this.sortOptions;
     const next = (currentIndex + dir + opts.length) % opts.length;
     this.setSort(opts[next].key);
-    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>(
-      '.projects-sort-option',
-    );
+    const buttons =
+      this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.projects-sort-option');
     buttons[next]?.focus();
   }
 
@@ -299,9 +298,8 @@ export class ProjectsComponent {
     const opts = this.viewOptions;
     const next = (currentIndex + dir + opts.length) % opts.length;
     this.setView(opts[next].key);
-    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>(
-      '.projects-view-option',
-    );
+    const buttons =
+      this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.projects-view-option');
     buttons[next]?.focus();
   }
 
