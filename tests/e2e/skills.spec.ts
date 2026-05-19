@@ -59,7 +59,10 @@ test.describe('/skills connective tissue', () => {
     const languagesSection = page.locator('section.skill-section', {
       hasText: 'Languages & Frameworks',
     });
-    await languagesSection.locator('button.expand-toggle').click();
+    const expand = languagesSection.locator('button.expand-toggle');
+    if ((await expand.count()) > 0 && (await expand.innerText()).includes('more')) {
+      await expand.click();
+    }
 
     const htmlBadge = page.locator('ui-skill-badge', { hasText: 'HTML5' }).first();
     await expect(htmlBadge).toBeVisible();
@@ -72,12 +75,22 @@ test.describe('/skills connective tissue', () => {
   }) => {
     await page.goto('/skills', { waitUntil: 'networkidle' });
 
-    // Iteration 5: the grid is deliberately uniform. No `.dimmed` /
+    // Iterate 5: the grid is deliberately uniform. No `.dimmed` /
     // `.core-accent` classes per tile — the tier signal lives in the
     // feature strip (curated narrative) and the list view (Core /
     // Working / Learning pill column). Sanity-check a few tiles so a
     // future "subtle tier cue" regression trips this assertion.
-    for (const label of ['Python', 'Rust', 'Datadog']) {
+    for (const [category, label] of [
+      ['Languages & Frameworks', 'Python'],
+      ['Languages & Frameworks', 'Rust'],
+      ['Observability', 'Datadog'],
+    ]) {
+      const section = page.locator('section.skill-section', { hasText: category });
+      const expand = section.locator('button.expand-toggle');
+      if ((await expand.count()) > 0 && (await expand.innerText()).includes('more')) {
+        await expand.click();
+      }
+
       const tile = page.locator('ui-skill-badge', { hasText: label }).first();
       await expect(tile).toBeVisible();
       await expect(tile.locator('.dimmed')).toHaveCount(0);
@@ -101,7 +114,8 @@ test.describe('/skills connective tissue', () => {
     await expect(page.locator('app-skill-feature-card').first()).toBeVisible();
     await expect(page.locator('table.skills-table')).toHaveCount(0);
 
-    await page.getByRole('button', { name: 'List view' }).click();
+    // View toggle buttons use role="radio" within a radiogroup.
+    await page.getByRole('radio', { name: 'List view' }).click();
 
     const table = page.locator('table.skills-table');
     await expect(table).toBeVisible();
@@ -111,7 +125,7 @@ test.describe('/skills connective tissue', () => {
     await expect(pythonRow.locator('.tier-pill')).toHaveText(/core/i);
     await expect(pythonRow.locator('a.row-link')).toHaveAttribute('href', '/projects/tag/python');
 
-    await page.getByRole('button', { name: 'Grid view' }).click();
+    await page.getByRole('radio', { name: 'Grid view' }).click();
     await expect(page.locator('app-skill-feature-card').first()).toBeVisible();
     await expect(page.locator('table.skills-table')).toHaveCount(0);
   });
