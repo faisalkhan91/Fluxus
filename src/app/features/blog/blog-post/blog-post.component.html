@@ -207,7 +207,7 @@
     the same moment they're trying to start reading. Source order matches
     the `loading -> error -> ready` state machine.
   -->
-  <ui-glass-panel class="post-content">
+  <ui-glass-panel class="post-content" [attr.aria-busy]="loading() ? 'true' : null">
     <!--
       Single discriminant `viewState()` drives the body — `'loading' |
       'error' | 'ready'`. Reads as a state machine instead of a chain of
@@ -216,10 +216,16 @@
       swap from skeleton to prose (and any state into the error panel)
       cross-fades; opacity-only so the reader's eye isn't tracking
       motion at the same moment they're starting to read.
+
+      `aria-busy="true"` on the panel during the loading branch tells AT
+      "the contents are about to change, hold off announcing" — together
+      with the role="status" / aria-live="polite" loading hint below, SR
+      users get the "Loading post..." readout instead of silence followed
+      by a sudden full-article announcement when httpResource resolves.
     -->
     @switch (viewState()) {
       @case ('loading') {
-        <div class="post-loading" animate.enter="fade-in">
+        <div class="post-loading" role="status" aria-live="polite" animate.enter="fade-in">
           <span class="loading-cursor">Loading post...</span>
         </div>
       }
