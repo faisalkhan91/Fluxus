@@ -84,8 +84,25 @@ const EVENT_HANDLER_DOUBLE = /\son[a-z]+\s*=\s*"([^"]*)"/gi;
 const EVENT_HANDLER_SINGLE = /\son[a-z]+\s*=\s*'([^']*)'/gi;
 const SCRIPT_TAG = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
 
-function isInlineScriptAttrs(attrs) {
-  return !/\bsrc\s*=/i.test(attrs);
+function isInlineExecutable(attrs) {
+  // 1. External scripts (has src=) are handled by 'self', no hash needed.
+  if (/\bsrc\s*=/i.test(attrs)) return false;
+
+  // 2. Only audit executable scripts. Data blocks like application/ld+json or
+  // application/json (Angular TransferState) are not executed by the browser
+  // as JS and thus don't trigger CSP script-src violations.
+  const typeMatch = attrs.match(/type\s*=\s*["']?([^"'\s>]+)["']?/i);
+  const type = typeMatch ? typeMatch[1].toLowerCase() : '';
+  const executableTypes = [
+    '',
+    'text/javascript',
+    'application/javascript',
+    'application/ecmascript',
+    'text/ecmascript',
+    'module',
+  ];
+
+  return executableTypes.includes(type);
 }
 
 const handlerMisses = [];
@@ -120,7 +137,7 @@ for (const file of walkHtml(DIST_HTML)) {
   let m;
   while ((m = SCRIPT_TAG.exec(html)) !== null) {
     const [, attrs, body] = m;
-    if (!isInlineScriptAttrs(attrs)) continue;
+    if (!isInlineExecutable(attrs)) continue;
     if (!body) continue;
     scriptCount += 1;
     const token = sha256Token(body);
