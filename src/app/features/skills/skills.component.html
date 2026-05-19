@@ -34,9 +34,20 @@
     </div>
   </header>
 
+  <!--
+    `class="skills-results"` on both branches gives the swap region a
+    shared `view-transition-name`, so `setViewMode()` (in TS) can wrap
+    the signal mutation in `document.startViewTransition` and the
+    browser snapshot-pairs the old subtree with the new for a cross-
+    fade. Same pattern + same timing as the Projects page list↔grid
+    toggle, so the IDE-tab metaphor stays cohesive across the app.
+    Reduced-motion + no-startViewTransition browsers fall back to
+    the existing instant swap.
+  -->
   @if (viewMode() === 'list') {
-    <app-skills-list-view />
+    <app-skills-list-view class="skills-results" />
   } @else {
+    <div class="skills-results">
     @if (coreSkills().length > 0) {
       <section class="feature-section" aria-labelledby="core-stack-label">
         <p class="feature-label" id="core-stack-label">// core stack</p>
@@ -105,5 +116,6 @@
         </div>
       </section>
     }
+    </div>
   }
 </div>
