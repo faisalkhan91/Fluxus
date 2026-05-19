@@ -94,6 +94,25 @@ describe('SeoService', () => {
     expect(canonical?.getAttribute('href')).toBe(`${environment.siteUrl}/`);
   });
 
+  it('clears any prior robots tag on every navigation, even into dynamicMeta routes', async () => {
+    // Simulates a user who lands on a draft post (BlogPostSeoService set
+    // noindex,nofollow) and then navigates onward. Without the reset in
+    // SeoService.init(), the noindex tag stays stuck on the document and
+    // crawlers de-index the next page they see.
+    service.setRobots('noindex,nofollow');
+    expect(document.head.querySelector('meta[name="robots"]')).not.toBeNull();
+
+    await router.navigate(['/about']);
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
+
+    // Same invariant on a dynamicMeta route — the early-return must not
+    // skip the clear, otherwise leaving a draft post for `/blog/<list>`
+    // would leak the same way.
+    service.setRobots('noindex,nofollow');
+    await router.navigate(['/blog']);
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
+  });
+
   describe('setLinkRel / removeLinkRel', () => {
     afterEach(() => {
       // Each test inserts <link rel="..."> tags into the live document
