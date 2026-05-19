@@ -1,4 +1,4 @@
-@for (toast of toasts.toasts(); track toast.id) {
+@for (toast of toasts.toasts(); track toast.id; let i = $index) {
   <!--
     Severity-aware role: `'error'` toasts get `role="alert"` (assertive,
     interrupts the SR queue) and the rest get `role="status"` (polite,
@@ -11,6 +11,7 @@
     class="toast"
     [attr.role]="toast.severity === 'error' ? 'alert' : 'status'"
     [attr.aria-live]="toast.severity === 'error' ? null : 'polite'"
+    [style.--toast-index]="i"
     animate.leave="toast-out"
   >
     <div class="toast-body">
