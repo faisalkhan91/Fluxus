@@ -1,6 +1,10 @@
 :host {
   position: fixed;
-  bottom: var(--space-4);
+  /* Add the iPhone home-indicator inset so the bottom toast clears
+     the swipe zone on devices with `viewport-fit: cover`. Same
+     pattern the mobile-nav-pill uses. The fallback `0px` keeps the
+     spacing identical on legacy browsers / non-notch devices. */
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   right: var(--space-4);
   z-index: var(--z-overlay);
   display: flex;
