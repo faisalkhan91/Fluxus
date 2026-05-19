@@ -211,6 +211,20 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: var(--space-4);
+  /*
+    Progressive enhancement: `interpolate-size: allow-keywords` opts
+    into transitionable `height: auto` on engines that support it
+    (Chrome 129+, Firefox 132+). Paired with the `transition: height`
+    below, expanding "+ N more" smoothly grows the grid container to
+    its new wrapped height instead of snapping in one frame. New
+    badges still fade up (the existing `animate.enter="enter-fade-up"`
+    on each `<ui-skill-badge>` carries that), so on engines without
+    `interpolate-size` the entrance still reads as motion — just
+    without the smooth container resize. No-op + no regression on
+    older browsers.
+  */
+  interpolate-size: allow-keywords;
+  transition: height var(--transition-base) var(--ease-decelerate);
 }
 
 .skill-grid > * {
