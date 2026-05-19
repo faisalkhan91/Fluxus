@@ -173,6 +173,17 @@ export class EditorTabBarComponent {
     buttons[nextIndex]?.focus();
   }
 
+  /*
+    Why no Cmd/Ctrl+W close shortcut: every major browser reserves
+    Cmd+W (mac) and Ctrl+W (Windows / Linux) at the chrome layer for
+    "close browser tab" before the keystroke is dispatched to the page.
+    A document-level keydown listener never sees the event, and
+    preventDefault() on a synthetic dispatch has no effect on the
+    real OS handler. The Delete key (above) is the in-app analogue
+    for keyboard close on a focused tab — there's no portable way to
+    bind to the browser's reserved combo. Don't waste time retrying.
+  */
+
   /**
    * Middle-click closes a tab. Universal editor convention (VS Code,
    * Sublime, Chrome tabs, Firefox tabs, IntelliJ) and a long-standing
