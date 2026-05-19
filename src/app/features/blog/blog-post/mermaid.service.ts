@@ -194,6 +194,22 @@ export class MermaidService {
           // Stash the source so a later revert can rebuild the
           // placeholder verbatim and re-render against a new theme.
           wrapper.setAttribute('data-mermaid-source', source);
+          /*
+            Fade the placeholder out before the swap so the eye sees a
+            cross-fade with the new figure's enter-animation (defined
+            in `blog-post.component.css` on `.mermaid`). Pure JS
+            because `replaceWith` is a synchronous DOM mutation — we
+            can't animate a leaving node via CSS without orchestration.
+            150 ms (`--duration-fast`) matches the global exit cadence;
+            the await keeps each diagram's swap atomic so subsequent
+            diagrams in the loop render without their fade-outs
+            stomping each other.
+
+            Reduced-motion users still see the swap, just without the
+            fade — the tween collapses to ~0 ms via the global rule on
+            the consuming element.
+          */
+          await this.fadeOut(node);
           node.replaceWith(wrapper);
         } catch {
           // Per-diagram failure: leave the source visible so the reader
@@ -204,5 +220,33 @@ export class MermaidService {
     } catch {
       // Lib-load failure (offline, network error). Placeholders stay.
     }
+  }
+
+  /**
+   * Animate a placeholder to `opacity: 0` before it gets replaced with
+   * the rendered SVG. Resolves on `transitionend` or after a 200 ms
+   * safety timeout (whichever fires first) — the timeout guards
+   * against engines that drop transitionend events when the element
+   * is detached mid-transition (older Safari) or where
+   * `prefers-reduced-motion` collapses the duration to ~0 ms (in
+   * which case `transitionend` may not dispatch reliably across all
+   * combinations of devices). Inline-style transition is set here
+   * rather than in CSS so the fade-out is orchestration-bound to the
+   * swap, not a property of every `.mermaid-source` on the page.
+   */
+  private fadeOut(node: HTMLElement): Promise<void> {
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        resolve();
+      };
+      node.addEventListener('transitionend', finish, { once: true });
+      // Safety net — see comment above.
+      setTimeout(finish, 200);
+      node.style.transition = 'opacity 150ms ease-out';
+      node.style.opacity = '0';
+    });
   }
 }
