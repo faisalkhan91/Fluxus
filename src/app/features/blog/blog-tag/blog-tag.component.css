@@ -56,7 +56,76 @@
 .post-card {
   height: 100%;
   display: flex;
+  /*
+    Tag-archive cards lead with a 1:1 thumbnail on the left to match
+    the non-featured cards on /blog. Body column stacks
+    vertically (date / title / excerpt / tags); the parent row gives
+    the thumb its 96 px slot. CSS is duplicated from
+    `blog.component.css` rather than hoisted to a shared partial —
+    promote to a `<ui-post-thumb>` component when a third caller
+    appears.
+  */
+  flex-direction: row;
+  gap: var(--space-4);
+}
+
+.post-card-thumb {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+}
+
+.post-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+  Cover-less fallback. Same IDE-voice sigil as the blog index.
+*/
+.post-card-sigil {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.post-card > .post-card-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .post-card-thumb,
+  .post-card-sigil {
+    width: 64px;
+    height: 64px;
+  }
+
+  .post-card-sigil {
+    font-size: 0.55rem;
+  }
 }
 
 .post-meta {
