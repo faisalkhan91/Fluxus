@@ -113,6 +113,20 @@ export class MermaidService {
     return true;
   }
 
+  /**
+   * Drop any pending deferred render and clear the restart request.
+   * Components call this on destroy so the singleton service doesn't
+   * fire an idle callback against a now-detached `root` element.
+   * The in-flight `runRender` itself is not cancellable (the async
+   * mermaid import doesn't expose abort), but `renderIfNeeded` short-
+   * circuits when the root has zero `.mermaid-source` children — and
+   * a detached subtree's `querySelectorAll` returns an empty list.
+   */
+  cancel(): void {
+    this.cancelPending();
+    this.restartRequested = false;
+  }
+
   private cancelPending(): void {
     if (!this.pendingHandle) return;
     if (typeof window === 'undefined') {
