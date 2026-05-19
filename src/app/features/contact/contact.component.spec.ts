@@ -164,6 +164,21 @@ describe('ContactComponent', () => {
     expect(error?.textContent?.trim()).toBe('Name is required');
   });
 
+  it('field error spans carry both role="alert" and an explicit aria-live="assertive"', () => {
+    // role="alert" implies aria-live="assertive" per the ARIA spec, but
+    // older NVDA + JAWS releases on Windows have been observed to miss
+    // the implicit mapping when the alert appears mid-form-interaction.
+    // The explicit attribute is belt-and-braces that costs nothing.
+    touchField('name');
+    touchField('email');
+    touchField('message');
+    for (const id of ['#name-error', '#email-error', '#message-error']) {
+      const error = el.querySelector(id);
+      expect(error?.getAttribute('role'), id).toBe('alert');
+      expect(error?.getAttribute('aria-live'), id).toBe('assertive');
+    }
+  });
+
   it('should show email required error when touched and empty', () => {
     touchField('email');
     const error = el.querySelector('#email-error');
