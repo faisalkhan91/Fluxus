@@ -171,10 +171,22 @@
     only have to land in one place.
   -->
   <ng-template #blogSkeleton>
+    <!--
+      `animate.leave="fade-out"` is the missing half of the cross-fade
+      with the real cards' `animate.enter="fade-in"` (above). Without
+      it, when blog data resolves the skeleton is removed from the DOM
+      in one frame and the cards fade in over the empty space — the
+      user sees shimmering placeholders → blank → cards. Pairing the
+      leave-fade lets Angular hold the skeleton in the DOM while the
+      150 ms exit runs, and the cards' enter-fade cross-blends with
+      it. Net result: a clean dissolve from skeleton to content
+      instead of a two-phase pop.
+    -->
     <ui-glass-card
       [elevation]="1"
       class="latest-post-card latest-post-card--skeleton"
       aria-hidden="true"
+      animate.leave="fade-out"
     >
       <div class="skeleton-line skeleton-line--meta"></div>
       <div class="skeleton-line skeleton-line--title"></div>
