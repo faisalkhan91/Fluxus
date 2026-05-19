@@ -100,12 +100,19 @@
   gap: var(--space-2);
 }
 
+/* Tags render as <a> links, so the hit area needs to clear WCAG 2.2
+   SC 2.5.8 (24 px). The previous `padding: 2px` resolved to ~14 px
+   tall — too small to tap reliably on mobile, which is the primary
+   content-discovery surface for blog tags. */
 .tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--accent-hover);
   background: var(--accent-subtle);
-  padding: 2px var(--space-2);
+  padding: 4px var(--space-3);
   border-radius: var(--radius-sm);
   letter-spacing: 0.02em;
 }
