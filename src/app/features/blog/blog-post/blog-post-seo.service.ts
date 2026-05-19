@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { SeoService } from '@core/services/seo.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
+import { blogPostUrl } from '@shared/utils/url.utils';
 
 /**
  * Blog-post-specific SEO concerns extracted from `BlogPostComponent`.
@@ -38,7 +39,7 @@ export class BlogPostSeoService {
    * predicate here keeps the two surfaces aligned.
    */
   updateMetaTags(post: BlogPost): void {
-    const url = `${environment.siteUrl}/blog/${post.slug}`;
+    const url = blogPostUrl(post.slug);
     const title = `${post.title} - ${environment.siteName}`;
     const cover = post.cover
       ? post.cover.startsWith('http')
@@ -78,8 +79,8 @@ export class BlogPostSeoService {
     }
     const prev = series.posts[series.index - 1];
     const next = series.posts[series.index + 1];
-    this.seo.setLinkRel('prev', prev ? `${environment.siteUrl}/blog/${prev.slug}` : null);
-    this.seo.setLinkRel('next', next ? `${environment.siteUrl}/blog/${next.slug}` : null);
+    this.seo.setLinkRel('prev', prev ? blogPostUrl(prev.slug) : null);
+    this.seo.setLinkRel('next', next ? blogPostUrl(next.slug) : null);
   }
 
   /**
