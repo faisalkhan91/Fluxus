@@ -122,6 +122,70 @@ describe('MobileNavPillComponent', () => {
     expect(component.menuOpen()).toBe(false);
   });
 
+  describe('drawer footer parity actions', () => {
+    /*
+      The footer carries the desktop-only entry points that previously
+      had no on-screen path on phones: command palette, theme picker,
+      resume download. Each emits a typed output and closes the
+      drawer (drawer-close ordering is what keeps the palette modal
+      from stacking under the menu modal).
+    */
+    it('renders three footer actions: Search, Choose theme, Download resume', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const actions = el.querySelectorAll('.menu-footer .menu-action');
+      expect(actions.length).toBe(3);
+      const labels = Array.from(actions).map((b) => b.textContent?.trim());
+      expect(labels[0]).toContain('Search');
+      expect(labels[1]).toContain('Choose theme');
+      expect(labels[2]).toContain('Download resume');
+    });
+
+    it('marks the resume action as the primary CTA', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const cta = el.querySelector('.menu-footer .menu-action--cta');
+      expect(cta).not.toBeNull();
+      expect(cta?.textContent?.trim()).toContain('Download resume');
+    });
+
+    it('emits paletteRequested + closes drawer when Search is clicked', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.paletteRequested.subscribe(spy);
+      const btn = el.querySelectorAll('.menu-footer .menu-action')[0] as HTMLButtonElement;
+      btn.click();
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(component.menuOpen()).toBe(false);
+    });
+
+    it('emits themePickerRequested + closes drawer when Choose theme is clicked', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.themePickerRequested.subscribe(spy);
+      const btn = el.querySelectorAll('.menu-footer .menu-action')[1] as HTMLButtonElement;
+      btn.click();
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(component.menuOpen()).toBe(false);
+    });
+
+    it('emits resumeRequested + closes drawer when Download resume is clicked', () => {
+      component.menuOpen.set(true);
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.resumeRequested.subscribe(spy);
+      const btn = el.querySelectorAll('.menu-footer .menu-action')[2] as HTMLButtonElement;
+      btn.click();
+      fixture.detectChanges();
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(component.menuOpen()).toBe(false);
+    });
+  });
+
   it('should have navigation role on host', () => {
     expect(fixture.nativeElement.getAttribute('role')).toBe('navigation');
   });
