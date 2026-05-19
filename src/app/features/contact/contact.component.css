@@ -169,6 +169,33 @@
   text-align: center;
 }
 
+/*
+  One-shot accent glow on the success card. Pairs with the
+  `enter-fade-up` (translateY) the panel already runs so the
+  user's eye follows the state-change without a competing
+  mid-animation. 600 ms total via decelerate ease — a touch
+  longer than `--duration-base` (250 ms) so the glow has time
+  to read after the fade-up settles, but well inside IDE-tone
+  restraint (no spring, no bounce). Pure box-shadow + no transform
+  so nothing reflows; runs once per class application via `both`.
+  Reduced-motion users skip via the global rule.
+*/
+.success-state {
+  animation: success-glow 600ms var(--ease-decelerate) both;
+}
+
+@keyframes success-glow {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  40% {
+    box-shadow: 0 0 24px 6px var(--accent-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
 .success-state ui-icon,
 .confirm-state ui-icon {
   color: var(--accent);
