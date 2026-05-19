@@ -150,6 +150,6 @@ describe('GithubMetaComponent', () => {
     expect(demoLink).toBeTruthy();
     expect(demoLink!.getAttribute('href')).toBe('https://example.com/demo');
     expect(demoLink!.getAttribute('target')).toBe('_blank');
-    expect(demoLink!.getAttribute('rel')).toBe('noopener');
+    expect(demoLink!.getAttribute('rel')).toBe('noopener noreferrer');
   });
 });
