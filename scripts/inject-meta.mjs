@@ -423,6 +423,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', metaDescription);
     html = setMetaProperty(html, 'twitter:image', imageUrl);
+    html = setMetaProperty(html, 'twitter:image:alt', `${projectTitle} — project screenshot`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
       html = setMetaProperty(html, 'twitter:creator', TWITTER_HANDLE);
@@ -459,6 +460,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', description);
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'twitter:image:alt', `${SITE_NAME} — portfolio social card`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
     }
@@ -487,6 +489,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', description);
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'twitter:image:alt', `${SITE_NAME} — portfolio social card`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
     }
@@ -529,6 +532,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', post.excerpt);
     html = setMetaProperty(html, 'twitter:image', cover);
+    html = setMetaProperty(html, 'twitter:image:alt', `${post.title} — blog post cover`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
       html = setMetaProperty(html, 'twitter:creator', TWITTER_HANDLE);
@@ -550,6 +554,7 @@ for await (const htmlPath of walk(DIST)) {
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'twitter:image:alt', `${SITE_NAME} — portfolio social card`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
     }
