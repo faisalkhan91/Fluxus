@@ -113,6 +113,28 @@ describe('MobileNavPillComponent', () => {
     expect(emptyLabel).toBeNull();
   });
 
+  it('renders identity (avatar + name + role) in the drawer header, tappable to /', () => {
+    /*
+      Brand parity: desktop sidebar always shows avatar + Faisal Khan +
+      Software Engineer at the top, including a tap-to-home anchor.
+      Phones used to see only a sparse "Navigate" label, so brand
+      presence vanished on every route except /about.
+    */
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+
+    const identity = el.querySelector('.menu-identity') as HTMLElement;
+    expect(identity).not.toBeNull();
+    expect(identity.getAttribute('aria-label')).toBe('Go to Welcome page');
+
+    const avatar = identity.querySelector('img.menu-identity-avatar') as HTMLImageElement;
+    expect(avatar?.alt).toBe('Faisal Khan');
+    expect(identity.querySelector('.menu-identity-name')?.textContent?.trim()).toBe('Faisal Khan');
+    expect(identity.querySelector('.menu-identity-role')?.textContent?.trim()).toBe(
+      'Software Engineer',
+    );
+  });
+
   it('renders the IDE-themed .ext chip next to each labelled link', () => {
     // Mirrors the desktop sidebar's `.nav-ext` column so the brand
     // voice carries on phones; previously the chip was stripped.
