@@ -197,8 +197,27 @@ export class ProjectDetailComponent {
   constructor() {
     effect(() => {
       const p = this.project();
-      if (!p) return;
-      untracked(() => this.updateMetaTags(p));
+      const slug = this.slugParam();
+      untracked(() => {
+        if (p) {
+          this.updateMetaTags(p);
+        } else if (slug) {
+          // Bad slug (typo'd URL or removed project). Mark the page
+          // noindex,nofollow so the "not found" chrome doesn't compete
+          // with the real prerendered project pages in the index, and
+          // give the page a meaningful title so the browser tab and
+          // crawler logs still convey *what* failed. The empty-slug
+          // case isn't reachable through the route's `:slug` matcher
+          // but we guard anyway.
+          this.seo.setRobots('noindex,nofollow');
+          this.seo.updateDynamicMeta({
+            title: `Project not found — ${environment.siteName}`,
+            description: 'The project you are looking for does not exist.',
+            url: `${environment.siteUrl}/projects/${slug}`,
+            type: 'website',
+          });
+        }
+      });
     });
   }
 
