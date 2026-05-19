@@ -533,8 +533,7 @@ async function main() {
         // Empty result (cold cache, missing repo, rate-limited) falls
         // through to whatever the old cache had — same semantic as
         // before the parallel refactor.
-        item.row.commitsPerWeek =
-          commits ?? cache.repos?.[item.key]?.commitsPerWeek ?? null;
+        item.row.commitsPerWeek = commits ?? cache.repos?.[item.key]?.commitsPerWeek ?? null;
       }),
     );
   }

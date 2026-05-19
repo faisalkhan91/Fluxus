@@ -17,9 +17,7 @@ describe('prefersReducedMotion', () => {
   });
 
   it('returns true when the OS reports the user prefers reduced motion', () => {
-    const spy = vi
-      .spyOn(window, 'matchMedia')
-      .mockReturnValue({ matches: true } as MediaQueryList);
+    const spy = vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: true } as MediaQueryList);
     try {
       expect(prefersReducedMotion()).toBe(true);
       expect(spy).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)');

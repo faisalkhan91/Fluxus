@@ -51,10 +51,7 @@ describe('MermaidService', () => {
     mockedRender.mockClear();
     resolveRender = null;
     TestBed.configureTestingModule({
-      providers: [
-        MermaidService,
-        { provide: ThemeService, useValue: { scheme: signal('dark') } },
-      ],
+      providers: [MermaidService, { provide: ThemeService, useValue: { scheme: signal('dark') } }],
     });
     service = TestBed.inject(MermaidService);
   });

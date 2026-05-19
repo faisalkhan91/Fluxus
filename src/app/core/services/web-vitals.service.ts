@@ -42,7 +42,10 @@ type ScheduleHandle =
 
 function scheduleIdle(cb: () => void): ScheduleHandle {
   if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
-    return { kind: 'idle', id: window.requestIdleCallback(() => cb(), { timeout: IDLE_FALLBACK_MS }) };
+    return {
+      kind: 'idle',
+      id: window.requestIdleCallback(() => cb(), { timeout: IDLE_FALLBACK_MS }),
+    };
   }
   if (typeof setTimeout === 'undefined') return null;
   return { kind: 'timeout', id: setTimeout(cb, IDLE_FALLBACK_MS) };

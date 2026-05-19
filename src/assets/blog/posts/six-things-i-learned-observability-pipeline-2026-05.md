@@ -8,17 +8,17 @@ Here are six layers that lied to me, and the small assertions that caught them.
 
 ## Datadog drops historical metrics silently unless you opt in
 
-The eighteen-hour-old window came back empty because Datadog's [Historical Metrics](https://docs.datadoghq.com/metrics/custom_metrics/historical_metrics/) feature, the thing that lets you submit points with timestamps from outside the last hour, is opt-in *per metric name or namespace prefix*. Not org-level, not workspace-level, per-prefix. Without it, every point your SDK uploads with a timestamp older than `now - 1h` is silently discarded at the ingest gateway. There is no error returned to the SDK. There is no telemetry on the publisher side. The only signal is that the metric you swore you wrote is missing from the dashboard.
+The eighteen-hour-old window came back empty because Datadog's [Historical Metrics](https://docs.datadoghq.com/metrics/custom_metrics/historical_metrics/) feature, the thing that lets you submit points with timestamps from outside the last hour, is opt-in _per metric name or namespace prefix_. Not org-level, not workspace-level, per-prefix. Without it, every point your SDK uploads with a timestamp older than `now - 1h` is silently discarded at the ingest gateway. There is no error returned to the SDK. There is no telemetry on the publisher side. The only signal is that the metric you swore you wrote is missing from the dashboard.
 
 The fix is one click in the metrics summary UI: pick the prefix, set Enable historical metrics to on. After that, the documented latency staircase kicks in. Below an hour is near-instant. One to twelve hours lands within the hour. Twelve hours to thirty days lands overnight.
 
-The pattern this represents is more interesting than the bug. Vendor APIs frequently distinguish *write accepted* from *data persisted*, and the gap between those two states tends to be invisible from the client. The discipline I now apply: any time I'm writing to a vendor API for a use case that isn't the obvious happy path, I write one round-trip integration test that asserts the data shows up where I expect to read it. Cheap, ugly, catches this entire class of failure.
+The pattern this represents is more interesting than the bug. Vendor APIs frequently distinguish _write accepted_ from _data persisted_, and the gap between those two states tends to be invisible from the client. The discipline I now apply: any time I'm writing to a vendor API for a use case that isn't the obvious happy path, I write one round-trip integration test that asserts the data shows up where I expect to read it. Cheap, ugly, catches this entire class of failure.
 
 ## API key prefixes gate endpoints, not just accounts
 
 For three days every scheduled invocation of the submit Lambda returned `HTTP 403: Permissions are not granted` from Coralogix's DataPrime endpoint. No row was written to the in-flight ledger, the reconciler had nothing to reconcile, and the publisher was never invoked. The pipeline looked busy from the outside (Lambdas firing, no Lambda errors, the EventBridge rules active) and was doing nothing.
 
-The fix was one character. Coralogix issues two key prefixes for two scopes: `cxup_*` is DATAQUERYING (which `/api/v1/dataprime/*` requires), and `cxtp_*` is SENDDATA (which the ingest endpoints require). The secret had been populated with a `cxtp_*` key. Both keys belong to the same account, both have valid permissions for *something*, and the 403 response carries no hint about scope. You get the same body for a typo, an expired key, a downed service, and a scope mismatch.
+The fix was one character. Coralogix issues two key prefixes for two scopes: `cxup_*` is DATAQUERYING (which `/api/v1/dataprime/*` requires), and `cxtp_*` is SENDDATA (which the ingest endpoints require). The secret had been populated with a `cxtp_*` key. Both keys belong to the same account, both have valid permissions for _something_, and the 403 response carries no hint about scope. You get the same body for a typo, an expired key, a downed service, and a scope mismatch.
 
 The cost-multiplier on this bug came from a second layer. After the secret was rotated, every Lambda continued to return 403 for hours. Cause: `@lru_cache` on the secret-fetch helper was holding the stale value in the warm container. The fix was setting a throwaway environment variable to force a cold start, which I'd recommend baking into your secret-rotation runbook regardless of whether you've ever hit this.
 
@@ -39,7 +39,7 @@ The general shape is worth holding onto. Type errors at compile time can masquer
 
 ## Async retries amplify non-idempotent emissions
 
-Lambda's async-invoke retry behavior is one of the more quietly dangerous defaults I've shipped against. The publisher in this pipeline is invoked async by the reconciler on every terminal-success window. Lambda retries failed invocations up to two more times before sending them to the DLQ, and the determination of *failed* is made by the runtime, not the function. A successful emit followed by an SDK-close timeout, a cold-start hang, a network blip past the function's return value, all of these flip the invocation to failed even when the work succeeded.
+Lambda's async-invoke retry behavior is one of the more quietly dangerous defaults I've shipped against. The publisher in this pipeline is invoked async by the reconciler on every terminal-success window. Lambda retries failed invocations up to two more times before sending them to the DLQ, and the determination of _failed_ is made by the runtime, not the function. A successful emit followed by an SDK-close timeout, a cold-start hang, a network blip past the function's return value, all of these flip the invocation to failed even when the work succeeded.
 
 Datadog's count metrics dedupe server-side on `(name, timestamp, tags)`. Distribution metrics, which is what you use for percentiles, append. A retry of an already-successful publisher run double-counts every distribution sample for that window. p99s come out silently wrong. Nobody pages, because the dashboards don't look broken; they look slightly off in a way that's easy to dismiss.
 
@@ -51,7 +51,7 @@ The wider claim: idempotency is the producer's responsibility, not the sink's. N
 
 Coralogix's background-query API caps each query at one million result rows. Exceeding the cap returns a terminal-failure status with `MAX_RESULTS` in the error body. This is not transient and it is not retryable. It is the platform telling you that your `(query, window_size, traffic_volume)` triple no longer fits and asking you to tighten the window.
 
-The trap is treating it as a generic failure. When traffic on one asset doubled overnight, the reconciler started classifying every hourly tick as a terminal-error window and routing it to the regular ERROR-log alert. On-call got paged at three in the morning. The runbook said *investigate*, which led to a forty-minute investigation that ended with *yeah, traffic doubled, halve the window*. The platform was working as intended; the alert was working as intended; the *classification* was wrong.
+The trap is treating it as a generic failure. When traffic on one asset doubled overnight, the reconciler started classifying every hourly tick as a terminal-error window and routing it to the regular ERROR-log alert. On-call got paged at three in the morning. The runbook said _investigate_, which led to a forty-minute investigation that ended with _yeah, traffic doubled, halve the window_. The platform was working as intended; the alert was working as intended; the _classification_ was wrong.
 
 The fix is structural. Parse the terminal-failure body for the reason code, and route the `MAX_RESULTS` case to a remediation-bearing log line rather than a generic ERROR:
 
@@ -71,7 +71,7 @@ Don't ship that until you've thought through what it does on a deterministic fai
 
 A `MAX_RESULTS` window will deterministically fail under retry. So will a query that won't compile, a YAML that won't parse, an IAM permission that hasn't propagated. Auto-recovery on those generates retry storms that drown the logs and burn through your downstream's rate limit without making progress. And when the failure is systemic (Coralogix down, Datadog tenant incident, EventBridge regional outage), auto-recovery actively makes the outage worse: every retry is another query against an already-sick downstream.
 
-The shape of the right answer is a classification gate. Bound retries per window, page on the cap. Add a portfolio-wide circuit breaker so a wave of simultaneous gaps escalates eagerly rather than quietly hammering. Reset attempt counters after a quiet period so a fixed bug unsticks on its own. None of this is hard; the hard part is admitting that "self-healing" is a property of a *subset* of failure modes and committing to the classification work to tell them apart.
+The shape of the right answer is a classification gate. Bound retries per window, page on the cap. Add a portfolio-wide circuit breaker so a wave of simultaneous gaps escalates eagerly rather than quietly hammering. Reset attempt counters after a quiet period so a fixed bug unsticks on its own. None of this is hard; the hard part is admitting that "self-healing" is a property of a _subset_ of failure modes and committing to the classification work to tell them apart.
 
 I get into the actual mechanics in [Part 3 of this series](/blog/self-healing-needs-a-human-in-the-loop-2026-05).
 

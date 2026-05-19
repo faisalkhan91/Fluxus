@@ -48,74 +48,74 @@
     <app-skills-list-view class="skills-results" />
   } @else {
     <div class="skills-results">
-    @if (coreSkills().length > 0) {
-      <section class="feature-section" aria-labelledby="core-stack-label">
-        <p class="feature-label" id="core-stack-label">// core stack</p>
-        <div class="feature-strip">
-          @for (skill of coreSkills(); track skill.name; let i = $index) {
-            @let u = usageFor(skill);
-            <app-skill-feature-card
-              [attr.id]="'skill-' + slugify(skill.name)"
-              [name]="skill.name"
-              [iconSrc]="skill.iconSrc"
-              [tagline]="skill.tagline"
-              [since]="skill.since"
-              [href]="projectsHref(u)"
-              [projectsCount]="u?.projects?.length ?? 0"
-              [postsCount]="u?.posts?.length ?? 0"
-              [postsHref]="postsHref(u)"
-              [mono]="skill.mono ?? false"
-              animate.enter="enter-fade-up"
-              [style.--enter-delay]="i * 40 + 'ms'"
-            />
-          }
-        </div>
-      </section>
-    }
+      @if (coreSkills().length > 0) {
+        <section class="feature-section" aria-labelledby="core-stack-label">
+          <p class="feature-label" id="core-stack-label">// core stack</p>
+          <div class="feature-strip">
+            @for (skill of coreSkills(); track skill.name; let i = $index) {
+              @let u = usageFor(skill);
+              <app-skill-feature-card
+                [attr.id]="'skill-' + slugify(skill.name)"
+                [name]="skill.name"
+                [iconSrc]="skill.iconSrc"
+                [tagline]="skill.tagline"
+                [since]="skill.since"
+                [href]="projectsHref(u)"
+                [projectsCount]="u?.projects?.length ?? 0"
+                [postsCount]="u?.posts?.length ?? 0"
+                [postsHref]="postsHref(u)"
+                [mono]="skill.mono ?? false"
+                animate.enter="enter-fade-up"
+                [style.--enter-delay]="i * 40 + 'ms'"
+              />
+            }
+          </div>
+        </section>
+      }
 
-    @for (category of skillsData.categories(); track category.title) {
-      <section class="skill-section" [attr.aria-labelledby]="'skill-' + slugify(category.title)">
-        <ui-section-header
-          [title]="category.title"
-          [headingId]="'skill-' + slugify(category.title)"
-          [decoration]="'// ' + slugify(category.title) + '.json'"
-        />
+      @for (category of skillsData.categories(); track category.title) {
+        <section class="skill-section" [attr.aria-labelledby]="'skill-' + slugify(category.title)">
+          <ui-section-header
+            [title]="category.title"
+            [headingId]="'skill-' + slugify(category.title)"
+            [decoration]="'// ' + slugify(category.title) + '.json'"
+          />
 
-        <div class="skill-grid" [id]="'skill-grid-' + slugify(category.title)">
-          @for (skill of visibleSkills(category); track skill.name; let i = $index) {
-            @let u = usageFor(skill);
-            <ui-skill-badge
-              [attr.id]="'skill-' + slugify(skill.name)"
-              [name]="skill.name"
-              [iconSrc]="skill.iconSrc"
-              [href]="projectsHref(u)"
-              [projectsCount]="u?.projects?.length ?? 0"
-              [postsCount]="u?.posts?.length ?? 0"
-              [postsHref]="postsHref(u)"
-              [tagline]="skill.tagline"
-              [mono]="skill.mono ?? false"
-              animate.enter="enter-fade-up"
-              [style.--enter-delay]="i * 40 + 'ms'"
-            />
-          }
-          @if (hiddenCount(category) > 0) {
-            <button
-              type="button"
-              class="expand-toggle"
-              (click)="toggleCategory(category.title)"
-              [attr.aria-expanded]="isExpanded(category.title)"
-              [attr.aria-controls]="'skill-grid-' + slugify(category.title)"
-            >
-              @if (isExpanded(category.title)) {
-                Show less
-              } @else {
-                + {{ hiddenCount(category) }} more
-              }
-            </button>
-          }
-        </div>
-      </section>
-    }
+          <div class="skill-grid" [id]="'skill-grid-' + slugify(category.title)">
+            @for (skill of visibleSkills(category); track skill.name; let i = $index) {
+              @let u = usageFor(skill);
+              <ui-skill-badge
+                [attr.id]="'skill-' + slugify(skill.name)"
+                [name]="skill.name"
+                [iconSrc]="skill.iconSrc"
+                [href]="projectsHref(u)"
+                [projectsCount]="u?.projects?.length ?? 0"
+                [postsCount]="u?.posts?.length ?? 0"
+                [postsHref]="postsHref(u)"
+                [tagline]="skill.tagline"
+                [mono]="skill.mono ?? false"
+                animate.enter="enter-fade-up"
+                [style.--enter-delay]="i * 40 + 'ms'"
+              />
+            }
+            @if (hiddenCount(category) > 0) {
+              <button
+                type="button"
+                class="expand-toggle"
+                (click)="toggleCategory(category.title)"
+                [attr.aria-expanded]="isExpanded(category.title)"
+                [attr.aria-controls]="'skill-grid-' + slugify(category.title)"
+              >
+                @if (isExpanded(category.title)) {
+                  Show less
+                } @else {
+                  + {{ hiddenCount(category) }} more
+                }
+              </button>
+            }
+          </div>
+        </section>
+      }
     </div>
   }
 </div>

@@ -59,6 +59,18 @@
       -->
       <ul class="palette-list" id="palette-listbox" role="listbox">
         @for (item of filtered(); track item.id; let i = $index) {
+          <!--
+            `interactive-supports-focus` + `click-events-have-key-events`
+            are deliberately suppressed here: this `<li role="option">`
+            is part of the ARIA 1.2 combobox / listbox pattern, where
+            keyboard focus stays on the input (`palette-input`) and
+            navigation happens via `aria-activedescendant` + the input's
+            `onKey()` handler. Adding key handlers / `tabindex` on the
+            options would create dual-focus and break SR announcements.
+            The `(click)` / `(mouseenter)` here serve pointer users
+            only — that's the intended split.
+          -->
+          <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events,@angular-eslint/template/interactive-supports-focus -->
           <li
             class="palette-item"
             [class.palette-item--active]="i === highlighted()"

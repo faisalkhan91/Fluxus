@@ -21,7 +21,12 @@ async function readPostsJson<T>(): Promise<T[]> {
     return JSON.parse(raw) as T[];
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to parse ${path}: ${message}`);
+    // `cause` preserves the original parse error for downstream
+    // logging / SourceMap-Resolver-style stack walking. Without it,
+    // ESLint's `preserve-caught-error` flags the rethrow because the
+    // parser's structured error data (position, token) is dropped on
+    // the floor.
+    throw new Error(`Failed to parse ${path}: ${message}`, { cause: err });
   }
 }
 

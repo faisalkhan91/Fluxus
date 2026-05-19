@@ -242,7 +242,7 @@ describe('MarkdownService renderer', () => {
       // changes the renderer to emit `alt='...'`, this test should be
       // updated to assert single-quote escaping is added too.
       const html = service.render("![it's fine](/img.png)");
-      expect(html).toContain("alt=\"it's fine\"");
+      expect(html).toContain('alt="it\'s fine"');
     });
   });
 
@@ -254,7 +254,11 @@ describe('MarkdownService renderer', () => {
     });
 
     it('neutralises data:, vbscript:, file: hrefs', () => {
-      for (const href of ['data:text/html,<script>1</script>', 'vbscript:msgbox', 'file:///etc/passwd']) {
+      for (const href of [
+        'data:text/html,<script>1</script>',
+        'vbscript:msgbox',
+        'file:///etc/passwd',
+      ]) {
         const html = service.render(`[x](${href})`);
         expect(html, `href ${href}`).toContain('href="#"');
         expect(html, `href ${href}`).not.toContain(href.split(':')[0] + ':');
@@ -262,7 +266,12 @@ describe('MarkdownService renderer', () => {
     });
 
     it('passes http(s), mailto, tel through unchanged', () => {
-      for (const href of ['https://example.com/x', 'http://example.com', 'mailto:a@b', 'tel:+1234']) {
+      for (const href of [
+        'https://example.com/x',
+        'http://example.com',
+        'mailto:a@b',
+        'tel:+1234',
+      ]) {
         const html = service.render(`[x](${href})`);
         expect(html, `href ${href}`).toContain(`href="${href}"`);
       }

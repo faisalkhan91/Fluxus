@@ -26,7 +26,9 @@ import { ThemeService } from '@core/services/theme.service';
  * reused by any future component that wants mermaid in its rendered
  * markdown.
  */
-type IdleHandle = { kind: 'idle'; id: number } | { kind: 'timeout'; id: ReturnType<typeof setTimeout> };
+type IdleHandle =
+  | { kind: 'idle'; id: number }
+  | { kind: 'timeout'; id: ReturnType<typeof setTimeout> };
 
 @Injectable({ providedIn: 'root' })
 export class MermaidService {
