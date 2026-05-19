@@ -36,6 +36,15 @@ export class CommandPaletteComponent {
   protected query = signal('');
   protected highlighted = signal(0);
 
+  /**
+   * Element that owned focus when the palette opened — restored when
+   * the palette closes so keyboard users land back where they were
+   * (industry-standard a11y pattern: every modal that takes focus
+   * gives it back). Plain field, not a signal, because we never need
+   * to observe its changes; only the open/close paths read or write.
+   */
+  private previouslyFocused: HTMLElement | null = null;
+
   protected filtered = computed<CommandItem[]>(() => {
     const q = this.query().trim().toLowerCase();
     const all = this.commandCatalog.items();
@@ -85,6 +94,7 @@ export class CommandPaletteComponent {
   }
 
   protected openPalette(): void {
+    this.captureFocus();
     this.open.set(true);
     this.query.set('');
     this.highlighted.set(0);
@@ -99,6 +109,7 @@ export class CommandPaletteComponent {
    * sidebar / mobile FAB to surface theme actions in one keystroke.
    */
   openWith(initialQuery: string): void {
+    this.captureFocus();
     this.open.set(true);
     this.query.set(initialQuery);
     this.highlighted.set(0);
@@ -118,6 +129,36 @@ export class CommandPaletteComponent {
   protected close(): void {
     this.dialog()?.nativeElement.close?.();
     this.open.set(false);
+    this.restoreFocus();
+  }
+
+  /**
+   * Snapshot the element that owned focus right before the palette
+   * took over. SSR-guarded; bails on `document.body` so a user who
+   * arrived via Cmd+K with nothing focused doesn't get a phantom
+   * "focus shifted to body" on close. Called from both open paths.
+   */
+  private captureFocus(): void {
+    if (!this.isBrowser) return;
+    const active = document.activeElement;
+    this.previouslyFocused =
+      active instanceof HTMLElement && active !== document.body ? active : null;
+  }
+
+  /**
+   * Hand focus back to whoever had it before the palette opened.
+   * Skipped when the previous element is gone from the DOM (e.g. the
+   * mobile drawer's Search button — the drawer unmounts before the
+   * palette closes), so we don't try to focus a detached node and
+   * crash on Safari. Async via `queueMicrotask` so the dialog's
+   * own `close()` fully runs first; otherwise focus management
+   * inside the close transition can fight ours.
+   */
+  private restoreFocus(): void {
+    const target = this.previouslyFocused;
+    this.previouslyFocused = null;
+    if (!target?.isConnected || typeof target.focus !== 'function') return;
+    queueMicrotask(() => target.focus());
   }
 
   protected onInput(value: string): void {
@@ -141,13 +182,23 @@ export class CommandPaletteComponent {
   }
 
   protected select(item: CommandItem): void {
-    this.close();
     switch (item.kind) {
       case 'action':
+        // Action items (theme switch, etc.) don't navigate, so focus
+        // restoration to the original trigger is what the keyboard
+        // user expects after the palette dismisses.
+        this.close();
         item.run?.();
         return;
       case 'route':
         if (!item.route) return;
+        // Discard the captured-focus reference before closing — the
+        // upcoming navigation will own focus management (Angular
+        // routes the activeElement to the new route's content), and
+        // restoring focus to a button on the *outgoing* route would
+        // fight that briefly before the element unmounts.
+        this.previouslyFocused = null;
+        this.close();
         if (item.fragment) {
           this.router.navigate([item.route], { fragment: item.fragment });
         } else {
