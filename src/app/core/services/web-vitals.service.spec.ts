@@ -157,6 +157,60 @@ describe('WebVitalsService', () => {
 
       expect(() => registered.onCLS?.({ name: 'CLS', value: 0.02, id: 'v3-4' })).not.toThrow();
     });
+
+    describe('cancel', () => {
+      it('cancels a still-pending idle handle so register() never fires', async () => {
+        // Stub `requestIdleCallback` to NOT fire synchronously this
+        // time — we need a pending callback to cancel. The default
+        // beforeEach stub is the synchronous one for happy-path tests.
+        let queuedCallback: IdleRequestCallback | undefined;
+        let cancelledId: number | undefined;
+        Object.defineProperty(window, 'requestIdleCallback', {
+          configurable: true,
+          writable: true,
+          value: (cb: IdleRequestCallback): number => {
+            queuedCallback = cb;
+            return 42;
+          },
+        });
+        Object.defineProperty(window, 'cancelIdleCallback', {
+          configurable: true,
+          writable: true,
+          value: (id: number) => {
+            cancelledId = id;
+          },
+        });
+
+        service.start();
+        // The callback was queued but not yet fired.
+        expect(registered.onCLS).toBeUndefined();
+        expect(queuedCallback).toBeTypeOf('function');
+
+        service.cancel();
+        expect(cancelledId).toBe(42);
+
+        // After cancel, start() can be called again and re-schedules.
+        // (The previous `started` guard would have blocked this.)
+        let secondQueued: IdleRequestCallback | undefined;
+        Object.defineProperty(window, 'requestIdleCallback', {
+          configurable: true,
+          writable: true,
+          value: (cb: IdleRequestCallback): number => {
+            secondQueued = cb;
+            return 99;
+          },
+        });
+        service.start();
+        expect(secondQueued).toBeTypeOf('function');
+      });
+
+      it('cancel before start() is a no-op (no handle to clear)', () => {
+        // No idleHandle has been set; just resets the `started` flag
+        // (which is also already false). Verifies the early-return
+        // path doesn't throw.
+        expect(() => service.cancel()).not.toThrow();
+      });
+    });
   });
 
   describe('server platform', () => {
