@@ -128,6 +128,42 @@ npm test -- --watch=false  # single run (CI)
 
 ---
 
+## Notable implementation details
+
+A handful of project-specific contracts that aren't obvious from the file tree:
+
+### `site.config.json`
+
+Single source of truth for site identity. Three fields drive seven build scripts (`inject-meta`, `build-sitemap`, `build-feed`, `build-og-cards`, `build-csp`, `audit-csp`, `fetch-projects-github`):
+
+- `siteUrl` — production origin, used for canonicals, OG URLs, sitemap entries, atom feed self-links.
+- `siteName` — page title suffix, OG site name, JSON-LD publisher.
+- `twitterHandle` — optional, emitted as `twitter:site` / `twitter:creator` when set.
+
+A fork updates this file once and the script suite re-targets automatically.
+
+### Adding a theme
+
+Three files have to change in lockstep, or a fresh build will fail the CSP audit:
+
+1. `src/app/core/services/theme.registry.ts` — append to the `ThemeId` union and the `THEME_REGISTRY` array.
+2. `src/styles.css` — append a `[data-theme='<id>']` token block mirroring `[data-theme='crimson-light']`.
+3. `src/index.html` — append the same id to the inline pre-paint script's `THEME_IDS` allowlist.
+
+After all three, run `npm run build:prod` so `audit-csp.mjs` regenerates the script-src hash for the updated pre-paint script. The contract is enforced by `theme.registry.spec.ts` — drift fails unit tests before it reaches CSP.
+
+### TypeScript: `verbatimModuleSyntax`
+
+`tsconfig.json` has `"verbatimModuleSyntax": true`. Pure-interface imports must use `import type { X }` (or `import { type X, y }` for mixed). Violating produces `error TS1484` at compile time. Apply this to every `Project`, `BlogPost`, `Skill`, etc. import — the compiler enforces it.
+
+### Mobile / iOS
+
+- Top-level chrome (sidebar, body, hero) uses `100dvh` with a `100vh` fallback so the iOS Safari viewport tracks dynamic chrome instead of leaving an ~80 px phantom scroll zone.
+- `viewport-fit=cover` is set so `env(safe-area-inset-*)` reports non-zero on iPhone with a home indicator. The mobile nav pill, toast region, and reading-progress bar all consume the relevant inset.
+- Mobile menu modal applies `inert` on the rest of the shell so VoiceOver / keyboard can't escape the dialog.
+
+---
+
 ## Quality gates
 
 Six layered checks guard the build. The CI workflow runs lint, typecheck, audit, unit tests, build, Playwright, and Lighthouse on every PR; the prerender audit runs locally before a release tag.
