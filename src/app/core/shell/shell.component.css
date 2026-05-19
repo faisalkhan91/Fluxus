@@ -1,6 +1,9 @@
 :host {
   display: flex;
+  /* `100dvh` overrides on modern engines — see body rule in
+     styles.css for the iOS phantom-scroll rationale. */
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--surface-void);
 }
 
