@@ -207,4 +207,20 @@ describe('ProjectDetailComponent', () => {
     expect(status).toBeTruthy();
     expect(status.textContent).toContain('does-not-exist');
   });
+
+  it('marks the page noindex,nofollow when the slug does not resolve', () => {
+    // Bad slug shouldn't compete with the real prerendered project pages
+    // in the search index. The route is `dynamicMeta: true` so the static
+    // SEO path skips it; without an explicit setRobots here the document
+    // ships with no robots tag at all (after SeoService.init() clears
+    // any leftover) and the friendly fallback chrome is indexable.
+    paramMapSubject.next(convertToParamMap({ slug: 'does-not-exist' }));
+    fixture.detectChanges();
+    const robots = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    expect(robots?.getAttribute('content')).toBe('noindex,nofollow');
+    // And the title should reflect the failure rather than leaking the
+    // previous valid project's title.
+    expect((titleService.setTitle as unknown as ReturnType<typeof vi.fn>).mock.calls.at(-1)?.[0])
+      .toBe(`Project not found — ${environment.siteName}`);
+  });
 });
