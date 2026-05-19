@@ -96,6 +96,49 @@ describe('MermaidService', () => {
     });
   });
 
+  describe('cancel', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('clears a still-pending timeout so the deferred render never fires', () => {
+      const root = document.createElement('div');
+      root.appendChild(makePlaceholder('A-->B;'));
+
+      service.scheduleRender(root);
+      service.cancel();
+      vi.runAllTimers();
+
+      // Pending was cancelled so renderIfNeeded never reached the
+      // mermaid mock — no `mermaid.render()` call.
+      expect(mockedRender).not.toHaveBeenCalled();
+    });
+
+    it('drops a queued restart so a destroyed component does not retrigger a render', async () => {
+      const root = document.createElement('div');
+      root.appendChild(makePlaceholder('A-->B;'));
+
+      // Kick off an in-flight render — it awaits resolveRender.
+      service.scheduleRender(root);
+      await vi.runAllTimersAsync();
+      // While in flight, request a restart and then immediately cancel.
+      service.scheduleRender(root);
+      service.cancel();
+      // Resolve the original render.
+      resolveRender?.({ svg: '<svg></svg>' });
+      await vi.runAllTimersAsync();
+
+      // The in-flight render finished (1 call). The restart that
+      // would have replayed `scheduleRender` was cancelled, so no
+      // second mermaid.render call.
+      expect(mockedRender).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('scheduleRender — coalescing', () => {
     beforeEach(() => {
       vi.useFakeTimers();

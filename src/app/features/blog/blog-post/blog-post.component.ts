@@ -407,6 +407,12 @@ export class BlogPostComponent {
 
     this.destroyRef.onDestroy(() => {
       this.blogSeo.clearSeriesLinkRels();
+      // Drop any pending mermaid render so the root-scoped service
+      // doesn't fire an idle callback against a detached `.post-layout`
+      // subtree after we've torn down. The in-flight render itself
+      // can't be aborted but its placeholder query short-circuits on
+      // a detached root.
+      this.mermaid.cancel();
     });
 
     afterNextRender(() => {
