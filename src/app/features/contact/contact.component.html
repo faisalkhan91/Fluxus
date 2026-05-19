@@ -26,6 +26,7 @@
                 class="form-input"
                 placeholder="Your name"
                 autocomplete="name"
+                enterkeyhint="next"
                 [attr.aria-invalid]="
                   contactForm.get('name')?.invalid && contactForm.get('name')?.touched
                 "
@@ -52,6 +53,8 @@
                 class="form-input"
                 placeholder="your@email.com"
                 autocomplete="email"
+                enterkeyhint="next"
+                inputmode="email"
                 [attr.aria-invalid]="
                   contactForm.get('email')?.invalid && contactForm.get('email')?.touched
                 "
@@ -82,6 +85,8 @@
                 type="text"
                 class="form-input"
                 placeholder="What's this about?"
+                autocomplete="off"
+                enterkeyhint="next"
               />
             </div>
 
@@ -93,6 +98,7 @@
                 class="form-input form-textarea"
                 placeholder="Your message..."
                 rows="5"
+                enterkeyhint="send"
                 [attr.aria-invalid]="
                   contactForm.get('message')?.invalid && contactForm.get('message')?.touched
                 "
