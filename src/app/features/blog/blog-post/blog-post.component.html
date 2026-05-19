@@ -153,10 +153,11 @@
 
   @if (toc().length) {
     <!--
-      `aria-labelledby` must point at a real heading so screen readers list
-      this region under the page's heading outline, not as an unlabelled
-      complementary landmark. The visible "On this page" label is rendered
-      as the same <h2> so sighted and AT users see the same affordance.
+      Desktop sticky aside (≥ 1280 px) — `aria-labelledby` must point at a
+      real heading so screen readers list this region under the page's
+      heading outline, not as an unlabelled complementary landmark. The
+      visible "On this page" label is rendered as the same <h2> so sighted
+      and AT users see the same affordance.
     -->
     <aside class="post-toc" aria-labelledby="post-toc-heading">
       <h2 id="post-toc-heading" class="post-toc-title">On this page</h2>
@@ -172,6 +173,30 @@
         }
       </ol>
     </aside>
+
+    <!--
+      Mobile collapsible TOC (< 1280 px). Native `<details>` keeps the
+      keyboard / SR contract intact (Tab focuses the summary, Enter /
+      Space toggles, the disclosed list joins the page outline when open)
+      with zero JS, and the closed default keeps a long table of contents
+      from pushing the article body below the fold on small screens.
+      CSS hides this on desktop where the sticky aside above takes over,
+      so only one of the two ever paints — no duplicate-link confusion
+      in the a11y tree.
+    -->
+    <details class="post-toc-mobile">
+      <summary class="post-toc-mobile-summary">
+        <span class="post-toc-mobile-label">On this page</span>
+        <span class="post-toc-mobile-count">{{ toc().length }} sections</span>
+      </summary>
+      <ol class="post-toc-mobile-list">
+        @for (entry of toc(); track entry.id) {
+          <li [class.post-toc-mobile-h3]="entry.depth === 3">
+            <a [routerLink]="['/blog', slug()]" [fragment]="entry.id">{{ entry.text }}</a>
+          </li>
+        }
+      </ol>
+    </details>
   }
 
   <!--
