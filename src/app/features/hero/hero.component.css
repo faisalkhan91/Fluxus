@@ -400,6 +400,26 @@
 }
 
 /*
+  Touch parity. On (hover: none) the only feedback a user sees from
+  a tap is the `:active` state during finger contact — and the
+  desktop "press-in" magnitudes (-1 px / 1.02) are well below the
+  hover lift (-3 px / 1.05) the same control shows under a pointer.
+  Tap and click felt asymmetric: hover got real motion, tap got
+  almost nothing. Match the magnitudes + the full hover styling on
+  touch so a finger-press confirms with the same weight a
+  mouse-hover does.
+*/
+@media (hover: none) {
+  .social-link:active {
+    color: var(--accent-hover);
+    background: var(--accent-subtle);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-accent-glow);
+    transform: translateY(-3px) scale(1.05);
+  }
+}
+
+/*
   Reduced-motion overrides.
 
   The global `prefers-reduced-motion` rule in styles.css already collapses
