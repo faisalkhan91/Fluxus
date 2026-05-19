@@ -3,19 +3,24 @@
   "short_name": "FK",
   "description": "Senior Software Engineer with over a decade of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "theme_color": "#07070b",
   "background_color": "#07070b",
+  "categories": ["productivity", "education", "personalization"],
   "icons": [
     {
       "src": "/assets/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
