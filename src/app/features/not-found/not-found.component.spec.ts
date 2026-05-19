@@ -81,4 +81,14 @@ describe('NotFoundComponent', () => {
     const cards = el.querySelectorAll('.suggestion-card');
     expect(cards.length).toBe(3);
   });
+
+  it('emits noindex,nofollow on the document so SPA-nav 404s match the prerendered fingerprint', () => {
+    // SeoService.init() clears robots on every navigation, and the
+    // static-SEO path (which the wildcard route uses) doesn't set robots
+    // back. Without this component-level setRobots, a SPA-nav into a
+    // missing route shipped without the noindex tag and a crawler reaching
+    // `/foo` via a stale in-app link could index the 404 chrome.
+    const meta = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    expect(meta?.getAttribute('content')).toBe('noindex,nofollow');
+  });
 });
