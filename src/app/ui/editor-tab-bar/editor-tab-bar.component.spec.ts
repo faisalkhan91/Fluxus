@@ -88,6 +88,42 @@ describe('EditorTabBarComponent', () => {
     expect(closed?.id).toBe('about');
   });
 
+  it('emits tabClosed on middle-click for non-hero tabs (editor convention)', () => {
+    let closed: EditorTab | undefined;
+    component.tabClosed.subscribe((t: EditorTab) => (closed = t));
+    const aboutTab = el.querySelectorAll<HTMLButtonElement>('.tab')[1];
+    aboutTab.dispatchEvent(new MouseEvent('auxclick', { button: 1, bubbles: true }));
+    expect(closed?.id).toBe('about');
+  });
+
+  it('ignores middle-click on the hero tab (pinned, can never close)', () => {
+    let closed: EditorTab | undefined;
+    component.tabClosed.subscribe((t: EditorTab) => (closed = t));
+    const heroTab = el.querySelectorAll<HTMLButtonElement>('.tab')[0];
+    heroTab.dispatchEvent(new MouseEvent('auxclick', { button: 1, bubbles: true }));
+    expect(closed).toBeUndefined();
+  });
+
+  it('ignores right-click (button === 2) on a non-hero tab', () => {
+    // auxclick fires for any non-primary button. Only middle-click
+    // (button === 1) should close; right-click should pass through to
+    // the browser's context menu so users can copy the tab's contents.
+    let closed: EditorTab | undefined;
+    component.tabClosed.subscribe((t: EditorTab) => (closed = t));
+    const aboutTab = el.querySelectorAll<HTMLButtonElement>('.tab')[1];
+    aboutTab.dispatchEvent(new MouseEvent('auxclick', { button: 2, bubbles: true }));
+    expect(closed).toBeUndefined();
+  });
+
+  it('exposes the full tab label via the title attribute (truncation tooltip)', () => {
+    // CSS truncates long labels with text-overflow: ellipsis inside the
+    // scroll rail. Without `title`, the user has no way to read the
+    // full label without opening devtools. Native tooltip costs zero
+    // and surfaces label + ext on hover.
+    const aboutTab = el.querySelectorAll<HTMLButtonElement>('.tab')[1];
+    expect(aboutTab.getAttribute('title')).toBe('About.md');
+  });
+
   it('emits tabSelected and moves focus on ArrowRight (with wrap)', () => {
     const tabs = Array.from(el.querySelectorAll('[role="tab"]')) as HTMLElement[];
     let selected: EditorTab | undefined;
