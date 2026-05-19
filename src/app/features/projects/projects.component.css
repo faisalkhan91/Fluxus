@@ -544,12 +544,18 @@
   display: none;
 }
 
+/* See blog-tag.component.css for rationale — `<a class="tag">` links
+   need ≥24 px tap target so mobile filtering works. Padding/min-height
+   match the blog-tag rule for visual consistency across surfaces. */
 .tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--text-muted);
   background: var(--surface-overlay);
-  padding: 2px var(--space-2);
+  padding: 4px var(--space-3);
   border-radius: var(--radius-sm);
   border: 1px solid var(--glass-border);
   text-decoration: none;
