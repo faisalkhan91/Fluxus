@@ -2348,6 +2348,22 @@ img[src*='amazonwebservices-original-wordmark'] {
     color-scheme: light;
   }
 
+  /*
+    Suppress every animation and transition during print. Defence-in-
+    depth: the global prefers-reduced-motion block neutralises motion
+    when the OS asks for it, but a user printing on a system *without*
+    that preference would otherwise let the print engine sample frames
+    mid-animation — clipped glass-fade entries, half-faded toasts,
+    tab indicators caught between positions. Forcing both off pins
+    the printable surface to the steady-state visuals.
+  */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
   ui-sidebar,
   ui-editor-tab-bar,
   ui-mobile-nav-pill,
