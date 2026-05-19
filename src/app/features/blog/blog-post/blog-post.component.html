@@ -140,12 +140,25 @@
       layout doesn't shift while the image loads.
     -->
     <figure class="post-cover">
+      <!--
+        `sizes` must be viewport-relative only — NgOptimizedImage's
+        NG02952 rule rejects pixel values (it can't pick the right
+        srcset entry from `800px`). The blog post column maxes out at
+        800 px wide; on a 1600 px viewport that's `50vw`, on a 1280
+        px viewport it's `~62vw`, on phones it's `100vw`. Using `50vw`
+        for the desktop branch is the closest single-value
+        approximation to the column cap. The previous attempt used
+        `800px` here which threw NG02952 during init and left the
+        cover img with no src / width / height — every post page
+        rendered the cover as a 0-natural-width broken image. See
+        d5e52704 for the change that introduced the pixel value.
+      -->
       <img
         [ngSrc]="cover"
         [alt]="meta()?.title ?? ''"
         [width]="coverDims().w"
         [height]="coverDims().h"
-        sizes="(max-width: 767px) 100vw, 800px"
+        sizes="(max-width: 767px) 100vw, 50vw"
         priority
       />
     </figure>
