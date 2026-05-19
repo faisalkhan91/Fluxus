@@ -18,6 +18,7 @@ import { BlogService } from '@core/services/blog.service';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { slugify } from '@shared/utils/string.utils';
+import { prefersReducedMotion } from '@shared/utils/motion.utils';
 
 @Component({
   selector: 'app-hero',
@@ -78,7 +79,7 @@ export class HeroComponent {
     afterNextRender(() => {
       if (!isPlatformBrowser(this.platformId)) return;
       if (!window.matchMedia('(pointer: fine)').matches) return;
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (prefersReducedMotion()) return;
 
       const host = this.host.nativeElement as HTMLElement;
       let raf = 0;
