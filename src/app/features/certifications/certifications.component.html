@@ -19,8 +19,21 @@
       mobile. The matching `aria-label` exists so the SR knows what the
       Tab stop is — `<section aria-labelledby="certs-title">` labels the
       region but not this inner scroll-rail target specifically.
+
+      Keyboard scroll: ArrowLeft/ArrowRight + PageUp/PageDown work
+      natively on a focused scroll container (browser default — no JS
+      needed). The Home / End handlers below extend that with
+      "scroll to start / end" since the browser default for those
+      keys on a scroll container is page-scroll, not container-scroll.
     -->
-    <div class="cert-grid" role="list" tabindex="0" aria-label="Certifications grid">
+    <div
+      class="cert-grid"
+      role="list"
+      tabindex="0"
+      aria-label="Certifications grid"
+      (keydown.home)="scrollToStart($event)"
+      (keydown.end)="scrollToEnd($event)"
+    >
       @for (cert of certsData.certifications(); track cert.name; let i = $index) {
         <ui-glass-card
           [hover]="true"
