@@ -188,9 +188,42 @@
   color: var(--accent-hover);
 }
 
+/*
+  Label takes the available width so the optional .ext chip and the
+  active-indicator chevron sit on the right rail. Without this the
+  chip would crowd the label whenever the route wasn't active.
+*/
+.menu-link-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/*
+  IDE-themed file-extension chip — same visual treatment as the
+  desktop sidebar's `.nav-ext` so the brand voice carries on phones.
+  Mono font + muted colour + subtle letter-spacing read as a
+  metadata column rather than another label.
+*/
+.menu-link-ext {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.menu-link--active .menu-link-ext {
+  /* On the active row the link colour shifts to accent-hover; lift
+     the ext to match instead of staying muted-grey, otherwise the
+     chip looks orphaned on the highlighted row. */
+  color: var(--accent-hover);
+  opacity: 0.7;
+}
+
 .menu-link-indicator {
-  margin-left: auto;
+  margin-left: var(--space-2);
   opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .menu-divider {

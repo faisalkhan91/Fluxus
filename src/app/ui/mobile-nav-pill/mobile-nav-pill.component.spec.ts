@@ -13,16 +13,16 @@ const MOCK_ITEMS: MobileNavItem[] = [
 ];
 
 const MOCK_MENU_ITEMS: MobileMenuItem[] = [
-  { type: 'link', label: 'Home', route: '/', icon: 'home' },
-  { type: 'link', label: 'About', route: '/about', icon: 'user' },
-  { type: 'link', label: 'Blog', route: '/blog', icon: 'file-text' },
+  { type: 'link', label: 'Home', route: '/', icon: 'home', ext: '.tsx' },
+  { type: 'link', label: 'About', route: '/about', icon: 'user', ext: '.md' },
+  { type: 'link', label: 'Blog', route: '/blog', icon: 'file-text', ext: '.rss' },
   { type: 'divider', label: 'Work' },
-  { type: 'link', label: 'Experience', route: '/experience', icon: 'briefcase' },
-  { type: 'link', label: 'Skills', route: '/skills', icon: 'layers' },
-  { type: 'link', label: 'Projects', route: '/projects', icon: 'folder-git' },
-  { type: 'link', label: 'Certifications', route: '/certifications', icon: 'award' },
+  { type: 'link', label: 'Experience', route: '/experience', icon: 'briefcase', ext: '.ts' },
+  { type: 'link', label: 'Skills', route: '/skills', icon: 'layers', ext: '.json' },
+  { type: 'link', label: 'Projects', route: '/projects', icon: 'folder-git', ext: '.git' },
+  { type: 'link', label: 'Certifications', route: '/certifications', icon: 'award', ext: '.pem' },
   { type: 'divider', label: '' },
-  { type: 'link', label: 'Contact', route: '/contact', icon: 'mail' },
+  { type: 'link', label: 'Contact', route: '/contact', icon: 'mail', ext: '.sh' },
 ];
 
 describe('MobileNavPillComponent', () => {
@@ -111,6 +111,19 @@ describe('MobileNavPillComponent', () => {
     const dividers = el.querySelectorAll('.menu-divider');
     const emptyLabel = dividers[1].querySelector('.menu-divider-label');
     expect(emptyLabel).toBeNull();
+  });
+
+  it('renders the IDE-themed .ext chip next to each labelled link', () => {
+    // Mirrors the desktop sidebar's `.nav-ext` column so the brand
+    // voice carries on phones; previously the chip was stripped.
+    component.menuOpen.set(true);
+    fixture.detectChanges();
+    const exts = el.querySelectorAll('.menu-link-ext');
+    // 7 links in MOCK_MENU_ITEMS carry an ext (Home + 6 sidebar entries
+    // + Contact). Dividers don't render `.menu-link-ext`.
+    expect(exts.length).toBe(MOCK_MENU_ITEMS.filter((m) => m.type === 'link').length);
+    const skills = Array.from(exts).find((e) => e.textContent?.trim() === '.json');
+    expect(skills).toBeDefined();
   });
 
   it('should close menu when close button is clicked', () => {
