@@ -348,6 +348,7 @@
   font-family: var(--font-tech);
   font-size: 0.95rem;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   transition:
     background-color var(--transition-fast),

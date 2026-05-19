@@ -56,12 +56,7 @@
       separate cross-component pass.
     -->
     <div class="menu-header">
-      <a
-        class="menu-identity"
-        routerLink="/"
-        (click)="closeMenu()"
-        aria-label="Go to Welcome page"
-      >
+      <a class="menu-identity" routerLink="/" (click)="closeMenu()" aria-label="Go to Welcome page">
         <img
           ngSrc="assets/images/profile/profile_picture.jpg"
           width="48"
@@ -131,6 +126,17 @@
         <ui-icon name="palette" [size]="18" />
         <span>Choose theme</span>
       </button>
+      <a
+        class="menu-action"
+        href="https://github.com/faisalkhan91/Fluxus"
+        target="_blank"
+        rel="noopener noreferrer"
+        (click)="closeMenu()"
+        aria-label="View source on GitHub (opens in new tab)"
+      >
+        <ui-icon name="github" [size]="18" />
+        <span>View source</span>
+      </a>
       <button class="menu-action menu-action--cta" type="button" (click)="emitResume()">
         <ui-icon name="download" [size]="18" />
         <span>Download resume</span>
