@@ -120,22 +120,50 @@
                   </div>
                 </div>
               } @else {
-                <div class="post-meta">
-                  <time class="post-date" [attr.datetime]="entry.post.date">
-                    <ui-icon name="calendar" [size]="12" />
-                    {{ formatDate(entry.post.date) }}
-                  </time>
-                  <span class="post-reading-time">
-                    <ui-icon name="clock" [size]="12" />
-                    {{ entry.post.readingTime }}
+                <!--
+                  Non-featured cards: 1:1 thumbnail on the left, body on
+                  the right. The thumb reuses the existing `cover` field
+                  when present (browser scales the 1200×630 webp to 96
+                  px); cover-less posts get an IDE-voice sigil
+                  (`// <slug>.md`) that matches the codebase's
+                  decoration vocabulary (`// stack.json`,
+                  `// posts.rss`, …). Lazy-loaded — none of these are
+                  LCP candidates; the featured card's cover above keeps
+                  the `priority` flag.
+                -->
+                @if (entry.post.cover) {
+                  <figure class="post-card-thumb">
+                    <img
+                      [ngSrc]="entry.post.cover"
+                      [alt]="entry.post.title"
+                      width="96"
+                      height="96"
+                      loading="lazy"
+                    />
+                  </figure>
+                } @else {
+                  <span class="post-card-sigil" aria-hidden="true">
+                    // {{ entry.post.slug }}.md
                   </span>
-                </div>
-                <h2 class="post-title">{{ entry.post.title }}</h2>
-                <p class="post-excerpt">{{ entry.post.excerpt }}</p>
-                <div class="post-tags">
-                  @for (tag of entry.post.tags; track tag) {
-                    <span class="tag">{{ tag }}</span>
-                  }
+                }
+                <div class="post-card-body">
+                  <div class="post-meta">
+                    <time class="post-date" [attr.datetime]="entry.post.date">
+                      <ui-icon name="calendar" [size]="12" />
+                      {{ formatDate(entry.post.date) }}
+                    </time>
+                    <span class="post-reading-time">
+                      <ui-icon name="clock" [size]="12" />
+                      {{ entry.post.readingTime }}
+                    </span>
+                  </div>
+                  <h2 class="post-title">{{ entry.post.title }}</h2>
+                  <p class="post-excerpt">{{ entry.post.excerpt }}</p>
+                  <div class="post-tags">
+                    @for (tag of entry.post.tags; track tag) {
+                      <span class="tag">{{ tag }}</span>
+                    }
+                  </div>
                 </div>
               }
             </ui-glass-card>
