@@ -301,6 +301,20 @@
 */
 .reading-progress {
   position: fixed;
+  /*
+    Opt the bar out of the route view-transition. Without this, the
+    main-content view-transition captures both the old post's bar
+    (at e.g. scaleX 0.7 — the user's last scroll position) and the
+    new post's bar (fresh-mount scaleX 0) into separate snapshot
+    layers and cross-fades them. The user sees TWO bars at once
+    during the 120 ms transition: the old position fading out,
+    the new fading in at zero. Reads as confusing flash on every
+    blog→blog navigation. Giving the bar its own
+    `view-transition-name` extracts it from the page snapshot and
+    the rules below make it cleanly disappear during the transition,
+    then re-appear in its real position once the new post mounts.
+  */
+  view-transition-name: reading-progress;
   /* Pull below the iPhone Dynamic Island / notch so the bar stays
      visible in portrait. Without the inset, the 3 px bar paints
      directly under the up-to-59 px top safe area on iPhone 14 Pro+.
