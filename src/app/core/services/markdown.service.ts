@@ -140,8 +140,20 @@ const calloutExtension: TokenizerAndRendererExtension = {
     };
     const body = this.parser.parse(t.tokens);
     const titleText = t.title || CALLOUT_LABELS[t.kind];
+    // WARNING and CAUTION get `role="region"` + an explicit
+    // `aria-label="Warning"` / `"Caution"` so they surface as
+    // distinct landmarks in AT region-navigation and the SR
+    // announces the urgency kind alongside any custom title.
+    // NOTE / TIP / INFO stay on `role="note"` — supplemental,
+    // non-urgent prose blocks belong with note semantics rather
+    // than landmark-noise polluting longer posts. `role="alert"`
+    // is rejected for both: it's for *dynamic* changes and would
+    // force the SR to interrupt the read on page load.
+    const isUrgent = t.kind === 'warning' || t.kind === 'caution';
+    const role = isUrgent ? 'region' : 'note';
+    const ariaLabel = isUrgent ? ` aria-label="${escapeAttr(CALLOUT_LABELS[t.kind])}"` : '';
     return (
-      `<aside class="callout callout--${t.kind}" role="note">` +
+      `<aside class="callout callout--${t.kind}" role="${role}"${ariaLabel}>` +
       `<p class="callout-title">${escapeHtml(titleText)}</p>` +
       `${body}` +
       `</aside>\n`

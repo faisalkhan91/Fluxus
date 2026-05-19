@@ -145,7 +145,9 @@ describe('MarkdownService renderer', () => {
       '> [!WARNING] The SMR Trap\n> SMR drives experience catastrophic IOPS degradation.\n',
     );
     expect(html).toContain('class="callout callout--warning"');
-    expect(html).toContain('role="note"');
+    // WARNING is one of the urgent kinds — role/aria-label coverage
+    // lives in the dedicated specs below; this test just verifies
+    // the parser plus the visible title + body shape.
     expect(html).toContain('<p class="callout-title">The SMR Trap</p>');
     expect(html).toContain('SMR drives experience');
     // Plain blockquote without the marker still renders normally.
@@ -158,6 +160,27 @@ describe('MarkdownService renderer', () => {
     const html = service.render('> [!INFO]\n> Body only.\n');
     expect(html).toContain('class="callout callout--info"');
     expect(html).toContain('<p class="callout-title">Info</p>');
+  });
+
+  it('marks WARNING callouts as a labelled region (urgent landmark)', () => {
+    const html = service.render('> [!WARNING] Watch out\n> Body.\n');
+    expect(html).toContain('class="callout callout--warning"');
+    expect(html).toContain('role="region"');
+    expect(html).toContain('aria-label="Warning"');
+  });
+
+  it('marks CAUTION callouts as a labelled region', () => {
+    const html = service.render('> [!CAUTION] Hot stove\n> Body.\n');
+    expect(html).toContain('role="region"');
+    expect(html).toContain('aria-label="Caution"');
+  });
+
+  it('keeps NOTE / TIP / INFO callouts on role="note" (supplemental prose, no landmark)', () => {
+    for (const kind of ['NOTE', 'TIP', 'INFO']) {
+      const html = service.render(`> [!${kind}] Hi\n> Body.\n`);
+      expect(html, `kind ${kind}`).toContain('role="note"');
+      expect(html, `kind ${kind}`).not.toContain('aria-label=');
+    }
   });
 
   it('escapes attributes safely (no script injection in href/title/alt)', () => {
