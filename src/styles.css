@@ -1266,6 +1266,40 @@ img[src*='amazonwebservices-original-wordmark'] {
   background: var(--accent-subtle);
   color: var(--accent-hover);
   opacity: 1;
+  /*
+    Brief border-accent pulse confirms the click without breaking
+    IDE restraint. The animation runs once per `.copy-btn--copied`
+    application (the markdown service toggles the class for ~1.5 s
+    after a successful copy, then drops it), so the keyframe fires
+    once on apply, settles into the resting copied state, and is
+    gone when the class is removed. `--duration-base` (250 ms) +
+    decelerate matches the rest of the system; reduced-motion
+    users skip via the global rule.
+  */
+  animation: copy-pulse var(--duration-base) var(--ease-decelerate) both;
+}
+
+/*
+  Two-step border-glow pulse on copy-confirm.
+    0%  — accent border at 1 px (matches resting state)
+    50% — accent border + accent-glow shadow (the "ping")
+    100% — accent border, glow gone (settles into copied state)
+  No transform / no scale; the IDE restraint applies — the pulse is
+  pure colour + shadow so nothing in the page reflows.
+*/
+@keyframes copy-pulse {
+  0% {
+    border-color: var(--accent);
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+  }
+  100% {
+    border-color: var(--accent);
+    box-shadow: none;
+  }
 }
 
 .prose table {
