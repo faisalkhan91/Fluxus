@@ -379,6 +379,13 @@ for await (const htmlPath of walk(DIST)) {
   const route = deriveRoute(htmlPath);
   const url = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`;
 
+  // og:locale is invariant across every prerendered route — the site is
+  // English-only — so set it once at the top of the per-file pass
+  // instead of scattering identical setMetaProperty calls across each
+  // of the five branches below. en_US is the conventional default and
+  // matches the Person schema's `inLanguage: 'en'` graph.
+  html = setMetaProperty(html, 'og:locale', 'en_US');
+
   const tagMatch = route.match(/^\/blog\/tag\/([^/]+)$/);
   const projectTagMatch = route.match(/^\/projects\/tag\/([^/]+)$/);
   const blogMatch = route.match(/^\/blog\/([^/]+)$/);
