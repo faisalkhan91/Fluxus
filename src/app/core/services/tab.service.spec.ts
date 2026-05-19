@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
@@ -54,6 +54,14 @@ describe('TabService', () => {
     router = TestBed.inject(Router);
     service = TestBed.inject(TabService);
     await router.navigate(['/']);
+  });
+
+  afterEach(() => {
+    // Three tests below replace `router.navigate` with a `vi.spyOn(...)`
+    // wrapper. Without an explicit restore, the spy persists across the
+    // describe and the next test's TestBed.inject(Router) hands back a
+    // router with a mocked navigate — flaky in parallel runners.
+    vi.restoreAllMocks();
   });
 
   it('should be created', () => {
