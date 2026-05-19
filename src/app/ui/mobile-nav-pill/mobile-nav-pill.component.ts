@@ -11,7 +11,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { DOCUMENT, NgOptimizedImage } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
 
 export interface MobileNavItem {
@@ -86,6 +88,27 @@ export class MobileNavPillComponent {
     // inert attributes so the rest of the app stays interactive on
     // the next page.
     this.destroyRef.onDestroy(() => this.toggleBackgroundInert(false));
+
+    /*
+      Close the drawer on any navigation start — covers the Android
+      hardware back button (which fires popstate → router emits
+      NavigationStart) plus any rare path that would otherwise leave
+      the drawer painted on top of a different route. In-app drawer
+      taps already close the drawer in `navigateTo` before routing,
+      so this listener is purely a safety net for the navigations we
+      *don't* trigger ourselves.
+
+      `NavigationStart` (not End) so the dismiss animation runs while
+      the route resolves rather than after the new page paints.
+    */
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationStart),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
+        if (this.menuOpen()) this.menuOpen.set(false);
+      });
   }
 
   /**
