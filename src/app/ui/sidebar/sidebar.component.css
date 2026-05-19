@@ -19,7 +19,11 @@
   display: flex;
   flex-direction: column;
   width: var(--sidebar-width);
+  /* `100dvh` matches the body rule — without it, the fixed sidebar
+     extends past the visible iOS Safari viewport on first paint and
+     bleeds under the dynamic chrome until the user scrolls. */
   height: 100vh;
+  height: 100dvh;
   background: var(--surface-base);
   border-right: 1px solid var(--glass-border);
   padding: var(--space-6) 0;
