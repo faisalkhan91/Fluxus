@@ -772,6 +772,20 @@
 .mermaid {
   margin: var(--space-6) 0;
   text-align: center;
+  /*
+    Fade-in on first paint — `MermaidService.renderIfNeeded` calls
+    `node.replaceWith(figure)` to swap each `.mermaid-source`
+    placeholder with its rendered SVG, which is an instant DOM
+    mutation. On a slow client (or a dense post with many diagrams)
+    the placeholder is visible long enough for the swap to read as a
+    pop. Animating the new figure in over `--duration-base` blends
+    the swap into a soft reveal — keyframes are the existing
+    `simple-fade-in` so timing matches the rest of the system. The
+    `both` fill mode keeps the from-state during any animation
+    delay so the figure doesn't briefly show at full opacity before
+    the keyframe starts.
+  */
+  animation: simple-fade-in var(--duration-base) var(--ease-decelerate) both;
 }
 
 .mermaid svg {
