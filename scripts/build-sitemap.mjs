@@ -71,15 +71,19 @@ const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(
 // `/projects/tag/<slug>` mirrors `/blog/tag/<slug>` — discovered via the
 // shared `loadProjectTagSlugs()` helper, which regex-extracts directly
 // from the projects-data.service.ts source so this stays in sync without
-// a parallel JSON manifest.
-const projectTagSlugs = (await loadProjectTagSlugs()).map((entry) => entry.slug);
+// a parallel JSON manifest. Sorted for byte-stable sitemap.xml diffs —
+// the loader's emit order is regex-match order against the source file,
+// which shifts whenever a project is reordered or added.
+const projectTagSlugs = (await loadProjectTagSlugs()).map((entry) => entry.slug).sort();
 
 // `/projects/:slug` — one URL per project. Detail pages get a higher
 // priority than the tag archive (0.7 vs 0.4) since they are the richer,
 // canonical surface for a project. Tag archives remain for discovery.
+// Sorted alongside `projectTagSlugs` for the same byte-stability reason.
 const projectDetailSlugs = (await loadProjectEntries())
   .map((entry) => entry.titleSlug)
-  .filter(Boolean);
+  .filter(Boolean)
+  .sort();
 
 const entries = [
   ...STATIC_ROUTES.map(([path, priority]) =>
