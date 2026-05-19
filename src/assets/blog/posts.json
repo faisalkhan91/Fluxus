@@ -6,7 +6,8 @@
     "excerpt": "Chasing a broken-layout bug across an Angular 21 SSG + service-worker stack and the four lessons that fell out: why content-hashed assets aren't enough, the SwUpdate plus build-stamp belt-and-braces guard, sidebar collapse geometry, and why heading permalinks are a desktop-only affordance.",
     "tags": ["Angular", "SSG", "Service Worker", "CSS", "UX"],
     "readingTime": "8 min",
-    "cover": "assets/images/blog/fresh-css-deploy/cover.webp"
+    "cover": "assets/images/blog/fresh-css-deploy/cover.webp",
+    "wordCount": 1661
   },
   {
     "slug": "motion-you-can-feel-2026-04",
@@ -15,7 +16,8 @@
     "excerpt": "What I learned auditing every animation, transition, and micro-interaction in my Angular 21 portfolio: a six-token motion ladder, transform: scaleX over width, View Transitions for routes and theme, and a reduced-motion contract you can grade against.",
     "tags": ["Angular", "TypeScript", "UX", "Architecture"],
     "readingTime": "7 min",
-    "cover": "assets/images/blog/motion-audit/cover.webp"
+    "cover": "assets/images/blog/motion-audit/cover.webp",
+    "wordCount": 1506
   },
   {
     "slug": "homelab-storage-foundation",
@@ -26,7 +28,8 @@
     "readingTime": "13 min",
     "cover": "assets/images/blog/homelab-storage/hardware-stack.webp",
     "series": "Homelab Architecture",
-    "seriesOrder": 1
+    "seriesOrder": 1,
+    "wordCount": 2806
   },
   {
     "slug": "angular-signals-state-management",
@@ -34,7 +37,8 @@
     "date": "2026-03-28",
     "excerpt": "Practical patterns for replacing BehaviorSubjects with Signals—service state, computed derivations, SSR safety, and when to still reach for RxJS.",
     "tags": ["Angular", "TypeScript", "Architecture"],
-    "readingTime": "3 min"
+    "readingTime": "3 min",
+    "wordCount": 609
   },
   {
     "slug": "building-cloud-native-pipelines",
@@ -42,7 +46,8 @@
     "date": "2026-03-20",
     "excerpt": "A hands-on walkthrough of designing resilient, container-native CI/CD pipelines using GitHub Actions, Docker, and Kubernetes—from build triggers to zero-downtime deployments.",
     "tags": ["DevOps", "Cloud", "CI/CD"],
-    "readingTime": "2 min"
+    "readingTime": "2 min",
+    "wordCount": 333
   },
   {
     "slug": "blog-post-template",
@@ -51,6 +56,7 @@
     "excerpt": "A ready-to-copy template that demonstrates all supported Markdown features: headings, code blocks, lists, blockquotes, and more.",
     "tags": ["Template"],
     "readingTime": "1 min",
-    "draft": true
+    "draft": true,
+    "wordCount": 205
   }
 ]
