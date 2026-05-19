@@ -715,7 +715,13 @@ body {
   font-family: var(--font-body);
   background-color: var(--surface-void);
   color: var(--text-primary);
+  /* Progressive enhancement: `100vh` for older browsers (iOS Safari
+     14, older Edge), `100dvh` overrides on modern engines so the
+     viewport tracks the dynamic chrome (iOS toolbar show/hide,
+     keyboard appear/dismiss) without leaving an ~80 px phantom
+     scroll zone on first paint. */
   min-height: 100vh;
+  min-height: 100dvh;
   line-height: 1.6;
   overflow-x: hidden;
 }

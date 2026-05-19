@@ -8,6 +8,7 @@
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - var(--tab-bar-height) - var(--space-16));
+  min-height: calc(100dvh - var(--tab-bar-height) - var(--space-16));
   padding: var(--space-6);
   gap: var(--space-6);
 }
