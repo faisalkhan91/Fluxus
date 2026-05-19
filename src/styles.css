@@ -2277,6 +2277,24 @@ img[src*='amazonwebservices-original-wordmark'] {
   animation: simple-fade-in var(--duration-base) var(--ease-decelerate) both;
 }
 
+/*
+  Reading-progress bar is a viewport-relative scroll indicator — its
+  value at the moment of navigation is meaningless on the next post
+  (different content, different scroll height). Without an explicit
+  rule here the bar would be captured into the `main-content`
+  snapshot and cross-fade between the old position (e.g. 70 %) and
+  the new (fresh-mount 0 %), so the user sees two bars overlap for
+  the 120 ms transition. Setting its own `view-transition-name` on
+  `.reading-progress` (see `blog-post.component.css`) extracts it,
+  and these rules then suppress the snapshot pair entirely — old
+  bar disappears with the navigation, new bar paints fresh once the
+  next route mounts.
+*/
+::view-transition-old(reading-progress),
+::view-transition-new(reading-progress) {
+  animation: none;
+}
+
 /* WCAG 2.3.3 — honor user's reduced-motion preference. Collapses every
    animation, transition, and View Transitions pseudo-element animation to a
    near-zero duration so the UI remains static during motion-sensitive use. */
