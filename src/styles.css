@@ -2142,7 +2142,17 @@ img[src*='amazonwebservices-original-wordmark'] {
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    /* Zero `animation-delay` too — without this, staggered entries
+       (skills + certifications via `--enter-delay`, hero glow layers
+       at 4 s) hold their pre-animation state through the full delay
+       window before snapping to their end frame. The visible effect
+       is a cascade of items at `opacity: 0` / translated for up to
+       several seconds before they all pop in. Setting delay to 0
+       collapses the wait so reduced-motion users see the final
+       state immediately. */
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
   ::view-transition-group(*),
