@@ -30,6 +30,16 @@ export class SeoService {
           route = route.firstChild;
         }
 
+        // Clear any previously-set `robots` meta tag on every navigation.
+        // The only routes that *should* be noindex are draft / future-dated
+        // blog posts (set by BlogPostSeoService after its async post data
+        // resolves) and routes that opt in explicitly (NotFoundComponent,
+        // ProjectDetailComponent's invalid-slug fallback). Without this
+        // reset, navigating from `/blog/some-draft` to `/about` left the
+        // draft's `noindex,nofollow` tag stuck on the document and the
+        // crawler treated `/about` as hidden.
+        this.setRobots(null);
+
         const seo = route.snapshot.data?.['seo'];
         if (seo?.['dynamicMeta']) return;
 
