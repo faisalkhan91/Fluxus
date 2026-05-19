@@ -244,9 +244,16 @@ export class MarkdownService {
         const langClass = langKey ? ` language-${escapeAttr(langKey)}` : '';
         return (
           `<pre tabindex="0">` +
-          // aria-live=polite so the swap to "Copied!" is announced; the
-          // delegated click handler in BlogPostComponent does the work.
-          `<button type="button" class="copy-btn" aria-live="polite" aria-label="Copy code to clipboard">Copy</button>` +
+          // The button label lives in an inner `<span class="copy-btn-
+          // label" aria-live="polite">`. Putting `aria-live` on the
+          // button itself would leave some screen readers (notably
+          // iOS VoiceOver) silently dropping the announcement —
+          // `aria-live` traditionally applies to a container that
+          // existed in the DOM *before* the mutation, and the button
+          // mutating its own attribute is a non-standard shape. The
+          // delegated click handler in BlogPostComponent toggles only
+          // the span's textContent so the announcement reliably fires.
+          `<button type="button" class="copy-btn" aria-label="Copy code to clipboard"><span class="copy-btn-label" aria-live="polite">Copy</span></button>` +
           `<code class="hljs${langClass}">${highlighted}</code>` +
           `</pre>\n`
         );
