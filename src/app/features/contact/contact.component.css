@@ -41,7 +41,15 @@
   padding: var(--space-3) var(--space-4);
   color: var(--text-primary);
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  /*
+    16 px floor — iOS Safari auto-zooms into any focused input whose
+    computed `font-size` is below 16 px, then leaves the page scaled
+    after blur, breaking the layout for the rest of the visit. This was
+    previously 0.9rem (≈ 14.4 px) and triggered the zoom on every tap.
+    Desktop visually reads barely different at 1rem; the cost of the
+    extra 1.6 px is invisible compared to the iOS papercut.
+  */
+  font-size: 1rem;
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
