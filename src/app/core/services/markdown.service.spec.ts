@@ -67,6 +67,10 @@ describe('MarkdownService renderer', () => {
     expect(html).toContain('class="copy-btn"');
     expect(html).toContain('aria-label="Copy code to clipboard"');
     expect(html).toContain('class="hljs language-typescript"');
+    // The "Copied!" announcement target is an inner span, not the
+    // button itself — VoiceOver on iOS drops `aria-live` on the
+    // mutating element. Only the span's textContent toggles.
+    expect(html).toContain('<span class="copy-btn-label" aria-live="polite">Copy</span>');
   });
 
   it('emits literal hljs span markup for known languages, never escaped HTML', () => {
