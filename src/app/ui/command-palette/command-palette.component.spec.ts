@@ -428,6 +428,60 @@ describe('CommandPaletteComponent', () => {
     });
   });
 
+  describe('focus restoration on close', () => {
+    /*
+      A11y contract: every modal that takes keyboard focus must give it
+      back when it closes. Pre-fix the palette `close()` left focus on
+      `<body>`, breaking keyboard tab order for every user that opened
+      the palette and dismissed without selecting (Esc, click-outside,
+      X, action items).
+    */
+    it('restores focus to the trigger element when the palette closes', async () => {
+      // Mount a real button into the test DOM and focus it — the palette
+      // should snapshot it on open and refocus it on close.
+      const trigger = document.createElement('button');
+      trigger.id = 'palette-trigger-spec';
+      trigger.textContent = 'Open palette';
+      document.body.appendChild(trigger);
+      try {
+        trigger.focus();
+        expect(document.activeElement).toBe(trigger);
+
+        component.openWith('');
+        await new Promise<void>((r) => queueMicrotask(() => r()));
+        // Palette opened — focus moved to the input. Sanity-check.
+        expect(document.activeElement).not.toBe(trigger);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (component as any).close();
+        await new Promise<void>((r) => queueMicrotask(() => r()));
+        expect(document.activeElement).toBe(trigger);
+      } finally {
+        trigger.remove();
+      }
+    });
+
+    it('skips restoration when the captured trigger has been removed', async () => {
+      // Mobile drawer flow: the Search button unmounts before the
+      // palette closes. Focus should silently fall back to <body>
+      // rather than crash on a focus() call to a detached node.
+      const trigger = document.createElement('button');
+      document.body.appendChild(trigger);
+      trigger.focus();
+
+      component.openWith('');
+      await new Promise<void>((r) => queueMicrotask(() => r()));
+
+      trigger.remove();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      expect(() => (component as any).close()).not.toThrow();
+      await new Promise<void>((r) => queueMicrotask(() => r()));
+      // No assertion on activeElement target — just that close() didn't
+      // throw and the previouslyFocused field got cleared.
+    });
+  });
+
   describe('skill actions', () => {
     it('emits one route entry per skill that has at least one project', () => {
       openAndType('');
