@@ -64,9 +64,10 @@ export class GithubMetaComponent {
     return [];
   });
   protected readonly pushedRelative = computed(() => relativeTime(this.meta()?.pushedAt));
-  protected readonly releaseRelative = computed(() =>
-    this.rel() ? relativeTime(this.rel()!.publishedAt) : '',
-  );
+  protected readonly releaseRelative = computed(() => {
+    const release = this.rel();
+    return release ? relativeTime(release.publishedAt) : '';
+  });
   protected readonly starsCompact = computed(() => compactNumber(this.meta()?.stars));
   protected readonly forksCompact = computed(() => compactNumber(this.meta()?.forks));
   protected readonly languagesLabel = computed(() => languagesBarLabel(this.languages()));
