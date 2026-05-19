@@ -74,6 +74,13 @@ export class ContactComponent {
   }
 
   onSubmit(): void {
+    // Re-entry guard. The form template fades out via `animate.leave`
+    // when stage flips off 'editing', and the leave animation keeps the
+    // submit button momentarily clickable. A fast double-tap on slow
+    // devices (or a queued event flushing after the stage change) could
+    // otherwise re-fire window.open with the same mailto: payload, which
+    // surfaces as a phantom second mail-client window on some platforms.
+    if (this.stage() !== 'editing') return;
     if (!this.contactForm.valid) return;
 
     const { name, email, subject, message } = this.contactForm.getRawValue();

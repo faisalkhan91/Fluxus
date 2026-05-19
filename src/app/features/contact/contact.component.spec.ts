@@ -99,6 +99,19 @@ describe('ContactComponent', () => {
     expect(url).toContain('John');
   });
 
+  it('ignores a re-entrant submit while stage is no longer "editing"', () => {
+    // The form template fades out via animate.leave when stage flips —
+    // during that window the submit button is technically still
+    // clickable. A queued event or fast double-tap could re-fire
+    // onSubmit() with the same mailto payload. The stage guard at the
+    // top of onSubmit() short-circuits the second call.
+    fillForm({ name: 'John', email: 'john@test.com', subject: 'Hi', message: 'Body' });
+    component.onSubmit();
+    expect(windowOpenSpy).toHaveBeenCalledOnce();
+    component.onSubmit();
+    expect(windowOpenSpy).toHaveBeenCalledOnce();
+  });
+
   it('shows the confirmation step (not success) after a valid submit', () => {
     fillForm({ name: 'John', email: 'john@test.com', subject: '', message: 'Test' });
     component.onSubmit();
