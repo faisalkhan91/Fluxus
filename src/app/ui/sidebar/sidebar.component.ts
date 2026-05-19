@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
 import type { ThemeDef } from '@core/services/theme.registry';
@@ -91,10 +92,12 @@ export class SidebarComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
-    const sub = this.router.events
-      .pipe(filter((evt) => evt instanceof NavigationEnd))
+    this.router.events
+      .pipe(
+        filter((evt) => evt instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe(() => queueMicrotask(() => this.updateIndicator()));
-    this.destroyRef.onDestroy(() => sub.unsubscribe());
     queueMicrotask(() => this.updateIndicator());
   }
 
