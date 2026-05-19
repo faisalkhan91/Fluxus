@@ -182,8 +182,8 @@ export class SkillsComponent {
     const supportsViewTransition =
       this.isBrowser &&
       'startViewTransition' in this.document &&
-      typeof (this.document as Document & { startViewTransition?: unknown })
-        .startViewTransition === 'function';
+      typeof (this.document as Document & { startViewTransition?: unknown }).startViewTransition ===
+        'function';
 
     if (supportsViewTransition && !prefersReducedMotion()) {
       (
@@ -205,9 +205,8 @@ export class SkillsComponent {
     const opts = this.viewOptions;
     const next = (currentIndex + dir + opts.length) % opts.length;
     this.setViewMode(opts[next].key);
-    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>(
-      '.skills-view-option',
-    );
+    const buttons =
+      this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.skills-view-option');
     buttons[next]?.focus();
   }
 

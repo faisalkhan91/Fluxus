@@ -634,5 +634,4 @@ export class BlogPostComponent {
     }, ms);
     this.timers.add(id);
   }
-
 }

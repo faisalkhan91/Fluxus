@@ -187,7 +187,11 @@ function setMetaRobots(html, content) {
  * crawler probe-fetch is the safer path than a wrong declaration.
  */
 function setDefaultOgImageDimensions(html) {
-  return setMetaProperty(setMetaProperty(setMetaProperty(html, 'og:image:width', '1200'), 'og:image:height', '630'), 'og:image:type', 'image/png');
+  return setMetaProperty(
+    setMetaProperty(setMetaProperty(html, 'og:image:width', '1200'), 'og:image:height', '630'),
+    'og:image:type',
+    'image/png',
+  );
 }
 
 /**
