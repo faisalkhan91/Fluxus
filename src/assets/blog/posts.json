@@ -1,34 +1,34 @@
 [
   {
     "slug": "six-things-i-learned-observability-pipeline-2026-05",
-    "title": "Six Things I Learned Migrating an Observability Pipeline",
+    "title": "Six things that bit me migrating an observability pipeline",
     "date": "2026-05-19",
-    "excerpt": "Six failure modes from a recent project moving 30-day SLA reporting off Splunk Summary Indexing onto a Lambda pipeline that aggregates in Coralogix and emits to Datadog. Each lesson is a symptom that didn't say what it meant, a root cause that took longer than it should have, and a fix small enough to be embarrassing in retrospect.",
+    "excerpt": "Six bugs from a recent migration of 30-day SLA reporting off Splunk Summary Indexing onto a Lambda pipeline that aggregates inside Coralogix and emits to Datadog. Each one is a layer that didn't say what it actually meant: the platform accepted the write but didn't store it, the 403 didn't mention scope, the compile error blamed the wrong line, the retry was invisible to the function.",
     "tags": ["Observability", "SRE", "Architecture", "Datadog", "Coralogix", "Lambda"],
     "readingTime": "9 min",
-    "wordCount": 1660,
+    "wordCount": 1670,
     "series": "Reporting Pipeline Notes",
     "seriesOrder": 1
   },
   {
     "slug": "why-we-didnt-use-kafka-2026-05",
-    "title": "Why We Didn't Use Kafka",
+    "title": "Why we didn't reach for Kafka",
     "date": "2026-06-02",
-    "excerpt": "A teammate asked if we'd considered Kafka for a reporting pipeline. The short answer is that queues solve message durability while we needed outcome durability, a different problem with a differently-shaped answer. Here's the 1:1 mapping that resolved the conversation.",
+    "excerpt": "A colleague asked, half-jokingly, whether we'd considered Kafka for a reporting pipeline. Kafka would have given us a substrate to operate without changing the primitive the pipeline actually depends on. Queues solve message durability; we needed outcome durability. A different problem with a differently-shaped answer, and a 1:1 mapping that surprised me when I drew it out.",
     "tags": ["Observability", "SRE", "Architecture", "Kafka", "S3", "AWS"],
     "readingTime": "7 min",
-    "wordCount": 1378,
+    "wordCount": 1317,
     "series": "Reporting Pipeline Notes",
     "seriesOrder": 2
   },
   {
     "slug": "self-healing-needs-a-human-in-the-loop-2026-05",
-    "title": "Why Self-Healing Pipelines Need a Human in the Loop",
+    "title": "Self-healing pipelines need a human in the loop",
     "date": "2026-06-16",
-    "excerpt": "Auto-recovering every gap sounds great until the auto-recoverer cascades into retry storms against a sick downstream. Three failure classes (transient, deterministic, systemic) each need a different response. The boundary between 'auto-recover' and 'page someone' is the hardest design problem.",
+    "excerpt": "Auto-recovery is the default the cloud-vendor blog posts sell, and it works for transient failures. On deterministic failures it generates retry storms that drown the logs. On systemic failures it amplifies the outage. Three failure classes, three different right answers, and a classification gate small enough that the implementation more or less writes itself.",
     "tags": ["Observability", "SRE", "Architecture", "Self-Healing", "Operations"],
     "readingTime": "7 min",
-    "wordCount": 1389,
+    "wordCount": 1363,
     "series": "Reporting Pipeline Notes",
     "seriesOrder": 3
   },
