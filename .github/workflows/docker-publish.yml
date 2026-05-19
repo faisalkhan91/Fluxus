@@ -195,7 +195,7 @@ jobs:
 
       - name: Upload Trivy SARIF to GitHub Security
         if: always()
-        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba # v4
         with:
           sarif_file: trivy-results.sarif
           category: trivy-image-scan
@@ -219,7 +219,7 @@ jobs:
       - name: Mint GitHub App token
         id: app-token
         if: ${{ vars.HOMELAB_BOT_APP_ID != '' }}
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           app-id: ${{ vars.HOMELAB_BOT_APP_ID }}
           private-key: ${{ secrets.HOMELAB_BOT_PRIVATE_KEY }}
