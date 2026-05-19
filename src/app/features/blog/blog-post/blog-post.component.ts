@@ -32,6 +32,7 @@ import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
 import { prefersReducedMotion } from '@shared/utils/motion.utils';
+import { blogPostUrl } from '@shared/utils/url.utils';
 import { IMAGE_DIMS } from '@core/services/image-dims.generated';
 
 /**
@@ -254,7 +255,7 @@ export class BlogPostComponent {
   readonly shareUrls = computed(() => {
     const post = this.meta();
     const slug = this.slug();
-    const url = encodeURIComponent(`${environment.siteUrl}/blog/${slug}`);
+    const url = encodeURIComponent(blogPostUrl(slug));
     const title = encodeURIComponent(post?.title ?? '');
     const summary = encodeURIComponent(post?.excerpt ?? '');
     return {
@@ -301,7 +302,7 @@ export class BlogPostComponent {
       await navigator.share({
         title: post.title,
         text: post.excerpt,
-        url: `${environment.siteUrl}/blog/${slug}`,
+        url: blogPostUrl(slug),
       });
     } catch (err) {
       // AbortError is the user dismissing the share sheet — not an error.
@@ -316,7 +317,7 @@ export class BlogPostComponent {
   protected async copyShareLink(): Promise<void> {
     const slug = this.slug();
     if (!slug) return;
-    const url = `${environment.siteUrl}/blog/${slug}`;
+    const url = blogPostUrl(slug);
 
     if (await copyToClipboard(url)) {
       this.linkCopied.set(true);

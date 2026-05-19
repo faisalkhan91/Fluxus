@@ -18,6 +18,7 @@ import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SeoService } from '@core/services/seo.service';
 import { slugify } from '@shared/utils/string.utils';
 import { environment } from '@env/environment';
+import { projectTagUrl } from '@shared/utils/url.utils';
 
 /**
  * `/projects/tag/:tag` — projects archive filtered by a single tag slug.
@@ -114,7 +115,7 @@ export class ProjectsTagComponent {
    * producing a wrong canonical URL like `/projects/tag/TypeScript`.
    */
   private updateMetaTags({ slug, label }: { slug: string; label: string }): void {
-    const url = `${environment.siteUrl}/projects/tag/${slug}`;
+    const url = projectTagUrl(slug);
     const title = `Projects tagged "${label}" - ${environment.siteName}`;
     const description = `Every project in Faisal Khan's portfolio tagged with "${label}".`;
 
