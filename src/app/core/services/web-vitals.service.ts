@@ -30,13 +30,22 @@ const IDLE_FALLBACK_MS = 2000;
   `window.requestIdleCallback` after the module has been imported still
   see their stub. Module-level const capture would freeze us into the
   jsdom default (no `requestIdleCallback` → 2 s `setTimeout`).
+
+  Returns the scheduling handle as a tagged union so callers can cancel
+  cleanly — the idle path uses `cancelIdleCallback`, the timeout path
+  uses `clearTimeout`, and the SSR no-op path returns null.
 */
-function scheduleIdle(cb: () => void): void {
+type ScheduleHandle =
+  | { kind: 'idle'; id: number }
+  | { kind: 'timeout'; id: ReturnType<typeof setTimeout> }
+  | null;
+
+function scheduleIdle(cb: () => void): ScheduleHandle {
   if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
-    window.requestIdleCallback(() => cb(), { timeout: IDLE_FALLBACK_MS });
-    return;
+    return { kind: 'idle', id: window.requestIdleCallback(() => cb(), { timeout: IDLE_FALLBACK_MS }) };
   }
-  setTimeout(cb, IDLE_FALLBACK_MS);
+  if (typeof setTimeout === 'undefined') return null;
+  return { kind: 'timeout', id: setTimeout(cb, IDLE_FALLBACK_MS) };
 }
 
 /**
@@ -54,6 +63,15 @@ export class WebVitalsService {
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private config = DEFAULT_CONFIG;
   private started = false;
+  /**
+   * Pending idle / timeout handle from `scheduleIdle`. Stored so a
+   * subsequent `start()` call (rare — only an HMR re-init or a
+   * test-bed reset would land here, since `started` already guards
+   * the normal path) can cancel the not-yet-fired registration
+   * before kicking a new one. Without this, an HMR cycle could
+   * register the web-vitals observers twice and double every beacon.
+   */
+  private idleHandle: ScheduleHandle = null;
 
   start(overrides: Partial<VitalsConfig> = {}): void {
     if (!this.isBrowser || this.started) return;
@@ -71,7 +89,8 @@ export class WebVitalsService {
       still captures every vitals metric (LCP, CLS, INP) since they all
       observe events that occur *after* registration via buffered entries.
     */
-    scheduleIdle(() => {
+    this.idleHandle = scheduleIdle(() => {
+      this.idleHandle = null;
       void this.register();
     });
   }
