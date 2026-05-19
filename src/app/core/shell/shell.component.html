@@ -62,7 +62,13 @@
   <ui-icon [name]="themeService.isDark() ? 'sun' : 'moon'" [size]="18" />
 </button>
 
-<ui-mobile-nav-pill [items]="navService.mobileNavItems" [menuItems]="navService.mobileMenuItems" />
+<ui-mobile-nav-pill
+  [items]="navService.mobileNavItems"
+  [menuItems]="navService.mobileMenuItems"
+  (paletteRequested)="onPaletteRequested()"
+  (themePickerRequested)="onThemePickerRequested()"
+  (resumeRequested)="onResumeDownload()"
+/>
 
 <ui-toast-region />
 <ui-command-palette />
