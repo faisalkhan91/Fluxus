@@ -14,6 +14,29 @@
   pointer-events: none;
 }
 
+/*
+  On mobile the bottom of the viewport is already occupied by the
+  floating nav pill, which sits at the same `bottom: space-4 +
+  safe-area-inset-bottom` anchor. Toasts have a higher `z-index`
+  (`--z-overlay` 400 vs `--z-nav-pill` 200), so they used to paint
+  on top of the pill — when an SW-update / error toast appeared the
+  user lost access to navigation until it dismissed.
+
+  Lift the toast region by the pill's height plus a `--space-3`
+  breathing gap so the two surfaces stack instead of overlapping.
+  Right-aligned still, just translated up so the pill stays
+  tappable beneath. Desktop is unaffected (the pill is `display:
+  none` ≥ 768 px, so we don't need to reserve room for it).
+*/
+@media (max-width: 767px) {
+  :host {
+    bottom: calc(
+      var(--space-4) + var(--nav-pill-height) + var(--space-3) +
+        env(safe-area-inset-bottom, 0px)
+    );
+  }
+}
+
 .toast {
   display: flex;
   align-items: flex-start;
