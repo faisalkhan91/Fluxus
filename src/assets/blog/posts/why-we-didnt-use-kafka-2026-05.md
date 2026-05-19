@@ -1,20 +1,14 @@
-# Why we didn't reach for Kafka
+# We skipped Kafka
 
-A few weeks into the project, a colleague asked, half-jokingly, whether we'd considered Kafka. The pipeline aggregates large windows of log data on a schedule, emits results to a metrics platform, and tries hard never to lose a window. Kafka is the canonical answer for "I have events I really don't want to lose." It's a fair question and one I got asked in some form three or four times before the architecture was settled.
+Queues solve message durability. We needed outcome durability. Same five boxes either way; the difference is who runs them. That's the post.
 
-The short answer: Kafka would have given us a substrate to operate without changing the primitive the pipeline actually depends on. The longer answer is the one I wanted to write down, because the framing it produced (queues solve message durability; we needed outcome durability) turned out to be the most useful sentence in the whole architecture.
+A few weeks into the project a colleague asked, half-jokingly, whether we'd considered Kafka. The pipeline aggregates large windows of log data on a schedule, emits results to a metrics platform, and tries hard never to lose a window. That's exactly the kind of system Kafka is the canonical answer for, and I got asked some version of the same question three or four times before the architecture settled.
 
-## Queue-shaped vocabulary
+This post is the longer version of the answer.
 
-When you say "durable pipeline" out loud, the words that come back are queue-shaped. Kafka. RabbitMQ. NATS Jetstream. SQS. The mental model is: events flow through a buffer, the buffer is durable, consumers pull at their own pace, and if a consumer fails the buffer holds the message until it succeeds. The buffer is the system of record for *what hasn't been processed yet*.
+## Same five boxes
 
-That model is great for a particular shape of problem: many small messages, fan-out to multiple consumer groups, replay-as-recovery. None of those described what we were doing.
-
-What we were doing: every minute, scheduling a few queries against an archive index. Each query produces a `(asset, window_start)` tuple, a one-hour aggregation result. The aggregation either landed in the metrics platform or it didn't. The question the pipeline has to answer (and the question dashboards, audit reports, and on-call runbooks ask) is *did this 1-hour window for asset X get processed?* That isn't message durability. It's outcome durability, and the difference shows up everywhere downstream.
-
-## The 1:1 mapping
-
-Here's the part that surprised me when I drew it out. The Kafka-based design and the design we actually shipped have the same number of moving parts. Every primitive Kafka would give you has a counterpart in our stack:
+Here's the part that surprised me when I drew it out: the Kafka design and the design we actually shipped have the same number of moving parts. Every primitive Kafka would give you has a counterpart in our stack.
 
 | Kafka primitive | What it does | Our equivalent | Who runs it |
 |---|---|---|---|
@@ -25,8 +19,6 @@ Here's the part that surprised me when I drew it out. The Kafka-based design and
 | Offset commit log | Records "this was completely processed" | `completed/<asset>/<window_start>.json` markers | already exists |
 | Consumer group rebalancer | Reassigns work when a consumer dies | Lambda concurrency manager | AWS, free |
 | DLQ | Catches messages the consumer can't process | SQS DLQ wired to async-invoke `on_failure` | already exists |
-
-Same five-or-six boxes, same correctness properties: at-least-once delivery from the producer, dedup at the consumer, terminal-state markers downstream. The architectural shape is identical. The difference is who runs the substrate.
 
 ```mermaid
 flowchart LR
@@ -50,13 +42,15 @@ flowchart LR
   end
 ```
 
+Same correctness properties either way: at-least-once delivery from the producer, dedup at the consumer, terminal-state markers downstream. The architectural shape is identical. The difference is who runs the substrate.
+
 The Kafka diagram has three boxes someone on the team is on the hook for: the broker fleet, the dedup table, and the partition strategy. Each is a multi-day operability problem at minimum. Brokers want monitoring. Dedup tables want TTL policies. Partition strategy wants thought about traffic patterns and consumer affinity. Every one of those costs is paid for the privilege of getting a primitive that the Lambda runtime already gives us for free, with semantics we've already validated for the rest of the stack.
 
 ## Outcome durability is a consumer-layer property
 
-Here's the framing that resolved the conversation. *Queues solve message durability ("this event is safely stored until somebody handles it"). We needed outcome durability ("this 1-hour window for asset X was processed exactly once").* Those are different problems with different shaped answers.
+What we were doing was scheduling a few queries against an archive index every minute. Each query produces a `(asset, window_start)` tuple, a one-hour aggregation result. The aggregation either landed in the metrics platform or it didn't. The question the pipeline has to answer (and the question dashboards, audit reports, and on-call runbooks ask) is *did this 1-hour window for asset X get processed?*
 
-Message durability lives at the transport layer. It's a property of the queue: the broker stores the message, the broker promises redelivery, the broker holds it until you ack. The consumer can be dumb about idempotency because the buffer is the system of record.
+That isn't message durability. Message durability lives at the transport layer; it's a property of the queue. The broker stores the message, the broker promises redelivery, the broker holds it until you ack. The consumer can be dumb about idempotency because the buffer is the system of record.
 
 Outcome durability lives at the consumer layer. The dedup state has to be keyed by something the consumer can compute (for us, `(asset, window_start)`), and the consumer has to check that state before doing work. The buffer's job is reduced to *deliver at least once*; the consumer is the system of record for whether the work happened.
 
