@@ -213,7 +213,7 @@
           <ui-icon name="github" [size]="20" />
           <div>
             <span class="info-label">GitHub</span>
-            <a [href]="profile.personalInfo().github" target="_blank" rel="noopener"
+            <a [href]="profile.personalInfo().github" target="_blank" rel="noopener noreferrer"
               >faisalkhan91</a
             >
           </div>
@@ -225,7 +225,7 @@
           <ui-icon name="linkedin" [size]="20" />
           <div>
             <span class="info-label">LinkedIn</span>
-            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener"
+            <a [href]="profile.personalInfo().linkedIn" target="_blank" rel="noopener noreferrer"
               >faisalkhan91</a
             >
           </div>
@@ -239,7 +239,7 @@
               <ui-icon [name]="link.icon" [size]="20" />
               <div>
                 <span class="info-label">{{ link.platform }}</span>
-                <a [href]="link.url" target="_blank" rel="noopener">{{ link.label }}</a>
+                <a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
               </div>
             </div>
           </ui-glass-card>
