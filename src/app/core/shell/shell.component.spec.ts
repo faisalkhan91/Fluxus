@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA, computed, signal } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, computed, signal } from '@angular/core';
+import { Router, provideRouter } from '@angular/router';
 import { ShellComponent } from './shell.component';
 import { MediaQueryService } from '../services/media-query.service';
 import { TabService } from '../services/tab.service';
@@ -169,5 +169,89 @@ describe('ShellComponent', () => {
     const openWithSpy = vi.spyOn(palette, 'openWith');
     component.onThemePickerRequested();
     expect(openWithSpy).toHaveBeenCalledWith('theme:');
+  });
+
+  describe('main-content focus on route navigation', () => {
+    /*
+      Configures a fresh TestBed with two real routes so we can drive the
+      Router and observe whether the post-NavigationEnd focus orchestration
+      moves focus onto `<main id="main-content" tabindex="-1">`. The
+      shared describe-level fixture above uses `provideRouter([])`, which
+      can't navigate, so we re-bootstrap inside this nested describe.
+    */
+    @Component({ template: '' })
+    class DummyComponent {}
+
+    let nestedFixture: ComponentFixture<ShellComponent>;
+    let nestedEl: HTMLElement;
+    let nestedRouter: Router;
+
+    beforeEach(async () => {
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [ShellComponent],
+        providers: [
+          provideRouter([
+            { path: '', component: DummyComponent },
+            { path: 'about', component: DummyComponent },
+            { path: 'projects', component: DummyComponent },
+          ]),
+          { provide: MediaQueryService, useValue: mockMedia },
+          { provide: TabService, useValue: mockTabService },
+          { provide: NavigationService, useValue: mockNavService },
+          { provide: ThemeService, useValue: mockThemeService },
+          { provide: BlogService, useValue: mockBlogService },
+        ],
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      }).compileComponents();
+
+      nestedRouter = TestBed.inject(Router);
+      nestedFixture = TestBed.createComponent(ShellComponent);
+      nestedFixture.detectChanges();
+      nestedEl = nestedFixture.nativeElement;
+    });
+
+    async function flushMicrotasks(): Promise<void> {
+      await Promise.resolve();
+    }
+
+    it('does not focus #main-content on the initial navigation', async () => {
+      // Cold-load focus belongs to the browser default (top of doc /
+      // :target). Forcing focus to main on the very first NavigationEnd
+      // would scroll-jump the page on first paint.
+      await nestedRouter.navigate(['/']);
+      await flushMicrotasks();
+      const main = nestedEl.querySelector('#main-content');
+      expect(document.activeElement).not.toBe(main);
+    });
+
+    it('focuses #main-content on subsequent path changes', async () => {
+      await nestedRouter.navigate(['/']);
+      await nestedRouter.navigate(['/about']);
+      await flushMicrotasks();
+      const main = nestedEl.querySelector('#main-content');
+      expect(document.activeElement).toBe(main);
+    });
+
+    it('does not refocus on a same-path fragment-only change', async () => {
+      // Pure-fragment changes (#section anchors) are handled by Angular's
+      // anchorScrolling — moving focus to main would yank the SR cursor
+      // away from the anchored heading the user just clicked toward.
+      await nestedRouter.navigate(['/']);
+      await nestedRouter.navigate(['/about']);
+      await flushMicrotasks();
+
+      // Move focus elsewhere so we can detect whether the next nav stole
+      // it back to main.
+      const skipLink = nestedEl.querySelector<HTMLAnchorElement>('.skip-link');
+      skipLink?.focus();
+      expect(document.activeElement).toBe(skipLink);
+
+      await nestedRouter.navigate(['/about'], { fragment: 'section-2' });
+      await flushMicrotasks();
+      // Focus should still be on the skip link (or elsewhere) — NOT on main.
+      const main = nestedEl.querySelector('#main-content');
+      expect(document.activeElement).not.toBe(main);
+    });
   });
 });
