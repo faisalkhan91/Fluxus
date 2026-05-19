@@ -792,6 +792,41 @@ button:focus-visible {
   border-radius: var(--radius-sm);
 }
 
+/*
+  Windows High Contrast / forced-colors mode strips background-image,
+  filter, and box-shadow declarations to reduce the rendered surface
+  to system colors. That leaves icon-only chrome (mobile nav pill,
+  tab-bar extension chips, skill badges) at risk of disappearing
+  entirely if their visibility relies on a tinted background alone.
+
+  This block is the cross-cutting safety net:
+
+    1. Force the focus ring to the system `Highlight` color so it stays
+       maximally visible regardless of the per-theme `--focus-ring`
+       token (which may be a translucent rgba() the browser remaps
+       inconsistently).
+    2. Ensure interactive icon containers retain a 1px border in
+       `ButtonText` so shape and tap-target remain readable even if
+       the gradient/translucent fill is stripped.
+    3. Reset `forced-color-adjust` to `auto` on the `.skip-link` so it
+       uses system colors instead of its custom palette — otherwise
+       a high-contrast user might see white-on-white when they
+       activate the skip link.
+*/
+@media (forced-colors: active) {
+  :is(a, button, [role='button']):focus-visible {
+    outline-color: Highlight;
+  }
+  :is(.icon-button, .mobile-nav-pill button, .tab-bar button, .skill-badge):not(:disabled) {
+    border: 1px solid ButtonText;
+  }
+  .skip-link {
+    forced-color-adjust: auto;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+}
+
 img {
   display: block;
   max-width: 100%;
