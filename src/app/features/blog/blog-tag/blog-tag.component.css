@@ -117,14 +117,28 @@
 }
 
 @media (max-width: 640px) {
+  /*
+    Mobile mirrors the blog index featured hero — cover/sigil banner
+    on top, body below. Same geometry as `.post-card` rules in
+    `blog.component.css` (16:9 capped at 160 px tall). See that file
+    for the full rationale; duplicated here per the per-component-CSS
+    convention noted in the thumb rule above.
+  */
+  .post-card {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
   .post-card-thumb,
   .post-card-sigil {
-    width: 64px;
-    height: 64px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-height: 160px;
   }
 
   .post-card-sigil {
-    font-size: 0.55rem;
+    font-size: 0.85rem;
   }
 }
 

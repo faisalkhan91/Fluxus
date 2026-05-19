@@ -295,18 +295,37 @@
 
 @media (max-width: 640px) {
   /*
-    Phones drop the thumb to 64 × 64 so the card body still has
-    reading-width room. No vertical stacking — that would push the
-    title below the fold on cramped viewports.
+    Mobile mirrors the featured hero's stacked treatment: cover (or
+    sigil) becomes a full-width banner on top, body flows underneath.
+    The earlier 64 × 64 left-thumb at this viewport felt cramped —
+    a tiny square competing with the title and excerpt for the same
+    horizontal column. Banner-on-top gives the cover proper visual
+    weight while keeping the body at full reading width.
+
+    `aspect-ratio: 16 / 9` + `max-height: 160px` matches the featured
+    hero's mobile geometry but caps lower (160 vs 220 px) so secondary
+    cards stay visually subordinate. `height: auto` lets the
+    aspect-ratio compute the height from the now-100% width.
   */
+  .post-card {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
   .post-card-thumb,
   .post-card-sigil {
-    width: 64px;
-    height: 64px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-height: 160px;
   }
 
   .post-card-sigil {
-    font-size: 0.55rem;
+    /* Bumped from 0.62 rem (sized for the 96 × 96 desktop tile) to
+       0.85 rem so the IDE sigil reads cleanly at banner-width — the
+       wider plate would otherwise leave the mono text floating in a
+       sea of glass. */
+    font-size: 0.85rem;
   }
 }
 
