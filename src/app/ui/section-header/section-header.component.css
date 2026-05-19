@@ -62,6 +62,30 @@
   border-radius: var(--radius-pill);
   margin-top: var(--space-3);
   box-shadow: var(--shadow-accent-glow);
+  /*
+    Draws the bar in from 0 → full width on mount. Without this the
+    bar paints fully-formed while the H1 / H2 above it animates in
+    via the page's `enter-fade-up` choreography — the bar reads as
+    pre-painted while everything around it lands in motion.
+    `transform-origin: left` keeps the line growing rightward from
+    the column edge (matches the heading's left alignment), and
+    keeping the animation on `transform` (not `width`) means the
+    growth happens on the GPU compositor without invalidating
+    layout. 350 ms with a slight delay lets the heading's fade-up
+    settle first so the line draws in *after* the title arrives.
+  */
+  transform: scaleX(1);
+  transform-origin: left center;
+  animation: accent-line-draw 350ms var(--ease-decelerate) 80ms both;
+}
+
+@keyframes accent-line-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 /* H1 wears a longer accent-line so the additional hierarchy signal
