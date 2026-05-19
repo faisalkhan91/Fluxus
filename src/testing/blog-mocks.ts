@@ -3,6 +3,34 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
 import type { BlogPost } from '@shared/models/blog-post.model';
 
+/**
+ * Returns a minimal `BlogPost` with sensible defaults that satisfy the
+ * model's required fields. Mirrors `createMockProject` /
+ * `createMockGithubMeta` in `project-mocks.ts` — specs only spell out
+ * the fields they actually assert against, so a new optional field on
+ * the model doesn't require touching every consumer spec.
+ *
+ * Use this for one-off fixtures where the static `MOCK_POSTS` array
+ * doesn't fit; keep `MOCK_POSTS` for callers that want a fixed three-
+ * post catalog (blog list rendering, sorting, tag aggregation).
+ *
+ * The `tags` array is defensively copied per call so specs that mutate
+ * the array don't leak across tests — matching the same per-call-fresh
+ * pattern createMockGithubMeta uses for its nested arrays.
+ */
+export function createMockBlogPost(overrides: Partial<BlogPost> = {}): BlogPost {
+  const { tags: tagOverride, ...rest } = overrides;
+  return {
+    slug: 'test-post',
+    title: 'Test Post',
+    date: '2026-01-01',
+    excerpt: 'Test excerpt',
+    tags: tagOverride ? [...tagOverride] : [],
+    readingTime: '3 min',
+    ...rest,
+  };
+}
+
 export const MOCK_POSTS: BlogPost[] = [
   {
     slug: 'first-post',
