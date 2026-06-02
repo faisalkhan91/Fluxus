@@ -1,4 +1,5 @@
 import { test, expect, seedTheme, enableReducedMotion, PRERENDERED_ROUTES } from './fixtures';
+import type { Page } from '@playwright/test';
 import type { Theme } from './fixtures';
 
 /**
@@ -18,15 +19,23 @@ import type { Theme } from './fixtures';
  */
 
 /**
- * Routes-wide coverage stays restricted to the two Crimson themes (the
- * site's brand defaults) so the baseline footprint doesn't fan out from
- * `routes × 2 = 18` snapshots to `routes × 6 = 54`. Describe block labels
- * are retained as `'dark'` / `'light'` so the existing committed PNG
- * baselines under `visual.spec.ts-snapshots/` remain valid after the
- * registry refactor — only the seeded id changes (legacy `'dark'` /
- * `'light'` localStorage values are migrated by the inline pre-paint
- * script to the new ids, but seeding the new ids directly skips that
- * round-trip and is more representative of the production flow).
+ * Full-page snapshot with the known-volatile regions masked (the reading
+ * progress bar animates; post dates are date-formatted and not a design
+ * concern). 2% per-pixel tolerance absorbs sub-pixel font/AA noise.
+ */
+async function shot(page: Page) {
+  await expect(page).toHaveScreenshot({
+    fullPage: true,
+    mask: [page.locator('.reading-progress'), page.locator('.post-date')],
+    maxDiffPixelRatio: 0.02,
+    animations: 'disabled',
+  });
+}
+
+/**
+ * The two Crimson brand themes get the full route matrix — they're the
+ * defaults the overwhelming majority of visitors see, so every prerendered
+ * surface is pixel-locked here.
  */
 const PRIMARY_THEMES: { label: string; id: Theme }[] = [
   { label: 'dark', id: 'crimson-dark' },
@@ -45,14 +54,7 @@ for (const theme of PRIMARY_THEMES) {
         await page.goto(route, { waitUntil: 'networkidle' });
         // Pause web fonts shimmer + skeleton animations long enough to settle.
         await page.waitForTimeout(250);
-        await expect(page).toHaveScreenshot({
-          fullPage: true,
-          // Mask known-volatile regions so timestamps / progress bars don't
-          // produce diffs on every run.
-          mask: [page.locator('.reading-progress'), page.locator('.post-date')],
-          maxDiffPixelRatio: 0.02,
-          animations: 'disabled',
-        });
+        await shot(page);
       });
     }
 
@@ -63,43 +65,56 @@ for (const theme of PRIMARY_THEMES) {
     test('route /projects?view=list matches baseline', async ({ page }) => {
       await page.goto('/projects?view=list', { waitUntil: 'networkidle' });
       await page.waitForTimeout(250);
-      await expect(page).toHaveScreenshot({
-        fullPage: true,
-        mask: [page.locator('.reading-progress'), page.locator('.post-date')],
-        maxDiffPixelRatio: 0.02,
-        animations: 'disabled',
-      });
+      await shot(page);
+    });
+
+    // The wildcard 404 surface (glitch heading, terminal echo, suggestion
+    // cards). Served as the CSR shell, so we hit a deterministic bogus path
+    // and let the SPA render NotFoundComponent.
+    test('route /404 matches baseline', async ({ page }) => {
+      await page.goto('/this-route-does-not-exist', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(250);
+      await shot(page);
     });
   });
 }
 
 /**
- * Hero-only coverage for the additional theme palettes. Catches gross
- * token regressions (a missing `--surface-base`, a broken contrast pair)
- * without exploding the baseline footprint to `routes × 6`. If a future
- * change touches a theme-sensitive layout outside the hero (a new tag
- * pill on /blog, a full-bleed callout on /about), add a one-off
- * snapshot against that single route here rather than expanding the
- * loop to all of PRERENDERED_ROUTES.
+ * The other eight registered themes get a focused three-route set rather than
+ * the full matrix — enough to catch the surfaces the theme tokens actually
+ * drive without exploding the baseline footprint:
+ *   - `/` (hero): accent-as-text, muted nav labels, latest-post cards.
+ *   - `/projects`: per-theme card chrome + the WebP project imagery.
+ *   - a representative blog post: per-theme `hljs` syntax-token palette.
+ * Per-theme WCAG-AA contrast itself is enforced exhaustively by the all-theme
+ * axe pass in `a11y.spec.ts`; these snapshots guard the rendered composition.
  */
-const ADDITIONAL_THEMES: Theme[] = ['tokyo-night', 'solarized-light'];
+const SECONDARY_THEMES: Theme[] = [
+  'tokyo-night',
+  'solarized-light',
+  'nord',
+  'ayu-dark',
+  'rose-pine',
+  'night-owl',
+  'horizon',
+  'github-light',
+];
 
-for (const themeId of ADDITIONAL_THEMES) {
-  test.describe(`visual regression — ${themeId} (hero only)`, () => {
+const SECONDARY_ROUTES = ['/', '/projects', '/blog/angular-signals-state-management'] as const;
+
+for (const themeId of SECONDARY_THEMES) {
+  test.describe(`visual regression — ${themeId}`, () => {
     test.beforeEach(async ({ page }) => {
       await enableReducedMotion(page);
       await seedTheme(page, themeId);
     });
 
-    test('hero matches baseline', async ({ page }) => {
-      await page.goto('/', { waitUntil: 'networkidle' });
-      await page.waitForTimeout(250);
-      await expect(page).toHaveScreenshot({
-        fullPage: true,
-        mask: [page.locator('.reading-progress'), page.locator('.post-date')],
-        maxDiffPixelRatio: 0.02,
-        animations: 'disabled',
+    for (const route of SECONDARY_ROUTES) {
+      test(`route ${route} matches baseline`, async ({ page }) => {
+        await page.goto(route, { waitUntil: 'networkidle' });
+        await page.waitForTimeout(250);
+        await shot(page);
       });
-    });
+    }
   });
 }
