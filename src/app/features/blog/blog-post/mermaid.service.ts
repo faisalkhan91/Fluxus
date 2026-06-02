@@ -157,6 +157,14 @@ export class MermaidService {
     }
     if (this.restartRequested) {
       this.restartRequested = false;
+      // A schedule (in practice, a theme toggle) landed mid-render. The
+      // figures this pass produced AFTER the toggle carry the old palette
+      // and are now `<figure>`s, not `.mermaid-source` placeholders — so a
+      // bare re-run of renderIfNeeded would skip them and leave stale-theme
+      // diagrams in a new-theme document. Revert EVERY rendered figure back
+      // to a placeholder first so the restart re-renders the whole set
+      // against the current theme.
+      this.revertIfRendered(root);
       this.scheduleRender(root);
     }
   }

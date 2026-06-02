@@ -201,30 +201,50 @@ describe('MermaidService', () => {
       expect(root.querySelectorAll('.mermaid-source[data-mermaid-source]')).toHaveLength(0);
     });
 
-    it('coalesces a mid-render schedule into a single deferred restart', async () => {
+    it('coalesces mid-render schedules into ONE restart (no parallel renders)', async () => {
       const root = document.createElement('div');
       root.appendChild(makePlaceholder('A-->B;'));
 
-      // First scheduleRender — fires + reaches mermaid.render() which
-      // awaits resolveRender.
       service.scheduleRender(root);
       await vi.runAllTimersAsync();
       expect(mockedRender).toHaveBeenCalledTimes(1);
 
-      // Two more schedules during the in-flight render — the service
-      // should set `restartRequested` on the first and idempotently
-      // re-set it on the second, NOT spawn parallel renders.
+      // Two schedules during the in-flight render must NOT spawn parallel
+      // renders — they coalesce into a single `restartRequested`.
       service.scheduleRender(root);
       service.scheduleRender(root);
       expect(mockedRender).toHaveBeenCalledTimes(1);
+    });
 
-      // Resolve the original render. The deferred restart kicks in,
-      // finds no remaining placeholders (the figure replaced them), and
-      // short-circuits — so the call count stays at exactly one.
+    it('restart reverts mid-pass figures and re-renders them (theme-toggle correctness)', async () => {
+      // Regression for the theme-toggle-during-render race: a figure
+      // produced mid-pass is no longer a `.mermaid-source` placeholder, so
+      // a bare restart would skip it and leave a stale-palette diagram. The
+      // restart must revert EVERY figure and re-render the whole set.
+      const root = document.createElement('div');
+      root.appendChild(makePlaceholder('A-->B;'));
+
+      service.scheduleRender(root);
+      await vi.runAllTimersAsync();
+      expect(mockedRender).toHaveBeenCalledTimes(1);
+
+      // Simulate a theme toggle landing mid-render (the component would call
+      // revertIfRendered + scheduleRender; here the in-flight figure hasn't
+      // been created yet, so just request the restart).
+      service.scheduleRender(root);
+
+      // Resolve the in-flight render → figure created with the OLD palette.
       resolveRender?.({ svg: '<svg id="first"></svg>' });
       await vi.runAllTimersAsync();
+      // The restart reverted that figure and re-rendered it: a SECOND render.
+      expect(mockedRender).toHaveBeenCalledTimes(2);
 
-      expect(mockedRender).toHaveBeenCalledTimes(1);
+      // Resolve the restart's render; end state is exactly one figure with
+      // no orphaned placeholder left behind.
+      resolveRender?.({ svg: '<svg id="second"></svg>' });
+      await vi.runAllTimersAsync();
+      expect(root.querySelectorAll('figure.mermaid')).toHaveLength(1);
+      expect(root.querySelectorAll('.mermaid-source[data-mermaid-source]')).toHaveLength(0);
     });
   });
 });
