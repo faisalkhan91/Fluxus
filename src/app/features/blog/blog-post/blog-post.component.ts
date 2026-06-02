@@ -9,12 +9,15 @@ import {
   DestroyRef,
   ElementRef,
   afterNextRender,
+  PLATFORM_ID,
+  TransferState,
+  makeStateKey,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { httpResource } from '@angular/common/http';
-import { DOCUMENT, NgOptimizedImage } from '@angular/common';
+import { DOCUMENT, NgOptimizedImage, isPlatformServer } from '@angular/common';
 import { GlassPanelComponent } from '@ui/glass-panel/glass-panel.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
@@ -58,6 +61,18 @@ function stripLeadingH1(md: string): string {
   return [...lines.slice(0, i), ...lines.slice(j)].join('\n');
 }
 
+/** Rendered markdown body + extracted table of contents. */
+type RenderedPost = ReturnType<MarkdownService['renderWithToc']>;
+
+const EMPTY_RENDER: RenderedPost = { html: '', toc: [] };
+
+/**
+ * Per-slug TransferState key for the server-rendered markdown. The prerender
+ * pass writes the parsed result here so the client can reuse it instead of
+ * re-running marked + highlight.js on the hydration frame.
+ */
+const renderStateKey = (slug: string) => makeStateKey<RenderedPost>(`blog-render:${slug}`);
+
 @Component({
   selector: 'app-blog-post',
   templateUrl: './blog-post.component.html',
@@ -86,6 +101,8 @@ export class BlogPostComponent {
   private blogSeo = inject(BlogPostSeoService);
   private mermaid = inject(MermaidService);
   private document = inject(DOCUMENT);
+  private transferState = inject(TransferState);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
   /**
    * Reference to the `.post-layout` wrapper, populated by the first
@@ -140,7 +157,28 @@ export class BlogPostComponent {
    * line is examined and only when it matches `^#\s+`, so mid-document H1
    * usage (rare, but legal) is preserved.
    */
-  private readonly rendered = computed(() => {
+  private readonly rendered = computed<RenderedPost>(() => {
+    const slug = this.slug();
+
+    /*
+      Skip the client-side re-parse. marked + the synchronous highlight.js
+      pass already ran during prerender; serialising the result into
+      TransferState lets the client reuse it instead of re-running the whole
+      graph on the hydration frame (a TBT/long-task spike on code-heavy posts,
+      worst on throttled mobile). The render is deterministic, so the cached
+      HTML matches the prerendered DOM exactly and hydration stays clean.
+      `remove` frees the entry once consumed so it can't leak across an
+      in-app navigation to another post.
+    */
+    if (!this.isServer && slug) {
+      const key = renderStateKey(slug);
+      if (this.transferState.hasKey(key)) {
+        const cached = this.transferState.get(key, EMPTY_RENDER);
+        this.transferState.remove(key);
+        return cached;
+      }
+    }
+
     /*
       `httpResource.value()` *throws* when the resource is in an error
       state — the API surfaces failures imperatively rather than via a
@@ -150,10 +188,13 @@ export class BlogPostComponent {
       uncaught exception out of every effect that depends on
       `content()` / `rendered()`.
     */
-    if (this.postBody.error()) return { html: '', toc: [] };
+    if (this.postBody.error()) return EMPTY_RENDER;
     const raw = this.postBody.value();
-    if (!raw) return { html: '', toc: [] };
-    return this.md.renderWithToc(stripLeadingH1(raw));
+    if (!raw) return EMPTY_RENDER;
+    const result = this.md.renderWithToc(stripLeadingH1(raw));
+    // Publish the parse for the client to reuse (prerender only).
+    if (this.isServer && slug) this.transferState.set(renderStateKey(slug), result);
+    return result;
   });
 
   readonly content = computed(() => this.rendered().html);
