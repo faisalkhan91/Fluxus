@@ -52,13 +52,26 @@ test.describe('INP — blog post', () => {
       w.__eventObserver.observe({ type: 'event', buffered: true, durationThreshold: 16 });
     });
 
-    // Scroll the reading pane a few times — the rAF-throttled progress
-    // handler is the most likely INP regression source on this page.
-    const scroller = page.locator('main.content');
+    // Scroll the document a few times with a real wheel gesture — the
+    // rAF-throttled reading-progress handler is the most likely INP
+    // regression source on this page. The *document* is the real scroller:
+    // the column-flex shell lets `main.content` grow rather than overflow
+    // (see the note in styles.css), so el.scrollBy('main.content') moves
+    // nothing and would silently exercise no handler. A wheel gesture over
+    // the page drives both the JS fallback handler and the CSS scroll
+    // timeline.
+    await page.mouse.move(400, 400);
+    const scrollBefore = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0);
     for (let i = 0; i < 5; i++) {
-      await scroller.evaluate((el, dy) => el.scrollBy({ top: dy }), 600);
+      await page.mouse.wheel(0, 600);
       await page.waitForTimeout(120);
     }
+    const scrollAfter = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0);
+    // Prove the gesture actually moved the page. Without this, an empty
+    // event-timing buffer below is ambiguous between "all handlers fast"
+    // and "nothing scrolled at all" — the original spec scrolled the wrong
+    // element and passed trivially on the latter.
+    expect(scrollAfter, 'wheel input should scroll the document').toBeGreaterThan(scrollBefore);
 
     // Click each of the share buttons. Most are external <a target=_blank>
     // — Playwright auto-handles popup-blocked clicks; the click handler
@@ -80,10 +93,10 @@ test.describe('INP — blog post', () => {
     });
 
     if (durations.length === 0) {
-      // PerformanceEventTiming requires the interaction to be "slow enough"
-      // to be recorded (durationThreshold). An empty buffer is a *good*
-      // signal — it means every handler resolved well under 16 ms.
-      expect(durations.length).toBe(0);
+      // PerformanceEventTiming only records interactions slower than the
+      // 16 ms durationThreshold. Now that the scroll assertion above proves
+      // we drove real input, an empty buffer is an unambiguous *good* signal
+      // — every handler resolved under 16 ms.
       return;
     }
 
