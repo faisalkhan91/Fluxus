@@ -1,22 +1,35 @@
 import AxeBuilder from '@axe-core/playwright';
 import { PRERENDERED_ROUTES, expect, seedTheme, test, type Theme } from './fixtures';
 
-const THEMES: Theme[] = ['dark', 'light'];
+/**
+ * Every registered theme is exercised. axe runs per-theme because contrast
+ * is a per-palette property: a structural pass on one theme says nothing
+ * about another's token values.
+ */
+const THEMES: Theme[] = [
+  'crimson-dark',
+  'crimson-light',
+  'tokyo-night',
+  'solarized-light',
+  'nord',
+  'ayu-dark',
+  'rose-pine',
+  'night-owl',
+  'horizon',
+  'github-light',
+];
 
 /**
- * color-contrast is now ENFORCED on the default crimson themes. It was
- * previously disabled on the assumption that glassmorphism / backdrop-blur
- * surfaces produced false positives — but a Phase-4 audit (axe across every
- * route, both themes) found that assumption masked REAL failures: the accent
- * red used as text (links, tag pills, active nav labels) sat at 3.4–4.2:1.
- * Those are fixed via a per-theme `--text-accent` token in styles.css, and
- * the glass surfaces themselves come back clean (axe resolves the composited
- * canvas). Keeping the rule on locks the fix in.
- *
- * The `THEMES` below cover crimson dark/light only. The other registered
- * themes (tokyo-night, nord, solarized-light, …) still carry pre-existing
- * contrast debt in their muted-text + syntax-highlight palettes; broadening
- * this loop to all themes is tracked as a follow-up once those are tuned.
+ * color-contrast is ENFORCED across all themes. It was previously disabled
+ * on the assumption that glassmorphism / backdrop-blur surfaces produced
+ * false positives — but a Phase-4 audit (axe across every route, every
+ * theme) found that assumption masked REAL failures: accent-as-text at
+ * 3.4–4.2:1, muted labels that lost contrast over elevated glass, and
+ * several syntax-highlight tokens below AA on light surfaces. All are fixed
+ * in styles.css (per-theme `--text-accent`, bumped `--text-muted`, darkened/
+ * lightened hljs tokens); axe resolves the composited glass canvas, so the
+ * surfaces themselves come back clean. Keeping the rule on, on every theme,
+ * locks the fix in and catches any new palette from regressing.
  */
 const DISABLED_RULES: string[] = [];
 
