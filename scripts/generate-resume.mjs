@@ -10,6 +10,7 @@ const ACCENT = '#c92a2a';
 const TEXT = '#1a1a1a';
 const MUTED = '#555555';
 const RULE = '#cccccc';
+const LINK = '#2563eb';
 
 const MARGIN = 48;
 const PAGE_WIDTH = 612;
@@ -18,11 +19,25 @@ const COL_GAP = 24;
 const LEFT_COL = CONTENT_WIDTH * 0.62;
 const RIGHT_COL = CONTENT_WIDTH - LEFT_COL - COL_GAP;
 
+// Mirrors yearsOfExperience() in src/app/shared/utils/career.utils.ts
+// (CAREER_START = May 2013). Kept as a local copy because a plain .mjs
+// build script can't import the .ts util without a transpile step; the
+// start month + calendar-diff math are matched so the resume never
+// disagrees with the site by a year at a month boundary.
+const CAREER_START = new Date(2013, 4); // May 2013
 const yearsOfExperience = () => {
-  const start = new Date(2013, 5, 1);
-  return Math.floor((Date.now() - start.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+  const now = new Date();
+  let years = now.getFullYear() - CAREER_START.getFullYear();
+  if (now.getMonth() < CAREER_START.getMonth()) years--;
+  return years;
 };
 
+// Resume content is an intentionally CURATED subset of the canonical data
+// in src/app/core/services/{experience,profile,certifications}-data.service.ts
+// — early-career / intern / research roles are condensed and summaries are
+// rewritten in a tighter resume register. It is deliberately NOT generated
+// from those services; keep the two in rough sync by hand when the live
+// data changes.
 const experience = [
   {
     company: 'SoFi',
@@ -108,7 +123,7 @@ const certifications = [
   'AWS Certified Cloud Practitioner',
   'Azure Data Fundamentals',
   'Azure AI Fundamentals',
-  'Azure Security & Compliance Fundamentals',
+  'Security, Compliance, and Identity Fundamentals',
   'Azure Fundamentals',
 ];
 
@@ -117,32 +132,64 @@ const education = [
   { degree: 'B.Tech. Electronics & Telecom', school: 'VIT Pune, India', year: '2013' },
 ];
 
-function drawRule(doc, y) {
+const links = [
+  { label: 'Portfolio', url: 'https://faisalkhan.dpdns.org' },
+  { label: 'GitHub', url: 'https://github.com/faisalkhan91' },
+  { label: 'LinkedIn', url: 'https://linkedin.com/in/faisalkhan91' },
+  { label: 'Credly', url: 'https://credly.com/users/faisalkhan91' },
+];
+
+/** Draw a 0.5pt rule from (x, y) spanning `width`; returns the y below it. */
+function rule(doc, x, y, width) {
   doc
-    .moveTo(MARGIN, y)
-    .lineTo(PAGE_WIDTH - MARGIN, y)
+    .moveTo(x, y)
+    .lineTo(x + width, y)
     .strokeColor(RULE)
     .lineWidth(0.5)
     .stroke();
-  return y + 8;
+  return y + 6;
 }
 
-function sectionHeading(doc, title) {
+/**
+ * Accent uppercase section heading + underline rule at an explicit column
+ * position. Returns the y below the rule so callers chain content. Used for
+ * both the left (Experience) and right (Skills/Certs/Education/Links)
+ * columns so the heading treatment lives in one place.
+ */
+function columnHeading(doc, x, y, width, title) {
   doc
     .fontSize(10)
     .fillColor(ACCENT)
     .font('Helvetica-Bold')
-    .text(title.toUpperCase(), MARGIN, doc.y, {
-      characterSpacing: 1.5,
-    });
-  doc.moveDown(0.3);
-  return drawRule(doc, doc.y);
+    .text(title.toUpperCase(), x, y, { characterSpacing: 1.5, width });
+  return rule(doc, x, doc.y + 3, width);
+}
+
+/** Render a plain-string list (skills, certs) in the right column. */
+function textList(doc, x, startY, width, items, size) {
+  let y = startY;
+  for (const item of items) {
+    doc.fontSize(size).fillColor(TEXT).font('Helvetica').text(item, x, y, { width });
+    y = doc.y + 1;
+  }
+  return y;
+}
+
+/** Index of the current (last) buffered page. Requires bufferPages: true. */
+function currentPageIndex(doc) {
+  const range = doc.bufferedPageRange();
+  return range.start + range.count - 1;
 }
 
 function generate() {
+  // bufferPages lets us draw the left column (which may spill onto a second
+  // page) and then jump BACK to the page where the two-column block began to
+  // anchor the right column — without it, an overflowing left column resets
+  // doc.y onto a new page and the right column paints over the experience.
   const doc = new PDFDocument({
     size: 'LETTER',
     margins: { top: 40, bottom: 36, left: MARGIN, right: MARGIN },
+    bufferPages: true,
     info: {
       Title: 'Faisal Khan - Resume',
       Author: 'Faisal Khan',
@@ -150,7 +197,8 @@ function generate() {
     },
   });
 
-  doc.pipe(createWriteStream(OUTPUT));
+  const stream = createWriteStream(OUTPUT);
+  doc.pipe(stream);
 
   // --- Header ---
   doc
@@ -178,7 +226,7 @@ function generate() {
     );
 
   doc.moveDown(0.6);
-  drawRule(doc, doc.y);
+  rule(doc, MARGIN, doc.y, CONTENT_WIDTH);
   doc.moveDown(0.1);
 
   // --- Summary ---
@@ -197,27 +245,12 @@ function generate() {
 
   // --- Two-column layout ---
   const twoColStartY = doc.y;
+  const startPageIdx = currentPageIndex(doc);
 
-  // === LEFT COLUMN: Experience ===
-  doc.y = twoColStartY;
-  doc
-    .fontSize(10)
-    .fillColor(ACCENT)
-    .font('Helvetica-Bold')
-    .text('EXPERIENCE', MARGIN, doc.y, { characterSpacing: 1.5, width: LEFT_COL });
-  doc.moveDown(0.3);
-
-  doc
-    .moveTo(MARGIN, doc.y)
-    .lineTo(MARGIN + LEFT_COL, doc.y)
-    .strokeColor(RULE)
-    .lineWidth(0.5)
-    .stroke();
-  doc.y += 6;
+  // === LEFT COLUMN: Experience (drawn first; may paginate) ===
+  doc.y = columnHeading(doc, MARGIN, twoColStartY, LEFT_COL, 'Experience');
 
   for (const job of experience) {
-    const entryStartY = doc.y;
-
     doc
       .fontSize(9)
       .fillColor(TEXT)
@@ -239,127 +272,67 @@ function generate() {
   }
 
   const leftColEndY = doc.y;
+  const leftEndPageIdx = currentPageIndex(doc);
 
-  // === RIGHT COLUMN: Skills, Certs, Education ===
+  // === RIGHT COLUMN: anchored back to the two-column start page ===
   const rightX = MARGIN + LEFT_COL + COL_GAP;
+  doc.switchToPage(startPageIdx);
   let rightY = twoColStartY;
 
   // Skills
-  doc
-    .fontSize(10)
-    .fillColor(ACCENT)
-    .font('Helvetica-Bold')
-    .text('SKILLS', rightX, rightY, { characterSpacing: 1.5, width: RIGHT_COL });
-  rightY = doc.y + 3;
-
-  doc
-    .moveTo(rightX, rightY)
-    .lineTo(rightX + RIGHT_COL, rightY)
-    .strokeColor(RULE)
-    .lineWidth(0.5)
-    .stroke();
-  rightY += 6;
-
-  for (const skill of skills) {
-    doc.fontSize(8).fillColor(TEXT).font('Helvetica').text(skill, rightX, rightY, {
-      width: RIGHT_COL,
-    });
-    rightY = doc.y + 1;
-  }
-
-  rightY += 8;
+  rightY = columnHeading(doc, rightX, rightY, RIGHT_COL, 'Skills');
+  rightY = textList(doc, rightX, rightY, RIGHT_COL, skills, 8) + 8;
 
   // Certifications
-  doc
-    .fontSize(10)
-    .fillColor(ACCENT)
-    .font('Helvetica-Bold')
-    .text('CERTIFICATIONS', rightX, rightY, { characterSpacing: 1.5, width: RIGHT_COL });
-  rightY = doc.y + 3;
-
-  doc
-    .moveTo(rightX, rightY)
-    .lineTo(rightX + RIGHT_COL, rightY)
-    .strokeColor(RULE)
-    .lineWidth(0.5)
-    .stroke();
-  rightY += 6;
-
-  for (const cert of certifications) {
-    doc.fontSize(7.5).fillColor(TEXT).font('Helvetica').text(cert, rightX, rightY, {
-      width: RIGHT_COL,
-    });
-    rightY = doc.y + 1;
-  }
-
-  rightY += 8;
+  rightY = columnHeading(doc, rightX, rightY, RIGHT_COL, 'Certifications');
+  rightY = textList(doc, rightX, rightY, RIGHT_COL, certifications, 7.5) + 8;
 
   // Education
-  doc
-    .fontSize(10)
-    .fillColor(ACCENT)
-    .font('Helvetica-Bold')
-    .text('EDUCATION', rightX, rightY, { characterSpacing: 1.5, width: RIGHT_COL });
-  rightY = doc.y + 3;
-
-  doc
-    .moveTo(rightX, rightY)
-    .lineTo(rightX + RIGHT_COL, rightY)
-    .strokeColor(RULE)
-    .lineWidth(0.5)
-    .stroke();
-  rightY += 6;
-
+  rightY = columnHeading(doc, rightX, rightY, RIGHT_COL, 'Education');
   for (const edu of education) {
-    doc.fontSize(8).fillColor(TEXT).font('Helvetica-Bold').text(edu.degree, rightX, rightY, {
-      width: RIGHT_COL,
-    });
+    doc
+      .fontSize(8)
+      .fillColor(TEXT)
+      .font('Helvetica-Bold')
+      .text(edu.degree, rightX, rightY, { width: RIGHT_COL });
     doc
       .fontSize(7.5)
       .fillColor(MUTED)
       .font('Helvetica')
-      .text(`${edu.school}, ${edu.year}`, rightX, doc.y, {
-        width: RIGHT_COL,
-      });
+      .text(`${edu.school}, ${edu.year}`, rightX, doc.y, { width: RIGHT_COL });
     rightY = doc.y + 6;
   }
-
   rightY += 4;
 
-  // Links footer
-  doc
-    .fontSize(10)
-    .fillColor(ACCENT)
-    .font('Helvetica-Bold')
-    .text('LINKS', rightX, rightY, { characterSpacing: 1.5, width: RIGHT_COL });
-  rightY = doc.y + 3;
-
-  doc
-    .moveTo(rightX, rightY)
-    .lineTo(rightX + RIGHT_COL, rightY)
-    .strokeColor(RULE)
-    .lineWidth(0.5)
-    .stroke();
-  rightY += 6;
-
-  const links = [
-    { label: 'Portfolio', url: 'https://faisalkhan.serveblog.net' },
-    { label: 'GitHub', url: 'https://github.com/faisalkhan91' },
-    { label: 'LinkedIn', url: 'https://linkedin.com/in/faisalkhan91' },
-    { label: 'Credly', url: 'https://credly.com/users/faisalkhan91' },
-  ];
-
+  // Links
+  rightY = columnHeading(doc, rightX, rightY, RIGHT_COL, 'Links');
   for (const link of links) {
-    doc.fontSize(7.5).fillColor('#2563eb').font('Helvetica').text(link.label, rightX, rightY, {
+    doc.fontSize(7.5).fillColor(LINK).font('Helvetica').text(link.label, rightX, rightY, {
       width: RIGHT_COL,
       link: link.url,
       underline: true,
     });
     rightY = doc.y + 1;
   }
+  const rightColEndY = rightY;
+
+  // Leave the cursor at the true bottom of the two-column block so the page
+  // count is correct and any future trailing content flows from the right
+  // place — whichever column ended lower (or on a later page) wins.
+  doc.switchToPage(leftEndPageIdx);
+  doc.y = leftEndPageIdx === startPageIdx ? Math.max(leftColEndY, rightColEndY) : leftColEndY;
 
   doc.end();
-  console.log(`Resume generated: ${OUTPUT}`);
+
+  return new Promise((resolvePromise, reject) => {
+    stream.on('finish', () => resolvePromise(OUTPUT));
+    stream.on('error', reject);
+  });
 }
 
-generate();
+generate()
+  .then((output) => console.log(`Resume generated: ${output}`))
+  .catch((err) => {
+    console.error('Resume generation failed:', err);
+    process.exitCode = 1;
+  });

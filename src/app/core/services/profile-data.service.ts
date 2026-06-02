@@ -9,7 +9,7 @@ export class ProfileDataService {
     title: 'Senior Software Engineer',
     email: 'faisalkhan91@gmail.com',
     phone: '+1 (475)-355-7575',
-    website: 'http://faisalkhan.serveblog.net',
+    website: 'https://faisalkhan.dpdns.org',
     location: 'Kirkland, WA, USA',
     linkedIn: 'https://www.linkedin.com/in/faisalkhan91/',
     github: 'https://github.com/faisalkhan91',
