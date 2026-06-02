@@ -299,7 +299,11 @@
   --surface-void: #1a1b26;
   --surface-base: #24283b;
   --surface-raised: #292e42;
-  --surface-overlay: #414868;
+  /* Darkened from #414868 (Tokyo Night's bright selection blue). That value
+     was too light to carry muted-grade text at WCAG AA — project tags and
+     gh-pills sit on this surface and clipped ~3.5:1 there. #313656 keeps the
+     overlay clearly above --surface-raised while letting muted text pass. */
+  --surface-overlay: #313656;
 
   --glass-bg: rgba(192, 202, 245, 0.04);
   --glass-bg-hover: rgba(192, 202, 245, 0.07);
@@ -317,10 +321,10 @@
 
   --text-primary: rgba(192, 202, 245, 0.95);
   --text-secondary: rgba(169, 177, 214, 0.82);
-  /* Pushed from 0.75 → 0.6 so text-muted sits clearly below
-     text-secondary (was compressing the hierarchy). Still well
-     above WCAG AA against --surface-base (#24283b). */
-  --text-muted: rgba(169, 177, 214, 0.6);
+  /* 0.90 (was 0.6) so muted labels clear WCAG AA on the lighter elevated
+     glass they composite over — section decoration, nav-ext, form labels,
+     and the project tags / gh-pills on the (now-darkened) --surface-overlay. */
+  --text-muted: rgba(169, 177, 214, 0.9);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.08);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
@@ -362,7 +366,10 @@
 
   --text-primary: rgba(0, 43, 54, 0.92);
   --text-secondary: rgba(7, 54, 66, 0.75);
-  --text-muted: rgba(88, 110, 117, 0.95);
+  /* Darkened base01 #586e75 → #455a60 so muted labels clear WCAG AA on the
+     warm low-chroma glass surfaces (#e0ddcd etc.); #586e75 only reached
+     ~3.9:1 there even fully opaque. */
+  --text-muted: rgba(69, 90, 96, 0.95);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.7);
   --nav-pill-bg: rgba(253, 246, 227, 0.78);
@@ -422,9 +429,11 @@
      "bright white" territory that Nord explicitly avoids. */
   --text-primary: rgba(236, 239, 244, 0.98);
   --text-secondary: rgba(216, 222, 233, 0.82);
-  /* Widened the muted→secondary gap (0.68 → 0.55) so metadata reads
-     as clearly subordinate. Safe against --surface-base #2e3440. */
-  --text-muted: rgba(216, 222, 233, 0.55);
+  /* 0.88 (was 0.55): clears WCAG AA on the lighter elevated surfaces muted
+     labels composite over (the gh-pill on --surface-overlay #4c566a was the
+     binding case at 2.8:1). Nord's palette is low-contrast by design, so the
+     muted→secondary gap narrows, but AA wins. */
+  --text-muted: rgba(216, 222, 233, 0.88);
 
   --glass-bg-elevated: rgba(216, 222, 233, 0.08);
   --nav-pill-bg: rgba(46, 52, 64, 0.85);
@@ -522,7 +531,9 @@
 
   --text-primary: rgba(224, 222, 244, 0.95);
   --text-secondary: rgba(224, 222, 244, 0.78);
-  --text-muted: rgba(224, 222, 244, 0.6);
+  /* 0.70 (was 0.6) so muted labels on the elevated overlay (#403d52, the
+     gh-pill) clear WCAG AA. */
+  --text-muted: rgba(224, 222, 244, 0.7);
 
   --glass-bg-elevated: rgba(224, 222, 244, 0.08);
   --nav-pill-bg: rgba(31, 29, 46, 0.85);
@@ -625,7 +636,9 @@
      the darker new surface-base. */
   --text-primary: rgba(224, 224, 224, 0.98);
   --text-secondary: rgba(224, 224, 224, 0.78);
-  --text-muted: rgba(224, 224, 224, 0.55);
+  /* 0.72 (was 0.55) so muted labels on the elevated overlay (#3f4355, the
+     gh-pill) clear WCAG AA. */
+  --text-muted: rgba(224, 224, 224, 0.72);
 
   --glass-bg-elevated: rgba(224, 224, 224, 0.08);
   --nav-pill-bg: rgba(30, 32, 40, 0.85);
@@ -1715,7 +1728,8 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 /* === Highlight.js — Solarized Light === */
 [data-theme='solarized-light'] .hljs {
-  color: #657b83;
+  /* Solarized base00 #657b83 → #5e727a for WCAG AA on base3 #fdf6e3. */
+  color: #5e727a;
 }
 [data-theme='solarized-light'] .hljs-comment,
 [data-theme='solarized-light'] .hljs-quote {
@@ -1725,24 +1739,28 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='solarized-light'] .hljs-doctag,
 [data-theme='solarized-light'] .hljs-formula,
 [data-theme='solarized-light'] .hljs-keyword {
-  color: #859900;
+  /* #859900 (2.97:1) → #667600 for WCAG AA. */
+  color: #667600;
 }
 [data-theme='solarized-light'] .hljs-deletion,
 [data-theme='solarized-light'] .hljs-name,
 [data-theme='solarized-light'] .hljs-section,
 [data-theme='solarized-light'] .hljs-selector-tag,
 [data-theme='solarized-light'] .hljs-subst {
-  color: #dc322f;
+  /* #dc322f (4.29:1) → #d1302d for WCAG AA. */
+  color: #d1302d;
 }
 [data-theme='solarized-light'] .hljs-literal {
-  color: #d33682;
+  /* #d33682 (4.21:1) → #c6337a for WCAG AA. */
+  color: #c6337a;
 }
 [data-theme='solarized-light'] .hljs-addition,
 [data-theme='solarized-light'] .hljs-attribute,
 [data-theme='solarized-light'] .hljs-meta .hljs-string,
 [data-theme='solarized-light'] .hljs-regexp,
 [data-theme='solarized-light'] .hljs-string {
-  color: #2aa198;
+  /* #2aa198 (2.93:1) → #207c75 for WCAG AA. */
+  color: #207c75;
 }
 [data-theme='solarized-light'] .hljs-attr,
 [data-theme='solarized-light'] .hljs-number,
@@ -1752,7 +1770,8 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='solarized-light'] .hljs-template-variable,
 [data-theme='solarized-light'] .hljs-type,
 [data-theme='solarized-light'] .hljs-variable {
-  color: #b58900;
+  /* #b58900 (2.98:1) → #8b6900 for WCAG AA. */
+  color: #8b6900;
 }
 [data-theme='solarized-light'] .hljs-bullet,
 [data-theme='solarized-light'] .hljs-link,
@@ -1760,12 +1779,14 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='solarized-light'] .hljs-selector-id,
 [data-theme='solarized-light'] .hljs-symbol,
 [data-theme='solarized-light'] .hljs-title {
-  color: #268bd2;
+  /* #268bd2 (3.41:1) → #2075b0 for WCAG AA. */
+  color: #2075b0;
 }
 [data-theme='solarized-light'] .hljs-built_in,
 [data-theme='solarized-light'] .hljs-class .hljs-title,
 [data-theme='solarized-light'] .hljs-title.class_ {
-  color: #cb4b16;
+  /* #cb4b16 (4.27:1) → #c14715 for WCAG AA. */
+  color: #c14715;
 }
 [data-theme='solarized-light'] .hljs-emphasis {
   font-style: italic;
@@ -1796,10 +1817,12 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='nord'] .hljs-section,
 [data-theme='nord'] .hljs-selector-tag,
 [data-theme='nord'] .hljs-subst {
-  color: #bf616a;
+  /* Nord aurora red #bf616a (3.05:1) → #d08c92 for WCAG AA on #2e3440. */
+  color: #d08c92;
 }
 [data-theme='nord'] .hljs-literal {
-  color: #b48ead;
+  /* #b48ead (4.41:1) → #b793b0 for WCAG AA. */
+  color: #b793b0;
 }
 [data-theme='nord'] .hljs-addition,
 [data-theme='nord'] .hljs-attribute,
@@ -1816,7 +1839,8 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='nord'] .hljs-template-variable,
 [data-theme='nord'] .hljs-type,
 [data-theme='nord'] .hljs-variable {
-  color: #d08770;
+  /* #d08770 (4.39:1) → #d28c76 for WCAG AA. */
+  color: #d28c76;
 }
 [data-theme='nord'] .hljs-bullet,
 [data-theme='nord'] .hljs-link,
@@ -1917,7 +1941,8 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='rose-pine'] .hljs-doctag,
 [data-theme='rose-pine'] .hljs-formula,
 [data-theme='rose-pine'] .hljs-keyword {
-  color: #31748f;
+  /* Rosé Pine pine #31748f (3.16:1) → #5a90a5 for WCAG AA on #1f1d2e. */
+  color: #5a90a5;
 }
 [data-theme='rose-pine'] .hljs-deletion,
 [data-theme='rose-pine'] .hljs-name,
