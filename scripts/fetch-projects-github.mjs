@@ -621,6 +621,30 @@ async function main() {
     process.exit(1);
   }
 
+  // Validate every emitted entry at the data boundary so a structurally-
+  // valid-but-semantically-empty row (e.g. a manual entry missing a title,
+  // or a blank link) can never reach the generated file the app imports.
+  // Runs in this out-of-band refresh job only, so a failure fails the
+  // refresh — never the deployed build.
+  const invalid = emitted.filter(
+    (p) =>
+      typeof p.title !== 'string' ||
+      p.title.trim() === '' ||
+      typeof p.slug !== 'string' ||
+      p.slug.trim() === '' ||
+      typeof p.link !== 'string' ||
+      p.link.trim() === '' ||
+      !Array.isArray(p.tags),
+  );
+  if (invalid.length > 0) {
+    console.error(
+      `fetch-projects-github: FATAL ${invalid.length} project(s) failed validation ` +
+        `(empty title/slug/link or non-array tags) — refusing to write malformed data:`,
+      invalid.map((p) => p.slug || p.title || '(unnamed)'),
+    );
+    process.exit(1);
+  }
+
   await writeJson(CACHE_JSON, {
     fetchedAt: new Date().toISOString(),
     topic: overrides.topic ?? null,
