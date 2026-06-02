@@ -1,6 +1,6 @@
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController } from '@angular/common/http/testing';
+import type { HttpTestingController } from '@angular/common/http/testing';
 import type { BlogPost } from '@shared/models/blog-post.model';
 
 /**
@@ -58,7 +58,7 @@ export const MOCK_POSTS: BlogPost[] = [
   },
 ];
 
-export const MOCK_POST_BODY = 'Post content';
+const MOCK_POST_BODY = 'Post content';
 
 export async function flushPosts(
   httpTesting: HttpTestingController,

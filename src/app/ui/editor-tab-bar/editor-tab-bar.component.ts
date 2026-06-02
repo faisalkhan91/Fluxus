@@ -36,16 +36,18 @@ export class EditorTabBarComponent {
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  tabs = input.required<EditorTab[]>();
-  activeTabId = input.required<string>();
+  readonly tabs = input.required<EditorTab[]>();
+  readonly activeTabId = input.required<string>();
   tabSelected = output<EditorTab>();
   tabClosed = output<EditorTab>();
   closeAllRequested = output<void>();
 
-  protected scrollContainer = viewChild<ElementRef<HTMLElement>>('scrollContainer');
-  protected showLeftFade = signal(false);
-  protected showRightFade = signal(false);
-  protected closableCount = computed(() => this.tabs().filter((t) => t.id !== 'hero').length);
+  protected readonly scrollContainer = viewChild<ElementRef<HTMLElement>>('scrollContainer');
+  protected readonly showLeftFade = signal(false);
+  protected readonly showRightFade = signal(false);
+  protected readonly closableCount = computed(
+    () => this.tabs().filter((t) => t.id !== 'hero').length,
+  );
 
   /*
     H4 — single sliding indicator.
@@ -56,8 +58,8 @@ export class EditorTabBarComponent {
     `--tab-indicator-width` are recomputed whenever the active tab or the
     rendered tab geometry changes; the CSS handles the easing.
   */
-  protected indicatorX = signal(0);
-  protected indicatorWidth = signal(0);
+  protected readonly indicatorX = signal(0);
+  protected readonly indicatorWidth = signal(0);
   /*
     Suppresses the indicator's `transition` until the first geometry
     pass has committed. Without this, the SSR pre-hydration HTML
@@ -75,7 +77,7 @@ export class EditorTabBarComponent {
     transition only after that point — so the very first render
     is in-place, every subsequent move animates.
   */
-  protected indicatorReady = signal(false);
+  protected readonly indicatorReady = signal(false);
 
   constructor() {
     /*

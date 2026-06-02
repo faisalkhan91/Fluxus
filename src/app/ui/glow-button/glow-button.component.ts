@@ -17,8 +17,8 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlowButtonComponent {
-  variant = input<'primary' | 'secondary' | 'ghost'>('primary');
-  type = input<'button' | 'submit'>('button');
-  disabled = input(false);
+  readonly variant = input<'primary' | 'secondary' | 'ghost'>('primary');
+  readonly type = input<'button' | 'submit'>('button');
+  readonly disabled = input(false);
   clicked = output<MouseEvent>();
 }

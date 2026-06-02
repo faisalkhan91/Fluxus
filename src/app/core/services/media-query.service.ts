@@ -31,7 +31,9 @@ function resolveBreakpoint(): BreakpointKey {
 export class MediaQueryService {
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private current = signal<BreakpointKey>(this.isBrowser ? resolveBreakpoint() : SSR_DEFAULT);
+  private readonly current = signal<BreakpointKey>(
+    this.isBrowser ? resolveBreakpoint() : SSR_DEFAULT,
+  );
 
   readonly breakpoint = computed<BreakpointKey>(() => this.current());
 

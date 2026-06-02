@@ -14,7 +14,7 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
   },
 })
 export class GlassCardComponent {
-  elevation = input<1 | 2 | 3>(1);
-  hover = input(false);
-  glow = input(false);
+  readonly elevation = input<1 | 2 | 3>(1);
+  readonly hover = input(false);
+  readonly glow = input(false);
 }

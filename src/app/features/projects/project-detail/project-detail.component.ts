@@ -15,7 +15,6 @@ import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
-import { SkillUsageService } from '@core/services/skill-usage.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
 import { SeoService } from '@core/services/seo.service';
 import { BlogService } from '@core/services/blog.service';
@@ -33,7 +32,7 @@ import { projectUrl } from '@shared/utils/url.utils';
  * GithubMeta block (stars, forks, language, license, last-pushed),
  * README excerpt, 52-week commit sparkline, deep links back to
  * `/skills#skill-<slug>` for any tag that matches a known skill, and
- * blog posts tagged the same way via `SkillUsageService`.
+ * blog posts tagged the same way (matched directly against `BlogService`).
  *
  * The slug lookup is permissive: we match by the service-derived slug
  * first, then fall back to `slugify(title)` so a hand-crafted URL from
@@ -58,14 +57,13 @@ import { projectUrl } from '@shared/utils/url.utils';
 export class ProjectDetailComponent {
   private route = inject(ActivatedRoute);
   protected projectsData = inject(ProjectsDataService);
-  private skillUsage = inject(SkillUsageService);
   private skillsData = inject(SkillsDataService);
   private blog = inject(BlogService);
   private seo = inject(SeoService);
 
   protected slugify = slugify;
 
-  protected slugParam = toSignal(
+  protected readonly slugParam = toSignal(
     this.route.paramMap.pipe(map((p) => (p.get('slug') ?? '').toLowerCase())),
     { initialValue: '' },
   );

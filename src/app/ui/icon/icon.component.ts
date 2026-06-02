@@ -17,13 +17,13 @@ import type { IconShape } from './icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IconComponent {
-  name = input.required<string>();
-  size = input(20);
+  readonly name = input.required<string>();
+  readonly size = input(20);
 
   /**
    * Resolved shape list for the requested icon, or an empty list when the
    * name is unknown. Pre-resolving via a computed keeps the template cheap
    * and gives the SSR pass everything it needs to render the path data.
    */
-  protected shapes = computed<IconShape[]>(() => ICONS[this.name()] ?? []);
+  protected readonly shapes = computed<IconShape[]>(() => ICONS[this.name()] ?? []);
 }

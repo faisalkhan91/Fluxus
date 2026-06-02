@@ -56,7 +56,7 @@ export class BlogService {
    * in the same UTC day as the build will agree exactly) and refreshes
    * itself on the next visibility flip.
    */
-  private todaySignal = signal(todayYmd());
+  private readonly todaySignal = signal(todayYmd());
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;

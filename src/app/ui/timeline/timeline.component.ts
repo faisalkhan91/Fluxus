@@ -17,5 +17,5 @@ export interface TimelineEntry {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
-  items = input.required<TimelineEntry[]>();
+  readonly items = input.required<TimelineEntry[]>();
 }

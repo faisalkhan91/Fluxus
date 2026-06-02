@@ -33,7 +33,7 @@ export class BlogComponent {
   protected blog = inject(BlogService);
 
   /** De-duplicated, alphabetised list of every tag across all posts. */
-  protected allTags = computed(() => {
+  protected readonly allTags = computed(() => {
     const set = new Set<string>();
     for (const post of this.blog.posts()) {
       for (const tag of post.tags) set.add(tag);
@@ -60,7 +60,7 @@ export class BlogComponent {
    * controls the rendered shape, and `object-fit: cover` handles the
    * crop across covers of any intrinsic aspect ratio.
    */
-  protected decoratedPosts = computed<DecoratedPost[]>(() =>
+  protected readonly decoratedPosts = computed<DecoratedPost[]>(() =>
     this.blog.posts().map((post) => ({
       post,
       cover: post.cover ?? `/og/${post.slug}.png`,
@@ -76,7 +76,7 @@ export class BlogComponent {
    * empty state. After that, the live `blog.loading()` / `blog.error()`
    * signals decide between the loading / error / empty surfaces.
    */
-  protected viewState = computed<'ready' | 'loading' | 'error' | 'empty'>(() => {
+  protected readonly viewState = computed<'ready' | 'loading' | 'error' | 'empty'>(() => {
     if (this.decoratedPosts().length) return 'ready';
     if (this.blog.loading()) return 'loading';
     if (this.blog.error()) return 'error';

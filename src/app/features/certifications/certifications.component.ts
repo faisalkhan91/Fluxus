@@ -15,7 +15,7 @@ import { slugify } from '@shared/utils/string.utils';
 })
 export class CertificationsComponent {
   protected certsData = inject(CertificationsDataService);
-  protected expandedProvider = signal<string | null>(null);
+  protected readonly expandedProvider = signal<string | null>(null);
 
   /** Stable id for the courses panel that the accordion button controls. */
   protected panelId(name: string): string {

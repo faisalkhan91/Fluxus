@@ -14,7 +14,7 @@ import { ExperienceDataService } from '@core/services/experience-data.service';
 export class ExperienceComponent {
   private experienceData = inject(ExperienceDataService);
 
-  protected timelineEntries = computed<TimelineEntry[]>(() =>
+  protected readonly timelineEntries = computed<TimelineEntry[]>(() =>
     this.experienceData.items().map((item) => ({
       type: item.type === 'period' ? ('period' as const) : ('item' as const),
       title: item.title,

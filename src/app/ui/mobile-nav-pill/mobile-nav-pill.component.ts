@@ -1,8 +1,8 @@
+import type { ElementRef } from '@angular/core';
 import {
   Component,
   ChangeDetectionStrategy,
   DestroyRef,
-  ElementRef,
   effect,
   input,
   output,
@@ -55,8 +55,8 @@ export class MobileNavPillComponent {
   private document = inject(DOCUMENT);
   private destroyRef = inject(DestroyRef);
 
-  items = input.required<MobileNavItem[]>();
-  menuItems = input.required<MobileMenuItem[]>();
+  readonly items = input.required<MobileNavItem[]>();
+  readonly menuItems = input.required<MobileMenuItem[]>();
 
   /**
    * Drawer-footer parity actions. These exist on the desktop sidebar
@@ -69,10 +69,10 @@ export class MobileNavPillComponent {
   themePickerRequested = output<void>();
   resumeRequested = output<void>();
 
-  menuOpen = signal(false);
+  readonly menuOpen = signal(false);
 
-  protected menuTrigger = viewChild<ElementRef<HTMLButtonElement>>('menuTrigger');
-  protected menuPanel = viewChild<ElementRef<HTMLElement>>('menuPanel');
+  protected readonly menuTrigger = viewChild<ElementRef<HTMLButtonElement>>('menuTrigger');
+  protected readonly menuPanel = viewChild<ElementRef<HTMLElement>>('menuPanel');
 
   constructor() {
     effect(() => {

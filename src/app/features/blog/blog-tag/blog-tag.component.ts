@@ -40,7 +40,7 @@ export class BlogTagComponent {
   // route and we own the head tags ourselves (mirrors BlogPostComponent).
   private seo = inject(SeoService);
 
-  protected tagSlug = toSignal(
+  protected readonly tagSlug = toSignal(
     this.route.paramMap.pipe(map((p) => (p.get('tag') ?? '').toLowerCase())),
     { initialValue: '' },
   );

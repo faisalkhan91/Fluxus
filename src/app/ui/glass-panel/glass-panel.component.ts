@@ -11,6 +11,6 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
   },
 })
 export class GlassPanelComponent {
-  scrollable = input(false);
-  flush = input(false);
+  readonly scrollable = input(false);
+  readonly flush = input(false);
 }

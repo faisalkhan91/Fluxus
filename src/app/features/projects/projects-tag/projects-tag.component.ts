@@ -50,7 +50,7 @@ export class ProjectsTagComponent {
   protected projectsData = inject(ProjectsDataService);
   private seo = inject(SeoService);
 
-  protected tagSlug = toSignal(
+  protected readonly tagSlug = toSignal(
     this.route.paramMap.pipe(map((p) => (p.get('tag') ?? '').toLowerCase())),
     { initialValue: '' },
   );
@@ -82,7 +82,7 @@ export class ProjectsTagComponent {
    * the rest). A `Set<string>` keyed by title is fine here — no projects
    * share titles.
    */
-  private expandedSet = signal(new Set<string>());
+  private readonly expandedSet = signal(new Set<string>());
 
   protected isExpanded(title: string): boolean {
     return this.expandedSet().has(title);
