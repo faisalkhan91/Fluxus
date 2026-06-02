@@ -134,7 +134,15 @@ export class BlogPostComponent {
   private postBody = httpResource.text(
     () => {
       const slug = this.slug();
-      return slug ? `assets/blog/posts/${slug}.md` : undefined;
+      // Validate the slug shape before it reaches the fetch URL. Every real
+      // post slug is lowercase-kebab (verified against posts.json), so this
+      // rejects '.', '/', '%', and uppercase — closing the route-param ->
+      // asset-path traversal vector. Production nginx (`try_files … =404`,
+      // no SPA fallback) already 404s a crafted URL before this component
+      // boots, so this primarily hardens the dev server / pure-SPA path and
+      // guards against regressions. A non-matching slug falls through to the
+      // existing 'Post not found' branch.
+      return slug && /^[a-z0-9-]+$/.test(slug) ? `assets/blog/posts/${slug}.md` : undefined;
     },
     { defaultValue: '' },
   );
