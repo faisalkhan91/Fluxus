@@ -383,6 +383,10 @@
 .post-breadcrumb ol {
   display: flex;
   flex-wrap: wrap;
+  /* Center items on the cross axis so the 24 px tap-target link boxes
+     (below) share a vertical center with the plain-text current-page
+     item, instead of the links floating above the title's baseline. */
+  align-items: center;
   gap: var(--space-2);
   list-style: none;
   padding: 0;
@@ -418,6 +422,12 @@
 }
 
 .post-breadcrumb [aria-current='page'] {
+  /* Match the links' line box so the current-page title aligns with the
+     rest of the trail. It carries no tap target (not interactive), but it
+     needs the same min-height + centering to sit on the shared center. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   color: var(--text-primary);
 }
 
