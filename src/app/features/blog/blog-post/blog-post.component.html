@@ -358,14 +358,15 @@
   @if (relatedPosts().length) {
     <!--
       Related-posts section is below every prose body (post + footer +
-      author card) — well past the LCP candidate. Defer until the user
-      scrolls toward it so the initial CD pass after hydration doesn't
-      walk this list. The placeholder reserves a fixed block height so
-      the scroll target / footer-nav below doesn't jump when the
-      deferred chunk swaps in. `prefetch on idle` warms the chunk after
-      LCP so by the time the user scrolls, the swap is instant.
+      author card) — well past the LCP candidate. `hydrate on viewport`
+      keeps the list in the prerendered HTML (crawler-visible, no-JS
+      visible, no CLS) while deferring its client hydration until the
+      reader scrolls toward it, so the initial CD pass after hydration
+      doesn't walk this list. Without a `hydrate` trigger the block would
+      render only its @placeholder during SSR and rebuild client-side,
+      dropping the list from the prerendered document entirely.
     -->
-    @defer (on viewport; prefetch on idle) {
+    @defer (on viewport; hydrate on viewport) {
       <section class="post-related" aria-labelledby="post-related-heading">
         <h2 id="post-related-heading" class="post-related-title">You might also like</h2>
         <ul class="post-related-list">
@@ -392,11 +393,11 @@
     @let nav = adjacentPosts();
     <!--
       Adjacent (prev/next) post nav also lives below the fold for any
-      reader who lands at the top — defer until viewport intersection.
-      The placeholder is the same minimal-height stub so layout stays
-      stable while the chunk is in flight.
+      reader who lands at the top. Same `hydrate on viewport` treatment:
+      prerendered into the document for crawlers / no-JS, hydrated only
+      when scrolled into view.
     -->
-    @defer (on viewport; prefetch on idle) {
+    @defer (on viewport; hydrate on viewport) {
       <nav class="post-footer-nav" aria-label="Post navigation">
         @if (nav.prev) {
           <a [routerLink]="['/blog', nav.prev.slug]" class="footer-nav-link footer-nav-prev">
