@@ -25,6 +25,27 @@ function isPublished(post: BlogPost, today: string): boolean {
   return post.date <= today;
 }
 
+/**
+ * Structural guard for a `posts.json` entry. The manifest is loaded as an
+ * unchecked `httpResource<BlogPost[]>` typed cast, so a malformed entry
+ * (missing/non-string `date`, missing `tags` array) would otherwise throw
+ * deep inside `sortByDateDesc` / `isPublished` / the tag aggregation and
+ * blank the entire blog surface instead of degrading. Validating the fields
+ * that get dereferenced lets a bad entry be dropped rather than poison the
+ * whole list. `slug`/`title`/`date` must be strings and `tags` an array;
+ * everything else is optional in the model and guarded at its use site.
+ */
+function isValidPost(p: unknown): p is BlogPost {
+  if (!p || typeof p !== 'object') return false;
+  const post = p as Record<string, unknown>;
+  return (
+    typeof post['slug'] === 'string' &&
+    typeof post['title'] === 'string' &&
+    typeof post['date'] === 'string' &&
+    Array.isArray(post['tags'])
+  );
+}
+
 @Injectable({ providedIn: 'root' })
 export class BlogService {
   private platformId = inject(PLATFORM_ID);
@@ -58,6 +79,16 @@ export class BlogService {
    */
   private readonly todaySignal = signal(todayYmd());
 
+  /**
+   * The manifest, filtered to structurally-valid entries. A malformed post
+   * is dropped here (once) so it can't throw inside the downstream sort /
+   * publish / tag-aggregation logic and blank the whole blog. Every public
+   * surface reads through this rather than the raw resource value.
+   */
+  private readonly validatedPosts = computed<BlogPost[]>(() =>
+    (this.postsResource.value() ?? []).filter(isValidPost),
+  );
+
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;
     const onVisibility = () => {
@@ -82,14 +113,12 @@ export class BlogService {
   readonly posts = computed<BlogPost[]>(() => {
     if (!this.postsResource.hasValue()) return [];
     const today = this.todaySignal();
-    return this.sortByDateDesc(this.postsResource.value() ?? []).filter((p) =>
-      isPublished(p, today),
-    );
+    return this.sortByDateDesc(this.validatedPosts()).filter((p) => isPublished(p, today));
   });
 
   /** Includes drafts and scheduled posts. Useful for author-review tooling. */
   readonly allPosts = computed<BlogPost[]>(() =>
-    this.postsResource.hasValue() ? this.sortByDateDesc(this.postsResource.value() ?? []) : [],
+    this.postsResource.hasValue() ? this.sortByDateDesc(this.validatedPosts()) : [],
   );
 
   readonly latestPosts = computed<BlogPost[]>(() => this.posts().slice(0, 2));
