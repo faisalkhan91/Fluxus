@@ -23,7 +23,7 @@
  */
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, relative } from 'node:path';
 import { JSDOM } from 'jsdom';
 
 const BUILD_DIR = resolve('dist/fluxus/browser');
@@ -263,6 +263,75 @@ function checkBlogPost(slug) {
   }
 }
 
+/**
+ * Recursively yields every prerendered *.html file under the build dir.
+ */
+function* walkHtmlFiles(dir) {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) yield* walkHtmlFiles(full);
+    else if (entry.endsWith('.html')) yield full;
+  }
+}
+
+/** Strip ?query / #hash and a leading slash to a BUILD_DIR-relative path. */
+function normalizeLocalPath(url) {
+  return url.split('#')[0].split('?')[0].replace(/^\/+/, '');
+}
+
+/**
+ * Dead-internal-link + broken-image audit. For every prerendered page:
+ *  - each root-relative <a href> resolves to a real file or <dir>/index.html
+ *  - each <img src> (and every URL in its srcset) resolves to a real asset
+ * A stale post slug, a typo'd routerLink, or a missing/renamed image variant
+ * 404s in production today with no test catching it; this closes that gap.
+ * Resolution is checked against the actual file tree (not a route allow-list)
+ * so nested routes (/projects/<slug>, /blog/tag/<tag>) and static files
+ * (feed.xml, favicon.svg, the webmanifest) all validate correctly.
+ */
+function checkLinksAndImages(absFile) {
+  const rel = relative(BUILD_DIR, absFile);
+  const route = '/' + rel.replace(/(^|\/)index\.html$/, '$1').replace(/\/$/, '');
+  const html = readFileSync(absFile, 'utf8');
+  const doc = new JSDOM(html).window.document;
+
+  // Skip noindex pages (draft + future-dated post previews). They're
+  // prerendered for author review but are NOT part of the public site graph,
+  // and an unpublished post legitimately links to tag archives that only get
+  // generated once the post (and its tags) go public — flagging those would
+  // be a false positive on intentionally-provisional content.
+  const robots = doc.querySelector('meta[name="robots"]');
+  if (robots && /noindex/i.test(robots.getAttribute('content') ?? '')) return;
+
+  for (const a of doc.querySelectorAll('a[href^="/"]')) {
+    const raw = a.getAttribute('href');
+    if (!raw || raw.startsWith('//')) continue; // protocol-relative = external
+    const p = normalizeLocalPath(raw);
+    if (p === '') continue; // links to "/" (home)
+    if (existsSync(join(BUILD_DIR, p)) || existsSync(join(BUILD_DIR, p, 'index.html'))) continue;
+    pushIssue(route, `dead internal link: ${raw}`);
+  }
+
+  const imgUrls = new Set();
+  for (const img of doc.querySelectorAll('img')) {
+    const src = img.getAttribute('src');
+    if (src) imgUrls.add(src);
+    const srcset = img.getAttribute('srcset');
+    if (srcset) {
+      for (const part of srcset.split(',')) {
+        const u = part.trim().split(/\s+/)[0];
+        if (u) imgUrls.add(u);
+      }
+    }
+  }
+  for (const u of imgUrls) {
+    if (/^(data:|https?:|\/\/)/i.test(u)) continue; // inline / external
+    const p = normalizeLocalPath(u);
+    if (p === '' || existsSync(join(BUILD_DIR, p))) continue;
+    pushIssue(route, `broken image asset: ${u}`);
+  }
+}
+
 console.log('Auditing prerendered build at', BUILD_DIR);
 console.log('---');
 
@@ -286,6 +355,19 @@ if (blogSlugs.length === 0) {
     }
   }
 }
+
+// Dead-link + broken-image sweep across every prerendered page (routes, blog
+// posts, project detail pages, tag archives).
+let linkPages = 0;
+for (const absFile of walkHtmlFiles(BUILD_DIR)) {
+  try {
+    checkLinksAndImages(absFile);
+    linkPages++;
+  } catch (err) {
+    pushIssue(relative(BUILD_DIR, absFile), `link/image audit threw: ${err.message}`);
+  }
+}
+pushWin('links', `internal-link + image audit ran over ${linkPages} prerendered page(s)`);
 
 console.log(`Wins (${wins.length}):`);
 for (const w of wins) console.log('  ✓', w);
