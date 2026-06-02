@@ -363,6 +363,18 @@ export class MarkdownService {
         if (!altText) return img;
         return `<figure>${img}<figcaption>${escapeHtml(altText)}</figcaption></figure>`;
       },
+
+      // Raw inline/block HTML in a post is escaped, not emitted verbatim.
+      // marked's default `html` renderer passes author HTML through untouched,
+      // and the rendered string is handed to `bypassSecurityTrustHtml` — so a
+      // raw `<iframe>`, `<object>`, scheme-laden `<a>`, or `<form>` would skip
+      // every other guard in this file. The strict CSP already blocks inline
+      // script, but escape-and-show closes the passthrough at the source
+      // (same threat model as the link-scheme guard below: a future
+      // copy-paste mistake or a compromised commit). Posts that need real
+      // markup use markdown syntax, fenced code, or the callout extension —
+      // none of which produce `html` tokens.
+      html: ({ text }) => escapeHtml(text),
     };
 
     this.marked.use({
@@ -379,8 +391,15 @@ export class MarkdownService {
       // `file:`, …) collapses to `#` so the link still renders but does
       // nothing on click.
       walkTokens(token) {
-        if (token.type === 'link') {
-          (token as Tokens.Link).href = sanitizeLinkHref((token as Tokens.Link).href);
+        // Images get the same scheme allowlist as links — marked's default
+        // image renderer cleans the URL, but our custom `image` override
+        // doesn't, so a `data:`/`javascript:` image src would otherwise pass
+        // through. Running it here (before the renderer reads `href`) keeps
+        // the link and image paths symmetric; legitimate http(s)/relative
+        // srcs are returned unchanged so lookupDims/buildSrcset still match.
+        if (token.type === 'link' || token.type === 'image') {
+          const t = token as Tokens.Link | Tokens.Image;
+          t.href = sanitizeLinkHref(t.href);
         }
       },
     });

@@ -23,8 +23,11 @@ export type TrustedHtmlSource = 'local-markdown';
  * SECURITY: Only use this pipe for content from trusted sources (e.g.
  * locally-authored markdown rendered via marked + highlight.js). Angular's
  * default sanitizer strips class/style attributes needed for syntax
- * highlighting. The strict CSP in `nginx.conf` (`script-src 'self'`)
- * provides defense-in-depth against inline script injection.
+ * highlighting. The strict CSP (`script-src 'self'`, no `unsafe-inline`)
+ * generated into `dist/fluxus/security-headers.conf` by
+ * `scripts/build-csp.mjs` provides defense-in-depth against inline script
+ * injection; MarkdownService additionally escapes raw HTML tokens and
+ * scheme-checks link/image hrefs before this bypass.
  *
  * Callers MUST supply an explicit `source` argument in the template:
  *

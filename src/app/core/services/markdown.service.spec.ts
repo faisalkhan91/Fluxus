@@ -326,4 +326,58 @@ describe('MarkdownService renderer', () => {
       expect(second).not.toContain('id="intro-1"');
     });
   });
+
+  describe('raw HTML neutralisation', () => {
+    it('escapes a raw block-level HTML element instead of emitting it verbatim', () => {
+      const html = service.render('<iframe src="data:text/html,<h1>x</h1>"></iframe>');
+      expect(html).not.toContain('<iframe');
+      expect(html).toContain('&lt;iframe');
+    });
+
+    it('escapes raw inline HTML (e.g. an onerror img) inside a paragraph', () => {
+      const html = service.render('Hello <img src=x onerror=alert(1)> world');
+      expect(html).not.toMatch(/<img src=x onerror/);
+      expect(html).toContain('&lt;img');
+    });
+
+    it('escapes a hand-written raw <a> carrying a javascript: scheme', () => {
+      const html = service.render('<a href="javascript:alert(1)">click</a>');
+      expect(html).not.toContain('href="javascript:');
+      expect(html).toContain('&lt;a');
+    });
+  });
+
+  describe('image href sanitisation', () => {
+    it('neutralises a javascript: image src to # (image path now matches the link path)', () => {
+      const html = service.render('![x](javascript:alert(1))');
+      expect(html).toContain('src="#"');
+      expect(html).not.toContain('src="javascript:');
+    });
+
+    it('neutralises data: / vbscript: image srcs', () => {
+      for (const href of ['data:text/html,alert', 'vbscript:x', 'file:///etc/passwd']) {
+        const html = service.render(`![x](${href})`);
+        expect(html, `src ${href}`).toContain('src="#"');
+        expect(html, `src ${href}`).not.toContain(`src="${href.split(':')[0]}:`);
+      }
+    });
+
+    it('passes a legitimate relative image src through unchanged', () => {
+      const html = service.render('![x](assets/images/blog/foo.webp)');
+      expect(html).toContain('src="assets/images/blog/foo.webp"');
+    });
+  });
+
+  describe('responsive srcset for inline images', () => {
+    it('emits a width-descriptor srcset for an image with generated variants', () => {
+      const html = service.render('![x](assets/images/blog/homelab-storage/hardware-stack.webp)');
+      expect(html).toMatch(/srcset="[^"]*hardware-stack-256w\.webp 256w/);
+      expect(html).toContain('sizes="(max-width: 768px) 94vw, 720px"');
+    });
+
+    it('emits no srcset for an image without generated variants', () => {
+      const html = service.render('![x](assets/images/blog/no-such-image.webp)');
+      expect(html).not.toContain('srcset=');
+    });
+  });
 });
