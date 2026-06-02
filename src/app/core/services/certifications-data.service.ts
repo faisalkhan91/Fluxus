@@ -12,40 +12,41 @@ export class CertificationsDataService {
     },
     {
       name: 'Splunk Cloud Administration',
-      image: 'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png',
+      image: 'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.webp',
       issuer: 'Splunk',
     },
     {
       name: 'Microsoft Certified: Security, Compliance, and Identity Fundamentals',
       image:
-        'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png',
+        'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.webp',
       issuer: 'Microsoft',
     },
     {
       name: 'Microsoft Certified: Azure Data Fundamentals',
       image:
-        'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png',
+        'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.webp',
       issuer: 'Microsoft',
     },
     {
       name: 'Microsoft Certified: Azure AI Fundamentals',
       image:
-        'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png',
+        'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.webp',
       issuer: 'Microsoft',
     },
     {
       name: 'AWS Certified Cloud Practitioner',
-      image: 'assets/images/achievements/certifications/aws-certified-cloud-practitioner.png',
+      image: 'assets/images/achievements/certifications/aws-certified-cloud-practitioner.webp',
       issuer: 'AWS',
     },
     {
       name: 'Microsoft Certified: Azure Fundamentals',
-      image: 'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png',
+      image:
+        'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.webp',
       issuer: 'Microsoft',
     },
     {
       name: 'CRLA Level I, II and III',
-      image: 'assets/images/achievements/certifications/CRLACertifiedL1.png',
+      image: 'assets/images/achievements/certifications/CRLACertifiedL1.webp',
       issuer: 'CRLA',
     },
   ]);

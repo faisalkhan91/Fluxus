@@ -16,7 +16,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'text-analyzer',
     description:
       'A Python application that uses the Azure Text Analytics SDK to extract language, sentiment, and key phrases from user-supplied prose. Demonstrates cloud-native NLP with a thin, scriptable UI.',
-    image: 'assets/images/portfolio/TextAnalyzerAI.png',
+    image: 'assets/images/portfolio/TextAnalyzerAI.webp',
     link: 'https://github.com/faisalkhan91/Text-Analyzer-AI',
     tags: ['Python', 'Azure', 'AI', 'NLP', 'portfolio'],
     featured: true,
@@ -53,7 +53,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'image-generator',
     description:
       'A Python application that drives the Azure OpenAI DALL-E model from user prompts to produce generated images. A compact end-to-end example of prompt-to-image integration against a managed OpenAI endpoint.',
-    image: 'assets/images/portfolio/ImageGeneratorAI.png',
+    image: 'assets/images/portfolio/ImageGeneratorAI.webp',
     link: 'https://github.com/faisalkhan91/Image-Generator-AI',
     tags: ['Python', 'Azure', 'AI', 'OpenAI', 'portfolio'],
     featured: true,
@@ -90,7 +90,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'storm-events-analysis',
     description:
       'A data analysis project examining NOAA severe weather events from 2012 to 2016. Uses Hadoop MapReduce for large-scale dataset processing and Python for statistical modeling and visualization of storm patterns.',
-    image: 'assets/images/portfolio/StormEvents.gif',
+    image: 'assets/images/portfolio/StormEvents.webp',
     link: 'https://github.com/faisalkhan91/Storm-Events',
     tags: [
       'Python',
@@ -157,7 +157,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'bookstore',
     description:
       'An Angular web application for browsing and purchasing books online. Built with Angular CLI, TypeScript, and component-driven architecture with routing, services, and responsive HTML/CSS templates.',
-    image: 'assets/images/portfolio/BookStore.png',
+    image: 'assets/images/portfolio/BookStore.webp',
     link: 'https://github.com/faisalkhan91/Bookstore',
     tags: ['Angular', 'TypeScript', 'HTML', 'CSS', 'ngform', 'portfolio', 'routing', 'services'],
     featured: false,
@@ -208,7 +208,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'backtracking-search',
     description:
       'A Python program that solves a 6x6 Sudoku grid using the backtracking search algorithm, systematically exploring possible values and backtracking on constraint violations to produce a solved matrix.',
-    image: 'assets/images/portfolio/BacktrackingSearch.PNG',
+    image: 'assets/images/portfolio/BacktrackingSearch.webp',
     link: 'https://github.com/faisalkhan91/Backtracking-Search',
     tags: [
       'Python',
@@ -257,7 +257,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'dictionary-application',
     description:
       'A GUI-based dictionary app built with Python and Tkinter, powered by the Oxford Dictionary API. Features word definitions, etymology, phonetic pronunciation, audio playback, synonyms, antonyms, rhymes, and example usage.',
-    image: 'assets/images/portfolio/DictionaryApp.PNG',
+    image: 'assets/images/portfolio/DictionaryApp.webp',
     link: 'https://github.com/faisalkhan91/Dictionary-Application',
     tags: [
       'Python',
@@ -315,7 +315,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'insecure-file-extraction',
     description:
       'A security demonstration of path traversal exploitation in a poorly coded file upload function, showing how malicious code can be injected onto a web server through insecure file extraction.',
-    image: 'assets/images/portfolio/InsecureFileExtraction.PNG',
+    image: 'assets/images/portfolio/InsecureFileExtraction.webp',
     link: 'https://github.com/faisalkhan91/Insecure-File-Extraction',
     tags: [
       'Python',
@@ -372,7 +372,7 @@ export const PROJECTS: readonly Project[] = [
     slug: 'jenkins-cicd-pipeline',
     description:
       'An end-to-end CI/CD pipeline built with Jenkins and Ansible. Automates building, testing, and deploying applications using Docker, Nginx, PHP, and MySQL. Includes a Maven-based Java build pipeline with unit testing and artifact management.',
-    image: 'assets/images/portfolio/JenkinsCICD.PNG',
+    image: 'assets/images/portfolio/JenkinsCICD.webp',
     link: 'https://github.com/faisalkhan91/Jenkins-CI-CD',
     tags: [
       'Jenkins',
