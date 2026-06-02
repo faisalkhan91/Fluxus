@@ -95,12 +95,6 @@ export async function readViewTransitionFlag(page: Page): Promise<boolean> {
 }
 
 /**
- * Mobile viewport matching the `mobile-chromium` Playwright project (Pixel 7).
- * Useful for specs that want to force mobile in any project.
- */
-export const MOBILE_VIEWPORT = { width: 412, height: 915 };
-
-/**
  * The 8 SSG'd top-level routes plus one prerendered blog post.
  * Order matches the prerender audit script.
  */
