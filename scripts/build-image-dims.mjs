@@ -46,6 +46,10 @@ let processed = 0;
 for (const file of walk(ROOT)) {
   const ext = file.slice(file.lastIndexOf('.')).toLowerCase();
   if (!SUPPORTED.has(ext)) continue;
+  // Skip responsive width-variants (foo-640w.webp) emitted by
+  // build-image-variants.mjs — markdown/NgOptimizedImage only ever look up
+  // the base image, so variant entries would just be noise in the map.
+  if (/-\d+w\.webp$/i.test(file)) continue;
   try {
     const meta = await sharp(file).metadata();
     if (meta.width && meta.height) {
