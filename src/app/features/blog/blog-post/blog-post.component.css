@@ -372,7 +372,7 @@
 }
 
 .back-link:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
   background: var(--glass-bg);
 }
 
@@ -418,7 +418,7 @@
 }
 
 .post-breadcrumb a:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .post-breadcrumb [aria-current='page'] {
@@ -452,7 +452,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .post-series-eyebrow-sep {
@@ -514,7 +514,7 @@
 .tag {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--accent-hover);
+  color: var(--text-accent);
   background: var(--accent-subtle);
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);
@@ -620,8 +620,8 @@
 .share-link:hover,
 .share-link:focus-visible {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .share-text {
@@ -690,7 +690,7 @@
 
 .post-author-name a:hover,
 .post-author-name a:focus-visible {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .post-author-title {
@@ -714,7 +714,7 @@
   margin-left: calc(-1 * var(--space-2));
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: var(--accent-hover);
+  color: var(--text-accent);
   text-decoration: none;
   letter-spacing: 0.02em;
   border-radius: var(--radius-sm);
@@ -723,7 +723,7 @@
 
 .post-author-cta:hover,
 .post-author-cta:focus-visible {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 @media (max-width: 480px) {
@@ -845,7 +845,7 @@
 }
 
 .post-series-meta strong {
-  color: var(--accent-hover);
+  color: var(--text-accent);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -884,7 +884,7 @@
 
 .post-series-link:hover,
 .post-series-link:focus-visible {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .post-series-link--current {

@@ -4,20 +4,21 @@ import { PRERENDERED_ROUTES, expect, seedTheme, test, type Theme } from './fixtu
 const THEMES: Theme[] = ['dark', 'light'];
 
 /**
- * Color-contrast is intentionally disabled. The site uses a glassmorphism
- * design system with translucent surfaces where axe-core's contrast
- * algorithm produces a high false-positive rate (it doesn't see through
- * `backdrop-filter` blurs to the actual underlying canvas). Contrast is
- * tracked separately during manual design reviews and the dark/light
- * theme tokens in `src/styles.css` are tuned to satisfy WCAG AA on the
- * primary text variables.
+ * color-contrast is now ENFORCED on the default crimson themes. It was
+ * previously disabled on the assumption that glassmorphism / backdrop-blur
+ * surfaces produced false positives — but a Phase-4 audit (axe across every
+ * route, both themes) found that assumption masked REAL failures: the accent
+ * red used as text (links, tag pills, active nav labels) sat at 3.4–4.2:1.
+ * Those are fixed via a per-theme `--text-accent` token in styles.css, and
+ * the glass surfaces themselves come back clean (axe resolves the composited
+ * canvas). Keeping the rule on locks the fix in.
  *
- * Everything else WCAG 2A / 2AA / 2.1AA still runs — this spec catches
- * structural regressions: missing labels, ARIA misuse, focusable
- * scrollable regions, nested interactive controls, list/landmark
- * structure, etc.
+ * The `THEMES` below cover crimson dark/light only. The other registered
+ * themes (tokyo-night, nord, solarized-light, …) still carry pre-existing
+ * contrast debt in their muted-text + syntax-highlight palettes; broadening
+ * this loop to all themes is tracked as a follow-up once those are tuned.
  */
-const DISABLED_RULES = ['color-contrast'];
+const DISABLED_RULES: string[] = [];
 
 for (const theme of THEMES) {
   test.describe(`a11y — ${theme} theme`, () => {

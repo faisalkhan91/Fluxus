@@ -46,6 +46,6 @@
 }
 
 :host(.glow:hover) {
-  border-color: var(--accent);
+  border-color: var(--text-accent);
   box-shadow: var(--shadow-accent-glow);
 }

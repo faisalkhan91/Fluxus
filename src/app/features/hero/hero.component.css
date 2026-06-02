@@ -191,7 +191,7 @@
 }
 
 .greeting-decoration {
-  color: var(--accent);
+  color: var(--text-accent);
   flex-shrink: 0;
 }
 
@@ -283,7 +283,7 @@
 
 .hero-title-caret {
   display: inline-block;
-  color: var(--accent);
+  color: var(--text-accent);
   /*
     Stack two animations: a delayed fade-in lands the caret after the
     title text, then the shared `cursor-blink` keyframe takes over for
@@ -387,9 +387,9 @@
 
 .social-link:hover,
 .social-link:focus-visible {
-  color: var(--accent-hover);
+  color: var(--text-accent);
   background: var(--accent-subtle);
-  border-color: var(--accent);
+  border-color: var(--text-accent);
   box-shadow: var(--shadow-accent-glow);
   transform: translateY(-3px) scale(1.05);
 }
@@ -411,9 +411,9 @@
 */
 @media (hover: none) {
   .social-link:active {
-    color: var(--accent-hover);
+    color: var(--text-accent);
     background: var(--accent-subtle);
-    border-color: var(--accent);
+    border-color: var(--text-accent);
     box-shadow: var(--shadow-accent-glow);
     transform: translateY(-3px) scale(1.05);
   }
@@ -527,7 +527,7 @@
 }
 
 .label-decoration {
-  color: var(--accent);
+  color: var(--text-accent);
   margin-right: var(--space-2);
 }
 
@@ -672,14 +672,14 @@
   margin-top: var(--space-4);
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--accent-hover);
+  color: var(--text-accent);
   text-decoration: none;
   letter-spacing: 0.02em;
   transition: color var(--transition-fast);
 }
 
 .view-all-link:hover {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 @media (max-width: 767px) {

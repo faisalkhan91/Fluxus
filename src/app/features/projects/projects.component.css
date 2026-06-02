@@ -54,8 +54,8 @@
 
 .projects-view-option:hover,
 .projects-view-option:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .projects-view-option:focus-visible {
@@ -65,7 +65,7 @@
 
 .projects-view-option.active {
   color: var(--text-primary);
-  border-color: var(--accent);
+  border-color: var(--text-accent);
   background: var(--surface-overlay);
 }
 
@@ -126,8 +126,8 @@
 
 .projects-sort-option:hover,
 .projects-sort-option:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .projects-sort-option:focus-visible {
@@ -287,14 +287,14 @@
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text-accent);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 .projects-list-cta:hover,
 .projects-list-cta:focus-visible {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 /*
@@ -400,7 +400,7 @@
 
 .projects-list-row-title a:hover,
 .projects-list-row-title a:focus-visible {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 /*
@@ -545,14 +545,14 @@
   padding: 0;
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: var(--accent);
+  color: var(--text-accent);
   cursor: pointer;
   transition: color var(--transition-fast);
   align-self: flex-start;
 }
 
 .read-more-toggle:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .archived-badge {
@@ -621,8 +621,8 @@
 
 a.tag:hover,
 a.tag:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 a.tag:focus-visible {
@@ -640,7 +640,7 @@ a.tag:focus-visible {
 }
 
 .project-link:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 @media (max-width: 767px) {

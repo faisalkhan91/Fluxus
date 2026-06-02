@@ -34,7 +34,7 @@
 }
 
 .tag-breadcrumb a:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .tag-breadcrumb [aria-current='page'] {
@@ -193,7 +193,7 @@
   min-height: 24px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--accent-hover);
+  color: var(--text-accent);
   background: var(--accent-subtle);
   padding: 4px var(--space-3);
   border-radius: var(--radius-sm);
@@ -225,7 +225,7 @@
 .tag-back-link:hover,
 .tag-back-link:focus-visible {
   background: var(--glass-bg);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .tag-status {

@@ -196,8 +196,17 @@
     stands. Hover stays on `--accent` to preserve the existing rest→hover
     contrast pattern.
   */
-  --link-color: var(--accent-hover);
+  --link-color: var(--text-accent);
   --link-color-hover: var(--accent);
+  /*
+    Accent colour safe to use as TEXT on this theme's surfaces (WCAG AA,
+    ≥ 4.5:1). Defaults to --accent-hover, which clears AA on every dark
+    theme; the crimson, nord, and light themes override it below, where
+    the raw accent falls just short as small text. Every `color:` use of
+    the accent routes through this token — fills/borders/glows keep
+    --accent / --accent-hover.
+  */
+  --text-accent: var(--accent-hover);
 }
 
 /*
@@ -209,6 +218,9 @@
 */
 [data-theme='crimson-dark'] {
   --link-color: #ff5757;
+  /* #dc2626 (accent-hover) is only 3.4:1 on the raised/overlay surfaces;
+     #ff5757 clears 4.5:1 on all three dark surfaces (5.3:1 on overlay). */
+  --text-accent: #ff5757;
 }
 
 /*
@@ -223,6 +235,10 @@
 [data-theme='solarized-light'],
 [data-theme='github-light'] {
   --modal-overlay: rgba(15, 23, 42, 0.28);
+  /* These light themes share the crimson accent; #dc2626 (accent-hover)
+     fails AA as text on their light surfaces (~4.0:1). The darker --accent
+     (#b91c1c) clears 4.5:1 (5.4–6.5:1), so accent-text routes through it. */
+  --text-accent: #b91c1c;
 }
 
 /* === Crimson Light (default light theme) ===
@@ -371,6 +387,9 @@
 
 /* === Nord === */
 [data-theme='nord'] {
+  /* Nord's muted frost accent (#8fbcbb/#88c0d0) is only 3.5:1 as text on
+     the lighter Polar Night surfaces; a lifted frost tint clears 4.5:1. */
+  --text-accent: #b4d2d1;
   --surface-void: #242933;
   --surface-base: #2e3440;
   --surface-raised: #3b4252;
@@ -1013,7 +1032,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose .anchor:hover,
 .prose .anchor:focus-visible {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 @media (max-width: 900px) {
@@ -1163,7 +1182,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 }
 
 .prose li::marker {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 .prose blockquote {
@@ -1190,7 +1209,7 @@ img[src*='amazonwebservices-original-wordmark'] {
   background: var(--surface-overlay);
   padding: 1px 6px;
   border-radius: var(--radius-sm);
-  color: var(--accent-hover);
+  color: var(--text-accent);
   /*
     Long inline identifiers (`UltraSpecificDomainEntityRepository`, kebab-
     cased URLs, hex hashes) used to overflow the viewport on narrow
@@ -1274,7 +1293,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose .copy-btn--copied {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
   opacity: 1;
   /*
     Brief border-accent pulse confirms the click without breaking
@@ -1299,15 +1318,15 @@ img[src*='amazonwebservices-original-wordmark'] {
 */
 @keyframes copy-pulse {
   0% {
-    border-color: var(--accent);
+    border-color: var(--text-accent);
     box-shadow: none;
   }
   50% {
-    border-color: var(--accent);
+    border-color: var(--text-accent);
     box-shadow: 0 0 0 4px var(--accent-glow);
   }
   100% {
-    border-color: var(--accent);
+    border-color: var(--text-accent);
     box-shadow: none;
   }
 }
@@ -1452,7 +1471,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 }
 
 .prose input[type='checkbox'] {
-  accent-color: var(--accent);
+  accent-color: var(--text-accent);
   margin-right: var(--space-2);
 }
 
@@ -1573,17 +1592,20 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='crimson-light'] .hljs-section,
 [data-theme='crimson-light'] .hljs-selector-tag,
 [data-theme='crimson-light'] .hljs-subst {
-  color: #e45649;
+  /* #e45649 was 3.43:1 on the light code surface; #c0392b clears AA (5.08:1). */
+  color: #c0392b;
 }
 [data-theme='crimson-light'] .hljs-literal {
-  color: #0184bb;
+  /* #0184bb was 3.91:1 on the light code surface; #0369a1 clears AA (5.55:1). */
+  color: #0369a1;
 }
 [data-theme='crimson-light'] .hljs-addition,
 [data-theme='crimson-light'] .hljs-attribute,
 [data-theme='crimson-light'] .hljs-meta .hljs-string,
 [data-theme='crimson-light'] .hljs-regexp,
 [data-theme='crimson-light'] .hljs-string {
-  color: #50a14f;
+  /* #50a14f was 3.00:1 on the light code surface; #197a3e clears AA (5.04:1). */
+  color: #197a3e;
 }
 [data-theme='crimson-light'] .hljs-attr,
 [data-theme='crimson-light'] .hljs-number,
@@ -1601,12 +1623,15 @@ img[src*='amazonwebservices-original-wordmark'] {
 [data-theme='crimson-light'] .hljs-selector-id,
 [data-theme='crimson-light'] .hljs-symbol,
 [data-theme='crimson-light'] .hljs-title {
-  color: #4078f2;
+  /* #4078f2 was only 3.78:1 on the light code surface; #2563eb clears AA
+     (4.83:1 on --surface-base, 5.17:1 on white). */
+  color: #2563eb;
 }
 [data-theme='crimson-light'] .hljs-built_in,
 [data-theme='crimson-light'] .hljs-class .hljs-title,
 [data-theme='crimson-light'] .hljs-title.class_ {
-  color: #c18401;
+  /* #c18401 was 2.99:1 on the light code surface; #8a5d00 clears AA (5.38:1). */
+  color: #8a5d00;
 }
 [data-theme='crimson-light'] .hljs-emphasis {
   font-style: italic;

@@ -25,7 +25,7 @@
 .btn--primary {
   background: var(--accent);
   color: var(--text-on-accent);
-  border-color: var(--accent);
+  border-color: var(--text-accent);
 }
 
 .btn--primary:hover:not(:disabled) {

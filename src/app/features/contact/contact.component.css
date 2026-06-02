@@ -61,7 +61,7 @@
 }
 
 .form-input:focus {
-  border-color: var(--accent);
+  border-color: var(--text-accent);
   box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
@@ -129,7 +129,7 @@
 }
 
 .form-hint ui-icon {
-  color: var(--accent);
+  color: var(--text-accent);
   flex-shrink: 0;
 }
 
@@ -146,7 +146,7 @@
   gap: var(--space-2);
   background: transparent;
   border: none;
-  color: var(--accent-hover);
+  color: var(--text-accent);
   font-family: var(--font-body);
   font-size: 0.85rem;
   cursor: pointer;
@@ -156,7 +156,7 @@
 }
 
 .link-button:hover {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 .success-state,
@@ -198,7 +198,7 @@
 
 .success-state ui-icon,
 .confirm-state ui-icon {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 .success-state h3,
@@ -235,7 +235,7 @@
 }
 
 .info-item ui-icon {
-  color: var(--accent);
+  color: var(--text-accent);
   flex-shrink: 0;
 }
 

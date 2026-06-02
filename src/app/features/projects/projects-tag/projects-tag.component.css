@@ -43,7 +43,7 @@
 }
 
 .tag-breadcrumb a:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .tag-breadcrumb [aria-current='page'] {
@@ -89,7 +89,7 @@
 .tag-back-link:hover,
 .tag-back-link:focus-visible {
   background: var(--glass-bg);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 /*
@@ -176,14 +176,14 @@
   padding: 0;
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: var(--accent);
+  color: var(--text-accent);
   cursor: pointer;
   transition: color var(--transition-fast);
   align-self: flex-start;
 }
 
 .read-more-toggle:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .project-footer {
@@ -224,7 +224,7 @@
 }
 
 .project-link:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 @media (max-width: 767px) {
