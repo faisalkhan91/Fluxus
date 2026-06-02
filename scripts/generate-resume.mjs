@@ -80,6 +80,27 @@ const experience = [
     summary: 'Containerization and CI/CD modernization on Azure.',
   },
   {
+    company: 'DCI Resources',
+    role: 'Software Engineer Intern',
+    dates: 'Sep 2018 - Jan 2019',
+    summary:
+      "Drove Git workflow adoption and Azure deployments in the team's early DevOps transformation.",
+  },
+  {
+    company: 'University of New Haven',
+    role: 'Python Developer',
+    dates: 'Jan 2017 - May 2018',
+    summary:
+      'Built full-stack features for student-facing applications across the APIs, data layer, and Linux infrastructure.',
+  },
+  {
+    company: 'University of New Haven',
+    role: 'Research Assistant',
+    dates: 'May 2017 - Jul 2017',
+    summary:
+      'Analyzed large-scale NOAA weather datasets with Hadoop MapReduce; built ML models to surface storm trends.',
+  },
+  {
     company: 'Vodafone',
     role: 'Software Engineer',
     dates: 'May 2014 - Aug 2016',
@@ -225,9 +246,14 @@ function generate() {
       { align: 'left' },
     );
 
-  doc.moveDown(0.6);
-  rule(doc, MARGIN, doc.y, CONTENT_WIDTH);
-  doc.moveDown(0.1);
+  doc.moveDown(0.65);
+  // Assign doc.y from rule() so the cursor advances past the divider (the
+  // helper returns ruleY + 6). The previous code discarded that return and
+  // used moveDown(0.1), which left the rule sitting <1pt above the summary
+  // (hugging it) while ~5.5pt sat above the rule — a lopsided gap that read
+  // as the summary being jammed against the line. Now the rule sits with
+  // balanced breathing room on both sides.
+  doc.y = rule(doc, MARGIN, doc.y, CONTENT_WIDTH);
 
   // --- Summary ---
   doc
