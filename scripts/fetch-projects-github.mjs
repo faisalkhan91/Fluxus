@@ -151,17 +151,34 @@ const REPO_FIELDS_FRAGMENT = `
  *   - reports rateLimit so we can log cost and verify the 5× drop
  *     vs the old REST pipeline.
  *
- * Allowlist names get sanitised into safe alias identifiers
- * (`[A-Za-z_][A-Za-z0-9_]*`) so GraphQL accepts them.
+ * Aliases are `repoN` — safe identifiers by construction. The `owner` and
+ * `name` are interpolated into the query, so each allowlist entry is first
+ * validated to the `owner/name` shape (no whitespace, exactly one slash);
+ * malformed entries are skipped with a warning rather than emitting a
+ * `name: "undefined"` node that resolves to a NOT_FOUND error (which would
+ * otherwise drag the whole partial response into the error path).
  */
+function isValidRepoRef(repo) {
+  return typeof repo === 'string' && /^[^/\s]+\/[^/\s]+$/.test(repo.trim());
+}
+
 function buildPortfolioQuery(overrides) {
   const user = overrides.user ?? '';
   const topic = overrides.topic ?? '';
   const searchQuery = user && topic ? `user:${user} topic:${topic} fork:false archived:false` : '';
-  const allowlist = (overrides.repos ?? []).filter((r) => r?.repo);
+  const allowlist = (overrides.repos ?? []).filter((r) => {
+    if (!r?.repo) return false;
+    if (!isValidRepoRef(r.repo)) {
+      console.warn(
+        `fetch-projects-github: WARN skipping malformed allowlist entry "${r.repo}" (expected owner/name).`,
+      );
+      return false;
+    }
+    return true;
+  });
   const aliases = allowlist
     .map((entry, idx) => {
-      const [owner, name] = entry.repo.split('/');
+      const [owner, name] = entry.repo.trim().split('/');
       return `  repo${idx}: repository(owner: "${owner}", name: "${name}") { ...RepoFields }`;
     })
     .join('\n');
@@ -468,9 +485,27 @@ async function main() {
         );
       }
     } catch (err) {
-      console.warn(
-        `fetch-projects-github: WARN GraphQL request failed (${err.status ?? 'n/a'} ${err.message ?? err}); falling back to cache rows.`,
-      );
+      // GitHub returns a PARTIAL response — `data` for the repos that
+      // resolved PLUS a top-level `errors` array — whenever one aliased
+      // repo is renamed, deleted, made private, or malformed. Octokit's
+      // graphql() throws on the presence of `errors`, but carries the
+      // partial `data` on the thrown GraphqlResponseError. Recover it so
+      // one dead allowlist entry can't blank out the fresh fetch for every
+      // OTHER repo (the difference between "one repo goes stale" and "the
+      // whole refresh silently falls back to cache"). collectRepoNodes
+      // already skips the null aliases.
+      const partial = err?.data ?? err?.response?.data?.data;
+      if (partial) {
+        nodeMap = collectRepoNodes(partial);
+        const errCount = Array.isArray(err.errors) ? err.errors.length : 0;
+        console.warn(
+          `fetch-projects-github: WARN GraphQL returned partial data with ${errCount} error(s) — using fresh rows for the ${nodeMap.size} repo(s) that resolved, cache for the rest.`,
+        );
+      } else {
+        console.warn(
+          `fetch-projects-github: WARN GraphQL request failed (${err.status ?? 'n/a'} ${err.message ?? err}); falling back to cache rows.`,
+        );
+      }
     }
   }
 
