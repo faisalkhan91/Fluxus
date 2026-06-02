@@ -385,3 +385,74 @@ describe('BlogService — visibility change refresh', () => {
     expect(service.posts().map((p) => p.slug)).toEqual(['past']);
   });
 });
+
+describe('BlogService — series & related-posts', () => {
+  let service: BlogService;
+  let httpTesting: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: ErrorHandler, useValue: { handleError: () => undefined } },
+      ],
+    });
+    service = TestBed.inject(BlogService);
+    httpTesting = TestBed.inject(HttpTestingController);
+  });
+
+  describe('getSeries', () => {
+    it('returns undefined for a post that belongs to no series', async () => {
+      await flushPosts(httpTesting, MOCK_POSTS);
+      expect(service.getSeries('post-one')).toBeUndefined();
+    });
+
+    it('returns undefined for an unknown slug', async () => {
+      await flushPosts(httpTesting, MOCK_POSTS);
+      expect(service.getSeries('does-not-exist')).toBeUndefined();
+    });
+
+    it('groups series members sorted by seriesOrder and reports the current index', async () => {
+      const posts: BlogPost[] = [
+        { ...MOCK_POSTS[0], slug: 'part-2', series: 'Pipeline', seriesOrder: 2 },
+        { ...MOCK_POSTS[1], slug: 'part-1', series: 'Pipeline', seriesOrder: 1 },
+        { ...MOCK_POSTS[2], slug: 'unrelated' },
+      ];
+      await flushPosts(httpTesting, posts);
+      const result = service.getSeries('part-2');
+      expect(result?.series).toBe('Pipeline');
+      // Sorted by seriesOrder regardless of manifest order; `unrelated` excluded.
+      expect(result?.posts.map((p) => p.slug)).toEqual(['part-1', 'part-2']);
+      expect(result?.index).toBe(1);
+    });
+  });
+
+  describe('getRelatedPosts', () => {
+    it('returns [] for an unknown slug', async () => {
+      await flushPosts(httpTesting, MOCK_POSTS);
+      expect(service.getRelatedPosts('nope')).toEqual([]);
+    });
+
+    it('ranks by shared-tag overlap, excludes self + zero-overlap, caps at limit', async () => {
+      const posts: BlogPost[] = [
+        { ...MOCK_POSTS[0], slug: 'a', tags: ['ng', 'ts', 'rx'] },
+        { ...MOCK_POSTS[1], slug: 'b', tags: ['ng', 'ts'] }, // overlap 2
+        { ...MOCK_POSTS[2], slug: 'c', tags: ['ng'] }, // overlap 1
+        { ...MOCK_POSTS[0], slug: 'd', tags: ['unrelated'] }, // overlap 0 → excluded
+      ];
+      await flushPosts(httpTesting, posts);
+      expect(service.getRelatedPosts('a', 3).map((p) => p.slug)).toEqual(['b', 'c']);
+    });
+
+    it('breaks overlap ties by date (newest first) and honours the limit', async () => {
+      const posts: BlogPost[] = [
+        { ...MOCK_POSTS[0], slug: 'src', tags: ['x'] },
+        { ...MOCK_POSTS[0], slug: 'older', tags: ['x'], date: '2025-01-01' },
+        { ...MOCK_POSTS[0], slug: 'newer', tags: ['x'], date: '2025-09-01' },
+      ];
+      await flushPosts(httpTesting, posts);
+      expect(service.getRelatedPosts('src', 1).map((p) => p.slug)).toEqual(['newer']);
+    });
+  });
+});
