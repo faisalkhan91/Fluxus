@@ -10,6 +10,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { BehaviorSubject } from 'rxjs';
 import { BlogPostComponent } from './blog-post.component';
 import { BlogService } from '@core/services/blog.service';
+import { ErrorToastService } from '@core/services/error-toast.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { MOCK_POSTS, createMockBlogPost, flushMarkdown, failMarkdown } from '@testing/blog-mocks';
 
@@ -369,6 +370,60 @@ describe('BlogPostComponent', () => {
       const banner = el.querySelector('.post-series');
       expect(banner).toBeTruthy();
       expect(banner?.textContent).toContain('Part 1 of 2');
+    });
+  });
+
+  describe('sharing', () => {
+    function inner() {
+      return component as unknown as {
+        shareViaWebShare: () => Promise<void>;
+        copyShareLink: () => Promise<void>;
+        linkCopied: () => boolean;
+      };
+    }
+
+    afterEach(() => {
+      // jsdom carries property mutations across tests — clear the stubs.
+      Reflect.deleteProperty(navigator, 'share');
+      Reflect.deleteProperty(navigator, 'clipboard');
+    });
+
+    it('copyShareLink copies the post URL and flips linkCopied', async () => {
+      await load('second-post');
+      const writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+      await inner().copyShareLink();
+      expect(writeText).toHaveBeenCalledWith(expect.stringContaining('/blog/second-post'));
+      expect(inner().linkCopied()).toBe(true);
+    });
+
+    it('shareViaWebShare no-ops when the Web Share API is unavailable', async () => {
+      await load('second-post');
+      Reflect.deleteProperty(navigator, 'share');
+      await expect(inner().shareViaWebShare()).resolves.toBeUndefined();
+    });
+
+    it('shareViaWebShare swallows an AbortError (sheet dismissed) without a toast', async () => {
+      await load('second-post');
+      const push = vi.spyOn(TestBed.inject(ErrorToastService), 'push');
+      const abort = Object.assign(new Error('dismissed'), { name: 'AbortError' });
+      Object.defineProperty(navigator, 'share', {
+        configurable: true,
+        value: vi.fn().mockRejectedValue(abort),
+      });
+      await inner().shareViaWebShare();
+      expect(push).not.toHaveBeenCalled();
+    });
+
+    it('shareViaWebShare surfaces a toast on a non-abort share failure', async () => {
+      await load('second-post');
+      const push = vi.spyOn(TestBed.inject(ErrorToastService), 'push');
+      Object.defineProperty(navigator, 'share', {
+        configurable: true,
+        value: vi.fn().mockRejectedValue(new Error('boom')),
+      });
+      await inner().shareViaWebShare();
+      expect(push).toHaveBeenCalledTimes(1);
     });
   });
 });
