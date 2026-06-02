@@ -187,6 +187,15 @@ jobs:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
 
+      # Second pass under the mobile profile (slow-4G + 4x CPU) for the
+      # heaviest routes only. Thresholds are deliberately relaxed (warn,
+      # perf >= 0.85) so the simulated-mobile run reports regressions
+      # without hard-failing CI on lab-throttling variance.
+      - uses: treosh/lighthouse-ci-action@2f8dda6cf4de7d73b29853c3f29e73a01e297bd8 # v12.1.0
+        with:
+          configPath: ./lighthouserc.mobile.json
+          uploadArtifacts: true
+
   # Single fan-in check for branch protection. Requiring `CI / CI success`
   # instead of every individual job means adding/removing a parallel CI job
   # never requires editing branch protection rules.

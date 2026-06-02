@@ -5,6 +5,10 @@
       "url": [
         "http://localhost/",
         "http://localhost/about",
+        "http://localhost/skills",
+        "http://localhost/projects",
+        "http://localhost/projects/image-generator",
+        "http://localhost/contact",
         "http://localhost/blog",
         "http://localhost/blog/angular-signals-state-management"
       ],
@@ -26,7 +30,9 @@
         "interactive": ["warn", { "maxNumericValue": 3500 }],
         "uses-text-compression": "error",
         "uses-responsive-images": "warn",
-        "modern-image-formats": "warn"
+        "modern-image-formats": "warn",
+        "font-display": "warn",
+        "unused-javascript": ["warn", { "maxNumericValue": 150000 }]
       }
     },
     "upload": {
