@@ -1,10 +1,9 @@
-import type { AfterViewInit } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
-  PLATFORM_ID,
+  afterNextRender,
   computed,
   inject,
   input,
@@ -12,7 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
@@ -36,11 +35,10 @@ export type SidebarItem =
     'aria-label': 'Main Navigation',
   },
 })
-export class SidebarComponent implements AfterViewInit {
+export class SidebarComponent {
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   items = input.required<SidebarItem[]>();
   collapsed = input(false);
@@ -90,15 +88,20 @@ export class SidebarComponent implements AfterViewInit {
   protected indicatorY = signal(0);
   protected indicatorHeight = signal(0);
 
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
-    this.router.events
-      .pipe(
-        filter((evt) => evt instanceof NavigationEnd),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(() => queueMicrotask(() => this.updateIndicator()));
-    queueMicrotask(() => this.updateIndicator());
+  constructor() {
+    // `afterNextRender` (browser-only, never runs during SSR) wires the
+    // route-change subscription and runs the initial measurement once the
+    // first render commits — matching EditorTabBarComponent and keeping all
+    // reactive setup in the constructor rather than a lifecycle hook.
+    afterNextRender(() => {
+      this.router.events
+        .pipe(
+          filter((evt) => evt instanceof NavigationEnd),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe(() => queueMicrotask(() => this.updateIndicator()));
+      queueMicrotask(() => this.updateIndicator());
+    });
   }
 
   private updateIndicator(): void {
