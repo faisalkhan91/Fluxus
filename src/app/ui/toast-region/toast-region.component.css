@@ -126,7 +126,7 @@
 
 .toast-action {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   padding: 4px var(--space-3);
@@ -163,7 +163,7 @@
 }
 
 .toast-dismiss:active {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -50,7 +50,7 @@
 */
 .badge-inner-link:hover,
 .badge-inner-link:focus-within {
-  border-color: var(--accent);
+  border-color: var(--text-accent);
 }
 
 .badge-inner-link:focus-within {
@@ -184,8 +184,8 @@
 
 .badge-caption-link:hover,
 .badge-caption-link:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .badge-caption-link:focus-visible {

@@ -99,8 +99,8 @@
 
 .skills-view-option:hover,
 .skills-view-option:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .skills-view-option:focus-visible {
@@ -110,7 +110,7 @@
 
 .skills-view-option.active {
   color: var(--text-primary);
-  border-color: var(--accent);
+  border-color: var(--text-accent);
   background: var(--surface-overlay);
 }
 
@@ -290,8 +290,8 @@
 
 .expand-toggle:hover,
 .expand-toggle:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
   background: var(--glass-bg-hover);
 }
 

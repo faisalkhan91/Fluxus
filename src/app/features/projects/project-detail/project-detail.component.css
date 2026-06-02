@@ -36,7 +36,7 @@
 }
 
 .detail-breadcrumb a:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .detail-breadcrumb [aria-current='page'] {
@@ -127,8 +127,8 @@
 
 .detail-source-link:hover,
 .detail-source-link:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .detail-section {
@@ -172,8 +172,8 @@
 
 .detail-chip:hover,
 .detail-chip:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .detail-chip:focus-visible {
@@ -184,8 +184,8 @@
 /* Skills chips adopt a subtly different accent so "Skills used" reads
    as a distinct surface from the plain archive-links above. */
 .detail-chip-skill {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
   opacity: 0.85;
 }
 
@@ -206,7 +206,7 @@
 .detail-sparkline {
   width: 240px;
   height: 40px;
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 .detail-sparkline-total {
@@ -246,7 +246,7 @@
 }
 
 .detail-related-list a:hover {
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .detail-related-date {
@@ -281,7 +281,7 @@
 .detail-back-link:hover,
 .detail-back-link:focus-visible {
   background: var(--glass-bg);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .detail-status {

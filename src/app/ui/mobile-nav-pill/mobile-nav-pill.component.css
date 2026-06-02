@@ -65,11 +65,11 @@
 
 .pill-item:active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .pill-item.active {
-  color: var(--accent-hover);
+  color: var(--text-accent);
   background: var(--accent-subtle);
 }
 
@@ -198,7 +198,7 @@
 
 .menu-close:active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .menu-list {
@@ -239,12 +239,12 @@
 
 .menu-link:active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .menu-link--active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 /*
@@ -275,7 +275,7 @@
   /* On the active row the link colour shifts to accent-hover; lift
      the ext to match instead of staying muted-grey, otherwise the
      chip looks orphaned on the highlighted row. */
-  color: var(--accent-hover);
+  color: var(--text-accent);
   opacity: 0.7;
 }
 
@@ -359,7 +359,7 @@
 .menu-action:hover,
 .menu-action:focus-visible {
   background: var(--glass-bg-hover);
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 .menu-action:focus-visible {
@@ -381,7 +381,7 @@
 .menu-action--cta {
   background: var(--accent);
   color: var(--text-on-accent);
-  border-color: var(--accent);
+  border-color: var(--text-accent);
   font-weight: 600;
   margin-top: var(--space-1);
 }
@@ -390,7 +390,7 @@
 .menu-action--cta:focus-visible {
   background: var(--accent-hover);
   color: var(--text-on-accent);
-  border-color: var(--accent-hover);
+  border-color: var(--text-accent);
 }
 
 .menu-action--cta:active {

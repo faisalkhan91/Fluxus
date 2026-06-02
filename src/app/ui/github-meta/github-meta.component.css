@@ -54,8 +54,8 @@
 
 .gh-pill-link:hover,
 .gh-pill-link:focus-visible {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 /*

@@ -45,8 +45,8 @@
 .subscribe-link:hover,
 .subscribe-link:focus-visible {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
-  border-color: var(--accent);
+  color: var(--text-accent);
+  border-color: var(--text-accent);
 }
 
 .post-grid {
@@ -398,7 +398,7 @@
 .tag {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: var(--accent-hover);
+  color: var(--text-accent);
   background: var(--accent-subtle);
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);

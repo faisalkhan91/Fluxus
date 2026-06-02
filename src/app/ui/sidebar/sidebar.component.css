@@ -121,7 +121,7 @@
 }
 
 .sidebar-home-link:hover .avatar-wrapper {
-  border-color: var(--accent);
+  border-color: var(--text-accent);
 }
 
 .avatar {
@@ -305,16 +305,16 @@
 
 .nav-item:active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .nav-item.active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .nav-item.active ui-icon {
-  color: var(--accent);
+  color: var(--text-accent);
 }
 
 .nav-label {
@@ -411,7 +411,7 @@
 
 .theme-toggle:active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .theme-picker-btn {
@@ -436,7 +436,7 @@
 
 .theme-picker-btn:active {
   background: var(--accent-subtle);
-  color: var(--accent-hover);
+  color: var(--text-accent);
 }
 
 .resume-btn {
