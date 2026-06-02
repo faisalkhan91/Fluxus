@@ -38,6 +38,12 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+# Deny-by-default backstop: every job below declares its own explicit
+# `permissions:` block (which fully overrides this), so today's behaviour is
+# unchanged — this only stops a future job that forgets its block from
+# inheriting the broad repo-default token scope.
+permissions: {}
+
 jobs:
   build-and-push:
     name: Build and push image
