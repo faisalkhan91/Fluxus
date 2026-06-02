@@ -11,6 +11,7 @@ import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import { IMAGE_DIMS } from './image-dims.generated';
+import { IMAGE_VARIANTS } from '../image/image-variants.generated';
 import { slugify } from '@shared/utils/string.utils';
 
 hljs.registerLanguage('typescript', typescript);
@@ -124,6 +125,29 @@ function lookupDims(href: string): { w: number; h: number } | undefined {
   if (/^https?:/i.test(href)) return undefined;
   const trimmed = href.replace(/^\.?\/?/, '');
   return IMAGE_DIMS[trimmed];
+}
+
+/**
+ * Builds a width-descriptor `srcset` for an inline markdown image that has
+ * pre-generated WebP variants (scripts/build-image-variants.mjs). Inline
+ * prose images render as plain `<img>` (not NgOptimizedImage), so the
+ * IMAGE_LOADER never sees them — we emit the responsive srcset here instead.
+ * Variant URLs preserve whatever path prefix the author used; the original
+ * is appended at its intrinsic width so large viewports still get full res.
+ * Returns '' when the image has no variants.
+ */
+function buildSrcset(href: string, dim: { w: number; h: number } | undefined): string {
+  if (!href || /^https?:/i.test(href)) return '';
+  const key = href.replace(/^\.?\/?/, '');
+  const widths = IMAGE_VARIANTS[key];
+  if (!widths || widths.length === 0) return '';
+  const dot = href.lastIndexOf('.');
+  if (dot < 0) return '';
+  const base = href.slice(0, dot);
+  const ext = href.slice(dot);
+  const entries = widths.map((w) => `${escapeAttr(`${base}-${w}w${ext}`)} ${w}w`);
+  if (dim?.w) entries.push(`${escapeAttr(href)} ${dim.w}w`);
+  return entries.join(', ');
 }
 
 /**
@@ -326,9 +350,16 @@ export class MarkdownService {
         const titleAttr = title ? ` title="${escapeAttr(title)}"` : '';
         const altText = (text ?? '').trim();
         const altAttr = ` alt="${escapeAttr(altText)}"`;
+        // Responsive srcset for images with pre-generated variants. `sizes`
+        // matches the prose column: full width on mobile, ~720px max on
+        // desktop (the .prose measure).
+        const srcset = buildSrcset(href, dim);
+        const responsiveAttrs = srcset
+          ? ` srcset="${srcset}" sizes="(max-width: 768px) 94vw, 720px"`
+          : '';
         const img = `<img src="${escapeAttr(
           href,
-        )}"${altAttr}${titleAttr}${dimAttrs} loading="lazy" decoding="async" />`;
+        )}"${altAttr}${titleAttr}${dimAttrs}${responsiveAttrs} loading="lazy" decoding="async" />`;
         if (!altText) return img;
         return `<figure>${img}<figcaption>${escapeHtml(altText)}</figcaption></figure>`;
       },

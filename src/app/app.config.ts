@@ -11,6 +11,7 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { provideClientHydration, withIncrementalHydration } from '@angular/platform-browser';
 import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
+import { provideResponsiveImageLoader } from './core/image/responsive-image-loader';
 import { SeoService } from './core/services/seo.service';
 import { AppErrorHandler } from './core/services/app-error-handler';
 import { WebVitalsService } from './core/services/web-vitals.service';
@@ -36,6 +37,10 @@ export const appConfig: ApplicationConfig = {
       }),
     ),
     provideHttpClient(withFetch()),
+    // Maps NgOptimizedImage srcset entries to pre-generated WebP width
+    // variants (scripts/build-image-variants.mjs); images without variants
+    // pass through untouched. See ./core/image/responsive-image-loader.
+    provideResponsiveImageLoader(),
     // withIncrementalHydration enables event replay automatically and lets
     // `@defer` blocks above the fold avoid hydration layout shift.
     provideClientHydration(withIncrementalHydration()),
