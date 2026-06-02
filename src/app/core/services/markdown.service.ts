@@ -53,14 +53,55 @@ function escapeAttr(value: string): string {
  * `file:`, and the `javascript:` case) collapses to `#` so the link still
  * renders but does nothing on click.
  */
+/**
+ * Decode the HTML character references a browser would resolve while
+ * parsing an attribute value, so the scheme test below sees what the
+ * browser will actually execute — not the obfuscated source spelling.
+ * Covers numeric (`&#106;`), hex (`&#x6a;`), and the named references
+ * that decode to scheme-relevant characters (`&colon;` → `:`,
+ * `&Tab;`/`&NewLine;` → control chars). marked emits link hrefs verbatim
+ * (no `&`-escaping in its default link renderer), so without this an
+ * attacker can spell `javascript:` as `&#106;avascript:` or
+ * `java&#09;script:` and slip past a literal-letter scheme regex.
+ */
+function decodeCharRefs(value: string): string {
+  return value
+    .replace(/&#x([0-9a-f]+);?/gi, (_, hex: string) => safeFromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);?/g, (_, dec: string) => safeFromCodePoint(parseInt(dec, 10)))
+    .replace(/&colon;/gi, ':')
+    .replace(/&(?:tab|newline);/gi, ' ');
+}
+
+function safeFromCodePoint(code: number): string {
+  return Number.isFinite(code) && code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : '';
+}
+
 function sanitizeLinkHref(href: string | null | undefined): string {
   const raw = (href ?? '').trim();
   if (!raw) return '#';
-  if (raw.startsWith('#') || raw.startsWith('/') || raw.startsWith('./') || raw.startsWith('../')) {
+  // Normalise the way a browser does before resolving the scheme: decode
+  // character references and strip ASCII control chars (TAB/NL inside a
+  // scheme are ignored by URL parsers). The scheme test runs on this
+  // normalised form so `&#106;avascript:` / `java&#09;script:` / fully
+  // entity-encoded `javascript:` collapse to `#` instead of being waved
+  // through as "relative references".
+  // Strip all whitespace + ASCII control chars from the scheme-check
+  // form (a real URL scheme contains none; URL parsers ignore embedded
+  // TAB/NL). Only the safety decision uses `normalized`; the emitted
+  // href is always `raw`.
+  // eslint-disable-next-line no-control-regex -- intentional: stripping ASCII control chars is the point (browsers ignore TAB/NL inside a URL scheme).
+  const normalized = decodeCharRefs(raw).replace(/[\s\u0000-\u001F\u007F]+/g, '');
+  if (
+    normalized.startsWith('#') ||
+    normalized.startsWith('/') ||
+    normalized.startsWith('./') ||
+    normalized.startsWith('../')
+  ) {
     return raw;
   }
-  // Detect a leading scheme; if present and not allowed, neutralise.
-  const schemeMatch = /^([a-z][a-z0-9+.-]*):/i.exec(raw);
+  // Detect a leading scheme on the normalised form; if present and not
+  // allowed, neutralise.
+  const schemeMatch = /^([a-z][a-z0-9+.-]*):/i.exec(normalized);
   if (!schemeMatch) return raw; // no scheme → relative reference
   const scheme = schemeMatch[1].toLowerCase();
   if (scheme === 'http' || scheme === 'https' || scheme === 'mailto' || scheme === 'tel') {
@@ -187,6 +228,16 @@ export class MarkdownService {
    */
   private currentToc: TocEntry[] = [];
 
+  /**
+   * Per-render count of each base heading slug, so duplicate heading text
+   * gets unique ids (`overview`, `overview-1`, `overview-2`). Without this,
+   * two `## Overview` headings emit the same `id`/`data-anchor-id`, and a
+   * deep link or TOC click to the second one resolves to the first —
+   * leaving that section unreachable by anchor. Reset alongside
+   * `currentToc` at the start of every render.
+   */
+  private slugCounts = new Map<string, number>();
+
   constructor() {
     const renderer: Partial<Renderer> = {
       // Heading: emit a stable slugified `id` so external hash links
@@ -207,7 +258,12 @@ export class MarkdownService {
       // (one per page, already addressable by the canonical URL) and
       // h4+ rarely warrants its own shareable anchor.
       heading: ({ text, depth }) => {
-        const id = slugify(text.trim());
+        const base = slugify(text.trim());
+        // De-duplicate: first occurrence keeps the bare slug, repeats get
+        // a numeric suffix so every section is independently addressable.
+        const seen = this.slugCounts.get(base) ?? 0;
+        this.slugCounts.set(base, seen + 1);
+        const id = seen === 0 ? base : `${base}-${seen}`;
         const inline = this.marked.parseInline(text) as string;
         if (depth === 2 || depth === 3) {
           this.currentToc.push({ id, text: text.trim(), depth });
@@ -301,6 +357,7 @@ export class MarkdownService {
 
   render(md: string): string {
     this.currentToc = [];
+    this.slugCounts.clear();
     return this.parseSafely(md);
   }
 
@@ -311,6 +368,7 @@ export class MarkdownService {
    */
   renderWithToc(md: string): { html: string; toc: TocEntry[] } {
     this.currentToc = [];
+    this.slugCounts.clear();
     const html = this.parseSafely(md);
     return { html, toc: [...this.currentToc] };
   }

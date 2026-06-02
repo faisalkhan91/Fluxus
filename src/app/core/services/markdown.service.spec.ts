@@ -282,5 +282,48 @@ describe('MarkdownService renderer', () => {
       expect(service.render('[x](/about)')).toContain('href="/about"');
       expect(service.render('[x](./post)')).toContain('href="./post"');
     });
+
+    it('neutralises HTML-entity-obfuscated javascript: schemes (decode before scheme test)', () => {
+      // A browser decodes character references and ignores control chars
+      // while resolving an href's scheme, so these all execute as
+      // `javascript:` unless the sanitizer normalises first. The literal-
+      // letter scheme regex alone would wave them through as "relative".
+      const payloads = [
+        '[x](&#106;avascript:alert(1))', // decimal entity for 'j'
+        '[x](&#x6a;avascript:alert(1))', // hex entity for 'j'
+        '[x](java&#09;script:alert(1))', // TAB inside the scheme
+        '[x](javascript&colon;alert(1))', // entity for the ':' itself
+      ];
+      for (const md of payloads) {
+        const html = service.render(md);
+        expect(html, md).toContain('href="#"');
+        // The decoded scheme must not survive as a usable javascript: link.
+        expect(html, md).not.toMatch(/href="[^"]*avascript:alert/i);
+      }
+    });
+
+    it('still passes a legit https URL containing query-param ampersands', () => {
+      const html = service.render('[x](https://example.com/s?a=1&b=2)');
+      expect(html).toContain('href="https://example.com/s?a=1&b=2"');
+    });
+  });
+
+  describe('heading id de-duplication', () => {
+    it('suffixes duplicate heading slugs so every section is addressable', () => {
+      const { html, toc } = service.renderWithToc('## Overview\n\nfoo\n\n## Overview\n\nbar');
+      expect(html).toContain('id="overview"');
+      expect(html).toContain('id="overview-1"');
+      expect(toc.map((t) => t.id)).toEqual(['overview', 'overview-1']);
+      // data-anchor-id must track the unique id, not collide.
+      expect(html).toContain('data-anchor-id="overview-1"');
+    });
+
+    it('resets the slug counter between renders', () => {
+      service.render('## Intro');
+      const second = service.render('## Intro');
+      // A fresh render starts the counter over — no leaked `-1` suffix.
+      expect(second).toContain('id="intro"');
+      expect(second).not.toContain('id="intro-1"');
+    });
   });
 });
