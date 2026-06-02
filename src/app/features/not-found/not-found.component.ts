@@ -46,9 +46,9 @@ export class NotFoundComponent {
     leaves), still need to refresh the displayed path; we still listen
     to `NavigationEnd` for that.
   */
-  private liveUrl = signal('');
+  private readonly liveUrl = signal('');
 
-  private routerUrl = toSignal(
+  private readonly routerUrl = toSignal(
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
       map((e) => e.urlAfterRedirects),

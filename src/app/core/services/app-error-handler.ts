@@ -1,4 +1,5 @@
-import { ErrorHandler, Injectable, PLATFORM_ID, inject } from '@angular/core';
+import type { ErrorHandler } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ErrorToastService } from './error-toast.service';
 import { environment } from '@env/environment';

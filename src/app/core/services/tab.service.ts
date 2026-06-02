@@ -35,8 +35,8 @@ const HERO_TAB: EditorTab = {
 export class TabService {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private tabs = signal<EditorTab[]>([]);
-  private activeId = signal<string>('');
+  private readonly tabs = signal<EditorTab[]>([]);
+  private readonly activeId = signal<string>('');
 
   /** Read-only view of the current tab list, in display order. */
   readonly openTabs = computed(() => this.tabs());

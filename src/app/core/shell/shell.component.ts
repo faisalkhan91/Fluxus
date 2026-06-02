@@ -91,7 +91,7 @@ export class ShellComponent {
    * Using `viewChild` keeps the wiring local to the shell instead of
    * routing through a service for what is essentially a UI-glue call.
    */
-  private palette = viewChild.required<CommandPaletteComponent>(CommandPaletteComponent);
+  private readonly palette = viewChild.required<CommandPaletteComponent>(CommandPaletteComponent);
 
   onResumeDownload(): void {
     if (this.isBrowser) {

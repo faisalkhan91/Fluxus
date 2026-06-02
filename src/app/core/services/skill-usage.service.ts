@@ -53,7 +53,7 @@ export class SkillUsageService {
    * Pre-bucketing means the per-skill loop in `usageBySlug` is O(skills *
    * variants) instead of O(skills * projects * tags).
    */
-  private projectsBySlug = computed<Map<string, Project[]>>(() => {
+  private readonly projectsBySlug = computed<Map<string, Project[]>>(() => {
     const map = new Map<string, Project[]>();
     for (const project of this.projectsData.projects()) {
       for (const tag of project.tags) {
@@ -68,7 +68,7 @@ export class SkillUsageService {
   });
 
   /** Same shape as `projectsBySlug`, but keyed off published blog posts. */
-  private postsBySlug = computed<Map<string, BlogPost[]>>(() => {
+  private readonly postsBySlug = computed<Map<string, BlogPost[]>>(() => {
     const map = new Map<string, BlogPost[]>();
     for (const post of this.blog.posts()) {
       for (const tag of post.tags) {

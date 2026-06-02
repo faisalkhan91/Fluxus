@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import type { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, computed, signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
 import { ShellComponent } from './shell.component';

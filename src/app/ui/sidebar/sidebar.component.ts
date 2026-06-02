@@ -40,15 +40,15 @@ export class SidebarComponent {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
-  items = input.required<SidebarItem[]>();
-  collapsed = input(false);
+  readonly items = input.required<SidebarItem[]>();
+  readonly collapsed = input(false);
   /**
    * Currently-active theme definition. Drives the icon (sun on dark themes
    * = "next is light", moon on light themes = "next is dark") and the
    * inline label. Required so the sidebar never has to guess; the shell
    * always has a definite ThemeService reading available.
    */
-  currentTheme = input.required<ThemeDef>();
+  readonly currentTheme = input.required<ThemeDef>();
   resumeClicked = output<void>();
   /** Quick swap to the user's last pick within the opposite scheme. */
   themeToggled = output<void>();
@@ -59,7 +59,7 @@ export class SidebarComponent {
   themePickerRequested = output<void>();
 
   /** Computed shorthand for the template; keeps the binding boilerplate down. */
-  protected isDark = computed<boolean>(() => this.currentTheme().scheme === 'dark');
+  protected readonly isDark = computed<boolean>(() => this.currentTheme().scheme === 'dark');
 
   /**
    * Click handler that lets a single visible button cover both default
@@ -85,8 +85,8 @@ export class SidebarComponent {
     class asynchronously after navigation; reading offsetTop / offsetHeight
     inside a microtask ensures the layout is committed before we read.
   */
-  protected indicatorY = signal(0);
-  protected indicatorHeight = signal(0);
+  protected readonly indicatorY = signal(0);
+  protected readonly indicatorHeight = signal(0);
 
   constructor() {
     // `afterNextRender` (browser-only, never runs during SSR) wires the

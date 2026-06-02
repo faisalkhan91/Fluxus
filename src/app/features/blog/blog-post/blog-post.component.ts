@@ -96,7 +96,7 @@ export class BlogPostComponent {
    * reactivity declarations co-located with the component's state and
    * makes the dependency graph easier to reason about.
    */
-  private postLayout = signal<HTMLElement | null>(null);
+  private readonly postLayout = signal<HTMLElement | null>(null);
 
   /**
    * Tracks every fire-and-forget `setTimeout` scheduled by the component
@@ -107,7 +107,7 @@ export class BlogPostComponent {
    */
   private timers = new Set<ReturnType<typeof setTimeout>>();
 
-  protected slug = toSignal(this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')), {
+  protected readonly slug = toSignal(this.route.paramMap.pipe(map((p) => p.get('slug') ?? '')), {
     initialValue: '',
   });
 

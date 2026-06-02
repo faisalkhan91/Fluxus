@@ -1,3 +1,4 @@
+import type { ElementRef } from '@angular/core';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -5,7 +6,6 @@ import {
   signal,
   computed,
   viewChild,
-  ElementRef,
   afterNextRender,
   PLATFORM_ID,
   DestroyRef,
@@ -29,12 +29,12 @@ export class CommandPaletteComponent {
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  protected dialog = viewChild<ElementRef<HTMLDialogElement>>('dialog');
-  protected input = viewChild<ElementRef<HTMLInputElement>>('input');
+  protected readonly dialog = viewChild<ElementRef<HTMLDialogElement>>('dialog');
+  protected readonly input = viewChild<ElementRef<HTMLInputElement>>('input');
 
-  protected open = signal(false);
-  protected query = signal('');
-  protected highlighted = signal(0);
+  protected readonly open = signal(false);
+  protected readonly query = signal('');
+  protected readonly highlighted = signal(0);
 
   /**
    * Element that owned focus when the palette opened — restored when
@@ -45,7 +45,7 @@ export class CommandPaletteComponent {
    */
   private previouslyFocused: HTMLElement | null = null;
 
-  protected filtered = computed<CommandItem[]>(() => {
+  protected readonly filtered = computed<CommandItem[]>(() => {
     const q = this.query().trim().toLowerCase();
     const all = this.commandCatalog.items();
     if (!q) return all;
@@ -64,7 +64,7 @@ export class CommandPaletteComponent {
    * readers announce arrow-key movement inside the listbox even though
    * keyboard focus stays on the input. WAI-ARIA combobox/listbox pattern.
    */
-  protected activeDescendantId = computed<string | null>(() => {
+  protected readonly activeDescendantId = computed<string | null>(() => {
     const list = this.filtered();
     if (list.length === 0) return null;
     const item = list[Math.min(this.highlighted(), list.length - 1)];

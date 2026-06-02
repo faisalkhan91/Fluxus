@@ -88,8 +88,8 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillBadgeComponent {
-  name = input.required<string>();
-  iconSrc = input<string>();
+  readonly name = input.required<string>();
+  readonly iconSrc = input<string>();
   /**
    * `routerLink` target for the card-wide click area — typically
    * `/projects/tag/<slug>`. When omitted, the tile stays a static
@@ -97,32 +97,32 @@ export class SkillBadgeComponent {
    * stretched `::after` on the projects-caption anchor, so we never
    * nest anchors.
    */
-  href = input<string>();
+  readonly href = input<string>();
   /** Renders the "N projects" caption pill when > 0. */
-  projectsCount = input<number>(0);
+  readonly projectsCount = input<number>(0);
   /** Renders the "M posts" caption pill when > 0. */
-  postsCount = input<number>(0);
+  readonly postsCount = input<number>(0);
   /**
    * Optional `routerLink` for the posts caption pill — typically
    * `/blog/tag/<slug>`. When omitted, the count renders as plain text.
    */
-  postsHref = input<string>();
+  readonly postsHref = input<string>();
   /** Surfaced via the native `title` attribute on hover. */
-  tagline = input<string>();
+  readonly tagline = input<string>();
   /**
    * When true, applies the `--icon-mono-filter` CSS token to the icon
    * so single-colour brand SVGs (Kafka, Cursor, Splunk, …) stay
    * visible against dark surfaces. The token is `none` on light
    * themes so coloured logos are never touched.
    */
-  mono = input<boolean>(false);
+  readonly mono = input<boolean>(false);
 
-  protected projectsAriaLabel = computed(() => {
+  protected readonly projectsAriaLabel = computed(() => {
     const n = this.projectsCount();
     return `${this.name()} — view ${n} ${n === 1 ? 'project' : 'projects'}`;
   });
 
-  protected postsAriaLabel = computed(() => {
+  protected readonly postsAriaLabel = computed(() => {
     const n = this.postsCount();
     return `${n} ${n === 1 ? 'post' : 'posts'} tagged ${this.name()}`;
   });

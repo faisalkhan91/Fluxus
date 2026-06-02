@@ -290,7 +290,7 @@ export class SkillsListViewComponent {
   private skillsData = inject(SkillsDataService);
   private usage = inject(SkillUsageService);
 
-  protected rows = computed<Row[]>(() => {
+  protected readonly rows = computed<Row[]>(() => {
     const out: Row[] = [];
     for (const cat of this.skillsData.categories()) {
       cat.skills.forEach((skill, idx) => {

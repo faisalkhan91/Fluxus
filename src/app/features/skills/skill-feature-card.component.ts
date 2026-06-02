@@ -283,26 +283,26 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillFeatureCardComponent {
-  name = input.required<string>();
-  iconSrc = input<string>();
-  tagline = input<string>();
-  since = input<number>();
-  href = input<string>();
-  projectsCount = input<number>(0);
-  postsCount = input<number>(0);
-  postsHref = input<string>();
+  readonly name = input.required<string>();
+  readonly iconSrc = input<string>();
+  readonly tagline = input<string>();
+  readonly since = input<number>();
+  readonly href = input<string>();
+  readonly projectsCount = input<number>(0);
+  readonly postsCount = input<number>(0);
+  readonly postsHref = input<string>();
   /**
    * When true, applies `--icon-mono-filter` to the icon so single-colour
    * brand SVGs stay visible on dark themes. See `Skill.mono`.
    */
-  mono = input<boolean>(false);
+  readonly mono = input<boolean>(false);
 
-  protected projectsAriaLabel = computed(() => {
+  protected readonly projectsAriaLabel = computed(() => {
     const n = this.projectsCount();
     return `${this.name()} — view ${n} ${n === 1 ? 'project' : 'projects'}`;
   });
 
-  protected postsAriaLabel = computed(() => {
+  protected readonly postsAriaLabel = computed(() => {
     const n = this.postsCount();
     return `${n} ${n === 1 ? 'post' : 'posts'} tagged ${this.name()}`;
   });

@@ -24,9 +24,9 @@ export type HeadingLevel = 1 | 2;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SectionHeaderComponent {
-  title = input.required<string>();
-  headingId = input<string>();
-  subtitle = input<string>();
-  decoration = input<string>();
-  level = input<HeadingLevel>(2);
+  readonly title = input.required<string>();
+  readonly headingId = input<string>();
+  readonly subtitle = input<string>();
+  readonly decoration = input<string>();
+  readonly level = input<HeadingLevel>(2);
 }

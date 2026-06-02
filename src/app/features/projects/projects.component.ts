@@ -91,11 +91,11 @@ export class ProjectsComponent {
     SSR render before signal hydrates), `width: 0` keeps the bar
     hidden — matches the tab-bar contract.
   */
-  protected sortIndicatorX = signal(0);
-  protected sortIndicatorWidth = signal(0);
-  protected sortRow = viewChild<ElementRef<HTMLElement>>('sortRow');
+  protected readonly sortIndicatorX = signal(0);
+  protected readonly sortIndicatorWidth = signal(0);
+  protected readonly sortRow = viewChild<ElementRef<HTMLElement>>('sortRow');
 
-  private expandedSet = signal(new Set<string>());
+  private readonly expandedSet = signal(new Set<string>());
 
   /** Query-driven sort key, defaulting to `featured` when absent or invalid. */
   protected readonly sort = toSignal(
