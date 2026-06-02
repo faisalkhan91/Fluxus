@@ -9,11 +9,11 @@ export interface ImageDim {
 }
 
 export const IMAGE_DIMS: Record<string, ImageDim> = {
-  'assets/images/achievements/certifications/aws-certified-cloud-practitioner.png': {
+  'assets/images/achievements/certifications/aws-certified-cloud-practitioner.webp': {
     w: 600,
     h: 600,
   },
-  'assets/images/achievements/certifications/CRLACertifiedL1.png': {
+  'assets/images/achievements/certifications/CRLACertifiedL1.webp': {
     w: 400,
     h: 400,
   },
@@ -22,24 +22,24 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
       w: 600,
       h: 600,
     },
-  'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.png': {
+  'assets/images/achievements/certifications/microsoft-certified-azure-ai-fundamentals.webp': {
     w: 600,
     h: 600,
   },
-  'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.png': {
+  'assets/images/achievements/certifications/microsoft-certified-azure-data-fundamentals.webp': {
     w: 600,
     h: 600,
   },
-  'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.png': {
+  'assets/images/achievements/certifications/microsoft-certified-azure-fundamentals.webp': {
     w: 600,
     h: 600,
   },
-  'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.png':
+  'assets/images/achievements/certifications/microsoft-certified-security-compliance-and-identity-fundamentals.webp':
     {
       w: 600,
       h: 600,
     },
-  'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.png': {
+  'assets/images/achievements/certifications/Splunk_Cloud_Administration_Badge.webp': {
     w: 600,
     h: 600,
   },
@@ -83,39 +83,35 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 1200,
     h: 630,
   },
-  'assets/images/portfolio/BacktrackingSearch.PNG': {
+  'assets/images/portfolio/BacktrackingSearch.webp': {
     w: 558,
     h: 247,
   },
-  'assets/images/portfolio/BookStore.png': {
+  'assets/images/portfolio/BookStore.webp': {
     w: 1519,
     h: 1324,
   },
-  'assets/images/portfolio/DictionaryApp.PNG': {
+  'assets/images/portfolio/DictionaryApp.webp': {
     w: 720,
     h: 622,
   },
-  'assets/images/portfolio/ImageGeneratorAI.png': {
+  'assets/images/portfolio/ImageGeneratorAI.webp': {
     w: 1200,
     h: 675,
   },
-  'assets/images/portfolio/InsecureFileExtraction.PNG': {
+  'assets/images/portfolio/InsecureFileExtraction.webp': {
     w: 900,
     h: 573,
   },
-  'assets/images/portfolio/JenkinsCICD.PNG': {
+  'assets/images/portfolio/JenkinsCICD.webp': {
     w: 945,
     h: 243,
   },
-  'assets/images/portfolio/LetterFrequencyAnalysis.PNG': {
-    w: 966,
-    h: 901,
-  },
-  'assets/images/portfolio/StormEvents.gif': {
+  'assets/images/portfolio/StormEvents.webp': {
     w: 853,
     h: 480,
   },
-  'assets/images/portfolio/TextAnalyzerAI.png': {
+  'assets/images/portfolio/TextAnalyzerAI.webp': {
     w: 1200,
     h: 675,
   },
