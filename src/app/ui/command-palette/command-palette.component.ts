@@ -14,6 +14,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { assertNever } from '@shared/utils/exhaustive.utils';
+import { scrollIntoViewIfPresent } from '@shared/utils/dom.utils';
 import { CommandCatalogService, type CommandItem } from './command-catalog.service';
 
 @Component({
@@ -203,10 +204,7 @@ export class CommandPaletteComponent {
       const id = this.activeDescendantId();
       if (!id) return;
       const target = this.dialog()?.nativeElement.querySelector(`#${id}`);
-      // jsdom (and a handful of older webviews) don't implement
-      // scrollIntoView. Guard so the method is a no-op there rather
-      // than crashing the keystroke pipeline.
-      target?.scrollIntoView?.({ block: 'nearest' });
+      scrollIntoViewIfPresent(target);
     });
   }
 

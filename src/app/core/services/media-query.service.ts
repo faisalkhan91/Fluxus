@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { hasMatchMedia } from '@shared/utils/motion.utils';
 
 export type BreakpointKey = 'mobile' | 'tablet' | 'desktop' | 'wide';
 
@@ -14,10 +15,6 @@ const DESKTOP_MAX = '(max-width: 1279px)';
 
 /** SSR default: assume wide/desktop layout for prerendered HTML. */
 const SSR_DEFAULT: BreakpointKey = 'wide';
-
-function hasMatchMedia(): boolean {
-  return typeof window !== 'undefined' && typeof window.matchMedia === 'function';
-}
 
 function resolveBreakpoint(): BreakpointKey {
   if (!hasMatchMedia()) return SSR_DEFAULT;

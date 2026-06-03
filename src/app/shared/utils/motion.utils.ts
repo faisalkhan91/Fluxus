@@ -10,12 +10,17 @@
  * cannot honour a per-client motion preference; let the client tier
  * make the call once the preference is reachable.
  */
+/**
+ * SSR-safe capability check for `window.matchMedia`. Returns `false` under
+ * SSR / non-browser execution. Shared by `prefersReducedMotion` here and by
+ * `MediaQueryService` so the guard can't drift between the two.
+ */
+export function hasMatchMedia(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function';
+}
+
 export function prefersReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  return hasMatchMedia() && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 type ViewTransitionCapableDocument = Document & {

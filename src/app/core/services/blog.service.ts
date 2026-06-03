@@ -2,28 +2,7 @@ import { Injectable, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import type { BlogPost } from '@shared/models/blog-post.model';
-
-/**
- * `YYYY-MM-DD` for "today" in UTC. The `posts.json` `date` field is also a
- * `YYYY-MM-DD` literal, so a lex comparison answers "has this post's calendar
- * day arrived yet?" without having to reason about timezones (matches the
- * technique already used in scripts/build-feed.mjs and scripts/build-sitemap.mjs).
- */
-function todayYmd(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-/**
- * Single source of truth for "should this post show on public surfaces?".
- * A post is public when it is not flagged as draft AND its publish date has
- * already arrived (calendar-day comparison). Used by `posts` directly and by
- * every consumer that flows through it — blog index, hero latest posts, tag
- * archive, command palette, related/adjacent/series helpers.
- */
-function isPublished(post: BlogPost, today: string): boolean {
-  if (post.draft) return false;
-  return post.date <= today;
-}
+import { isPostPublished, todayYmd } from '@shared/utils/blog.utils';
 
 /** How many recent posts the hero "latest" strip surfaces. */
 const LATEST_POSTS_LIMIT = 2;
@@ -116,7 +95,7 @@ export class BlogService {
   readonly posts = computed<BlogPost[]>(() => {
     if (!this.postsResource.hasValue()) return [];
     const today = this.todaySignal();
-    return this.sortByDateDesc(this.validatedPosts()).filter((p) => isPublished(p, today));
+    return this.sortByDateDesc(this.validatedPosts()).filter((p) => isPostPublished(p, today));
   });
 
   /** Includes drafts and scheduled posts. Useful for author-review tooling. */
