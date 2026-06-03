@@ -59,7 +59,7 @@
 }
 
 .projects-view-option:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .projects-sort-option:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -621,7 +621,7 @@ a.tag:focus-visible {
 }
 
 a.tag:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 

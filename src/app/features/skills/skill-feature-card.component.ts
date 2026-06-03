@@ -126,7 +126,7 @@ import { RouterLink } from '@angular/router';
       }
 
       .feature-card-link:focus-within {
-        outline: 2px solid var(--accent);
+        outline: 2px solid var(--focus-ring);
         outline-offset: 2px;
       }
 
@@ -255,7 +255,7 @@ import { RouterLink } from '@angular/router';
       }
 
       .feature-link:focus-visible {
-        outline: 2px solid var(--accent);
+        outline: 2px solid var(--focus-ring);
         outline-offset: 2px;
       }
 
