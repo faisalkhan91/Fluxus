@@ -1,5 +1,6 @@
 import { RenderMode, PrerenderFallback } from '@angular/ssr';
 import type { ServerRoute } from '@angular/ssr';
+import { slugify } from '@shared/utils/string.utils';
 
 /**
  * Read + parse `src/assets/blog/posts.json` with a descriptive error
@@ -55,13 +56,7 @@ export const serverRoutes: ServerRoute[] = [
       const today = new Date().toISOString().slice(0, 10);
       for (const p of posts.filter((p) => !p.draft && p.date <= today)) {
         for (const tag of p.tags ?? []) {
-          const slug = tag
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_]+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-+|-+$/g, '');
+          const slug = slugify(tag);
           if (slug) tags.add(slug);
         }
       }
@@ -84,13 +79,7 @@ export const serverRoutes: ServerRoute[] = [
       const tags = new Set<string>();
       for (const p of projects) {
         for (const tag of p.tags ?? []) {
-          const slug = tag
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_]+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-+|-+$/g, '');
+          const slug = slugify(tag);
           if (slug) tags.add(slug);
         }
       }
@@ -104,7 +93,9 @@ export const serverRoutes: ServerRoute[] = [
     async getPrerenderParams() {
       const { ProjectsDataService } = await import('./core/services/projects-data.service');
       const projects = new ProjectsDataService().projects();
-      return projects.filter((p) => !!p.slug).map((p) => ({ slug: p.slug as string }));
+      return projects
+        .filter((p): p is typeof p & { slug: string } => typeof p.slug === 'string')
+        .map((p) => ({ slug: p.slug }));
     },
   },
   {
