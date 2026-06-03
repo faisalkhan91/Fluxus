@@ -15,9 +15,8 @@ import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
-import { SkillsDataService } from '@core/services/skills-data.service';
+import { SkillUsageService } from '@core/services/skill-usage.service';
 import { SeoService } from '@core/services/seo.service';
-import { BlogService } from '@core/services/blog.service';
 import type { Project } from '@shared/models/project.model';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { slugify } from '@shared/utils/string.utils';
@@ -57,8 +56,7 @@ import { projectUrl } from '@shared/utils/url.utils';
 export class ProjectDetailComponent {
   private route = inject(ActivatedRoute);
   protected projectsData = inject(ProjectsDataService);
-  private skillsData = inject(SkillsDataService);
-  private blog = inject(BlogService);
+  private skillUsage = inject(SkillUsageService);
   private seo = inject(SeoService);
 
   protected slugify = slugify;
@@ -92,28 +90,12 @@ export class ProjectDetailComponent {
   readonly skillTags = computed<string[]>(() => {
     const p = this.project();
     if (!p) return [];
-    const skills = this.skillsData.categories().flatMap((c) => c.skills);
-    const knownSlugs = new Set<string>();
-    const aliasToCanonical = new Map<string, string>();
-    for (const s of skills) {
-      const canonical = slugify(s.name);
-      if (canonical) {
-        knownSlugs.add(canonical);
-        aliasToCanonical.set(canonical, canonical);
-      }
-      for (const alias of s.aliases ?? []) {
-        const a = slugify(alias);
-        if (!a) continue;
-        knownSlugs.add(a);
-        if (canonical) aliasToCanonical.set(a, canonical);
-      }
-    }
     const seen = new Set<string>();
     const out: string[] = [];
     for (const tag of p.tags) {
       const slug = slugify(tag);
-      if (!slug || !knownSlugs.has(slug)) continue;
-      const canonical = aliasToCanonical.get(slug) ?? slug;
+      if (!slug || !this.skillUsage.isKnownSkillSlug(slug)) continue;
+      const canonical = this.skillUsage.canonicalSkillSlug(slug);
       if (seen.has(canonical)) continue;
       seen.add(canonical);
       out.push(tag);
@@ -121,47 +103,21 @@ export class ProjectDetailComponent {
     return out;
   });
 
-  readonly skillAnchor = (tag: string): string => {
-    const slug = slugify(tag);
-    // Fold aliases back to the canonical skill so the anchor lands on
-    // the rendered badge id (see skills.component.html), even when the
-    // project tagged the alias spelling.
-    const skills = this.skillsData.categories().flatMap((c) => c.skills);
-    for (const s of skills) {
-      if (slugify(s.name) === slug) return `/skills#skill-${slug}`;
-      for (const alias of s.aliases ?? []) {
-        if (slugify(alias) === slug) return `/skills#skill-${slugify(s.name)}`;
-      }
-    }
-    return `/skills#skill-${slug}`;
-  };
+  readonly skillAnchor = (tag: string): string =>
+    // Fold aliases back to the canonical skill so the anchor lands on the
+    // rendered badge id (see skills.component.html), even when the project
+    // tagged the alias spelling.
+    `/skills#skill-${this.skillUsage.canonicalSkillSlug(slugify(tag))}`;
 
   /**
-   * Blog posts that share at least one tag with this project. Uses the
-   * skill-usage index as a pre-built `tagSlug → posts[]` map so we don't
-   * re-traverse the posts on every render. De-duplicated; ordered by
-   * the order posts appear in the `BlogService`.
+   * Blog posts that share at least one tag with this project. Delegates to
+   * `SkillUsageService` so the one tag→post matching path is reused rather
+   * than re-implemented here. De-duplicated; ordered by `BlogService.posts()`.
    */
   readonly relatedPosts = computed<BlogPost[]>(() => {
     const p = this.project();
     if (!p) return [];
-    const wanted = new Set<string>();
-    for (const tag of p.tags) {
-      const slug = slugify(tag);
-      if (slug) wanted.add(slug);
-    }
-    if (wanted.size === 0) return [];
-    const matched = new Set<BlogPost>();
-    for (const post of this.blog.posts()) {
-      for (const tag of post.tags ?? []) {
-        const slug = slugify(tag);
-        if (slug && wanted.has(slug)) {
-          matched.add(post);
-          break;
-        }
-      }
-    }
-    return Array.from(matched);
+    return this.skillUsage.postsForTagSlugs(p.tags.map((tag) => slugify(tag)));
   });
 
   /**

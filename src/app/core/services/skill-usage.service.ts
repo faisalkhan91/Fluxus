@@ -111,6 +111,62 @@ export class SkillUsageService {
     if (!slug) return undefined;
     return this.usageBySlug()[slug];
   }
+
+  /**
+   * Memoized index of skill slugs: the set of every known slug (skill names
+   * and aliases) plus an alias→canonical map. Rebuilt once per
+   * `categories()` tick so `isKnownSkillSlug` / `canonicalSkillSlug` are O(1)
+   * — `ProjectDetailComponent` previously rebuilt this map on every render.
+   */
+  private readonly skillSlugIndex = computed(() => {
+    const known = new Set<string>();
+    const aliasToCanonical = new Map<string, string>();
+    for (const cat of this.skillsData.categories()) {
+      for (const skill of cat.skills) {
+        const canonical = slugify(skill.name);
+        if (canonical) {
+          known.add(canonical);
+          aliasToCanonical.set(canonical, canonical);
+        }
+        for (const alias of skill.aliases ?? []) {
+          const a = slugify(alias);
+          if (!a) continue;
+          known.add(a);
+          if (canonical) aliasToCanonical.set(a, canonical);
+        }
+      }
+    }
+    return { known, aliasToCanonical };
+  });
+
+  /** True when `slug` matches a known skill name or alias. */
+  isKnownSkillSlug(slug: string): boolean {
+    return this.skillSlugIndex().known.has(slug);
+  }
+
+  /**
+   * Fold a (possibly alias) skill slug to its canonical skill-name slug — the
+   * id the rendered badge carries (`#skill-<canonical>`). Returns the input
+   * unchanged when it isn't a known alias.
+   */
+  canonicalSkillSlug(slug: string): string {
+    return this.skillSlugIndex().aliasToCanonical.get(slug) ?? slug;
+  }
+
+  /**
+   * Published blog posts carrying at least one tag whose slug is in
+   * `tagSlugs`. De-duplicated and returned in `BlogService.posts()` order
+   * (date-descending). Lets callers (project detail) reuse the one
+   * tag→post matching path instead of re-implementing it.
+   */
+  postsForTagSlugs(tagSlugs: Iterable<string>): BlogPost[] {
+    const wanted = new Set<string>();
+    for (const slug of tagSlugs) if (slug) wanted.add(slug);
+    if (wanted.size === 0) return [];
+    return this.blog
+      .posts()
+      .filter((post) => (post.tags ?? []).some((t) => wanted.has(slugify(t))));
+  }
 }
 
 function resolveSkill(
