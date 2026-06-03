@@ -25,6 +25,9 @@ function isPublished(post: BlogPost, today: string): boolean {
   return post.date <= today;
 }
 
+/** How many recent posts the hero "latest" strip surfaces. */
+const LATEST_POSTS_LIMIT = 2;
+
 /**
  * Structural guard for a `posts.json` entry. The manifest is loaded as an
  * unchecked `httpResource<BlogPost[]>` typed cast, so a malformed entry
@@ -121,7 +124,7 @@ export class BlogService {
     this.postsResource.hasValue() ? this.sortByDateDesc(this.validatedPosts()) : [],
   );
 
-  readonly latestPosts = computed<BlogPost[]>(() => this.posts().slice(0, 2));
+  readonly latestPosts = computed<BlogPost[]>(() => this.posts().slice(0, LATEST_POSTS_LIMIT));
   readonly loading = computed<boolean>(() => this.postsResource.isLoading());
   readonly error = computed<string | null>(() =>
     this.postsResource.error() ? 'Failed to load blog posts' : null,
