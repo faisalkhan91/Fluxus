@@ -88,7 +88,7 @@
         <div class="latest-posts-row">
           @if (blog.loading() && !blog.latestPosts().length) {
             @for (i of skeletonSlots; track i) {
-              <ng-container *ngTemplateOutlet="blogSkeleton" />
+              <ng-container [ngTemplateOutlet]="blogSkeleton" />
             }
           } @else if (blog.latestPosts().length) {
             @for (post of blog.latestPosts(); track post.slug; let i = $index) {
@@ -124,7 +124,7 @@
         </h2>
         <div class="latest-posts-row">
           @for (i of skeletonSlots; track i) {
-            <ng-container *ngTemplateOutlet="blogSkeleton" />
+            <ng-container [ngTemplateOutlet]="blogSkeleton" />
           }
         </div>
       </div>
