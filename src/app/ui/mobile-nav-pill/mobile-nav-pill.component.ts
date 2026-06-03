@@ -124,7 +124,7 @@ export class MobileNavPillComponent {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationStart),
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
         if (this.menuOpen()) this.menuOpen.set(false);
