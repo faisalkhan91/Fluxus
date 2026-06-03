@@ -2,12 +2,11 @@ import {
   Component,
   ChangeDetectionStrategy,
   ElementRef,
-  PLATFORM_ID,
   inject,
   signal,
   computed,
 } from '@angular/core';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { SkillBadgeComponent } from '@ui/skill-badge/skill-badge.component';
@@ -17,7 +16,7 @@ import type { SkillUsage } from '@core/services/skill-usage.service';
 import { MediaQueryService } from '@core/services/media-query.service';
 import type { SkillCategory, Skill } from '@shared/models/skill.model';
 import { slugify } from '@shared/utils/string.utils';
-import { prefersReducedMotion } from '@shared/utils/motion.utils';
+import { applyViewTransition } from '@shared/utils/motion.utils';
 import { SkillFeatureCardComponent } from './skill-feature-card.component';
 import { SkillsListViewComponent } from './skills-list-view.component';
 
@@ -60,7 +59,6 @@ export class SkillsComponent {
   private readonly media = inject(MediaQueryService);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly expandedCategories = signal<Record<string, boolean>>({});
   protected readonly viewMode = signal<ViewMode>('grid');
 
@@ -165,33 +163,14 @@ export class SkillsComponent {
 
   protected setViewMode(mode: ViewMode): void {
     /*
-      Wrap the mode swap in `document.startViewTransition` so the
-      `view-transition-name: skills-results` region cross-fades
-      between the grid and list subtrees. Same pattern + same
-      timing the Projects page already uses for its list↔grid
-      toggle (Angular's `withViewTransitions()` handles that one
-      via the route navigation; this one is signal-driven so we
-      manage the transition ourselves). The two pages now feel
-      cohesive across the IDE-tab metaphor.
-
-      Falls back to an instant `viewMode.set` when:
-        - the API isn't supported (Firefox <132, older Safari)
-        - reduced-motion is on (WCAG 2.3.3)
-        - SSR / non-browser rendering
+      Cross-fade the `view-transition-name: skills-results` region
+      between the grid and list subtrees. This swap is signal-driven,
+      so Angular's route-level `withViewTransitions()` doesn't cover it
+      and we drive the transition ourselves via the shared helper, which
+      falls back to an instant set when the API is unsupported, the user
+      prefers reduced motion, or we're rendering on the server.
     */
-    const supportsViewTransition =
-      this.isBrowser &&
-      'startViewTransition' in this.document &&
-      typeof (this.document as Document & { startViewTransition?: unknown }).startViewTransition ===
-        'function';
-
-    if (supportsViewTransition && !prefersReducedMotion()) {
-      (
-        this.document as Document & { startViewTransition: (cb: () => void) => unknown }
-      ).startViewTransition(() => this.viewMode.set(mode));
-    } else {
-      this.viewMode.set(mode);
-    }
+    applyViewTransition(this.document, () => this.viewMode.set(mode));
   }
 
   /**
