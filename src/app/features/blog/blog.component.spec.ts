@@ -5,25 +5,28 @@ import { CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { BlogComponent } from './blog.component';
 import { BlogService } from '@core/services/blog.service';
+import { createMockBlogPost } from '@testing/blog-mocks';
 
+// Built via the shared factory (resilient to new required BlogPost fields).
+// Kept bespoke rather than reusing the shared MOCK_POSTS catalog because the
+// cover-vs-OG-fallback assertions need one post WITH a `cover` and one without.
 const MOCK_POSTS = [
-  {
+  createMockBlogPost({
     slug: 'post-one',
     title: 'Post One',
     date: '2025-01-01',
     excerpt: 'First',
     tags: ['angular'],
-    readingTime: '3 min',
     cover: 'assets/images/blog/cover-one.webp',
-  },
-  {
+  }),
+  createMockBlogPost({
     slug: 'post-two',
     title: 'Post Two',
     date: '2025-02-01',
     excerpt: 'Second',
     tags: ['go'],
     readingTime: '5 min',
-  },
+  }),
 ];
 
 const mockBlog = {
