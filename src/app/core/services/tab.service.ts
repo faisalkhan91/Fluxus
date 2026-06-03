@@ -3,14 +3,23 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { EditorTab } from '@ui/editor-tab-bar/editor-tab-bar.component';
+import { routes } from '../../app.routes';
 
 type TabData = Pick<EditorTab, 'label' | 'ext' | 'color'>;
 
+// Source the pinned Welcome tab's label/ext/color from the home ('') route's
+// `data.tab` so it can't drift from the route definition. Falls back to the
+// historical literals if the route shape ever changes (app.routes only
+// lazy-imports components, so this static import introduces no cycle).
+const HOME_TAB = routes[0]?.children?.find((r) => r.path === '' && r.pathMatch === 'full')?.data?.[
+  'tab'
+] as Partial<TabData> | undefined;
+
 const HERO_TAB: EditorTab = {
   id: 'hero',
-  label: 'Welcome',
-  ext: '.tsx',
-  color: '#61dafb',
+  label: HOME_TAB?.label ?? 'Welcome',
+  ext: HOME_TAB?.ext ?? '.tsx',
+  color: HOME_TAB?.color ?? '#61dafb',
   route: '/',
 };
 

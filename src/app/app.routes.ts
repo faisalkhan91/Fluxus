@@ -1,6 +1,12 @@
 import type { Routes } from '@angular/router';
 import { yearsOfExperience } from './shared/utils/career.utils';
 
+// Child routes that share a section reuse one tab object so a label/ext/color
+// tweak lands in a single place. The editor-tab resolver reads these by key,
+// so sharing the object reference across sibling routes is safe.
+const PROJECTS_TAB = { label: 'Projects', ext: '.git', color: '#e64a19' };
+const BLOG_TAB = { label: 'Blog', ext: '.rss', color: '#f78c40' };
+
 export const routes: Routes = [
   {
     path: '',
@@ -61,7 +67,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/projects/projects.component').then((m) => m.ProjectsComponent),
         data: {
-          tab: { label: 'Projects', ext: '.git', color: '#e64a19' },
+          tab: PROJECTS_TAB,
           seo: {
             title: 'Projects',
             description:
@@ -76,7 +82,7 @@ export const routes: Routes = [
             (m) => m.ProjectsTagComponent,
           ),
         data: {
-          tab: { label: 'Projects', ext: '.git', color: '#e64a19' },
+          tab: PROJECTS_TAB,
           seo: { dynamicMeta: true },
         },
       },
@@ -87,7 +93,7 @@ export const routes: Routes = [
             (m) => m.ProjectDetailComponent,
           ),
         data: {
-          tab: { label: 'Projects', ext: '.git', color: '#e64a19' },
+          tab: PROJECTS_TAB,
           seo: { dynamicMeta: true },
         },
       },
@@ -122,7 +128,7 @@ export const routes: Routes = [
         path: 'blog',
         loadComponent: () => import('./features/blog/blog.component').then((m) => m.BlogComponent),
         data: {
-          tab: { label: 'Blog', ext: '.rss', color: '#f78c40' },
+          tab: BLOG_TAB,
           seo: {
             title: 'Blog',
             description:
@@ -135,7 +141,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/blog/blog-tag/blog-tag.component').then((m) => m.BlogTagComponent),
         data: {
-          tab: { label: 'Blog', ext: '.rss', color: '#f78c40' },
+          tab: BLOG_TAB,
           seo: { dynamicMeta: true },
         },
       },
@@ -144,7 +150,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/blog/blog-post/blog-post.component').then((m) => m.BlogPostComponent),
         data: {
-          tab: { label: 'Blog', ext: '.rss', color: '#f78c40' },
+          tab: BLOG_TAB,
           seo: { dynamicMeta: true },
         },
       },
