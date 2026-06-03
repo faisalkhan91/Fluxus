@@ -9,11 +9,11 @@
  *
  * Run via `npm run build:image-dims` (also chained from `build:prod`).
  */
-import { readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, sep, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import prettier from 'prettier';
 import sharp from 'sharp';
+import { walk } from './lib/fs.mjs';
+import { writeFormatted } from './lib/emit.mjs';
 
 const ROOT = fileURLToPath(new URL('../src/assets/images', import.meta.url));
 const OUT = fileURLToPath(
@@ -21,17 +21,6 @@ const OUT = fileURLToPath(
 );
 
 const SUPPORTED = new Set(['.webp', '.png', '.jpg', '.jpeg', '.gif', '.avif', '.svg']);
-
-function* walk(dir) {
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) {
-      yield* walk(full);
-    } else {
-      yield full;
-    }
-  }
-}
 
 function toPosixAssetPath(absolute) {
   // We want keys like `assets/images/blog/foo.webp`, identical to what the
@@ -78,13 +67,5 @@ const rawBody =
 // across regenerations and `npm run lint` (which calls `prettier --check`)
 // stays green. Falling back to the raw JSON.stringify output keeps the script
 // usable if prettier isn't installed; CI will surface the drift in that case.
-let body = rawBody;
-try {
-  const config = (await prettier.resolveConfig(OUT)) ?? {};
-  body = await prettier.format(rawBody, { ...config, filepath: OUT });
-} catch {
-  /* prettier unavailable — emit raw output and let lint flag the drift */
-}
-
-writeFileSync(OUT, body, 'utf-8');
+await writeFormatted(OUT, rawBody);
 console.log(`Wrote ${OUT} with ${processed} image dim entries.`);

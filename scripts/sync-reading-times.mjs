@@ -17,6 +17,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { formatWithPrettier } from './lib/emit.mjs';
 
 const ROOT = process.cwd();
 const MANIFEST = join(ROOT, 'src/assets/blog/posts.json');
@@ -87,15 +88,7 @@ for (const post of manifest) {
 // (printWidth 100) and the diff matches `npm run format:check`. Falling back
 // to plain JSON.stringify keeps the script usable if prettier isn't installed.
 const before = await readFile(MANIFEST, 'utf-8');
-let serialized = JSON.stringify(manifest, null, 2) + '\n';
-try {
-  const prettier = await import('prettier');
-  const config = (await prettier.resolveConfig(MANIFEST)) ?? {};
-  serialized = await prettier.format(serialized, { ...config, filepath: MANIFEST });
-} catch {
-  // Prettier missing — keep the JSON.stringify output. CI will surface the
-  // formatting drift via `npm run format:check`.
-}
+const serialized = await formatWithPrettier(JSON.stringify(manifest, null, 2) + '\n', MANIFEST);
 if (serialized !== before) {
   await writeFile(MANIFEST, serialized, 'utf-8');
 }

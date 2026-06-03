@@ -25,9 +25,10 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve, relative } from 'node:path';
 import { JSDOM } from 'jsdom';
+import { walk } from './lib/fs.mjs';
+import { SITE_URL } from './lib/config.mjs';
 
 const BUILD_DIR = resolve('dist/fluxus/browser');
-const SITE_URL = 'https://faisalkhan.dpdns.org';
 const BLOG_DIR = join(BUILD_DIR, 'blog');
 
 const ROUTES = [
@@ -77,6 +78,22 @@ function attr(el, name) {
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Extract the trimmed text of every non-empty <h1> in the raw HTML. We scan
+ * the markup directly (not via jsdom) because jsdom doesn't reliably traverse
+ * Angular custom elements in the prerendered output.
+ */
+function extractH1Texts(html) {
+  return (html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) ?? [])
+    .map((m) =>
+      m
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;|&#?\w+;/g, ' ')
+        .trim(),
+    )
+    .filter((t) => t.length > 0);
 }
 
 function checkRoute(route) {
@@ -129,15 +146,7 @@ function checkRoute(route) {
 
   // h1 (rg over raw HTML — jsdom doesn't traverse Angular custom elements
   // reliably, so we scan the markup directly for <h1>...</h1> with text)
-  const h1Matches = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) ?? [];
-  const h1Texts = h1Matches
-    .map((m) =>
-      m
-        .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;|&#?\w+;/g, ' ')
-        .trim(),
-    )
-    .filter((t) => t.length > 0);
+  const h1Texts = extractH1Texts(html);
   if (route.h1Required) {
     if (h1Texts.length === 0) {
       pushIssue(route.path, 'no <h1> with rendered text on route');
@@ -245,32 +254,13 @@ function checkBlogPost(slug) {
   // h1 with rendered text. The post title comes from the markdown body, so
   // a missing <h1> means either the markdown forgot the heading or the
   // SSR markdown render path silently returned empty content.
-  const h1Matches = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g) ?? [];
-  const h1Texts = h1Matches
-    .map((m) =>
-      m
-        .replace(/<[^>]+>/g, '')
-        .replace(/&nbsp;|&#?\w+;/g, ' ')
-        .trim(),
-    )
-    .filter((t) => t.length > 0);
+  const h1Texts = extractH1Texts(html);
   if (h1Texts.length === 0) {
     pushIssue(route, 'no <h1> with rendered text on blog post (check markdown body)');
   } else if (h1Texts.length > 1) {
     pushIssue(route, `multiple non-empty <h1> elements (${h1Texts.length}): ${h1Texts.join(', ')}`);
   } else {
     pushWin(route, `<h1> OK ("${h1Texts[0].slice(0, 40)}")`);
-  }
-}
-
-/**
- * Recursively yields every prerendered *.html file under the build dir.
- */
-function* walkHtmlFiles(dir) {
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) yield* walkHtmlFiles(full);
-    else if (entry.endsWith('.html')) yield full;
   }
 }
 
@@ -359,7 +349,7 @@ if (blogSlugs.length === 0) {
 // Dead-link + broken-image sweep across every prerendered page (routes, blog
 // posts, project detail pages, tag archives).
 let linkPages = 0;
-for (const absFile of walkHtmlFiles(BUILD_DIR)) {
+for (const absFile of walk(BUILD_DIR, { filter: (name) => name.endsWith('.html') })) {
   try {
     checkLinksAndImages(absFile);
     linkPages++;

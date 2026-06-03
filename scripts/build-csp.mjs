@@ -21,11 +21,11 @@
  *
  * Run via `npm run build:prod` (chained after `inject-meta.mjs`).
  */
-import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { DIST_BROWSER, requireDistBrowser, walk } from './lib/fs.mjs';
+import { SCRIPT_TAG, isInlineExecutable, sha256Token } from './lib/csp.mjs';
 
-const DIST_HTML = join(process.cwd(), 'dist/fluxus/browser');
 const OUT_DIR = join(process.cwd(), 'dist/fluxus');
 const OUT_FILE = join(OUT_DIR, 'security-headers.conf');
 
@@ -37,52 +37,17 @@ const BEASTIES_ONLOAD_HASH = "'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEY
 const CLOUDFLARE_INSIGHTS_SCRIPT_SRC = 'https://static.cloudflareinsights.com';
 const CLOUDFLARE_INSIGHTS_CONNECT_SRC = 'https://cloudflareinsights.com';
 
-if (!statSync(DIST_HTML, { throwIfNoEntry: false })?.isDirectory()) {
-  console.error(`dist/fluxus/browser/ does not exist — run \`ng build\` first.`);
-  process.exit(1);
-}
-
-function* walk(dir) {
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) yield* walk(full);
-    else if (name.endsWith('.html')) yield full;
-  }
-}
-
-const SCRIPT_TAG = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
-
-function isInlineExecutable(attrs, body) {
-  // 1. External scripts (has src=) are handled by 'self', no hash needed.
-  if (/\bsrc\s*=/i.test(attrs)) return false;
-
-  // 2. Only hash executable scripts. Data blocks like application/ld+json or
-  // application/json (Angular TransferState) are not executed by the browser
-  // as JS and thus don't trigger CSP script-src violations.
-  const typeMatch = attrs.match(/type\s*=\s*["']?([^"'\s>]+)["']?/i);
-  const type = typeMatch ? typeMatch[1].toLowerCase() : '';
-  const executableTypes = [
-    '',
-    'text/javascript',
-    'application/javascript',
-    'application/ecmascript',
-    'text/ecmascript',
-    'module',
-  ];
-
-  return executableTypes.includes(type);
-}
+requireDistBrowser();
 
 const hashes = new Set();
 
-for (const file of walk(DIST_HTML)) {
+for (const file of walk(DIST_BROWSER, { filter: (name) => name.endsWith('.html') })) {
   const html = readFileSync(file, 'utf-8');
   for (const match of html.matchAll(SCRIPT_TAG)) {
     const [, attrs, body] = match;
-    if (!isInlineExecutable(attrs, body)) continue;
+    if (!isInlineExecutable(attrs)) continue;
     if (!body) continue;
-    const digest = createHash('sha256').update(body, 'utf-8').digest('base64');
-    hashes.add(`'sha256-${digest}'`);
+    hashes.add(sha256Token(body));
   }
 }
 

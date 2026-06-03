@@ -7,16 +7,15 @@
  *
  * Run via `npm run build:prod` (chained after `inject-meta.mjs`).
  */
-import { readFile, writeFile, stat } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { createRequire } from 'node:module';
 import { loadProjectTagSlugs, loadProjectEntries, slugify } from './lib/projects.mjs';
-
-const require = createRequire(import.meta.url);
-const { siteUrl: SITE_URL } = require('../site.config.json');
+import { SITE_URL } from './lib/config.mjs';
+import { requireDistBrowser } from './lib/fs.mjs';
+import { loadPosts, isPublished, todayYmd } from './lib/posts.mjs';
+import { escapeXmlText } from './lib/html.mjs';
 
 const DIST_SITEMAP = join(process.cwd(), 'dist/fluxus/browser/sitemap.xml');
-const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
 
 // Fail fast if the dist directory is missing so an out-of-order
 // invocation (e.g. someone running `node scripts/build-sitemap.mjs`
@@ -24,12 +23,7 @@ const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
 // loading the project catalog, and building the full XML before
 // discovering it has nowhere to write. The previous shape ran the
 // whole pipeline first and threw away the result.
-try {
-  await stat(join(process.cwd(), 'dist/fluxus/browser'));
-} catch {
-  console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
-  process.exit(1);
-}
+requireDistBrowser();
 
 // Tuple of [path, priority]. Order is the order they appear in the sitemap.
 // Keep in sync with src/app/app.routes.ts. Verified by the contract test in
@@ -45,23 +39,19 @@ const STATIC_ROUTES = [
   ['/blog', '0.9'],
 ];
 
-const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'));
-
-function escape(value) {
-  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+const posts = await loadPosts();
 
 function urlEntry(loc, priority, lastmod) {
-  const lastmodTag = lastmod ? `<lastmod>${escape(lastmod)}</lastmod>` : '';
-  return `  <url><loc>${escape(loc)}</loc>${lastmodTag}<priority>${priority}</priority></url>`;
+  const lastmodTag = lastmod ? `<lastmod>${escapeXmlText(lastmod)}</lastmod>` : '';
+  return `  <url><loc>${escapeXmlText(loc)}</loc>${lastmodTag}<priority>${priority}</priority></url>`;
 }
 
-const today = new Date().toISOString().slice(0, 10);
+const today = todayYmd();
 // Scheduled posts (date in the future) are excluded alongside drafts so the
 // sitemap only advertises URLs whose public metadata is also already live.
 // Direct /blog/<slug> URLs for those posts are still prerendered for author
 // review — see app.routes.server.ts — they just don't get search-indexed.
-const livePosts = posts.filter((p) => !p.draft && p.date <= today);
+const livePosts = posts.filter((p) => isPublished(p, today));
 
 // Unique tag slugs across all non-draft posts (matches the prerender list).
 const tagSlugs = Array.from(new Set(livePosts.flatMap((p) => (p.tags ?? []).map(slugify))))
