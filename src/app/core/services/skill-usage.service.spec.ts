@@ -195,4 +195,39 @@ describe('SkillUsageService', () => {
     const map = service.usageBySlug();
     expect(Object.keys(map).filter((s) => s === 'rust').length).toBe(1);
   });
+
+  describe('isKnownSkillSlug / canonicalSkillSlug', () => {
+    it('recognises skill-name and alias slugs', () => {
+      expect(service.isKnownSkillSlug('rust')).toBe(true);
+      expect(service.isKnownSkillSlug('html5')).toBe(true);
+      expect(service.isKnownSkillSlug('html')).toBe(true); // alias
+      expect(service.isKnownSkillSlug('cobol')).toBe(false);
+    });
+
+    it('folds an alias slug to its canonical skill slug', () => {
+      expect(service.canonicalSkillSlug('html')).toBe('html5');
+      expect(service.canonicalSkillSlug('rust')).toBe('rust');
+      expect(service.canonicalSkillSlug('unknown')).toBe('unknown');
+    });
+  });
+
+  describe('postsForTagSlugs', () => {
+    it('returns posts sharing any wanted tag slug, deduped in posts() order', () => {
+      expect(service.postsForTagSlugs(['rust']).map((p) => p.slug)).toEqual([
+        'rusty-thoughts',
+        'ts-style-guide',
+      ]);
+      // ts-style-guide is tagged both Rust + TypeScript — appears once.
+      expect(service.postsForTagSlugs(['rust', 'typescript']).map((p) => p.slug)).toEqual([
+        'rusty-thoughts',
+        'ts-style-guide',
+      ]);
+    });
+
+    it('returns [] for an empty or non-matching slug set', () => {
+      expect(service.postsForTagSlugs([])).toEqual([]);
+      expect(service.postsForTagSlugs([''])).toEqual([]);
+      expect(service.postsForTagSlugs(['nonexistent'])).toEqual([]);
+    });
+  });
 });

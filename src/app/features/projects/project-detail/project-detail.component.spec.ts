@@ -10,7 +10,6 @@ import { BehaviorSubject } from 'rxjs';
 import { ProjectDetailComponent } from './project-detail.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
-import { SkillUsageService } from '@core/services/skill-usage.service';
 import { BlogService } from '@core/services/blog.service';
 import type { Project } from '@shared/models/project.model';
 import { environment } from '@env/environment';
@@ -108,10 +107,8 @@ describe('ProjectDetailComponent', () => {
         { provide: ActivatedRoute, useValue: { paramMap: paramMapSubject.asObservable() } },
         { provide: ProjectsDataService, useValue: { projects: signal(MOCK_PROJECTS) } },
         { provide: SkillsDataService, useValue: MOCK_SKILLS },
-        {
-          provide: SkillUsageService,
-          useValue: { usageBySlug: signal({}), usageFor: () => undefined },
-        },
+        // The real SkillUsageService consumes the mocked data services above;
+        // ProjectDetailComponent delegates skill/related-post resolution to it.
         { provide: BlogService, useValue: MOCK_BLOG },
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
