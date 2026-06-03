@@ -554,15 +554,6 @@
   padding: var(--space-8);
 }
 
-.loading-cursor {
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  animation: cursor-blink-border 1s step-end infinite;
-  border-right: 2px solid var(--accent);
-  padding-right: var(--space-1);
-}
-
 .post-footer {
   margin-top: var(--space-8);
   display: flex;

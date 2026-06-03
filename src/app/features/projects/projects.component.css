@@ -58,11 +58,6 @@
   border-color: var(--text-accent);
 }
 
-.projects-view-option:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
 .projects-view-option.active {
   color: var(--text-primary);
   border-color: var(--text-accent);
@@ -128,11 +123,6 @@
 .projects-sort-option:focus-visible {
   color: var(--text-accent);
   border-color: var(--text-accent);
-}
-
-.projects-sort-option:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
 }
 
 /*
@@ -618,11 +608,6 @@ a.tag:hover,
 a.tag:focus-visible {
   color: var(--text-accent);
   border-color: var(--text-accent);
-}
-
-a.tag:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
 }
 
 .project-link {

@@ -188,11 +188,6 @@
   border-color: var(--text-accent);
 }
 
-.badge-caption-link:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
 /*
   Card-link overlay — the projects caption anchor stretches a
   transparent `::after` across the whole tile so clicking anywhere
