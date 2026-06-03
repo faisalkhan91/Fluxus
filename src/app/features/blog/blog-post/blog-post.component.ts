@@ -17,7 +17,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { httpResource } from '@angular/common/http';
-import { DOCUMENT, NgOptimizedImage, isPlatformServer } from '@angular/common';
+import { NgOptimizedImage, isPlatformServer } from '@angular/common';
 import { GlassPanelComponent } from '@ui/glass-panel/glass-panel.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
@@ -28,13 +28,14 @@ import { ProfileDataService } from '@core/services/profile-data.service';
 import { ErrorToastService } from '@core/services/error-toast.service';
 import { ThemeService } from '@core/services/theme.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
-import { environment } from '@env/environment';
 import { BlogPostSeoService } from './blog-post-seo.service';
 import { MermaidService } from './mermaid.service';
+import { ReadingProgressService } from './reading-progress.service';
+import { HeadingAnchorService } from './heading-anchor.service';
+import { CopyCodeService } from './copy-code.service';
 import { slugify } from '@shared/utils/string.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
-import { prefersReducedMotion } from '@shared/utils/motion.utils';
 import { blogPostUrl } from '@shared/utils/url.utils';
 import { lookupImageDims } from '@shared/utils/image-dims.utils';
 
@@ -100,7 +101,9 @@ export class BlogPostComponent {
   private elRef = inject(ElementRef);
   private blogSeo = inject(BlogPostSeoService);
   private mermaid = inject(MermaidService);
-  private document = inject(DOCUMENT);
+  private readingProgress = inject(ReadingProgressService);
+  private headingAnchor = inject(HeadingAnchorService);
+  private copyCode = inject(CopyCodeService);
   private transferState = inject(TransferState);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
@@ -382,10 +385,8 @@ export class BlogPostComponent {
     return formatPostDate(iso);
   }
 
-  readonly scrollProgress = signal(0);
-
-  /** Integer 0-100 for the reading bar's `aria-valuenow`. */
-  readonly readingProgressLabel = computed(() => Math.round(this.scrollProgress()));
+  /** Scroll progress (0–100) for the reading bar, sourced from the service. */
+  protected readonly scrollProgress = this.readingProgress.progress;
 
   constructor() {
     // Cancel any in-flight `setTimeout`s so the badge / button-reset
@@ -419,7 +420,7 @@ export class BlogPostComponent {
       const layout = this.postLayout();
       this.content();
       if (!layout) return;
-      untracked(() => this.rewriteAnchorHrefs(layout));
+      untracked(() => this.headingAnchor.rewriteHrefs(layout, this.slug()));
     });
 
     effect(() => {
@@ -478,190 +479,16 @@ export class BlogPostComponent {
       // declared above, which run their initial side-effect pass.
       this.postLayout.set(postLayout);
 
-      // Pin the scroll source to the document root so the JS rAF
-      // fallback path matches the CSS `animation-timeline: scroll(root)`
-      // declaration in `styles.css`. The previous shape preferred
-      // `<main class="content">` if it had scrollable overflow, then
-      // fell through to the doc root — which works today (the column-
-      // flex shell makes the document the actual scroller) but would
-      // diverge from the CSS path if the layout ever switched `.content`
-      // to a fixed-height scroll container, leaving Firefox + older
-      // engines reporting a different progress fraction than every
-      // other browser. Same target, same math, same result everywhere.
-      const scroller =
-        (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
+      // Reading-progress bar: JS rAF fallback (a no-op when the browser
+      // drives it via CSS scroll-driven animation). Disposer cancels it.
+      this.destroyRef.onDestroy(this.readingProgress.start());
 
-      // Skip the JS scroll listener entirely on browsers that support
-      // CSS scroll-driven animations — the `.reading-progress` bar is then
-      // animated via `animation-timeline: scroll(root)` on the compositor
-      // (see styles.css), which is cheaper and always smooth.
-      const cssScrollDriven =
-        typeof CSS !== 'undefined' &&
-        typeof CSS.supports === 'function' &&
-        CSS.supports('animation-timeline: scroll()');
-
-      if (!cssScrollDriven) {
-        // rAF-throttle the progress recompute. Scroll fires faster than the
-        // compositor frame on trackpads/wheels, so coalescing to one update
-        // per animation frame keeps INP healthy without losing fidelity —
-        // the eye can't perceive the bar moving more often than 60 Hz.
-        let rafHandle = 0;
-        let scheduled = false;
-        const recompute = () => {
-          scheduled = false;
-          rafHandle = 0;
-          const total = scroller.scrollHeight - scroller.clientHeight;
-          if (total <= 0) {
-            this.scrollProgress.set(100);
-            return;
-          }
-          this.scrollProgress.set(Math.min(100, (scroller.scrollTop / total) * 100));
-        };
-        // The document root scroller fires scroll events on `window`,
-        // not on `document.documentElement` — listening on the element
-        // itself would never receive them. (When this branch supported
-        // `.content` as a fallback scroller, the target was that
-        // element directly; pinning to the doc root means `window`
-        // is always correct.)
-        const target: EventTarget = window;
-        const onScroll = () => {
-          if (scheduled) return;
-          scheduled = true;
-          rafHandle = requestAnimationFrame(recompute);
-        };
-
-        // `passive: true` lets the browser keep scroll on the compositor
-        // thread; without it Chrome treats the listener as a potential
-        // preventDefault() and synchronises scrolling with the main thread.
-        target.addEventListener('scroll', onScroll, { passive: true });
-        // Seed the bar so it reflects any initial scroll restoration
-        // (e.g. browser back-forward navigation lands you mid-post).
-        recompute();
-        this.destroyRef.onDestroy(() => {
-          target.removeEventListener('scroll', onScroll);
-          if (rafHandle) cancelAnimationFrame(rafHandle);
-        });
-      }
-
-      // One delegated click listener for every code-block "Copy" button and
-      // every heading permalink anchor. The markup for both is generated by
-      // MarkdownService — see the `code` and `heading` renderer overrides.
-      const onClick = async (event: MouseEvent) => {
-        const target = event.target as HTMLElement | null;
-        if (!target) return;
-
-        // 1. Heading permalink anchors. The renderer emits `href="#id"`
-        //    plus `data-anchor-id="id"`; we hijack the click to update the
-        //    URL bar without bouncing the reader to "/" via <base href>.
-        const anchor = target.closest('.anchor[data-anchor-id]') as HTMLAnchorElement | null;
-        if (anchor) {
-          await this.handleAnchorClick(event, anchor);
-          return;
-        }
-
-        // 2. Code-block "Copy" buttons.
-        const button = target.closest('.copy-btn') as HTMLButtonElement | null;
-        if (!button) return;
-        const code = button.parentElement?.querySelector('code')?.textContent ?? '';
-        const ok = await copyToClipboard(code);
-        if (!ok) {
-          this.toasts.push({
-            title: 'Could not copy the snippet',
-            detail: 'Your browser blocked clipboard access. Select the code manually instead.',
-          });
-          return;
-        }
-        // Mutate the inner `.copy-btn-label` span (which carries the
-        // `aria-live="polite"` attribute) rather than the button's
-        // own textContent. Live regions are most reliably announced
-        // when the live element existed in the DOM *before* the
-        // mutation and only its text node changes — toggling the
-        // button's own text was being silently dropped by some
-        // SR + browser combinations on touch devices.
-        const label = button.querySelector<HTMLSpanElement>('.copy-btn-label');
-        if (!label) return;
-        const originalText = label.textContent;
-        const originalLabel = button.getAttribute('aria-label');
-        label.textContent = 'Copied!';
-        button.setAttribute('aria-label', 'Code copied to clipboard');
-        button.classList.add('copy-btn--copied');
-        this.scheduleTimeout(() => {
-          label.textContent = originalText;
-          if (originalLabel !== null) button.setAttribute('aria-label', originalLabel);
-          button.classList.remove('copy-btn--copied');
-        }, 1500);
-      };
-      postLayout.addEventListener('click', onClick);
-      this.destroyRef.onDestroy(() => postLayout.removeEventListener('click', onClick));
+      // Delegated click handlers for heading permalinks and code-copy
+      // buttons. Each service owns its own listener via closest() dispatch,
+      // so they stay independent and tear down separately.
+      this.destroyRef.onDestroy(this.headingAnchor.attach(postLayout, () => this.slug()));
+      this.destroyRef.onDestroy(this.copyCode.attach(postLayout));
     });
-  }
-
-  /**
-   * Rewrite every `[data-anchor-id]` permalink emitted by `MarkdownService`
-   * so its `href` resolves against the current post URL instead of the
-   * `<base href="/">` site root. Without this, clicking `<a href="#x">` on
-   * a post would navigate the reader to `/#x` (the home route) and lose
-   * their place. The data attribute is the stable identifier; the href
-   * is purely cosmetic for "copy link as".
-   */
-  private rewriteAnchorHrefs(root: HTMLElement): void {
-    const slug = this.slug();
-    if (!slug) return;
-    const base = `/blog/${slug}`;
-    const anchors = root.querySelectorAll<HTMLAnchorElement>('.anchor[data-anchor-id]');
-    anchors.forEach((a) => {
-      const id = a.getAttribute('data-anchor-id') ?? '';
-      if (!id) return;
-      a.setAttribute('href', `${base}#${id}`);
-    });
-  }
-
-  /**
-   * Click handler for permalink anchors. Updates the URL hash via
-   * `history.replaceState` (so back/forward isn't polluted), copies the
-   * absolute URL to the clipboard, and pulses a toast to confirm the
-   * copy succeeded. Modifier-clicks fall through to the browser so
-   * "open in new tab" / "copy link" continue to work as expected.
-   */
-  private async handleAnchorClick(event: MouseEvent, anchor: HTMLAnchorElement): Promise<void> {
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-      return;
-    }
-    event.preventDefault();
-    const id = anchor.getAttribute('data-anchor-id') ?? '';
-    const slug = this.slug();
-    if (!id || !slug) return;
-    const path = `/blog/${slug}#${id}`;
-    // Guard `window.history` independently of `window` itself: the outer
-    // `typeof window` check fails the SSR build, but exotic shells (e.g.
-    // some embedded webviews) expose `window` without `history`.
-    const history = typeof window !== 'undefined' ? window.history : undefined;
-    if (history) {
-      history.replaceState(history.state, '', path);
-      const target = this.document.getElementById(id);
-      if (target) {
-        // `scrollIntoView({ behavior: 'smooth' })` is a JS-side option
-        // and the browser honours it over the global `scroll-behavior:
-        // auto` CSS rule that the reduced-motion `@media` block sets.
-        // Check the preference at click time and pass `'instant'` to
-        // skip the smooth-scroll animation for motion-sensitive users
-        // (WCAG 2.3.3).
-        target.scrollIntoView({
-          behavior: prefersReducedMotion() ? 'instant' : 'smooth',
-          block: 'start',
-        });
-        // Move keyboard focus to the heading itself so the next Tab
-        // continues from the section the reader just navigated to.
-        if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
-        target.focus({ preventScroll: true });
-      }
-    }
-    if (await copyToClipboard(`${environment.siteUrl}${path}`)) {
-      this.toasts.push({
-        title: 'Section link copied',
-        detail: 'A link to this section is now on your clipboard.',
-      });
-    }
   }
 
   /**
