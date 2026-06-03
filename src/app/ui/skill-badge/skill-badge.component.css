@@ -54,7 +54,7 @@
 }
 
 .badge-inner-link:focus-within {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -189,7 +189,7 @@
 }
 
 .badge-caption-link:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
