@@ -135,11 +135,6 @@
   background: var(--glass-bg-hover);
 }
 
-.menu-identity:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
 .menu-identity-avatar {
   width: 48px;
   height: 48px;
@@ -360,11 +355,6 @@
 .menu-action:focus-visible {
   background: var(--glass-bg-hover);
   color: var(--text-accent);
-}
-
-.menu-action:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
 }
 
 .menu-action:active {

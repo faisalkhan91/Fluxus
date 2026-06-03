@@ -2212,6 +2212,20 @@ img[src*='amazonwebservices-original-wordmark'] {
 }
 
 /*
+  Blinking-caret "Loading…" affordance shared by the blog index, blog-tag,
+  and blog-post routes. Lives here (global, encapsulation-piercing) so the
+  three blog surfaces share one definition instead of re-declaring it.
+*/
+.loading-cursor {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  animation: cursor-blink-border 1s step-end infinite;
+  border-right: 2px solid var(--accent);
+  padding-right: var(--space-1);
+}
+
+/*
   Shared entrance utilities.
 
   `enter-fade-up` is the workhorse for `animate.enter` directives across
