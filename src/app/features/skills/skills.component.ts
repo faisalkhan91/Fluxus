@@ -17,6 +17,7 @@ import { MediaQueryService } from '@core/services/media-query.service';
 import type { SkillCategory, Skill } from '@shared/models/skill.model';
 import { slugify } from '@shared/utils/string.utils';
 import { applyViewTransition } from '@shared/utils/motion.utils';
+import { rovingNext, focusByIndex } from '@shared/utils/roving.utils';
 import { SkillFeatureCardComponent } from './skill-feature-card.component';
 import { SkillsListViewComponent } from './skills-list-view.component';
 
@@ -181,12 +182,9 @@ export class SkillsComponent {
    */
   protected onViewKey(event: Event, currentIndex: number, dir: -1 | 1): void {
     event.preventDefault();
-    const opts = this.viewOptions;
-    const next = (currentIndex + dir + opts.length) % opts.length;
-    this.setViewMode(opts[next].key);
-    const buttons =
-      this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.skills-view-option');
-    buttons[next]?.focus();
+    const next = rovingNext(currentIndex, dir, this.viewOptions.length);
+    this.setViewMode(this.viewOptions[next].key);
+    focusByIndex(this.host.nativeElement, '.skills-view-option', next);
   }
 
   protected usageFor(skill: Skill): SkillUsage | undefined {

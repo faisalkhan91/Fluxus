@@ -15,7 +15,7 @@ import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { BlogService } from '@core/services/blog.service';
 import { SeoService } from '@core/services/seo.service';
-import { slugify } from '@shared/utils/string.utils';
+import { resolveTagLabel, filterByTagSlug } from '@shared/utils/tag.utils';
 import { formatPostDate } from '@shared/utils/blog.utils';
 import { environment } from '@env/environment';
 import { blogTagUrl } from '@shared/utils/url.utils';
@@ -50,21 +50,13 @@ export class BlogTagComponent {
    * uses, falling back to the slug. We compare on slugified tags so URLs like
    * `/blog/tag/ci-cd` match either `CI/CD` or `ci/cd` in the manifest.
    */
-  readonly tagLabel = computed(() => {
-    const slug = this.tagSlug();
-    if (!slug) return '';
-    for (const post of this.blog.posts()) {
-      const match = post.tags.find((t) => slugify(t) === slug);
-      if (match) return match;
-    }
-    return slug;
-  });
+  readonly tagLabel = computed(() =>
+    resolveTagLabel(this.blog.posts(), (p) => p.tags, this.tagSlug()),
+  );
 
-  readonly matchingPosts = computed(() => {
-    const slug = this.tagSlug();
-    if (!slug) return [];
-    return this.blog.posts().filter((p) => p.tags.some((t) => slugify(t) === slug));
-  });
+  readonly matchingPosts = computed(() =>
+    filterByTagSlug(this.blog.posts(), (p) => p.tags, this.tagSlug()),
+  );
 
   constructor() {
     // Update <title>, OG/Twitter, description, and canonical whenever the

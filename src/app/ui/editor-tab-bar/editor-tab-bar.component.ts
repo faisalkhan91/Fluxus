@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
+import { rovingNext, focusByIndex } from '@shared/utils/roving.utils';
 
 export interface EditorTab {
   id: string;
@@ -167,12 +168,9 @@ export class EditorTabBarComponent {
     const tabs = this.tabs();
     if (tabs.length === 0) return;
 
-    const nextIndex = (currentIndex + direction + tabs.length) % tabs.length;
-    const next = tabs[nextIndex];
-    this.tabSelected.emit(next);
-
-    const buttons = this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.tab');
-    buttons[nextIndex]?.focus();
+    const nextIndex = rovingNext(currentIndex, direction, tabs.length);
+    this.tabSelected.emit(tabs[nextIndex]);
+    focusByIndex(this.host.nativeElement, '.tab', nextIndex);
   }
 
   /*

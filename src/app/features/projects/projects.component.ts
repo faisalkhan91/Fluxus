@@ -13,8 +13,6 @@ import {
 } from '@angular/core';
 import { NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
@@ -23,6 +21,9 @@ import { ProjectsDataService } from '@core/services/projects-data.service';
 import type { Project } from '@shared/models/project.model';
 import { slugify } from '@shared/utils/string.utils';
 import { assertNever } from '@shared/utils/exhaustive.utils';
+import { createExpandableSet } from '@shared/utils/expandable-set';
+import { rovingNext, focusByIndex } from '@shared/utils/roving.utils';
+import { queryParamSignal, setQueryParam } from '@shared/utils/query-param.utils';
 
 /**
  * Sort key for the projects grid. Mirrored in the `?sort=` query
@@ -55,6 +56,30 @@ function parsePushedAt(pushedAt: string | null | undefined): number {
   if (!pushedAt) return 0;
   const ms = Date.parse(pushedAt);
   return Number.isFinite(ms) ? ms : 0;
+}
+
+/** Featured-first tiebreak for the `stars`/`updated` sorts when values tie. */
+function featuredTiebreak(a: Project, b: Project): number {
+  return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+}
+
+function byAlpha(a: Project, b: Project): number {
+  return a.title.localeCompare(b.title);
+}
+
+function byStars(a: Project, b: Project): number {
+  const sa = a.github?.stars ?? -1;
+  const sb = b.github?.stars ?? -1;
+  return sb !== sa ? sb - sa : featuredTiebreak(a, b);
+}
+
+function byUpdated(a: Project, b: Project): number {
+  // `parsePushedAt` coerces missing/invalid dates to 0 so they sort to the
+  // bottom (and ties fall through to the featured tiebreak) — without it a
+  // NaN comparison would float a malformed entry to an unpredictable spot.
+  const ta = parsePushedAt(a.github?.pushedAt);
+  const tb = parsePushedAt(b.github?.pushedAt);
+  return tb !== ta ? tb - ta : featuredTiebreak(a, b);
 }
 
 @Component({
@@ -95,18 +120,10 @@ export class ProjectsComponent {
   protected readonly sortIndicatorWidth = signal(0);
   protected readonly sortRow = viewChild<ElementRef<HTMLElement>>('sortRow');
 
-  private readonly expandedSet = signal(new Set<string>());
+  private readonly expanded = createExpandableSet();
 
   /** Query-driven sort key, defaulting to `featured` when absent or invalid. */
-  protected readonly sort = toSignal(
-    this.route.queryParamMap.pipe(
-      map((q): ProjectSort => {
-        const raw = (q.get('sort') ?? '').toLowerCase() as ProjectSort;
-        return ALLOWED_SORTS.includes(raw) ? raw : 'featured';
-      }),
-    ),
-    { initialValue: 'featured' as ProjectSort },
-  );
+  protected readonly sort = queryParamSignal(this.route, 'sort', ALLOWED_SORTS, 'featured');
 
   /**
    * Projects re-ordered according to `sort`. `featured` keeps catalog
@@ -123,27 +140,11 @@ export class ProjectsComponent {
     const mode = this.sort();
     switch (mode) {
       case 'alpha':
-        return base.sort((a, b) => a.title.localeCompare(b.title));
+        return base.sort(byAlpha);
       case 'stars':
-        return base.sort((a, b) => {
-          const sa = a.github?.stars ?? -1;
-          const sb = b.github?.stars ?? -1;
-          if (sb !== sa) return sb - sa;
-          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-        });
+        return base.sort(byStars);
       case 'updated':
-        return base.sort((a, b) => {
-          // `Date.parse` returns NaN for malformed strings; without an
-          // explicit isNaN check `(NaN - 0)` is NaN, which is *neither*
-          // `> 0` nor `< 0`, leaving JS's stable sort to float the bad
-          // entry to an unpredictable position. Coerce missing/invalid
-          // dates to 0 so they sort to the bottom (and ties fall through
-          // to the featured tiebreak).
-          const ta = parsePushedAt(a.github?.pushedAt);
-          const tb = parsePushedAt(b.github?.pushedAt);
-          if (tb !== ta) return tb - ta;
-          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-        });
+        return base.sort(byUpdated);
       case 'featured':
         return base;
       default:
@@ -211,27 +212,14 @@ export class ProjectsComponent {
   }
 
   protected setSort(key: ProjectSort): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      // `featured` is the default so we scrub the query param rather than
-      // leaving `?sort=featured` dangling in the URL; every other value
-      // sticks so refresh + share-link survive.
-      queryParams: { sort: key === 'featured' ? null : key },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+    // `featured` is the default, so scrub the param rather than leaving
+    // `?sort=featured` dangling; every other value sticks for refresh /
+    // share-link survival.
+    setQueryParam(this.router, this.route, 'sort', key === 'featured' ? null : key);
   }
 
   /** Query-driven view mode, defaulting to `list` when absent or invalid. */
-  protected readonly view = toSignal(
-    this.route.queryParamMap.pipe(
-      map((q): ProjectView => {
-        const raw = (q.get('view') ?? '').toLowerCase() as ProjectView;
-        return ALLOWED_VIEWS.includes(raw) ? raw : DEFAULT_VIEW;
-      }),
-    ),
-    { initialValue: DEFAULT_VIEW },
-  );
+  protected readonly view = queryParamSignal(this.route, 'view', ALLOWED_VIEWS, DEFAULT_VIEW);
 
   /**
    * Featured projects in `visibleProjects()` order. Renders as the
@@ -264,14 +252,9 @@ export class ProjectsComponent {
   ];
 
   protected setView(key: ProjectView): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      // `list` is the default — scrub the query param when selecting it
-      // so the URL stays clean. `grid` sticks.
-      queryParams: { view: key === DEFAULT_VIEW ? null : key },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+    // `list` is the default — scrub the param when selecting it so the URL
+    // stays clean; `grid` sticks.
+    setQueryParam(this.router, this.route, 'view', key === DEFAULT_VIEW ? null : key);
   }
 
   /**
@@ -284,38 +267,19 @@ export class ProjectsComponent {
    */
   protected onSortKey(event: Event, currentIndex: number, dir: -1 | 1): void {
     event.preventDefault();
-    const opts = this.sortOptions;
-    const next = (currentIndex + dir + opts.length) % opts.length;
-    this.setSort(opts[next].key);
-    const buttons =
-      this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.projects-sort-option');
-    buttons[next]?.focus();
+    const next = rovingNext(currentIndex, dir, this.sortOptions.length);
+    this.setSort(this.sortOptions[next].key);
+    focusByIndex(this.host.nativeElement, '.projects-sort-option', next);
   }
 
   /** Roving tabindex + selection move for the view radiogroup. */
   protected onViewKey(event: Event, currentIndex: number, dir: -1 | 1): void {
     event.preventDefault();
-    const opts = this.viewOptions;
-    const next = (currentIndex + dir + opts.length) % opts.length;
-    this.setView(opts[next].key);
-    const buttons =
-      this.host.nativeElement.querySelectorAll<HTMLButtonElement>('.projects-view-option');
-    buttons[next]?.focus();
+    const next = rovingNext(currentIndex, dir, this.viewOptions.length);
+    this.setView(this.viewOptions[next].key);
+    focusByIndex(this.host.nativeElement, '.projects-view-option', next);
   }
 
-  protected isExpanded(title: string): boolean {
-    return this.expandedSet().has(title);
-  }
-
-  protected toggleExpand(title: string): void {
-    this.expandedSet.update((set) => {
-      const next = new Set(set);
-      if (next.has(title)) {
-        next.delete(title);
-      } else {
-        next.add(title);
-      }
-      return next;
-    });
-  }
+  protected isExpanded = this.expanded.isExpanded;
+  protected toggleExpand = this.expanded.toggle;
 }
