@@ -10,7 +10,7 @@ import dockerfile from 'highlight.js/lib/languages/dockerfile';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
-import { IMAGE_DIMS } from './image-dims.generated';
+import { lookupImageDims } from '@shared/utils/image-dims.utils';
 import { IMAGE_VARIANTS } from '../image/image-variants.generated';
 import { slugify } from '@shared/utils/string.utils';
 
@@ -109,22 +109,6 @@ function sanitizeLinkHref(href: string | null | undefined): string {
     return raw;
   }
   return '#';
-}
-
-/**
- * Looks up the intrinsic dimensions for an image referenced from markdown.
- * The map is generated from on-disk assets by `scripts/build-image-dims.mjs`.
- *
- * Knows about three URL shapes that show up in posts:
- *   - `assets/images/blog/foo.webp`            (recommended, exact key)
- *   - `/assets/images/blog/foo.webp`           (root-relative)
- *   - `https://faisalkhan.dpdns.org/assets/…`  (absolute, ignored)
- */
-function lookupDims(href: string): { w: number; h: number } | undefined {
-  if (!href) return undefined;
-  if (/^https?:/i.test(href)) return undefined;
-  const trimmed = href.replace(/^\.?\/?/, '');
-  return IMAGE_DIMS[trimmed];
 }
 
 /**
@@ -345,7 +329,7 @@ export class MarkdownService {
       // visibly under the image — alt text alone is invisible to sighted
       // users, which loses the author's intended caption context.
       image: ({ href, title, text }) => {
-        const dim = lookupDims(href);
+        const dim = lookupImageDims(href);
         const dimAttrs = dim ? ` width="${dim.w}" height="${dim.h}"` : '';
         const titleAttr = title ? ` title="${escapeAttr(title)}"` : '';
         const altText = (text ?? '').trim();
@@ -396,7 +380,7 @@ export class MarkdownService {
         // doesn't, so a `data:`/`javascript:` image src would otherwise pass
         // through. Running it here (before the renderer reads `href`) keeps
         // the link and image paths symmetric; legitimate http(s)/relative
-        // srcs are returned unchanged so lookupDims/buildSrcset still match.
+        // srcs are returned unchanged so lookupImageDims/buildSrcset still match.
         if (token.type === 'link' || token.type === 'image') {
           const t = token as Tokens.Link | Tokens.Image;
           t.href = sanitizeLinkHref(t.href);

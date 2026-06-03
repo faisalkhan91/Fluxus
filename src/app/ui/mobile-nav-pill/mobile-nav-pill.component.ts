@@ -15,6 +15,7 @@ import { NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
+import { scrollIntoViewIfPresent } from '@shared/utils/dom.utils';
 
 export interface MobileNavItem {
   label: string;
@@ -91,14 +92,7 @@ export class MobileNavPillComponent {
             on every open.
           */
           const active = panel.nativeElement.querySelector<HTMLElement>('.menu-link--active');
-          // `scrollIntoView` exists on every browser engine but JSDOM
-          // (used by the unit tests) doesn't ship it. Guard with a
-          // typeof check rather than try/catch so test runs stay clean
-          // and the call is a clean no-op in environments that don't
-          // implement it.
-          if (active && typeof active.scrollIntoView === 'function') {
-            active.scrollIntoView({ block: 'nearest' });
-          }
+          scrollIntoViewIfPresent(active);
         });
       }
       this.toggleBackgroundInert(open);

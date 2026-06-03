@@ -36,7 +36,7 @@ import { formatPostDate } from '@shared/utils/blog.utils';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
 import { prefersReducedMotion } from '@shared/utils/motion.utils';
 import { blogPostUrl } from '@shared/utils/url.utils';
-import { IMAGE_DIMS } from '@core/services/image-dims.generated';
+import { lookupImageDims } from '@shared/utils/image-dims.utils';
 
 /**
  * Drop the markdown body's leading `# Heading` line so the rendered HTML
@@ -271,17 +271,12 @@ export class BlogPostComponent {
 
   /**
    * Intrinsic dimensions for the cover image, looked up from the build-time
-   * IMAGE_DIMS map so the hero banner doesn't trigger CLS while it loads.
+   * image-dims map so the hero banner doesn't trigger CLS while it loads.
    * Falls back to a 16:9 placeholder so the layout still reserves space.
    */
-  readonly coverDims = computed(() => {
-    const cover = this.meta()?.cover;
-    if (!cover) return { w: 1600, h: 900 };
-    if (/^https?:/i.test(cover)) return { w: 1600, h: 900 };
-    const key = cover.replace(/^\.?\/?/, '');
-    const dim = IMAGE_DIMS[key];
-    return dim ? { w: dim.w, h: dim.h } : { w: 1600, h: 900 };
-  });
+  readonly coverDims = computed(
+    () => lookupImageDims(this.meta()?.cover ?? '') ?? { w: 1600, h: 900 },
+  );
 
   /**
    * Reading time read straight from the manifest. The build script

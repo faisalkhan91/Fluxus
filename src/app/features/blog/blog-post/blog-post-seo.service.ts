@@ -3,6 +3,7 @@ import { SeoService } from '@core/services/seo.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
 import { blogPostUrl } from '@shared/utils/url.utils';
+import { isPostPublished } from '@shared/utils/blog.utils';
 
 /**
  * Blog-post-specific SEO concerns extracted from `BlogPostComponent`.
@@ -55,12 +56,10 @@ export class BlogPostSeoService {
       image: cover,
     });
 
-    // Same `isHidden` predicate as `scripts/inject-meta.mjs` — drafts
-    // OR posts whose calendar day hasn't arrived yet. Crawler signal
-    // is identical across the SPA and prerender paths.
-    const today = new Date().toISOString().slice(0, 10);
-    const isHidden = post.draft === true || post.date > today;
-    this.seo.setRobots(isHidden ? 'noindex,nofollow' : null);
+    // Same predicate as `scripts/inject-meta.mjs` (and BlogService) — a post
+    // is hidden when it's a draft OR its calendar day hasn't arrived yet.
+    // Crawler signal stays identical across the SPA and prerender paths.
+    this.seo.setRobots(isPostPublished(post) ? null : 'noindex,nofollow');
   }
 
   /**

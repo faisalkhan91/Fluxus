@@ -1,9 +1,11 @@
 /**
  * Shared, dependency-free helpers for blog content.
  *
- * Both the Angular components and the Node-side build scripts (sitemap, RSS,
- * inject-meta) can call these without dragging in HttpClient or DI.
+ * Used across the Angular components (blog index, hero, tag archive, post
+ * SEO). The Node-side build scripts use the parallel `scripts/lib/posts.mjs`
+ * since `.mjs` can't import `.ts`; the two intentionally mirror each other.
  */
+import type { BlogPost } from '@shared/models/blog-post.model';
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
@@ -33,4 +35,26 @@ export function formatPostDate(iso: string): string {
   const parsed = new Date(iso);
   if (Number.isNaN(parsed.getTime())) return iso;
   return DATE_FORMATTER.format(parsed);
+}
+
+/**
+ * `YYYY-MM-DD` for "today" in UTC. The `posts.json` `date` field is also a
+ * `YYYY-MM-DD` literal, so a lex comparison answers "has this post's calendar
+ * day arrived yet?" without having to reason about timezones (matches the
+ * technique used in scripts/lib/posts.mjs for the build pipeline).
+ */
+export function todayYmd(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Single source of truth for "should this post show on public surfaces?".
+ * A post is public when it is not flagged as draft AND its publish date has
+ * already arrived (calendar-day comparison). Used by `BlogService` (index,
+ * hero, tag archive, command palette, related/adjacent/series) and by
+ * `BlogPostSeoService` (SPA `noindex` gate, as `!isPostPublished`).
+ */
+export function isPostPublished(post: BlogPost, today: string = todayYmd()): boolean {
+  if (post.draft) return false;
+  return post.date <= today;
 }

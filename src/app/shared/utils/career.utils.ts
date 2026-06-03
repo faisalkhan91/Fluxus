@@ -1,3 +1,7 @@
+// Canonical career start. Mirrored (by necessity — a `.mjs` build script
+// can't import this `.ts`) in scripts/generate-resume.mjs; keep both the
+// start month and the calendar-diff math below in sync so the generated
+// resume never disagrees with the site by a year at a month boundary.
 const CAREER_START = new Date(2013, 4); // May 2013
 
 /**
