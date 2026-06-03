@@ -38,7 +38,7 @@
         aria-expanded="true"
         [attr.aria-activedescendant]="activeDescendantId()"
         [value]="query()"
-        (input)="onInput($any($event.target).value)"
+        (input)="onInput(input.value)"
         (keydown)="onKey($event)"
         autocomplete="off"
         spellcheck="false"
