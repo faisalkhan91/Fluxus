@@ -5,34 +5,37 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { provideHttpClient } from '@angular/common/http';
 import { BlogService } from './blog.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
-import { flushPosts } from '@testing/blog-mocks';
+import { flushPosts, createMockBlogPost } from '@testing/blog-mocks';
 import { waitForEffects } from '@testing/signals';
 
+// Built via the shared factory (resilient to new required BlogPost fields).
+// Dates are deliberately out of order so `posts()` sort assertions below
+// actually exercise the date-descending sort — the pre-sorted shared
+// MOCK_POSTS catalog would make those tests trivial, so this stays bespoke.
 const MOCK_POSTS: BlogPost[] = [
-  {
+  createMockBlogPost({
     slug: 'post-one',
     title: 'First Post',
     date: '2025-01-15',
     excerpt: 'Excerpt one',
     tags: ['angular'],
     readingTime: '5 min',
-  },
-  {
+  }),
+  createMockBlogPost({
     slug: 'post-two',
     title: 'Second Post',
     date: '2025-03-10',
     excerpt: 'Excerpt two',
     tags: ['typescript'],
-    readingTime: '3 min',
-  },
-  {
+  }),
+  createMockBlogPost({
     slug: 'post-three',
     title: 'Third Post',
     date: '2025-02-20',
     excerpt: 'Excerpt three',
     tags: ['devops'],
     readingTime: '7 min',
-  },
+  }),
 ];
 
 describe('BlogService', () => {
@@ -129,30 +132,30 @@ describe('BlogService — publish-date gating', () => {
   const FUTURE = '2026-04-30';
 
   const POSTS: BlogPost[] = [
-    {
+    createMockBlogPost({
       slug: 'past-post',
       title: 'Past',
       date: PAST,
       excerpt: 'past',
       tags: ['angular'],
       readingTime: '1 min',
-    },
-    {
+    }),
+    createMockBlogPost({
       slug: 'today-post',
       title: 'Today',
       date: TODAY,
       excerpt: 'today',
       tags: ['angular'],
       readingTime: '1 min',
-    },
-    {
+    }),
+    createMockBlogPost({
       slug: 'future-post',
       title: 'Future',
       date: FUTURE,
       excerpt: 'future',
       tags: ['angular'],
       readingTime: '1 min',
-    },
+    }),
   ];
 
   beforeEach(() => {
@@ -246,15 +249,15 @@ describe('BlogService — draft filtering', () => {
     green.
   */
   const POSTS: BlogPost[] = [
-    {
+    createMockBlogPost({
       slug: 'visible-post',
       title: 'Visible',
       date: '2025-01-01',
       excerpt: 'visible',
       tags: ['angular'],
       readingTime: '1 min',
-    },
-    {
+    }),
+    createMockBlogPost({
       slug: 'hidden-draft',
       title: 'Draft',
       date: '2025-02-01',
@@ -262,7 +265,7 @@ describe('BlogService — draft filtering', () => {
       tags: ['angular'],
       readingTime: '1 min',
       draft: true,
-    },
+    }),
   ];
 
   beforeEach(() => {
@@ -308,22 +311,22 @@ describe('BlogService — visibility change refresh', () => {
   const PUBLISH = '2026-04-30';
 
   const POSTS: BlogPost[] = [
-    {
+    createMockBlogPost({
       slug: 'tomorrow',
       title: 'Tomorrow',
       date: PUBLISH,
       excerpt: 'tomorrow',
       tags: ['angular'],
       readingTime: '1 min',
-    },
-    {
+    }),
+    createMockBlogPost({
       slug: 'past',
       title: 'Past',
       date: '2025-01-01',
       excerpt: 'past',
       tags: ['angular'],
       readingTime: '1 min',
-    },
+    }),
   ];
 
   beforeEach(() => {

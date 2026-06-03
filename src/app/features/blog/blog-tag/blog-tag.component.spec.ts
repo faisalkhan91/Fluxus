@@ -10,25 +10,29 @@ import { BehaviorSubject } from 'rxjs';
 import { BlogTagComponent } from './blog-tag.component';
 import { BlogService } from '@core/services/blog.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
+import { createMockBlogPost } from '@testing/blog-mocks';
 import { environment } from '@env/environment';
 
+// Built via the shared factory so a new required BlogPost field doesn't break
+// this spec. Tags stay mixed-case on purpose — the label-resolution assertions
+// ("Angular"/"Go") depend on the original casing, which the lowercase shared
+// MOCK_POSTS catalog wouldn't exercise.
 const MOCK_POSTS: BlogPost[] = [
-  {
+  createMockBlogPost({
     slug: 'first-post',
     title: 'First Post',
     date: '2025-01-01',
     excerpt: 'First excerpt',
     tags: ['Angular', 'TypeScript'],
-    readingTime: '3 min',
-  },
-  {
+  }),
+  createMockBlogPost({
     slug: 'second-post',
     title: 'Second Post',
     date: '2025-02-01',
     excerpt: 'Second excerpt',
     tags: ['Go'],
     readingTime: '5 min',
-  },
+  }),
 ];
 
 describe('BlogTagComponent', () => {
