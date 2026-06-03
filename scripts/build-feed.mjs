@@ -7,12 +7,12 @@
  *
  * Run via `npm run build:prod` (chained after `inject-meta.mjs`).
  */
-import { readFile, writeFile, stat } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { createRequire } from 'node:module';
-
-const require = createRequire(import.meta.url);
-const { siteUrl: SITE_URL, siteName: SITE_NAME } = require('../site.config.json');
+import { SITE_URL, SITE_NAME } from './lib/config.mjs';
+import { requireDistBrowser } from './lib/fs.mjs';
+import { loadPosts, isPublished, todayYmd } from './lib/posts.mjs';
+import { escapeXmlAttr } from './lib/html.mjs';
 
 // Optional positional output path. With no arg, writes to the prod
 // build output (chained from `npm run build:prod` after `ng build`).
@@ -21,7 +21,6 @@ const { siteUrl: SITE_URL, siteName: SITE_NAME } = require('../site.config.json'
 // root (gitignored) that you can open in a browser or drag into a feed
 // reader to verify formatting/dates after a `posts.json` change.
 const customOut = process.argv[2];
-const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
 const FEED_PATH = customOut
   ? resolve(process.cwd(), customOut)
   : join(process.cwd(), 'dist/fluxus/browser/feed.xml');
@@ -29,20 +28,7 @@ const FEED_PATH = customOut
 // The dist/ existence check only matters for the default (prod) path —
 // a spot-check run targets the repo root or wherever the user points it.
 if (!customOut) {
-  try {
-    await stat(join(process.cwd(), 'dist/fluxus/browser'));
-  } catch {
-    console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
-    process.exit(1);
-  }
-}
-
-function escape(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  requireDistBrowser();
 }
 
 /**
@@ -61,9 +47,9 @@ function postIsoTimestamp(date) {
 // caches would otherwise pin the entry at its first appearance and never
 // surface the on-time publish update. The next prod build that crosses the
 // publish boundary picks the entry up.
-const todayYmd = new Date().toISOString().slice(0, 10);
-const posts = JSON.parse(await readFile(POSTS_JSON, 'utf-8'))
-  .filter((p) => !p.draft && p.date <= todayYmd)
+const today = todayYmd();
+const posts = (await loadPosts())
+  .filter((p) => isPublished(p, today))
   // Date-descending; secondary slug-ascending so two posts dated the same
   // day always emit in the same order. Without the tiebreaker, equal-date
   // entries swap order across runs and the committed feed.xml diff churns
@@ -117,25 +103,25 @@ const entries = posts
     // <link> match the Atom spec defaults but are explicit so strict
     // validators / readers don't have to assume.
     return `  <entry>
-    <title>${escape(post.title)}</title>
-    <link rel="alternate" type="text/html" href="${escape(url)}"/>
-    <id>${escape(url)}</id>
+    <title>${escapeXmlAttr(post.title)}</title>
+    <link rel="alternate" type="text/html" href="${escapeXmlAttr(url)}"/>
+    <id>${escapeXmlAttr(url)}</id>
     <updated>${entryUpdated}</updated>
     <published>${published}</published>
     <author><name>Faisal Khan</name></author>
-    <summary type="text">${escape(post.excerpt)}</summary>
-    ${(post.tags || []).map((tag) => `<category term="${escape(tag)}"/>`).join('\n    ')}
+    <summary type="text">${escapeXmlAttr(post.excerpt)}</summary>
+    ${(post.tags || []).map((tag) => `<category term="${escapeXmlAttr(tag)}"/>`).join('\n    ')}
   </entry>`;
   })
   .join('\n');
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
-  <title>${escape(SITE_NAME)}</title>
+  <title>${escapeXmlAttr(SITE_NAME)}</title>
   <subtitle>Engineering blog</subtitle>
-  <link rel="alternate" type="text/html" href="${escape(`${SITE_URL}/`)}"/>
-  <link rel="self" type="application/atom+xml" href="${escape(`${SITE_URL}/feed.xml`)}"/>
-  <id>${escape(`${SITE_URL}/`)}</id>
+  <link rel="alternate" type="text/html" href="${escapeXmlAttr(`${SITE_URL}/`)}"/>
+  <link rel="self" type="application/atom+xml" href="${escapeXmlAttr(`${SITE_URL}/feed.xml`)}"/>
+  <id>${escapeXmlAttr(`${SITE_URL}/`)}</id>
   <updated>${updated}</updated>
   <author><name>Faisal Khan</name></author>
 ${entries}

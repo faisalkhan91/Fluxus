@@ -15,11 +15,12 @@
  *
  * Run via `npm run build:image-variants` (chained from build:prod).
  */
-import { readdirSync, statSync, existsSync, writeFileSync } from 'node:fs';
+import { statSync, existsSync } from 'node:fs';
 import { join, relative, sep, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import prettier from 'prettier';
 import sharp from 'sharp';
+import { walk } from './lib/fs.mjs';
+import { writeFormatted } from './lib/emit.mjs';
 
 const SRC_ROOT = fileURLToPath(new URL('../src', import.meta.url));
 const DIRS = ['assets/images/portfolio', 'assets/images/blog'].map((d) => join(SRC_ROOT, d));
@@ -34,14 +35,6 @@ const OUT = fileURLToPath(
 // intrinsic width are generated (no upscaling).
 const WIDTHS = [256, 384, 640, 960, 1280];
 const QUALITY = 82;
-
-function* walk(dir) {
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) yield* walk(full);
-    else yield full;
-  }
-}
 
 const isVariant = (f) => /-\d+w\.webp$/i.test(f);
 const variantPath = (abs, w) => abs.replace(/\.webp$/i, `-${w}w.webp`);
@@ -94,14 +87,7 @@ const rawBody =
   ' * served as-is (the loader returns the original src untouched).\n */\n' +
   `export const IMAGE_VARIANTS: Record<string, readonly number[]> = ${JSON.stringify(ordered, null, 2)};\n`;
 
-let body = rawBody;
-try {
-  const config = (await prettier.resolveConfig(OUT)) ?? {};
-  body = await prettier.format(rawBody, { ...config, filepath: OUT });
-} catch {
-  /* prettier unavailable — emit raw output and let lint flag the drift */
-}
-writeFileSync(OUT, body, 'utf-8');
+await writeFormatted(OUT, rawBody);
 
 console.log(
   `Wrote ${OUT}\n  ${Object.keys(ordered).length} source images, ` +

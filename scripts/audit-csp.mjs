@@ -19,17 +19,14 @@
  *
  * Run via `npm run audit:csp` (chained at the end of `build:prod`).
  */
-import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { DIST_BROWSER, requireDistBrowser, walk } from './lib/fs.mjs';
+import { SCRIPT_TAG, isInlineExecutable, sha256Token } from './lib/csp.mjs';
 
-const DIST_HTML = join(process.cwd(), 'dist/fluxus/browser');
 const HEADERS_FILE = join(process.cwd(), 'dist/fluxus/security-headers.conf');
 
-if (!statSync(DIST_HTML, { throwIfNoEntry: false })?.isDirectory()) {
-  console.error(`dist/fluxus/browser/ does not exist — run \`ng build\` first.`);
-  process.exit(1);
-}
+requireDistBrowser();
 if (!statSync(HEADERS_FILE, { throwIfNoEntry: false })?.isFile()) {
   console.error(`${HEADERS_FILE} does not exist — run scripts/build-csp.mjs first.`);
   process.exit(1);
@@ -63,47 +60,12 @@ if (scriptSrc.length === 0) {
 const scriptSrcSet = new Set(scriptSrc);
 const hasUnsafeHashes = scriptSrcSet.has("'unsafe-hashes'");
 
-function* walkHtml(dir) {
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    if (statSync(full).isDirectory()) yield* walkHtml(full);
-    else if (name.endsWith('.html')) yield full;
-  }
-}
-
-function sha256Token(value) {
-  const digest = createHash('sha256').update(value, 'utf-8').digest('base64');
-  return `'sha256-${digest}'`;
-}
-
 // Inline event handler attributes — anything matching `on<word>="..."`. We
 // scan single- and double-quoted forms; unquoted attribute values are
 // vanishingly rare in machine-emitted HTML and we can add them later if
 // they ever appear in dist/.
 const EVENT_HANDLER_DOUBLE = /\son[a-z]+\s*=\s*"([^"]*)"/gi;
 const EVENT_HANDLER_SINGLE = /\son[a-z]+\s*=\s*'([^']*)'/gi;
-const SCRIPT_TAG = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
-
-function isInlineExecutable(attrs) {
-  // 1. External scripts (has src=) are handled by 'self', no hash needed.
-  if (/\bsrc\s*=/i.test(attrs)) return false;
-
-  // 2. Only audit executable scripts. Data blocks like application/ld+json or
-  // application/json (Angular TransferState) are not executed by the browser
-  // as JS and thus don't trigger CSP script-src violations.
-  const typeMatch = attrs.match(/type\s*=\s*["']?([^"'\s>]+)["']?/i);
-  const type = typeMatch ? typeMatch[1].toLowerCase() : '';
-  const executableTypes = [
-    '',
-    'text/javascript',
-    'application/javascript',
-    'application/ecmascript',
-    'text/ecmascript',
-    'module',
-  ];
-
-  return executableTypes.includes(type);
-}
 
 const handlerMisses = [];
 const scriptMisses = [];
@@ -112,9 +74,9 @@ let scriptCount = 0;
 const seenHandlers = new Set();
 const seenScripts = new Set();
 
-for (const file of walkHtml(DIST_HTML)) {
+for (const file of walk(DIST_BROWSER, { filter: (name) => name.endsWith('.html') })) {
   const html = readFileSync(file, 'utf-8');
-  const rel = file.slice(DIST_HTML.length + 1);
+  const rel = file.slice(DIST_BROWSER.length + 1);
 
   for (const re of [EVENT_HANDLER_DOUBLE, EVENT_HANDLER_SINGLE]) {
     re.lastIndex = 0;

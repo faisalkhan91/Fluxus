@@ -32,17 +32,15 @@
  * SITE_NAME / TWITTER_HANDLE so a fork only needs to update one file
  * to retarget the script suite.
  */
-import { readFile, writeFile, readdir, stat } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { join, relative, sep, posix } from 'node:path';
-import { createRequire } from 'node:module';
 import { loadProjectTagSlugs, loadProjectEntries, slugify } from './lib/projects.mjs';
+import { SITE_URL, SITE_NAME, TWITTER_HANDLE } from './lib/config.mjs';
+import { DIST_BROWSER, walkAsync } from './lib/fs.mjs';
+import { loadPosts, isPublished, todayYmd } from './lib/posts.mjs';
+import { escapeXmlText, escapeXmlAttr } from './lib/html.mjs';
 
-const require = createRequire(import.meta.url);
-const config = require('../site.config.json');
-const { siteUrl: SITE_URL, siteName: SITE_NAME } = config;
-const TWITTER_HANDLE = (config.twitterHandle ?? '').trim();
-
-const DIST = join(process.cwd(), 'dist/fluxus/browser');
+const DIST = DIST_BROWSER;
 const DEFAULT_OG_IMAGE = `${SITE_URL}/assets/images/og-image.png`;
 
 function resolveCover(post) {
@@ -55,20 +53,17 @@ function resolveCover(post) {
   return `${SITE_URL}/og/${post.slug}.png`;
 }
 
-const blogManifest = JSON.parse(
-  await readFile(join(process.cwd(), 'src/assets/blog/posts.json'), 'utf-8'),
-);
+const blogManifest = await loadPosts();
 const blogBySlug = new Map(blogManifest.map((p) => [p.slug, p]));
 
 // Map of tag slug -> { label, posts: [] } across published posts (non-draft
 // AND publish date today-or-earlier). Future-dated posts are excluded so the
 // CollectionPage JSON-LD and tag-page <head> metadata stay aligned with the
 // prerender list in app.routes.server.ts and the sitemap/feed.
-const todayYmd = new Date().toISOString().slice(0, 10);
+const today = todayYmd();
 const tagsBySlug = new Map();
 for (const post of blogManifest) {
-  if (post.draft) continue;
-  if (post.date > todayYmd) continue;
+  if (!isPublished(post, today)) continue;
   for (const tag of post.tags ?? []) {
     const slug = slugify(tag);
     if (!slug) continue;
@@ -115,18 +110,6 @@ for (const entry of await loadProjectEntries()) {
   });
 }
 
-async function* walk(dir) {
-  for (const name of await readdir(dir)) {
-    const full = join(dir, name);
-    const info = await stat(full);
-    if (info.isDirectory()) {
-      yield* walk(full);
-    } else if (name === 'index.html') {
-      yield full;
-    }
-  }
-}
-
 function deriveRoute(htmlPath) {
   const rel = relative(DIST, htmlPath).split(sep).join(posix.sep);
   const dir = rel.replace(/\/?index\.html$/, '');
@@ -134,7 +117,7 @@ function deriveRoute(htmlPath) {
 }
 
 function setMetaProperty(html, property, content) {
-  const safe = escapeAttr(content);
+  const safe = escapeXmlAttr(content);
   const attr = property.startsWith('og:') ? 'property' : 'name';
   const re = new RegExp(`<meta\\s+${attr}=\"${property}\"[^>]*>`, 'i');
   const tag = `<meta ${attr}="${property}" content="${safe}">`;
@@ -142,18 +125,18 @@ function setMetaProperty(html, property, content) {
 }
 
 function setLinkCanonical(html, url) {
-  const tag = `<link rel="canonical" href="${escapeAttr(url)}">`;
+  const tag = `<link rel="canonical" href="${escapeXmlAttr(url)}">`;
   return /<link\s+rel="canonical"[^>]*>/i.test(html)
     ? html.replace(/<link\s+rel="canonical"[^>]*>/i, tag)
     : html.replace('</head>', `    ${tag}\n  </head>`);
 }
 
 function setTitle(html, title) {
-  return html.replace(/<title>[^<]*<\/title>/i, `<title>${escapeText(title)}</title>`);
+  return html.replace(/<title>[^<]*<\/title>/i, `<title>${escapeXmlText(title)}</title>`);
 }
 
 function setMetaDescription(html, description) {
-  const tag = `<meta name="description" content="${escapeAttr(description)}">`;
+  const tag = `<meta name="description" content="${escapeXmlAttr(description)}">`;
   return /<meta\s+name="description"[^>]*>/i.test(html)
     ? html.replace(/<meta\s+name="description"[^>]*>/i, tag)
     : html.replace('</head>', `    ${tag}\n  </head>`);
@@ -168,7 +151,7 @@ function setMetaDescription(html, description) {
  * a `noindex` meta is the only thing that tells crawlers to skip it.
  */
 function setMetaRobots(html, content) {
-  const tag = `<meta name="robots" content="${escapeAttr(content)}">`;
+  const tag = `<meta name="robots" content="${escapeXmlAttr(content)}">`;
   return /<meta\s+name="robots"[^>]*>/i.test(html)
     ? html.replace(/<meta\s+name="robots"[^>]*>/i, tag)
     : html.replace('</head>', `    ${tag}\n  </head>`);
@@ -233,21 +216,14 @@ function setBlogJsonLd(html, post, url) {
     ...(typeof post.wordCount === 'number' ? { wordCount: post.wordCount } : {}),
   };
   const block =
-    `    <script type="application/ld+json" data-blog-jsonld="${escapeAttr(post.slug)}">${JSON.stringify(blogPosting)}</script>\n` +
-    `    <script type="application/ld+json" data-breadcrumb-jsonld="${escapeAttr(post.slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-blog-jsonld="${escapeXmlAttr(post.slug)}">${JSON.stringify(blogPosting)}</script>\n` +
+    `    <script type="application/ld+json" data-breadcrumb-jsonld="${escapeXmlAttr(post.slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
   // Remove any prior injected blocks from a previous run (idempotency).
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-(?:blog|breadcrumb)-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
   );
   return stripped.replace('</head>', `${block}  </head>`);
-}
-
-function escapeAttr(value) {
-  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-}
-function escapeText(value) {
-  return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 /**
@@ -288,8 +264,8 @@ function setProjectJsonLd(html, slug, projectTitle, description, imageUrl, url) 
     inLanguage: 'en',
   };
   const block =
-    `    <script type="application/ld+json" data-project-detail-jsonld="${escapeAttr(slug)}">${JSON.stringify(article)}</script>\n` +
-    `    <script type="application/ld+json" data-project-detail-breadcrumb-jsonld="${escapeAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-project-detail-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(article)}</script>\n` +
+    `    <script type="application/ld+json" data-project-detail-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-project-detail(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
@@ -324,8 +300,8 @@ function setProjectTagJsonLd(html, slug, label, url) {
     isPartOf: { '@id': `${SITE_URL}/#website` },
   };
   const block =
-    `    <script type="application/ld+json" data-project-tag-jsonld="${escapeAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
-    `    <script type="application/ld+json" data-project-tag-breadcrumb-jsonld="${escapeAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-project-tag-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
+    `    <script type="application/ld+json" data-project-tag-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-project-tag(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
@@ -363,8 +339,8 @@ function setTagJsonLd(html, slug, label, posts, url) {
     })),
   };
   const block =
-    `    <script type="application/ld+json" data-tag-jsonld="${escapeAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
-    `    <script type="application/ld+json" data-tag-breadcrumb-jsonld="${escapeAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-tag-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
+    `    <script type="application/ld+json" data-tag-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-tag(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
@@ -378,7 +354,7 @@ let tagsProcessed = 0;
 let projectTagsProcessed = 0;
 let projectDetailsProcessed = 0;
 
-for await (const htmlPath of walk(DIST)) {
+for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index.html' })) {
   let html = await readFile(htmlPath, 'utf-8');
   const route = deriveRoute(htmlPath);
   const url = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`;
@@ -515,7 +491,7 @@ for await (const htmlPath of walk(DIST)) {
     // Robots meta is the missing piece; without it, Googlebot can index
     // a guessed URL and the JSON-LD BlogPosting block makes the page
     // look fully published.
-    const isHidden = post.draft === true || post.date > todayYmd;
+    const isHidden = !isPublished(post, today);
     html = setTitle(html, title);
     html = setMetaDescription(html, post.excerpt);
     if (isHidden) {

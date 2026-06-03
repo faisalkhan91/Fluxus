@@ -10,34 +10,21 @@
  * Run via `npm run build:prod` (chained after `inject-meta.mjs`, before
  * `build-csp.mjs` so the og/*.png paths exist when CSP scanning runs).
  */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { createRequire } from 'node:module';
 import sharp from 'sharp';
+import { SITE_NAME } from './lib/config.mjs';
+import { DIST_BROWSER, requireDistBrowser } from './lib/fs.mjs';
+import { loadPosts } from './lib/posts.mjs';
+import { escapeXmlAttr } from './lib/html.mjs';
 
-const require = createRequire(import.meta.url);
-const { siteName: SITE_NAME } = require('../site.config.json');
-
-const DIST_BROWSER = join(process.cwd(), 'dist/fluxus/browser');
 const OUT_DIR = join(DIST_BROWSER, 'og');
-const POSTS_JSON = join(process.cwd(), 'src/assets/blog/posts.json');
 
-if (!existsSync(DIST_BROWSER)) {
-  console.error('dist/fluxus/browser/ does not exist — run `ng build` first.');
-  process.exit(1);
-}
+requireDistBrowser();
 
 mkdirSync(OUT_DIR, { recursive: true });
 
-const posts = JSON.parse(readFileSync(POSTS_JSON, 'utf-8'));
-
-function escape(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+const posts = await loadPosts();
 
 /**
  * Wraps a string at the given character budget so titles render across 1–3
@@ -72,7 +59,7 @@ function renderSvg(post) {
       const xOffset = 80 + i * 150;
       return `<g transform="translate(${xOffset}, 510)">
         <rect width="130" height="36" rx="8" fill="rgba(201,42,42,0.18)" />
-        <text x="65" y="24" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" fill="#e03131">${escape(tag)}</text>
+        <text x="65" y="24" text-anchor="middle" font-family="ui-monospace,monospace" font-size="16" fill="#e03131">${escapeXmlAttr(tag)}</text>
       </g>`;
     })
     .join('');
@@ -80,7 +67,7 @@ function renderSvg(post) {
   const titleText = titleLines
     .map((line, i) => {
       const y = 220 + i * 84;
-      return `<text x="80" y="${y}" font-family="ui-sans-serif,system-ui" font-size="64" font-weight="700" fill="#ffffff">${escape(line)}</text>`;
+      return `<text x="80" y="${y}" font-family="ui-sans-serif,system-ui" font-size="64" font-weight="700" fill="#ffffff">${escapeXmlAttr(line)}</text>`;
     })
     .join('');
 
@@ -98,7 +85,7 @@ function renderSvg(post) {
   </defs>
   <rect width="1200" height="630" fill="url(#bg)" />
   <rect width="1200" height="630" fill="url(#glow)" />
-  <text x="80" y="100" font-family="ui-monospace,monospace" font-size="22" fill="rgba(255,255,255,0.5)" letter-spacing="2">// ${escape(SITE_NAME.toUpperCase())}</text>
+  <text x="80" y="100" font-family="ui-monospace,monospace" font-size="22" fill="rgba(255,255,255,0.5)" letter-spacing="2">// ${escapeXmlAttr(SITE_NAME.toUpperCase())}</text>
   ${titleText}
   ${tagPills}
   <text x="80" y="600" font-family="ui-monospace,monospace" font-size="20" fill="rgba(255,255,255,0.6)">faisalkhan.dpdns.org/blog</text>
