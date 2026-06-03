@@ -5,7 +5,6 @@ import {
   computed,
   effect,
   untracked,
-  signal,
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
@@ -17,6 +16,8 @@ import { SectionHeaderComponent } from '@ui/section-header/section-header.compon
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SeoService } from '@core/services/seo.service';
 import { slugify } from '@shared/utils/string.utils';
+import { resolveTagLabel, filterByTagSlug } from '@shared/utils/tag.utils';
+import { createExpandableSet } from '@shared/utils/expandable-set';
 import { environment } from '@env/environment';
 import { projectTagUrl } from '@shared/utils/url.utils';
 
@@ -60,42 +61,22 @@ export class ProjectsTagComponent {
    * the BlogTag behaviour so users see "CI/CD" rather than "ci-cd" in
    * the heading even when arriving via a slugified URL.
    */
-  readonly tagLabel = computed(() => {
-    const slug = this.tagSlug();
-    if (!slug) return '';
-    for (const project of this.projectsData.projects()) {
-      const match = project.tags.find((t) => slugify(t) === slug);
-      if (match) return match;
-    }
-    return slug;
-  });
+  readonly tagLabel = computed(() =>
+    resolveTagLabel(this.projectsData.projects(), (p) => p.tags, this.tagSlug()),
+  );
 
-  readonly matchingProjects = computed(() => {
-    const slug = this.tagSlug();
-    if (!slug) return [];
-    return this.projectsData.projects().filter((p) => p.tags.some((t) => slugify(t) === slug));
-  });
+  readonly matchingProjects = computed(() =>
+    filterByTagSlug(this.projectsData.projects(), (p) => p.tags, this.tagSlug()),
+  );
 
   /**
-   * Per-card "expanded" set, identical to the parent ProjectsComponent so
-   * the cards behave the same way (clamp at 3 lines, "Read more" reveals
-   * the rest). A `Set<string>` keyed by title is fine here — no projects
-   * share titles.
+   * Per-card "expanded" set, identical to the parent ProjectsComponent so the
+   * cards behave the same way (clamp at 3 lines, "Read more" reveals the
+   * rest). Keyed by title — no projects share titles.
    */
-  private readonly expandedSet = signal(new Set<string>());
-
-  protected isExpanded(title: string): boolean {
-    return this.expandedSet().has(title);
-  }
-
-  protected toggleExpand(title: string): void {
-    this.expandedSet.update((set) => {
-      const next = new Set(set);
-      if (next.has(title)) next.delete(title);
-      else next.add(title);
-      return next;
-    });
-  }
+  private readonly expanded = createExpandableSet();
+  protected isExpanded = this.expanded.isExpanded;
+  protected toggleExpand = this.expanded.toggle;
 
   protected slugify = slugify;
 
