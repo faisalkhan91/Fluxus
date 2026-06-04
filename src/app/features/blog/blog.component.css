@@ -395,26 +395,6 @@
   gap: var(--space-2);
 }
 
-.tag {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--text-accent);
-  background: var(--accent-subtle);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  transition:
-    background-color var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.tag--link:hover,
-.tag--link:focus-visible {
-  background: var(--accent);
-  color: var(--text-on-accent);
-}
-
 .post-grid-hint {
   display: flex;
   flex-wrap: wrap;

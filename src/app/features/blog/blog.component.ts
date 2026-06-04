@@ -3,6 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
+import { TagComponent } from '@ui/tag/tag.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { BlogService } from '@core/services/blog.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
@@ -23,6 +24,7 @@ interface DecoratedPost {
   imports: [
     GlassCardComponent,
     IconComponent,
+    TagComponent,
     SectionHeaderComponent,
     NgOptimizedImage,
     RouterLink,

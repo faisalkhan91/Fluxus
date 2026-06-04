@@ -133,7 +133,7 @@ describe('ProjectsComponent', () => {
   });
 
   it('should render tags', () => {
-    const firstCardTags = el.querySelector('.project-card')?.querySelectorAll('.tag');
+    const firstCardTags = el.querySelector('.project-card')?.querySelectorAll('.ui-tag');
     expect(firstCardTags?.length).toBe(2);
     expect(firstCardTags?.[0].textContent?.trim()).toBe('Angular');
   });
@@ -147,7 +147,7 @@ describe('ProjectsComponent', () => {
   it('renders tags as links to the projects archive at /projects/tag/:slug', () => {
     const firstCardTags = el
       .querySelector('.project-card')
-      ?.querySelectorAll<HTMLAnchorElement>('a.tag');
+      ?.querySelectorAll<HTMLAnchorElement>('a.ui-tag');
     expect(firstCardTags?.length).toBe(2);
     expect(firstCardTags?.[0].getAttribute('href')).toBe('/projects/tag/angular');
     expect(firstCardTags?.[1].getAttribute('href')).toBe('/projects/tag/typescript');

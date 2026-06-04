@@ -31,6 +31,9 @@
   --glass-border: rgba(255, 255, 255, 0.07);
   --glass-border-hover: rgba(255, 255, 255, 0.14);
   --glass-blur: 20px;
+  /* Hover-lift distance shared by glass surfaces (glass-card, skill-badge).
+     glow-button overrides to -1px locally for a subtler button lift. */
+  --glass-lift: -2px;
 
   /* === Accent (Crimson/Cardinal) === */
   --accent: #c92a2a;
@@ -1098,7 +1101,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 .post-related-link,
 .footer-nav-link,
 .post-author-cta,
-.tag--link {
+.ui-tag--interactive {
   scroll-margin-top: var(--space-8);
 }
 

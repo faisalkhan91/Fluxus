@@ -115,7 +115,7 @@
                   <p class="post-excerpt">{{ entry.post.excerpt }}</p>
                   <div class="post-tags">
                     @for (tag of entry.post.tags; track tag) {
-                      <span class="tag">{{ tag }}</span>
+                      <span uiTag size="sm">{{ tag }}</span>
                     }
                   </div>
                 </div>
@@ -161,7 +161,7 @@
                   <p class="post-excerpt">{{ entry.post.excerpt }}</p>
                   <div class="post-tags">
                     @for (tag of entry.post.tags; track tag) {
-                      <span class="tag">{{ tag }}</span>
+                      <span uiTag size="sm">{{ tag }}</span>
                     }
                   </div>
                 </div>
@@ -173,7 +173,7 @@
       <p class="post-grid-hint">
         Browse by tag:
         @for (tag of allTags(); track tag) {
-          <a [routerLink]="['/blog/tag', tagSlug(tag)]" class="tag tag--link">{{ tag }}</a>
+          <a uiTag size="sm" interactive [routerLink]="['/blog/tag', tagSlug(tag)]">{{ tag }}</a>
         }
       </p>
     }

@@ -20,6 +20,7 @@ import { NgOptimizedImage, isPlatformServer } from '@angular/common';
 import { GlassPanelComponent } from '@ui/glass-panel/glass-panel.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
+import { TagComponent } from '@ui/tag/tag.component';
 import { TrustedHtmlPipe } from '@shared/pipes/trusted-html.pipe';
 import { BlogService } from '@core/services/blog.service';
 import { MarkdownService } from '@core/services/markdown.service';
@@ -81,6 +82,7 @@ const renderStateKey = (slug: string) => makeStateKey<RenderedPost>(`blog-render
     GlassPanelComponent,
     GlassCardComponent,
     IconComponent,
+    TagComponent,
     NgOptimizedImage,
     RouterLink,
     TrustedHtmlPipe,

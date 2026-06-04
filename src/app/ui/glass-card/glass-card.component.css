@@ -31,7 +31,7 @@
 :host(.hoverable:hover) {
   background: var(--glass-bg-hover);
   border-color: var(--glass-border-hover);
-  transform: translateY(-2px);
+  transform: translateY(var(--glass-lift));
   box-shadow: var(--shadow-glass);
 }
 

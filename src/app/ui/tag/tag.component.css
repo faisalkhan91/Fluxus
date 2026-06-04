@@ -1,0 +1,50 @@
+:host {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+/* === Size === */
+/* Compact inline pill (blog index). */
+:host(.ui-tag--sm) {
+  padding: 2px var(--space-2);
+}
+/* 24 px tap target (default) — clears WCAG 2.2 SC 2.5.8. */
+:host(.ui-tag--md) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px var(--space-3);
+}
+
+/* === Variant === */
+:host(.ui-tag--accent) {
+  color: var(--text-accent);
+  background: var(--accent-subtle);
+  letter-spacing: 0.02em;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+:host(.ui-tag--neutral) {
+  color: var(--text-muted);
+  background: var(--surface-overlay);
+  border: 1px solid var(--glass-border);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+/* === Interactive (links only) === */
+:host(.ui-tag--accent.ui-tag--interactive:hover),
+:host(.ui-tag--accent.ui-tag--interactive:focus-visible) {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+:host(.ui-tag--neutral.ui-tag--interactive:hover),
+:host(.ui-tag--neutral.ui-tag--interactive:focus-visible) {
+  color: var(--text-accent);
+  border-color: var(--text-accent);
+}

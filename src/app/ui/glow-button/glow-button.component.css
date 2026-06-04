@@ -1,4 +1,6 @@
 .btn {
+  /* Subtler lift than glass surfaces (-2px); see --glass-lift in styles.css. */
+  --glass-lift: -1px;
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -31,7 +33,7 @@
 .btn--primary:hover:not(:disabled) {
   background: var(--accent-hover);
   box-shadow: var(--shadow-accent-glow);
-  transform: translateY(-1px);
+  transform: translateY(var(--glass-lift));
 }
 
 .btn--primary:active:not(:disabled) {
@@ -49,7 +51,7 @@
 .btn--secondary:hover:not(:disabled) {
   background: var(--glass-bg-hover);
   border-color: var(--glass-border-hover);
-  transform: translateY(-1px);
+  transform: translateY(var(--glass-lift));
 }
 
 .btn--secondary:active:not(:disabled) {

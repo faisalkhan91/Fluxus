@@ -15,6 +15,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
+import { TagComponent } from '@ui/tag/tag.component';
 import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import type { Project } from '@shared/models/project.model';
@@ -91,6 +92,7 @@ function byUpdated(a: Project, b: Project): number {
     SectionHeaderComponent,
     GlassCardComponent,
     IconComponent,
+    TagComponent,
     GithubMetaComponent,
   ],
 })

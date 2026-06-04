@@ -113,7 +113,9 @@
               <div class="projects-list-tags">
                 @for (tag of project.tags; track tag) {
                   <a
-                    class="tag"
+                    uiTag
+                    variant="neutral"
+                    interactive
                     [routerLink]="['/projects/tag', slugify(tag)]"
                     [attr.aria-label]="'View all projects tagged ' + tag"
                     >{{ tag }}</a
@@ -197,7 +199,9 @@
               <div class="projects-list-tags">
                 @for (tag of project.tags; track tag) {
                   <a
-                    class="tag"
+                    uiTag
+                    variant="neutral"
+                    interactive
                     [routerLink]="['/projects/tag', slugify(tag)]"
                     [attr.aria-label]="'View all projects tagged ' + tag"
                     >{{ tag }}</a
@@ -289,7 +293,9 @@
               <div class="project-tags">
                 @for (tag of project.tags; track tag) {
                   <a
-                    class="tag"
+                    uiTag
+                    variant="neutral"
+                    interactive
                     [routerLink]="['/projects/tag', slugify(tag)]"
                     [attr.aria-label]="'View all projects tagged ' + tag"
                     >{{ tag }}</a

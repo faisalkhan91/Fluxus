@@ -239,7 +239,7 @@
   the command palette, SEO, and tag-index pages — only presentation
   is trimmed. The full set is visible on the project detail page.
 */
-.projects-list-tags > .tag:nth-child(n + 6) {
+.projects-list-tags > .ui-tag:nth-child(n + 6) {
   display: none;
 }
 
@@ -579,35 +579,8 @@
 }
 
 /* Same 5-tag display cap as the list view — see `.projects-list-tags`. */
-.project-tags > .tag:nth-child(n + 6) {
+.project-tags > .ui-tag:nth-child(n + 6) {
   display: none;
-}
-
-/* See blog-tag.component.css for rationale — `<a class="tag">` links
-   need ≥24 px tap target so mobile filtering works. Padding/min-height
-   match the blog-tag rule for visual consistency across surfaces. */
-.tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  background: var(--surface-overlay);
-  padding: 4px var(--space-3);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--glass-border);
-  text-decoration: none;
-  transition:
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    background var(--transition-fast);
-}
-
-a.tag:hover,
-a.tag:focus-visible {
-  color: var(--text-accent);
-  border-color: var(--text-accent);
 }
 
 .project-link {
