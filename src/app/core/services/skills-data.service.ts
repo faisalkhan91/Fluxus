@@ -1,10 +1,10 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import type { Skill, SkillCategory, SkillTier } from '@shared/models/skill.model';
 /* Type-only import avoids a runtime circular dep — `skill-usage.service`
    already imports `SkillsDataService` at runtime. */
 import type { SkillUsage } from './skill-usage.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SkillsDataService {
   readonly categories = signal<SkillCategory[]>([
     {

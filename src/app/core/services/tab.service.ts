@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject, DestroyRef } from '@angular/core';
+import { Service, signal, computed, inject, DestroyRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -32,11 +32,11 @@ const HERO_TAB: EditorTab = {
  * visits to the same segment. The Welcome tab is pinned and cannot
  * be closed; new tabs land to its right.
  *
- * The service is `providedIn: 'root'` so the tab list survives router
- * changes and component teardowns. `editor-tab-bar.component` is the
- * sole renderer.
+ * The service is root-provided (`@Service()`) so the tab list survives
+ * router changes and component teardowns. `editor-tab-bar.component` is
+ * the sole renderer.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TabService {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);

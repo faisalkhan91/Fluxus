@@ -1,4 +1,4 @@
-import { Injectable, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import { Service, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import type { BlogPost } from '@shared/models/blog-post.model';
@@ -28,7 +28,7 @@ function isValidPost(p: unknown): p is BlogPost {
   );
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class BlogService {
   private platformId = inject(PLATFORM_ID);
   private destroyRef = inject(DestroyRef);

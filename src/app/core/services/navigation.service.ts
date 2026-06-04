@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import type { SidebarItem } from '@ui/sidebar/sidebar.component';
 import type { MobileNavItem, MobileMenuItem } from '@ui/mobile-nav-pill/mobile-nav-pill.component';
 
@@ -105,7 +105,7 @@ const NAV: NavEntry[] = [
   },
 ];
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class NavigationService {
   /*
     All three navigation surfaces are derived once at construction from the

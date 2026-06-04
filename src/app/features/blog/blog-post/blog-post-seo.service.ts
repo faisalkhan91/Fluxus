@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { SeoService } from '@core/services/seo.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { environment } from '@env/environment';
@@ -21,7 +21,7 @@ import { isPostPublished } from '@shared/utils/blog.utils';
  * knows about `BlogPost` and series shape. `SeoService` provides the
  * primitive `setLinkRel` / `setCanonical` writes underneath.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class BlogPostSeoService {
   private seo = inject(SeoService);
 

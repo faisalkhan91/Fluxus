@@ -1,8 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import type { PersonalInfo, Education, SocialLink } from '@shared/models/profile.model';
 import { yearsOfExperience } from '@shared/utils/career.utils';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProfileDataService {
   readonly personalInfo = signal<PersonalInfo>({
     name: 'Faisal Khan',

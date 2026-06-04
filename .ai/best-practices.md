@@ -49,5 +49,5 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Services
 
 - Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
+- Use the `@Service()` decorator for singleton services (Angular v22+; auto-provided in root and tree-shakeable). Equivalent to `@Injectable({ providedIn: 'root' })`.
 - Use the `inject()` function instead of constructor injection

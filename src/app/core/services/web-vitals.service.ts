@@ -1,4 +1,4 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Service, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '@env/environment';
 
@@ -61,7 +61,7 @@ function scheduleIdle(cb: () => void): ScheduleHandle {
  * `requestIdleCallback` so the dynamic import network/parse work doesn't
  * compete with the Largest Contentful Paint on bootstrap.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class WebVitalsService {
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private config = DEFAULT_CONFIG;

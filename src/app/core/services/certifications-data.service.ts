@@ -1,7 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import type { Certification, CourseProvider, Award } from '@shared/models/certification.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CertificationsDataService {
   readonly certifications = signal<Certification[]>([
     {

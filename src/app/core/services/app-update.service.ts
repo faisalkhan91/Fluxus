@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { DestroyRef, Service, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
@@ -46,7 +46,7 @@ const POLL_INTERVAL_MS = 5 * 60_000;
  * Inert under SSR (no `window`, no SW) so it's safe to invoke from
  * `provideAppInitializer` regardless of platform.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppUpdateService {
   private readonly sw = inject(SwUpdate);
   private readonly router = inject(Router);

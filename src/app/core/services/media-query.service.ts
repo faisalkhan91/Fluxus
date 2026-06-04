@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
+import { Service, signal, computed, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { hasMatchMedia } from '@shared/utils/motion.utils';
 
@@ -24,7 +24,7 @@ function resolveBreakpoint(): BreakpointKey {
   return 'wide';
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class MediaQueryService {
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));

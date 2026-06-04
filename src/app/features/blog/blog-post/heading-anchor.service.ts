@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ErrorToastService } from '@core/services/error-toast.service';
 import { environment } from '@env/environment';
@@ -15,7 +15,7 @@ import { prefersReducedMotion } from '@shared/utils/motion.utils';
  * `MermaidService` / `BlogPostSeoService`). Uses `closest()` dispatch so it
  * can own its own delegated listener independently of the copy-code one.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HeadingAnchorService {
   private document = inject(DOCUMENT);
   private toasts = inject(ErrorToastService);

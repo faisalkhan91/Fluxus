@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 
 /**
  * Severity controls how aggressively the toast is announced to assistive
@@ -59,7 +59,7 @@ const DEFAULT_INFO_TTL = 4000;
  * failures the user should acknowledge. Either default can be overridden
  * per-call via the `ttl` field (number = explicit ms, `null` = sticky).
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ErrorToastService {
   private nextId = 1;
   /**
