@@ -68,6 +68,22 @@ for (const theme of PRIMARY_THEMES) {
       await shot(page);
     });
 
+    // The grid view + the tag archive both render the shared app-post-card's
+    // sibling, app-project-card — surfaces the default `/projects` (list) and
+    // `view=list` snapshots above don't exercise. Lock them so card-chrome
+    // regressions are caught per theme + viewport.
+    test('route /projects?view=grid matches baseline', async ({ page }) => {
+      await page.goto('/projects?view=grid', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(250);
+      await shot(page);
+    });
+
+    test('route /projects/tag/aws matches baseline', async ({ page }) => {
+      await page.goto('/projects/tag/aws', { waitUntil: 'networkidle' });
+      await page.waitForTimeout(250);
+      await shot(page);
+    });
+
     // The wildcard 404 surface (glitch heading, terminal echo, suggestion
     // cards). Served as the CSR shell, so we hit a deterministic bogus path
     // and let the SPA render NotFoundComponent.
