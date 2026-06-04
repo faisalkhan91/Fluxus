@@ -123,16 +123,10 @@
                 }
               </div>
               <a
+                uiSourceLink
                 [href]="project.link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="project-link"
                 [attr.aria-label]="'View ' + project.title + ' on GitHub'"
-              >
-                <ui-icon name="github" [size]="14" />
-                <span>Source</span>
-                <ui-icon name="external-link" [size]="12" />
-              </a>
+              ></a>
             </div>
 
             <a
@@ -210,16 +204,10 @@
               </div>
             </div>
             <a
+              uiSourceLink
               [href]="project.link"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="project-link"
               [attr.aria-label]="'View ' + project.title + ' on GitHub'"
-            >
-              <ui-icon name="github" [size]="14" />
-              <span>Source</span>
-              <ui-icon name="external-link" [size]="12" />
-            </a>
+            ></a>
           </article>
         }
       }
@@ -303,16 +291,11 @@
                 }
               </div>
               <a
+                uiSourceLink
+                [iconSize]="16"
                 [href]="project.link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="project-link"
                 [attr.aria-label]="'View ' + project.title + ' on GitHub'"
-              >
-                <ui-icon name="github" [size]="16" />
-                <span>Source</span>
-                <ui-icon name="external-link" [size]="12" />
-              </a>
+              ></a>
             </div>
           </div>
         </ui-glass-card>

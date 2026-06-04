@@ -6,6 +6,7 @@ import { map } from 'rxjs';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { TagComponent } from '@ui/tag/tag.component';
+import { SourceLinkComponent } from '@ui/source-link/source-link.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import { SeoService } from '@core/services/seo.service';
@@ -35,6 +36,7 @@ import { projectTagUrl } from '@shared/utils/url.utils';
     GlassCardComponent,
     IconComponent,
     TagComponent,
+    SourceLinkComponent,
     SectionHeaderComponent,
     RouterLink,
     NgOptimizedImage,

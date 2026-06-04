@@ -199,19 +199,6 @@
   flex-wrap: wrap;
 }
 
-.project-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  transition: color var(--transition-fast);
-}
-
-.project-link:hover {
-  color: var(--text-accent);
-}
-
 @media (max-width: 767px) {
   .projects-grid {
     grid-template-columns: 1fr;

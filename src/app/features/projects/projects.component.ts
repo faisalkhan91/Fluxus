@@ -16,6 +16,7 @@ import { SectionHeaderComponent } from '@ui/section-header/section-header.compon
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { TagComponent } from '@ui/tag/tag.component';
+import { SourceLinkComponent } from '@ui/source-link/source-link.component';
 import { GithubMetaComponent } from '@ui/github-meta/github-meta.component';
 import { ProjectsDataService } from '@core/services/projects-data.service';
 import type { Project } from '@shared/models/project.model';
@@ -93,6 +94,7 @@ function byUpdated(a: Project, b: Project): number {
     GlassCardComponent,
     IconComponent,
     TagComponent,
+    SourceLinkComponent,
     GithubMetaComponent,
   ],
 })
