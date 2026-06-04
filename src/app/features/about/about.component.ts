@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
@@ -10,7 +10,6 @@ import { ProfileDataService } from '@core/services/profile-data.service';
   templateUrl: './about.component.html',
   styleUrl: './about.component.css',
   imports: [NgOptimizedImage, GlassCardComponent, SectionHeaderComponent, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutComponent {
   protected profile = inject(ProfileDataService);

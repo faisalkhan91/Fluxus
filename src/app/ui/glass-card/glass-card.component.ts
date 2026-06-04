@@ -1,10 +1,9 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'ui-glass-card',
   template: '<ng-content />',
   styleUrl: './glass-card.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.hoverable]': 'hover()',
     '[class.glow]': 'glow()',

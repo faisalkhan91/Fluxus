@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  computed,
-  effect,
-  untracked,
-} from '@angular/core';
+import { Component, inject, computed, effect, untracked } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -44,7 +37,6 @@ import { projectTagUrl } from '@shared/utils/url.utils';
     RouterLink,
     NgOptimizedImage,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsTagComponent {
   private route = inject(ActivatedRoute);

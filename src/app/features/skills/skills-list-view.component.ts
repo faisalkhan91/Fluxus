@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SkillsDataService, deriveTier } from '@core/services/skills-data.service';
@@ -284,7 +284,6 @@ interface Row {
     `,
   ],
   imports: [NgOptimizedImage, RouterLink],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillsListViewComponent {
   private skillsData = inject(SkillsDataService);

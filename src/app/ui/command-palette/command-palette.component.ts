@@ -1,7 +1,6 @@
 import type { ElementRef } from '@angular/core';
 import {
   Component,
-  ChangeDetectionStrategy,
   inject,
   signal,
   computed,
@@ -22,7 +21,6 @@ import { CommandCatalogService, type CommandItem } from './command-catalog.servi
   templateUrl: './command-palette.component.html',
   styleUrl: './command-palette.component.css',
   imports: [IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommandPaletteComponent {
   private router = inject(Router);

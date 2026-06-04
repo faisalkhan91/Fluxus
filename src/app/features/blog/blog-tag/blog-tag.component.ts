@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  computed,
-  effect,
-  untracked,
-} from '@angular/core';
+import { Component, inject, computed, effect, untracked } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -31,7 +24,6 @@ import { blogTagUrl } from '@shared/utils/url.utils';
     SectionHeaderComponent,
     RouterLink,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogTagComponent {
   private route = inject(ActivatedRoute);

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
@@ -11,7 +11,6 @@ import { slugify } from '@shared/utils/string.utils';
   templateUrl: './certifications.component.html',
   styleUrl: './certifications.component.css',
   imports: [NgOptimizedImage, SectionHeaderComponent, GlassCardComponent, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CertificationsComponent {
   protected certsData = inject(CertificationsDataService);

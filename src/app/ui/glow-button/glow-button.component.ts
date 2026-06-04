@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'ui-glow-button',
@@ -14,7 +14,6 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
     </button>
   `,
   styleUrl: './glow-button.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlowButtonComponent {
   readonly variant = input<'primary' | 'secondary' | 'ghost'>('primary');

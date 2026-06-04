@@ -1,6 +1,5 @@
 import {
   Component,
-  ChangeDetectionStrategy,
   inject,
   signal,
   computed,
@@ -86,7 +85,6 @@ const renderStateKey = (slug: string) => makeStateKey<RenderedPost>(`blog-render
     RouterLink,
     TrustedHtmlPipe,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogPostComponent {
   private route = inject(ActivatedRoute);

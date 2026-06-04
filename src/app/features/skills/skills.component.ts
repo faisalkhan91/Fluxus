@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  ElementRef,
-  inject,
-  signal,
-  computed,
-} from '@angular/core';
+import { Component, ElementRef, inject, signal, computed } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { IconComponent } from '@ui/icon/icon.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
@@ -50,7 +43,6 @@ const FEATURE_CAP = 6;
     SkillFeatureCardComponent,
     SkillsListViewComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillsComponent {
   protected skillsData = inject(SkillsDataService);

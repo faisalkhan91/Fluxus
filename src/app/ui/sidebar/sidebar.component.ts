@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -26,7 +25,6 @@ export type SidebarItem =
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
   imports: [RouterLink, RouterLinkActive, NgOptimizedImage, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.collapsed]': 'collapsed()',
     '[style.--nav-indicator-y.px]': 'indicatorY()',

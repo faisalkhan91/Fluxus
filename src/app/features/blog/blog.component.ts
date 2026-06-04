@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
@@ -27,7 +27,6 @@ interface DecoratedPost {
     NgOptimizedImage,
     RouterLink,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogComponent {
   protected blog = inject(BlogService);

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
 import { TimelineComponent } from '@ui/timeline/timeline.component';
 import type { TimelineEntry } from '@ui/timeline/timeline.component';
@@ -9,7 +9,6 @@ import { ExperienceDataService } from '@core/services/experience-data.service';
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.css',
   imports: [SectionHeaderComponent, TimelineComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExperienceComponent {
   private experienceData = inject(ExperienceDataService);

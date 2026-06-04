@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { ICONS } from './icons';
 import type { IconShape } from './icons';
 
@@ -14,7 +14,6 @@ import type { IconShape } from './icons';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IconComponent {
   readonly name = input.required<string>();

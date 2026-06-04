@@ -1,12 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  PLATFORM_ID,
-  computed,
-  inject,
-  signal,
-  afterNextRender,
-} from '@angular/core';
+import { Component, PLATFORM_ID, computed, inject, signal, afterNextRender } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -18,7 +10,6 @@ import { SeoService } from '@core/services/seo.service';
   selector: 'app-not-found',
   templateUrl: './not-found.component.html',
   styleUrl: './not-found.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, IconComponent],
 })
 export class NotFoundComponent {

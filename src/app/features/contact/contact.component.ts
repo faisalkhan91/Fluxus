@@ -1,12 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  DestroyRef,
-  PLATFORM_ID,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
@@ -29,7 +21,6 @@ type SubmitStage = 'editing' | 'awaiting-confirmation' | 'sent';
     GlowButtonComponent,
     IconComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
   protected profile = inject(ProfileDataService);
