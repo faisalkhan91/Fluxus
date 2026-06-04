@@ -14,6 +14,7 @@ import { NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
+import { ProfileDataService } from '@core/services/profile-data.service';
 import { scrollIntoViewIfPresent } from '@shared/utils/dom.utils';
 
 export interface MobileNavItem {
@@ -53,6 +54,8 @@ export class MobileNavPillComponent {
   private router = inject(Router);
   private document = inject(DOCUMENT);
   private destroyRef = inject(DestroyRef);
+  /** Identity (name/role/avatar) shown in the drawer header. */
+  protected readonly profile = inject(ProfileDataService);
 
   readonly items = input.required<MobileNavItem[]>();
   readonly menuItems = input.required<MobileMenuItem[]>();
