@@ -7,7 +7,7 @@ import {
   inject,
 } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { provideClientHydration, withIncrementalHydration } from '@angular/platform-browser';
 import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
@@ -36,7 +36,9 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'enabled',
       }),
     ),
-    provideHttpClient(withFetch()),
+    // fetch is the default backend as of v22 (withFetch was deprecated); the
+    // SSR + httpResource paths rely on it.
+    provideHttpClient(),
     // Maps NgOptimizedImage srcset entries to pre-generated WebP width
     // variants (scripts/build-image-variants.mjs); images without variants
     // pass through untouched. See ./core/image/responsive-image-loader.
