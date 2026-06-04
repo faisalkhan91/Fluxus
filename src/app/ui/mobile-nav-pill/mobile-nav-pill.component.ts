@@ -1,7 +1,6 @@
 import type { ElementRef } from '@angular/core';
 import {
   Component,
-  ChangeDetectionStrategy,
   DestroyRef,
   effect,
   input,
@@ -45,7 +44,6 @@ export type MobileMenuItem =
   templateUrl: './mobile-nav-pill.component.html',
   styleUrl: './mobile-nav-pill.component.css',
   imports: [RouterLink, RouterLinkActive, IconComponent, NgOptimizedImage],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     role: 'navigation',
     'aria-label': 'Main Navigation',

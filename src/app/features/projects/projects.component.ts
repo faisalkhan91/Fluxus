@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -94,7 +93,6 @@ function byUpdated(a: Project, b: Project): number {
     IconComponent,
     GithubMetaComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsComponent {
   protected projectsData = inject(ProjectsDataService);

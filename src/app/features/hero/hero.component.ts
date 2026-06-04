@@ -1,6 +1,5 @@
 import {
   Component,
-  ChangeDetectionStrategy,
   DestroyRef,
   ElementRef,
   PLATFORM_ID,
@@ -25,7 +24,6 @@ import { prefersReducedMotion } from '@shared/utils/motion.utils';
   templateUrl: './hero.component.html',
   styleUrl: './hero.component.css',
   imports: [RouterLink, NgTemplateOutlet, GlowButtonComponent, GlassCardComponent, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroComponent {
   private readonly router = inject(Router);

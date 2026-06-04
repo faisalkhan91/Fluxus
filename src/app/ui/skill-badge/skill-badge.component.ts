@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -85,7 +85,6 @@ import { RouterLink } from '@angular/router';
   `,
   styleUrl: './skill-badge.component.css',
   imports: [NgOptimizedImage, RouterLink],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillBadgeComponent {
   readonly name = input.required<string>();

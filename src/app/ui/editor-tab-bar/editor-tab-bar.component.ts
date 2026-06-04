@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
@@ -30,7 +29,6 @@ export interface EditorTab {
   templateUrl: './editor-tab-bar.component.html',
   styleUrl: './editor-tab-bar.component.css',
   imports: [IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditorTabBarComponent {
   private host = inject<ElementRef<HTMLElement>>(ElementRef);

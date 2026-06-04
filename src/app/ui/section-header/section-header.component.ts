@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 export type HeadingLevel = 1 | 2;
 
@@ -21,7 +21,6 @@ export type HeadingLevel = 1 | 2;
     <div class="accent-line" [class.accent-line--page]="level() === 1"></div>
   `,
   styleUrl: './section-header.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SectionHeaderComponent {
   readonly title = input.required<string>();

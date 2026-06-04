@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { GlassCardComponent } from '../glass-card/glass-card.component';
 
 export interface TimelineEntry {
@@ -14,7 +14,6 @@ export interface TimelineEntry {
   templateUrl: './timeline.component.html',
   styleUrl: './timeline.component.css',
   imports: [GlassCardComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent {
   readonly items = input.required<TimelineEntry[]>();

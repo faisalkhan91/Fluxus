@@ -46,8 +46,9 @@ module.exports = defineConfig([
         'error',
         { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
       ],
-      // "Set changeDetection: OnPush in @Component"
-      '@angular-eslint/prefer-on-push-component-change-detection': 'error',
+      // (OnPush is the v22 default under our zoneless setup — explicit
+      // changeDetection is no longer required, so the prefer-on-push rule is
+      // dropped to match the refreshed .ai conventions.)
       // "Use signals for state" / "input() and output() functions instead of decorators"
       '@angular-eslint/prefer-signals': 'error',
       // "Use the inject() function instead of constructor injection"
@@ -57,16 +58,6 @@ module.exports = defineConfig([
       // NOTE: @angular-eslint/no-uncalled-signals (catches a signal used
       // without () in a binding) needs type-aware linting (parserOptions
       // projectService), which would slow CI lint — deferred as an opt-in.
-    },
-  },
-  {
-    // Test scaffolding (inline host components in specs) is exempt from the
-    // production component-shape rule: forcing OnPush on a throwaway test
-    // component changes how `fixture.detectChanges()` drives change
-    // detection and would destabilise existing specs for no production gain.
-    files: ['**/*.spec.ts'],
-    rules: {
-      '@angular-eslint/prefer-on-push-component-change-detection': 'off',
     },
   },
   {

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
@@ -280,7 +280,6 @@ import { RouterLink } from '@angular/router';
     `,
   ],
   imports: [NgOptimizedImage, RouterLink],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkillFeatureCardComponent {
   readonly name = input.required<string>();

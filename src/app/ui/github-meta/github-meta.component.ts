@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
 import type { GithubMeta } from '@shared/models/project.model';
 import {
@@ -32,7 +32,6 @@ import {
   templateUrl: './github-meta.component.html',
   styleUrl: './github-meta.component.css',
   imports: [IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GithubMetaComponent {
   /** GitHub data block. Renders nothing when undefined. */

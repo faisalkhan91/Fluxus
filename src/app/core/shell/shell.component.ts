@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  viewChild,
-  PLATFORM_ID,
-  DestroyRef,
-} from '@angular/core';
+import { Component, inject, viewChild, PLATFORM_ID, DestroyRef } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -34,7 +27,6 @@ import { ThemeService } from '../services/theme.service';
     ToastRegionComponent,
     CommandPaletteComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShellComponent {
   protected media = inject(MediaQueryService);
