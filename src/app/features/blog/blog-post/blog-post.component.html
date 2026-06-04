@@ -85,8 +85,9 @@
       <div class="post-tags">
         @for (tag of post.tags; track tag) {
           <a
+            uiTag
+            interactive
             [routerLink]="['/blog/tag', tagSlug(tag)]"
-            class="tag tag--link"
             [attr.aria-label]="'Browse posts tagged ' + tag"
             >{{ tag }}</a
           >
