@@ -1,14 +1,12 @@
 import { Component, inject, computed } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
 import { TagComponent } from '@ui/tag/tag.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { PostCardComponent } from './post-card/post-card.component';
 import { BlogService } from '@core/services/blog.service';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { slugify } from '@shared/utils/string.utils';
-import { formatPostDate } from '@shared/utils/blog.utils';
 
 /** Fallback cover dimensions match the build-og-cards.mjs output (1200x630). */
 
@@ -21,14 +19,7 @@ interface DecoratedPost {
   selector: 'app-blog',
   templateUrl: './blog.component.html',
   styleUrl: './blog.component.css',
-  imports: [
-    GlassCardComponent,
-    IconComponent,
-    TagComponent,
-    SectionHeaderComponent,
-    NgOptimizedImage,
-    RouterLink,
-  ],
+  imports: [IconComponent, TagComponent, SectionHeaderComponent, RouterLink, PostCardComponent],
 })
 export class BlogComponent {
   protected blog = inject(BlogService);
@@ -86,9 +77,5 @@ export class BlogComponent {
 
   protected tagSlug(tag: string): string {
     return slugify(tag);
-  }
-
-  protected formatDate(iso: string): string {
-    return formatPostDate(iso);
   }
 }

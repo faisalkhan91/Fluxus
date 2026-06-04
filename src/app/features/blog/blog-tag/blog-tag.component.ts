@@ -1,16 +1,13 @@
 import { Component, inject, computed, effect, untracked } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { GlassCardComponent } from '@ui/glass-card/glass-card.component';
 import { IconComponent } from '@ui/icon/icon.component';
-import { TagComponent } from '@ui/tag/tag.component';
 import { SectionHeaderComponent } from '@ui/section-header/section-header.component';
+import { PostCardComponent } from '../post-card/post-card.component';
 import { BlogService } from '@core/services/blog.service';
 import { SeoService } from '@core/services/seo.service';
 import { resolveTagLabel, filterByTagSlug } from '@shared/utils/tag.utils';
-import { formatPostDate } from '@shared/utils/blog.utils';
 import { environment } from '@env/environment';
 import { blogTagUrl } from '@shared/utils/url.utils';
 
@@ -18,14 +15,7 @@ import { blogTagUrl } from '@shared/utils/url.utils';
   selector: 'app-blog-tag',
   templateUrl: './blog-tag.component.html',
   styleUrl: './blog-tag.component.css',
-  imports: [
-    GlassCardComponent,
-    IconComponent,
-    TagComponent,
-    NgOptimizedImage,
-    SectionHeaderComponent,
-    RouterLink,
-  ],
+  imports: [IconComponent, SectionHeaderComponent, RouterLink, PostCardComponent],
 })
 export class BlogTagComponent {
   private route = inject(ActivatedRoute);
@@ -76,9 +66,5 @@ export class BlogTagComponent {
 
     this.seo.updateDynamicMeta({ title, description, url, type: 'website' });
     this.seo.setCanonical(url);
-  }
-
-  protected formatDate(iso: string): string {
-    return formatPostDate(iso);
   }
 }

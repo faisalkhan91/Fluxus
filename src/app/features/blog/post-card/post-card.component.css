@@ -1,0 +1,291 @@
+/* The card is a grid item of the parent `.post-grid`; the featured hero
+   spans the full row. The inner `.post-link` fills the (possibly
+   `grid-auto-rows: 1fr`-stretched) cell. */
+:host {
+  display: block;
+}
+
+:host(.featured) {
+  grid-column: 1 / -1;
+}
+
+.post-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+  /*
+    Resting state for the entrance transition. The from-state lives in the
+    `@starting-style` block below; the transition-delay reads `--enter-delay`
+    set on the host per-card so the wave staggers without any JS.
+  */
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms),
+    transform var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms);
+}
+
+/* Featured card uses a 2-column grid: thumbnail left (~320px), body right.
+   `padding: 0` lets the cover bleed flush against the card's left edge;
+   the body re-supplies its own padding via `.post-card-body`. */
+.post-link--featured .post-card {
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.post-card-cover {
+  /* `position: relative` anchors `NgOptimizedImage`'s `fill`-mode <img>,
+     which is absolutely-positioned inside the figure. */
+  position: relative;
+  margin: 0;
+  background: var(--surface-base);
+  overflow: hidden;
+  /*
+    Grid items default to `min-width: auto` / `min-height: auto`, letting the
+    intrinsic image inflate the track past its `minmax(0, 320px)` cap and
+    spill into column 2. Pin both floors to zero so the track cap wins.
+  */
+  min-width: 0;
+  min-height: 0;
+}
+
+.post-link--featured .post-card-cover {
+  /*
+    The grid column caps width at 320px and `align-items: stretch` matches
+    height to the body; `max-height` bounds tall bodies so the image never
+    dominates the fold. No `aspect-ratio` here — it would fight the track cap
+    and overflow into column 2; `object-fit: cover` handles the crop instead.
+  */
+  height: 100%;
+  max-height: 280px;
+}
+
+.post-card-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Defensive `min-width: 0` — the img has explicit NgOptimizedImage dims
+     whose min-content width can fight `width: 100%` in some grid contexts. */
+  min-width: 0;
+  /* Subtle zoom on hover mirrors the GlassCard hover lift. */
+  transition: transform var(--transition-base);
+}
+
+.post-link--featured:hover .post-card-cover img,
+.post-link--featured:focus-visible .post-card-cover img {
+  transform: scale(1.02);
+}
+
+.post-link--featured .post-card-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  /* `min-width: 0` lets the body shrink inside `minmax(0, 1fr)` even when a
+     long tag or excerpt has a wider intrinsic min-content size. */
+  min-width: 0;
+}
+
+.post-link--featured .post-title {
+  font-size: 1.5rem;
+}
+
+.post-card {
+  height: 100%;
+  display: flex;
+  /*
+    Non-featured cards lead with a 1:1 thumbnail on the left, so the card is
+    `row` by default. Featured cards override to their own grid layout above.
+    `.post-card-body` carries `flex-direction: column` so the body still
+    stacks date / title / excerpt / tags vertically.
+  */
+  flex-direction: row;
+  gap: var(--space-4);
+}
+
+/*
+  1:1 thumbnail tile for non-featured cards. Square (96 × 96 desktop, full-
+  width banner on mobile). `flex-shrink: 0` holds the hard 96px; the body
+  column takes every remaining pixel via `flex: 1`.
+*/
+.post-card-thumb {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+}
+
+.post-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cover-less fallback. IDE voice: `// <slug>.md` in mono on the same glass
+   tile. `--text-muted` keeps the sigil quiet — it's a placeholder. */
+.post-card-sigil {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+/* Body column for non-featured cards. `min-width: 0` defeats the flex
+   default so a long title wraps inside its column. */
+.post-card > .post-card-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  /*
+    Mobile mirrors the featured hero's stacked treatment: cover (or sigil)
+    becomes a full-width 16:9 banner on top, body flows underneath. Capped
+    at 160px (vs the hero's 220) so secondary cards stay subordinate.
+  */
+  .post-card {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .post-card-thumb,
+  .post-card-sigil {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-height: 160px;
+  }
+
+  .post-card-sigil {
+    /* Bumped from 0.62rem so the IDE sigil reads cleanly at banner width. */
+    font-size: 0.85rem;
+  }
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.post-date,
+.post-reading-time {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.post-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  line-height: 1.3;
+}
+
+/*
+  `clampText` callers (the blog index, whose grid uses `grid-auto-rows: 1fr`)
+  clamp the title to 2 lines and the excerpt to 3 so a long/short pair in the
+  same row stays balanced. The tag archive sizes cards to content and omits
+  the clamp. The featured title keeps the clamp but overrides font-size above.
+*/
+:host(.clamp) .post-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-excerpt {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+  /* `flex: 1` absorbs the slack between title and tags so — paired with the
+     parent grid's `grid-auto-rows: 1fr` — the tag row pins to the card
+     bottom across a row of cards. */
+  flex: 1;
+}
+
+:host(.clamp) .post-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 767px) {
+  /*
+    Below 768px the featured hero collapses to a stacked layout: cover on
+    top as a clamped 16:9 thumbnail (max 220px tall), body full-width below.
+  */
+  .post-link--featured .post-card {
+    grid-template-columns: 1fr;
+  }
+
+  .post-link--featured .post-card-cover {
+    aspect-ratio: 16 / 9;
+    max-height: 220px;
+  }
+}
+
+/*
+  Entrance from-state, applied synchronously on insertion via CSS
+  `@starting-style`. Preferred over the `animate.enter` directive because
+  animate.enter adds its class one frame after insertion — Chrome's View
+  Transitions snapshot hides that, but Firefox (no View Transitions support)
+  reveals it as a one-frame flash of rendered content snapping to opacity:0
+  before the rise. `@starting-style` applies on the same insertion trigger
+  but synchronously, so the first paint is already the from-state.
+
+  Featured card uses opacity-only — translating the heavy cover image while
+  it's still decoding looks jank, so transform is pinned to none.
+*/
+@starting-style {
+  .post-link {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .post-link--featured {
+    opacity: 0;
+    transform: none;
+  }
+}

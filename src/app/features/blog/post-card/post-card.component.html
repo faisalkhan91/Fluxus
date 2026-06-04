@@ -1,0 +1,46 @@
+@let p = post();
+<a [routerLink]="['/blog', p.slug]" class="post-link" [class.post-link--featured]="featured()">
+  <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
+    @if (featured()) {
+      <!--
+        Featured (newest) post: side-thumbnail layout. Cover sits in the
+        left grid column (~320px on desktop), body on the right. The cover
+        uses NgOptimizedImage with `priority` so Angular emits the right
+        loading/decoding/fetchpriority hints for this LCP surface.
+      -->
+      <figure class="post-card-cover">
+        <img [ngSrc]="cover()" [alt]="p.title" fill priority sizes="(max-width: 768px) 92vw, 25vw" />
+      </figure>
+    } @else if (p.cover) {
+      <!--
+        Non-featured: 1:1 thumbnail reusing `cover` (browser scales the
+        1200×630 webp to 96px). Lazy-loaded — not an LCP candidate.
+      -->
+      <figure class="post-card-thumb">
+        <img [ngSrc]="p.cover" [alt]="p.title" width="96" height="96" loading="lazy" />
+      </figure>
+    } @else {
+      <!-- Cover-less posts get an IDE-voice `// <slug>.md` sigil. -->
+      <span class="post-card-sigil" aria-hidden="true"> // {{ p.slug }}.md </span>
+    }
+    <div class="post-card-body">
+      <div class="post-meta">
+        <time class="post-date" [attr.datetime]="p.date">
+          <ui-icon name="calendar" [size]="12" />
+          {{ formatDate(p.date) }}
+        </time>
+        <span class="post-reading-time">
+          <ui-icon name="clock" [size]="12" />
+          {{ p.readingTime }}
+        </span>
+      </div>
+      <h2 class="post-title">{{ p.title }}</h2>
+      <p class="post-excerpt">{{ p.excerpt }}</p>
+      <div class="post-tags">
+        @for (tag of p.tags; track tag) {
+          <span uiTag [size]="tagSize()">{{ tag }}</span>
+        }
+      </div>
+    </div>
+  </ui-glass-card>
+</a>
