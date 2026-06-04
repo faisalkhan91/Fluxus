@@ -1,5 +1,5 @@
 import type { ErrorHandler } from '@angular/core';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Service, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { ErrorToastService } from './error-toast.service';
 import { environment } from '@env/environment';
@@ -33,7 +33,7 @@ interface SentryShape {
   captureException(err: unknown): void;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AppErrorHandler implements ErrorHandler {
   private toasts = inject(ErrorToastService);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));

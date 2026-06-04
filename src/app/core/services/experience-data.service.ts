@@ -1,7 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import type { TimelineItem } from '@shared/models/experience.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ExperienceDataService {
   readonly items = signal<TimelineItem[]>([
     { type: 'period', title: 'SoFi' },

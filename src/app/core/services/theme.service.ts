@@ -1,12 +1,4 @@
-import {
-  Injectable,
-  signal,
-  computed,
-  effect,
-  DestroyRef,
-  inject,
-  PLATFORM_ID,
-} from '@angular/core';
+import { Service, signal, computed, effect, DestroyRef, inject, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { applyViewTransition } from '@shared/utils/motion.utils';
 import {
@@ -54,7 +46,7 @@ interface LastByScheme {
   light: ThemeId;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ThemeService {
   private destroyRef = inject(DestroyRef);
   private document = inject(DOCUMENT);

@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 
 /**
  * Tracks reading progress (0–100) through the document for the
@@ -6,10 +6,10 @@ import { Injectable, signal } from '@angular/core';
  * component so the scroll-driven plumbing lives in one testable place.
  *
  * Sits at the feature layer (not `core/services`) alongside the other
- * blog-post-only services. `providedIn: 'root'` is fine — only one blog
- * post renders at a time, and `start()` re-seeds the signal per page.
+ * blog-post-only services. Root-provided (`@Service()`) is fine — only one
+ * blog post renders at a time, and `start()` re-seeds the signal per page.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ReadingProgressService {
   private readonly _progress = signal(0);
 

@@ -1,4 +1,4 @@
-import { Injectable, inject, DestroyRef } from '@angular/core';
+import { Service, inject, DestroyRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
@@ -10,7 +10,7 @@ import { environment } from '@env/environment';
 const DEFAULT_DESCRIPTION = `Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.`;
 const DEFAULT_OG_IMAGE = `${environment.siteUrl}/assets/images/og-image.png`;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SeoService {
   private router = inject(Router);
   private title = inject(Title);

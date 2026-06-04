@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { Marked, type Renderer, type Tokens, type TokenizerAndRendererExtension } from 'marked';
 import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -220,7 +220,7 @@ export interface TocEntry {
   depth: 2 | 3;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class MarkdownService {
   // Single Marked instance with no `markedHighlight` plugin — the custom `code`
   // renderer below is the sole owner of highlighting + the copy button + the

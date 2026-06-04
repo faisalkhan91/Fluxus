@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import type { Project } from '@shared/models/project.model';
 import { PROJECTS } from '@core/data/projects.generated';
 
@@ -16,7 +16,7 @@ import { PROJECTS } from '@core/data/projects.generated';
  * row is from GitHub or a manual entry — everything flows through
  * the same `Project` shape.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProjectsDataService {
   readonly projects = signal<Project[]>([...PROJECTS]);
 }

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { ThemeService } from '@core/services/theme.service';
 
 /**
@@ -30,7 +30,7 @@ type IdleHandle =
   | { kind: 'idle'; id: number }
   | { kind: 'timeout'; id: ReturnType<typeof setTimeout> };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class MermaidService {
   private theme = inject(ThemeService);
 

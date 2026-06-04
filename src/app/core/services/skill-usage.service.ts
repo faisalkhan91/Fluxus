@@ -1,4 +1,4 @@
-import { Injectable, inject, computed } from '@angular/core';
+import { Service, inject, computed } from '@angular/core';
 import type { Project } from '@shared/models/project.model';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import type { Skill } from '@shared/models/skill.model';
@@ -42,7 +42,7 @@ export interface SkillUsage {
  * (`ProjectsDataService.projects()`, `BlogService.posts()`,
  * `SkillsDataService.categories()`) without manual subscription.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SkillUsageService {
   private skillsData = inject(SkillsDataService);
   private projectsData = inject(ProjectsDataService);

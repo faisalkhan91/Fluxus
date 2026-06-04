@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { ErrorToastService } from '@core/services/error-toast.service';
 import { copyToClipboard } from '@shared/utils/clipboard.utils';
 
@@ -9,7 +9,7 @@ import { copyToClipboard } from '@shared/utils/clipboard.utils';
  * dispatch and its own timer set so it's fully independent of the
  * heading-anchor handler attached to the same root.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CopyCodeService {
   private toasts = inject(ErrorToastService);
 

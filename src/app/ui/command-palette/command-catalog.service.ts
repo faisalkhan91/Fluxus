@@ -1,4 +1,4 @@
-import { Injectable, computed, inject } from '@angular/core';
+import { Service, computed, inject } from '@angular/core';
 import { NavigationService } from '@core/services/navigation.service';
 import { BlogService } from '@core/services/blog.service';
 import { ThemeService } from '@core/services/theme.service';
@@ -84,7 +84,7 @@ function toDomId(id: string): string {
  * `CommandItem` shape is bespoke to the palette and no other surface
  * in the app needs it today.
  */
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CommandCatalogService {
   private nav = inject(NavigationService);
   private blog = inject(BlogService);
