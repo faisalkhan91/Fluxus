@@ -6,13 +6,24 @@
   max-width: 900px;
   margin: 0 auto;
   /*
-    Entrance ramp lives in the transition + @starting-style block at the
-    bottom of this file. We declare the resting state here so the
-    selector specificity matches what @starting-style overrides on
-    insertion.
+    Entrance ramp lives in the transition + @starting-style block below.
+    We declare the resting state here so the selector specificity matches
+    what @starting-style overrides on insertion.
   */
   opacity: 1;
   transition: opacity var(--duration-base) var(--ease-decelerate);
+}
+
+/*
+  Layout entrance from-state, applied synchronously on insertion via CSS
+  `@starting-style` (see post-card.component.css for the full Firefox-flash
+  rationale). The cards run their own `@starting-style` inside the
+  app-post-card component.
+*/
+@starting-style {
+  .blog-layout {
+    opacity: 0;
+  }
 }
 
 .blog-header {
@@ -53,346 +64,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   /*
-    `grid-auto-rows: 1fr` locks every row's card height to its
-    tallest peer — without this, a row with a 4-line excerpt
-    stretched its neighbour row's 2-line-excerpt cards to match,
-    leaving awkward whitespace. Paired with the title + excerpt
-    clamps below, each row resolves to a predictable ceiling
-    regardless of content length.
+    `grid-auto-rows: 1fr` locks every row's card height to its tallest peer
+    — without it a 4-line excerpt stretched its neighbour row's 2-line cards.
+    Paired with the title + excerpt clamps in app-post-card (`clampText`),
+    each row resolves to a predictable ceiling regardless of content length.
   */
   grid-auto-rows: 1fr;
   gap: var(--space-6);
-}
-
-.post-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  /*
-    Resting state for the entrance transition. The from-state lives in
-    the `@starting-style` block at the bottom of this file; the
-    transition-delay reads the inline `--enter-delay` set per-card in
-    the template (i * 30ms) so the wave staggers without any JS.
-  */
-  opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms),
-    transform var(--duration-base) var(--ease-decelerate) var(--enter-delay, 0ms);
-}
-
-/* The newest post is rendered as a hero card spanning the full grid width.
-   The size difference is communicated by a side thumbnail (see
-   `.post-card-cover`) — no "LATEST" pill needed. The featured flag is
-   data-driven via `[class.post-link--featured]="$first"` so we can later
-   swap "newest" for any other rule (e.g. an explicit `featured: true` flag)
-   without touching CSS. */
-.post-link--featured {
-  grid-column: 1 / -1;
-}
-
-/* Featured card uses a 2-column grid: thumbnail left (~320px), body right.
-   `padding: 0` lets the cover bleed flush against the card's left edge;
-   the body re-supplies its own padding via `.post-card-body` so the text
-   has consistent breathing room without needing a column-gap. */
-.post-link--featured .post-card {
-  padding: 0;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
-  align-items: stretch;
-}
-
-.post-card-cover {
-  /* `position: relative` anchors `NgOptimizedImage`'s `fill`-mode
-     <img>, which is absolutely-positioned inside the figure. */
-  position: relative;
-  margin: 0;
-  background: var(--surface-base);
-  overflow: hidden;
-  /*
-    Grid items default to `min-width: auto` / `min-height: auto`, which
-    means the column's content can inflate the track past its declared
-    `minmax(0, 320px)` cap. The figure has both an aspect-ratio-derived
-    intrinsic width and an intrinsic image (1600×900) inside it; without
-    these floors at zero, the cover spills into column 2 and the body
-    text renders behind the image. Pin both dimensions so the grid track
-    constraint wins unconditionally.
-  */
-  min-width: 0;
-  min-height: 0;
-}
-
-.post-link--featured .post-card-cover {
-  /*
-    The grid column already caps the figure's width at 320px and
-    `align-items: stretch` matches its height to the body cell; the
-    `max-height` then puts an upper bound on tall bodies so the image
-    never dominates the fold. We deliberately do *not* set
-    `aspect-ratio` here — pairing aspect-ratio with `height: 100%` in a
-    `minmax(0, 320px)` track is what caused the figure to overflow into
-    column 2 (the implied width = stretched-height × 4/3 fights the
-    track cap). `object-fit: cover` on the inner img handles the visual
-    crop so we don't need a hard ratio on the figure itself.
-  */
-  height: 100%;
-  max-height: 280px;
-}
-
-.post-card-cover img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /*
-    Defensive `min-width: 0`: the img has explicit `width`/`height`
-    attributes from NgOptimizedImage (1600×900 here). Without this, its
-    intrinsic min-content width can fight `width: 100%` in some grid
-    contexts.
-  */
-  min-width: 0;
-  /* Subtle zoom on hover mirrors the GlassCard hover lift. */
-  transition: transform var(--transition-base);
-}
-
-.post-link--featured:hover .post-card-cover img,
-.post-link--featured:focus-visible .post-card-cover img {
-  transform: scale(1.02);
-}
-
-/*
-  Entrance from-state, applied synchronously on element insertion via
-  CSS `@starting-style`. Using @starting-style here (instead of the
-  `animate.enter` directive we use elsewhere) avoids a Firefox-specific
-  flash on client-side route navigation: animate.enter adds its class
-  one frame after insertion, which Chrome's View Transitions snapshot
-  crossfade hides but Firefox (which doesn't yet support the View
-  Transitions API and falls back to plain nav) reveals as a one-frame
-  flash of fully-rendered content snapping to opacity:0 before the
-  rise. The browser applies @starting-style on the same insertion
-  trigger but synchronously, so the first paint is already the
-  from-state and the transition runs cleanly in both browsers.
-
-  Featured card uses opacity-only — translating the heavy cover image
-  while it's still decoding looks jank, so the from-state explicitly
-  pins transform to none.
-*/
-@starting-style {
-  .blog-layout {
-    opacity: 0;
-  }
-
-  .post-link {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  .post-link--featured {
-    opacity: 0;
-    transform: none;
-  }
-}
-
-.post-link--featured .post-card-body {
-  padding: var(--space-5);
-  display: flex;
-  flex-direction: column;
-  /*
-    Same reasoning as the cover: `min-width: 0` lets the body shrink
-    inside `minmax(0, 1fr)` even when the longest tag or excerpt has a
-    wider intrinsic min-content size. Without it, long titles can push
-    column 2 past `1fr`, indirectly squeezing column 1.
-  */
-  min-width: 0;
-}
-
-.post-link--featured .post-title {
-  font-size: 1.5rem;
-}
-
-.post-card {
-  height: 100%;
-  display: flex;
-  /*
-    Non-featured cards now lead with a 1:1 thumbnail on the left, so
-    the card flex-direction is `row` by default. Featured cards
-    override to their own grid layout further down (`.post-link--featured
-    .post-card`), so this row default doesn't fight the side-by-side
-    cover/body geometry the featured card already uses.
-
-    `.post-card-body` (the right column) carries `flex-direction: column`
-    so date / title / excerpt / tags still stack vertically inside the
-    body — same content order as before, just nested one level deeper.
-  */
-  flex-direction: row;
-  gap: var(--space-4);
-}
-
-/*
-  1:1 thumbnail tile for non-featured cards. Square (96 × 96 desktop,
-  64 × 64 mobile) so the title baseline above and the excerpt below
-  align nicely with the thumb's vertical centre. `flex-shrink: 0`
-  because flex defaults to allowing shrink and we want a hard 96 px;
-  body column gets every remaining pixel via `flex: 1`.
-*/
-.post-card-thumb {
-  width: 96px;
-  height: 96px;
-  flex-shrink: 0;
-  margin: 0;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-}
-
-.post-card-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/*
-  Cover-less fallback. IDE voice: `// <slug>.md` rendered in mono on
-  the same glass tile. Centred via flex; `word-break: break-word`
-  catches the longest slugs (~30 chars at 0.62 rem fits comfortably
-  in two lines but defensive guard is cheap). `--text-muted` keeps
-  the sigil quiet — it's a placeholder, not an attention-grabber.
-*/
-.post-card-sigil {
-  width: 96px;
-  height: 96px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
-  text-align: center;
-  word-break: break-word;
-  line-height: 1.3;
-}
-
-/*
-  Body column for non-featured cards. Inherits flex-column so the
-  meta / title / excerpt / tags stack the same way they did before
-  the row wrapper was introduced. `min-width: 0` defeats the flex
-  default so a long title can wrap inside its column instead of
-  pushing the row past the card boundary.
-*/
-.post-card > .post-card-body {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-@media (max-width: 640px) {
-  /*
-    Mobile mirrors the featured hero's stacked treatment: cover (or
-    sigil) becomes a full-width banner on top, body flows underneath.
-    The earlier 64 × 64 left-thumb at this viewport felt cramped —
-    a tiny square competing with the title and excerpt for the same
-    horizontal column. Banner-on-top gives the cover proper visual
-    weight while keeping the body at full reading width.
-
-    `aspect-ratio: 16 / 9` + `max-height: 160px` matches the featured
-    hero's mobile geometry but caps lower (160 vs 220 px) so secondary
-    cards stay visually subordinate. `height: auto` lets the
-    aspect-ratio compute the height from the now-100% width.
-  */
-  .post-card {
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .post-card-thumb,
-  .post-card-sigil {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-    max-height: 160px;
-  }
-
-  .post-card-sigil {
-    /* Bumped from 0.62 rem (sized for the 96 × 96 desktop tile) to
-       0.85 rem so the IDE sigil reads cleanly at banner-width — the
-       wider plate would otherwise leave the mono text floating in a
-       sea of glass. */
-    font-size: 0.85rem;
-  }
-}
-
-.post-meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-3);
-}
-
-.post-date,
-.post-reading-time {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
-}
-
-.post-title {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-3);
-  line-height: 1.3;
-  /*
-    Clamp regular post titles at 2 lines so a long-title / short-
-    title pair in the same row doesn't unbalance the cards. The
-    featured card (`.post-link--featured .post-title`) overrides
-    the font-size but keeps the clamp — the side-by-side layout
-    still benefits from title length not blowing out the column.
-  */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.post-excerpt {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: var(--space-4);
-  /*
-    3-line ceiling on the excerpt matches the projects list-view
-    compact row pattern (`.projects-list-row-desc`). `flex: 1`
-    below still lets the excerpt absorb whatever vertical space
-    remains between the title and the tag row, which — paired
-    with `grid-auto-rows: 1fr` on the parent grid — anchors the
-    tag row to the card bottom across every card in the row.
-  */
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-}
-
-.post-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
 }
 
 .post-grid-hint {
@@ -432,20 +110,5 @@
 @media (max-width: 767px) {
   .post-grid {
     grid-template-columns: 1fr;
-  }
-
-  /*
-    Below 768px the featured hero collapses back to a stacked layout: the
-    cover sits on top with a clamped 16:9 thumbnail (max 220px tall) so the
-    image stays compact on phone and the body still gets the full width
-    underneath.
-  */
-  .post-link--featured .post-card {
-    grid-template-columns: 1fr;
-  }
-
-  .post-link--featured .post-card-cover {
-    aspect-ratio: 16 / 9;
-    max-height: 220px;
   }
 }

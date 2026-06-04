@@ -27,57 +27,13 @@
   } @else {
     <div class="post-grid">
       @for (post of matchingPosts(); track post.slug; let i = $index) {
-        <a
-          [routerLink]="['/blog', post.slug]"
-          class="post-link"
-          animate.enter="enter-fade-up"
-          [style.--enter-delay]="i * 50 + 'ms'"
-        >
-          <ui-glass-card [elevation]="1" [hover]="true" [glow]="true" class="post-card">
-            <!--
-              1:1 thumbnail mirroring the non-featured cards on /blog.
-              Reuses `post.cover` when present (browser scales 1200×630
-              webp to 96 px); cover-less posts get the IDE-voice
-              `// <slug>.md` sigil. Lazy-loaded — none of these are
-              LCP candidates on the tag archive.
-            -->
-            @if (post.cover) {
-              <figure class="post-card-thumb">
-                <img
-                  [ngSrc]="post.cover"
-                  [alt]="post.title"
-                  width="96"
-                  height="96"
-                  loading="lazy"
-                />
-              </figure>
-            } @else {
-              <span class="post-card-sigil" aria-hidden="true"> // {{ post.slug }}.md </span>
-            }
-            <div class="post-card-body">
-              <div class="post-meta">
-                <time class="post-date" [attr.datetime]="post.date">
-                  <ui-icon name="calendar" [size]="12" />
-                  {{ formatDate(post.date) }}
-                </time>
-                <span class="post-reading-time">
-                  <ui-icon name="clock" [size]="12" />
-                  {{ post.readingTime }}
-                </span>
-              </div>
-              <h2 class="post-title">{{ post.title }}</h2>
-              <p class="post-excerpt">{{ post.excerpt }}</p>
-              <!-- Render every tag (not just the active one) so cards on the
-                   tag archive look like the cards on /blog and reveal what
-                   else each post covers. -->
-              <div class="post-tags">
-                @for (tag of post.tags; track tag) {
-                  <span uiTag>{{ tag }}</span>
-                }
-              </div>
-            </div>
-          </ui-glass-card>
-        </a>
+        <!--
+          Tag-archive cards mirror the blog index's non-featured cards (no
+          hero/featured variant here). `md` tag pills + the unclamped body
+          (the archive sizes cards to content) are the only divergences from
+          the index, both expressed as inputs. 50ms-per-card entrance wave.
+        -->
+        <app-post-card [post]="post" tagSize="md" [index]="i" [enterDelayStep]="50" />
       }
     </div>
     <p class="tag-grid-footer">
