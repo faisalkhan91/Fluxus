@@ -15,6 +15,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
 import { rovingNext, focusByIndex } from '@shared/utils/roving.utils';
+import { readActiveOffset } from '@shared/utils/indicator.utils';
 
 export interface EditorTab {
   id: string;
@@ -144,13 +145,13 @@ export class EditorTabBarComponent {
   private updateIndicator(): void {
     const scroller = this.scrollContainer()?.nativeElement;
     if (!scroller) return;
-    const active = scroller.querySelector<HTMLElement>('.tab.active');
-    if (!active) {
+    const geo = readActiveOffset(scroller, '.tab.active', 'x');
+    if (!geo) {
       this.indicatorWidth.set(0);
       return;
     }
-    this.indicatorX.set(active.offsetLeft);
-    this.indicatorWidth.set(active.offsetWidth);
+    this.indicatorX.set(geo.offset);
+    this.indicatorWidth.set(geo.size);
   }
 
   private updateFades(): void {

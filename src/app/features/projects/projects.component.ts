@@ -25,6 +25,7 @@ import { assertNever } from '@shared/utils/exhaustive.utils';
 import { createExpandableSet } from '@shared/utils/expandable-set';
 import { rovingNext, focusByIndex } from '@shared/utils/roving.utils';
 import { queryParamSignal, setQueryParam } from '@shared/utils/query-param.utils';
+import { readActiveOffset } from '@shared/utils/indicator.utils';
 
 /**
  * Sort key for the projects grid. Mirrored in the `?sort=` query
@@ -204,13 +205,13 @@ export class ProjectsComponent {
   private updateSortIndicator(): void {
     const row = this.sortRow()?.nativeElement;
     if (!row) return;
-    const active = row.querySelector<HTMLElement>('.projects-sort-option.active');
-    if (!active) {
+    const geo = readActiveOffset(row, '.projects-sort-option.active', 'x');
+    if (!geo) {
       this.sortIndicatorWidth.set(0);
       return;
     }
-    this.sortIndicatorX.set(active.offsetLeft);
-    this.sortIndicatorWidth.set(active.offsetWidth);
+    this.sortIndicatorX.set(geo.offset);
+    this.sortIndicatorWidth.set(geo.size);
   }
 
   protected setSort(key: ProjectSort): void {

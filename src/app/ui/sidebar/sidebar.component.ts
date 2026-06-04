@@ -14,6 +14,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
+import { readActiveOffset } from '@shared/utils/indicator.utils';
 import { ProfileDataService } from '@core/services/profile-data.service';
 import type { ThemeDef } from '@core/services/theme.registry';
 
@@ -106,12 +107,12 @@ export class SidebarComponent {
   }
 
   private updateIndicator(): void {
-    const active = this.host.nativeElement.querySelector<HTMLElement>('.nav-item.active');
-    if (!active) {
+    const geo = readActiveOffset(this.host.nativeElement, '.nav-item.active', 'y');
+    if (!geo) {
       this.indicatorHeight.set(0);
       return;
     }
-    this.indicatorY.set(active.offsetTop);
-    this.indicatorHeight.set(active.offsetHeight);
+    this.indicatorY.set(geo.offset);
+    this.indicatorHeight.set(geo.size);
   }
 }
