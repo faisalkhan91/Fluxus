@@ -58,12 +58,13 @@
   @if (view() === 'list') {
     <div class="projects-results projects-list">
       @for (project of featuredProjects(); track project.title; let i = $index) {
+        @let archived = project.github?.archived;
         <ui-glass-card
           class="projects-list-hero"
           [hover]="true"
           [glow]="!!project.featured"
           [attr.id]="'project-' + slugify(project.title)"
-          [class.archived]="project.github?.archived"
+          [class.archived]="archived"
           animate.enter="enter-fade-up"
           [style.--enter-delay]="i * 60 + 'ms'"
         >
@@ -98,7 +99,7 @@
           <div class="projects-list-hero-body">
             <h2 class="projects-list-hero-title">
               {{ project.title }}
-              @if (project.github?.archived) {
+              @if (archived) {
                 <span class="archived-badge" title="This repository is archived on GitHub"
                   >archived</span
                 >
@@ -153,10 +154,11 @@
           More work
         </h2>
         @for (project of moreProjects(); track project.title; let i = $index) {
+          @let archived = project.github?.archived;
           <article
             class="projects-list-row"
             [attr.id]="'project-' + slugify(project.title)"
-            [class.archived]="project.github?.archived"
+            [class.archived]="archived"
             animate.enter="enter-fade-up"
             [style.--enter-delay]="(i + 1) * 40 + 'ms'"
           >
@@ -185,7 +187,7 @@
                   {{ project.title }}
                   <span aria-hidden="true" class="projects-list-row-arrow">→</span>
                 </a>
-                @if (project.github?.archived) {
+                @if (archived) {
                   <span class="archived-badge" title="This repository is archived on GitHub"
                     >archived</span
                   >
@@ -221,13 +223,14 @@
   } @else {
     <div class="projects-results projects-grid">
       @for (project of visibleProjects(); track project.title; let i = $index) {
+        @let archived = project.github?.archived;
         <ui-glass-card
           [attr.id]="'project-' + slugify(project.title)"
           [hover]="true"
           [glow]="!!project.featured"
           class="project-card"
           [class.expanded]="isExpanded(project.title)"
-          [class.archived]="project.github?.archived"
+          [class.archived]="archived"
           animate.enter="enter-fade-up"
           [style.--enter-delay]="i * 60 + 'ms'"
         >
@@ -256,7 +259,7 @@
           <div class="project-body">
             <h3 class="project-title">
               {{ project.title }}
-              @if (project.github?.archived) {
+              @if (archived) {
                 <span class="archived-badge" title="This repository is archived on GitHub"
                   >archived</span
                 >
