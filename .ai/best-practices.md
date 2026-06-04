@@ -5,7 +5,6 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use strict type checking
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
-- `verbatimModuleSyntax` is enabled — pure-interface imports must use `import type { X }` (or `import { type X, fn }` for mixed). Violations fail compile with TS1484.
 
 ## Angular Best Practices
 
@@ -27,7 +26,6 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Keep components small and focused on a single responsibility
 - Use `input()` and `output()` functions instead of decorators
 - Use `computed()` for derived state
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
 - Prefer inline templates for small components
 - Prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead
