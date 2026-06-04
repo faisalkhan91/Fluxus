@@ -5,14 +5,14 @@
         ngSrc="assets/images/profile/profile_picture.jpg"
         width="80"
         height="80"
-        alt="Faisal Khan"
+        [alt]="profile.personalInfo().name"
         priority
         class="avatar"
       />
     </div>
     <div class="identity">
-      <h2 class="name">Faisal Khan</h2>
-      <p class="role">Software Engineer</p>
+      <h2 class="name">{{ profile.personalInfo().name }}</h2>
+      <p class="role">{{ profile.personalInfo().navRole }}</p>
     </div>
   </a>
 </div>

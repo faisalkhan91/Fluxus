@@ -7,6 +7,7 @@ export class ProfileDataService {
   readonly personalInfo = signal<PersonalInfo>({
     name: 'Faisal Khan',
     title: 'Senior Software Engineer',
+    navRole: 'Software Engineer',
     email: 'faisalkhan91@gmail.com',
     phone: '+1 (475)-355-7575',
     website: 'https://faisalkhan.dpdns.org',

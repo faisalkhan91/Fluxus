@@ -14,6 +14,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs/operators';
 import { IconComponent } from '../icon/icon.component';
+import { ProfileDataService } from '@core/services/profile-data.service';
 import type { ThemeDef } from '@core/services/theme.registry';
 
 export type SidebarItem =
@@ -37,6 +38,8 @@ export class SidebarComponent {
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  /** Identity (name/role/avatar) shown in the sidebar header. */
+  protected readonly profile = inject(ProfileDataService);
 
   readonly items = input.required<SidebarItem[]>();
   readonly collapsed = input(false);

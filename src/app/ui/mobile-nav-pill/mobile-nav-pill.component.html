@@ -50,10 +50,9 @@
       role block. Tapping the identity area routes to "/" (the same
       anchor the desktop sidebar's logo carries) so the action is
       discoverable on phones too. Close button stays at the top-right.
-      Identity values are hardcoded here on purpose to match the
-      sidebar's template, which also embeds the same literals — a
-      single ProfileDataService source-of-truth refactor would be a
-      separate cross-component pass.
+      Identity values are sourced from ProfileDataService (the same
+      single source the desktop sidebar binds), so the two surfaces
+      can't drift.
     -->
     <div class="menu-header">
       <a class="menu-identity" routerLink="/" (click)="closeMenu()" aria-label="Go to Welcome page">
@@ -61,12 +60,12 @@
           ngSrc="assets/images/profile/profile_picture.jpg"
           width="48"
           height="48"
-          alt="Faisal Khan"
+          [alt]="profile.personalInfo().name"
           class="menu-identity-avatar"
         />
         <span class="menu-identity-text">
-          <span class="menu-identity-name">Faisal Khan</span>
-          <span class="menu-identity-role">Software Engineer</span>
+          <span class="menu-identity-name">{{ profile.personalInfo().name }}</span>
+          <span class="menu-identity-role">{{ profile.personalInfo().navRole }}</span>
         </span>
       </a>
       <button class="menu-close" (click)="closeMenu()" aria-label="Close menu">
