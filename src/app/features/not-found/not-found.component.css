@@ -124,14 +124,14 @@
   flex: 1;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-70);
   color: var(--text-muted);
 }
 
 .terminal-body {
   padding: var(--space-4) var(--space-5);
   font-family: var(--font-mono);
-  font-size: var(--fs-base);
+  font-size: var(--fs-82);
   line-height: 1.8;
 }
 
@@ -220,7 +220,7 @@
 
 .suggestion-cmd {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-72);
   color: var(--text-accent);
   white-space: nowrap;
   overflow: hidden;
@@ -229,7 +229,7 @@
 
 .suggestion-label {
   font-family: var(--font-body);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-70);
   color: var(--text-muted);
 }
 
@@ -250,7 +250,7 @@
   }
 
   .terminal-body {
-    font-size: var(--fs-sm);
+    font-size: var(--fs-75);
     padding: var(--space-3) var(--space-4);
   }
 }

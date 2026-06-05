@@ -31,7 +31,7 @@
   background: var(--accent);
   color: var(--text-on-accent);
   font-family: var(--font-mono);
-  font-size: var(--fs-base);
+  font-size: var(--fs-80);
   border-radius: var(--radius-sm);
   text-decoration: none;
   transition: top var(--transition-fast);

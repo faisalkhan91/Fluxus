@@ -1,6 +1,6 @@
 :host {
   font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
+  font-size: var(--fs-65);
   border-radius: var(--radius-sm);
   text-decoration: none;
 }

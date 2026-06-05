@@ -8,7 +8,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
-  font-size: var(--fs-md);
+  font-size: var(--fs-875);
   font-weight: 500;
   cursor: pointer;
   transition:

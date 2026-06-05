@@ -106,7 +106,7 @@
 
 .projects-sort-option {
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-75);
   color: var(--text-muted);
   background: transparent;
   padding: var(--space-2) var(--space-3);
@@ -213,7 +213,7 @@
 
 .projects-list-hero-title {
   font-family: var(--font-display);
-  font-size: var(--fs-4xl);
+  font-size: var(--fs-140);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -221,7 +221,7 @@
 
 .projects-list-hero-desc {
   margin: 0;
-  font-size: var(--fs-lg);
+  font-size: var(--fs-90);
   line-height: 1.6;
   color: var(--text-secondary);
 }
@@ -275,7 +275,7 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-mono);
-  font-size: var(--fs-base);
+  font-size: var(--fs-80);
   font-weight: 600;
   color: var(--text-accent);
   text-decoration: none;
@@ -307,7 +307,7 @@
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--glass-border);
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-70);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -375,7 +375,7 @@
 .projects-list-row-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-100);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -416,7 +416,7 @@
 
 .projects-list-row-desc {
   margin: 0;
-  font-size: var(--fs-md);
+  font-size: var(--fs-85);
   line-height: 1.6;
   color: var(--text-secondary);
   display: -webkit-box;
@@ -507,13 +507,13 @@
 
 .project-title {
   font-family: var(--font-display);
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-110);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .project-desc {
-  font-size: var(--fs-md);
+  font-size: var(--fs-85);
   color: var(--text-secondary);
   line-height: 1.6;
   display: -webkit-box;
@@ -534,7 +534,7 @@
   border: none;
   padding: 0;
   font-family: var(--font-mono);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-75);
   color: var(--text-accent);
   cursor: pointer;
   align-self: flex-start;
@@ -544,7 +544,7 @@
   display: inline-block;
   margin-left: var(--space-2);
   font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
+  font-size: var(--fs-55);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
@@ -622,7 +622,7 @@
   }
 
   .read-more-toggle {
-    font-size: var(--fs-2xs);
+    font-size: var(--fs-65);
   }
 
   .project-card.expanded .project-desc {

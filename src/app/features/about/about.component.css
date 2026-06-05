@@ -39,7 +39,7 @@
 
 .avatar-name {
   text-align: center;
-  font-size: var(--fs-2xl);
+  font-size: var(--fs-110);
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: var(--space-1);
@@ -48,7 +48,7 @@
 .avatar-title {
   text-align: center;
   font-family: var(--font-tech);
-  font-size: var(--fs-base);
+  font-size: var(--fs-80);
   color: var(--text-secondary);
 }
 
@@ -59,7 +59,7 @@
 }
 
 .bio-text p {
-  font-size: var(--fs-lg);
+  font-size: var(--fs-95);
   line-height: 1.8;
   color: var(--text-secondary);
 }
@@ -83,7 +83,7 @@
 
 .contact-label {
   display: block;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-70);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -92,7 +92,7 @@
 }
 
 .contact-value {
-  font-size: var(--fs-md);
+  font-size: var(--fs-85);
   color: var(--text-primary);
 }
 
@@ -110,7 +110,7 @@
 
 .edu-year {
   font-family: var(--font-mono);
-  font-size: var(--fs-base);
+  font-size: var(--fs-80);
   color: var(--text-accent);
   font-weight: 500;
   white-space: nowrap;
@@ -118,14 +118,14 @@
 }
 
 .edu-degree {
-  font-size: var(--fs-lg);
+  font-size: var(--fs-95);
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: var(--space-1);
 }
 
 .edu-institution {
-  font-size: var(--fs-md);
+  font-size: var(--fs-85);
   color: var(--text-secondary);
 }
 
