@@ -64,6 +64,28 @@
   --font-mono: 'Fira Code', monospace;
   --font-tech: 'Space Grotesk', sans-serif;
 
+  /* === Font size scale ===
+     One ramp for all type. The fixed steps (rem) replace ~27 drifted
+     ad-hoc values; dominant sizes are kept and only outliers snap to the
+     nearest step. The fluid tokens wrap the responsive clamp()s used for
+     display/heading sizes so every font-size flows through a token. */
+  --fs-2xs: 0.65rem;
+  --fs-xs: 0.7rem;
+  --fs-sm: 0.75rem;
+  --fs-base: 0.8rem;
+  --fs-md: 0.85rem;
+  --fs-lg: 0.9rem;
+  --fs-xl: 1rem;
+  --fs-2xl: 1.1rem;
+  --fs-3xl: 1.2rem;
+  --fs-4xl: 1.5rem;
+  --fs-5xl: 2rem;
+  --fs-fluid-section: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --fs-fluid-section-lg: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  --fs-fluid-article: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --fs-fluid-hero: clamp(2.5rem, 6vw, 4rem);
+  --fs-fluid-display: clamp(5rem, 15vw, 9rem);
+
   /* === Spacing === */
   --space-1: 4px;
   --space-2: 8px;
@@ -1107,7 +1129,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose h1 {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: var(--fs-5xl);
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: var(--space-6);
@@ -1117,7 +1139,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose h2 {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: var(--fs-4xl);
   font-weight: 600;
   color: var(--text-primary);
   margin-top: var(--space-10);
@@ -1128,7 +1150,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose h3 {
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: var(--fs-2xl);
   font-weight: 600;
   color: var(--text-primary);
   margin-top: var(--space-8);
@@ -1137,7 +1159,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose h4 {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
   color: var(--text-primary);
   margin-top: var(--space-6);
@@ -1250,7 +1272,7 @@ img[src*='amazonwebservices-original-wordmark'] {
   display: block;
   padding: var(--space-5);
   background: var(--surface-base);
-  font-size: 0.82rem;
+  font-size: var(--fs-base);
   line-height: 1.7;
   color: var(--text-primary);
   border-radius: var(--radius-md);
@@ -1274,7 +1296,7 @@ img[src*='amazonwebservices-original-wordmark'] {
   min-width: 44px;
   padding: 4px var(--space-2);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   background: var(--glass-bg);
   color: var(--text-secondary);
   border: 1px solid var(--glass-border);
@@ -1353,7 +1375,7 @@ img[src*='amazonwebservices-original-wordmark'] {
   -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
   margin: var(--space-6) 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
 }
 
 .prose th {
@@ -1363,7 +1385,7 @@ img[src*='amazonwebservices-original-wordmark'] {
   color: var(--text-primary);
   font-weight: 600;
   font-family: var(--font-tech);
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
 }
 
 .prose td {
@@ -1416,7 +1438,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 .prose .callout-title {
   margin: 0 0 var(--space-2);
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -1474,7 +1496,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 .prose figcaption {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   /*
     Bumped from --text-muted so figure captions clear WCAG AA contrast in both
     themes. Figcaptions describe images and act as inline documentation, so
@@ -1493,20 +1515,20 @@ img[src*='amazonwebservices-original-wordmark'] {
 
 @media (max-width: 767px) {
   .prose h1 {
-    font-size: 1.6rem;
+    font-size: var(--fs-4xl);
   }
 
   .prose h2 {
-    font-size: 1.2rem;
+    font-size: var(--fs-3xl);
   }
 
   .prose pre code {
     padding: var(--space-3);
-    font-size: 0.75rem;
+    font-size: var(--fs-sm);
   }
 
   .prose table {
-    font-size: 0.78rem;
+    font-size: var(--fs-sm);
   }
 
   .prose th,
@@ -2221,7 +2243,7 @@ img[src*='amazonwebservices-original-wordmark'] {
 */
 .loading-cursor {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   color: var(--text-muted);
   animation: cursor-blink-border 1s step-end infinite;
   border-right: 2px solid var(--accent);

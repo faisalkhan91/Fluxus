@@ -105,7 +105,7 @@
   border-right: 1px solid var(--glass-border);
   color: var(--text-secondary);
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   cursor: pointer;
   white-space: nowrap;
   transition:
@@ -141,7 +141,7 @@
 
 .tab-ext {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   color: var(--text-muted);
 }
 
@@ -192,7 +192,7 @@
   border-left: 1px solid var(--glass-border);
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   cursor: pointer;
   flex-shrink: 0;
   transition:

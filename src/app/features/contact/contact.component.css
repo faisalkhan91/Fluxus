@@ -28,7 +28,7 @@
 
 .form-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -49,7 +49,7 @@
     Desktop visually reads barely different at 1rem; the cost of the
     extra 1.6 px is invisible compared to the iOS papercut.
   */
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
@@ -70,7 +70,7 @@
 }
 
 .form-error {
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   color: var(--error);
 }
 
@@ -124,7 +124,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   line-height: 1.5;
 }
 
@@ -148,7 +148,7 @@
   border: none;
   color: var(--text-accent);
   font-family: var(--font-body);
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
@@ -204,7 +204,7 @@
 .success-state h3,
 .confirm-state h3 {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: var(--fs-4xl);
   color: var(--text-primary);
 }
 
@@ -242,7 +242,7 @@
 .info-label {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -250,7 +250,7 @@
 }
 
 .info-value {
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
 }
 

@@ -6,7 +6,7 @@
      sits beside in the card footer. The footer row is already 24 px tall
      from those pills, so this grows the hit area without shifting layout. */
   min-height: 24px;
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   color: var(--text-secondary);
   transition: color var(--transition-fast);
 }
