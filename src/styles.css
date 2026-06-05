@@ -223,7 +223,11 @@
     override below).
   */
   --modal-overlay: rgba(0, 0, 0, 0.55);
-  --selection-bg: var(--accent-subtle);
+  /* Text selection: a 30% accent tint rather than the ~6–10% --accent-subtle,
+     which is near-invisible on dark backgrounds. Theme-aware via the live
+     --accent (works across all 10 themes); text keeps --selection-color so it
+     stays readable over the tint. */
+  --selection-bg: color-mix(in srgb, var(--accent) 30%, transparent);
   --selection-color: var(--text-primary);
   --focus-ring: var(--accent);
   --divider: var(--glass-border);
