@@ -2,6 +2,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  /* ≥24 px pointer target (WCAG 2.2 SC 2.5.8), matching the tag pills it
+     sits beside in the card footer. The footer row is already 24 px tall
+     from those pills, so this grows the hit area without shifting layout. */
+  min-height: 24px;
   font-size: 0.8rem;
   color: var(--text-secondary);
   transition: color var(--transition-fast);
