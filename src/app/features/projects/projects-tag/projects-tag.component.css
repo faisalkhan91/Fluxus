@@ -27,7 +27,13 @@
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  /* `auto-fit` (not `auto-fill`) collapses the empty trailing tracks so a
+     tag with 1–2 matches doesn't leave phantom columns and a lopsided gap.
+     Capping the track at 420px stops a lone card from stretching the full
+     row width, and `justify-content: center` keeps the populated tracks
+     centered under the heading instead of pinned left. */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 420px));
+  justify-content: center;
   gap: var(--space-6);
 }
 

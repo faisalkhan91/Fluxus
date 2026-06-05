@@ -49,6 +49,12 @@ const GENERATED_TS = join(ROOT, 'src/app/core/data/projects.generated.ts');
 const GENERATED_JSON = join(ROOT, 'src/app/core/data/projects.generated.json');
 const CACHE_JSON = join(ROOT, 'scripts/cache/projects-github.json');
 
+// Corrections for known-misspelled GitHub repo topics (topics are author-set
+// on GitHub, so typos flow straight through). Normalized at the single point
+// topics enter our data, so a re-fetch self-corrects. Best fixed at the source
+// too — correct the topic on the repo and the entry here can be retired.
+const TOPIC_FIXUPS = { ngnix: 'nginx' };
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? '';
 
 /**
@@ -232,7 +238,8 @@ function repoNodeToCacheRow(node) {
   }));
   const topics = (node.repositoryTopics?.nodes ?? [])
     .map((n) => n?.topic?.name)
-    .filter((t) => typeof t === 'string');
+    .filter((t) => typeof t === 'string')
+    .map((t) => TOPIC_FIXUPS[t] ?? t);
   const latestRelease =
     node.latestRelease?.tagName && node.latestRelease?.publishedAt
       ? { tag: node.latestRelease.tagName, publishedAt: node.latestRelease.publishedAt }

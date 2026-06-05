@@ -365,7 +365,7 @@
       "jenkins-ci-cd",
       "jenkins-pipeline",
       "linux",
-      "ngnix",
+      "nginx",
       "php",
       "portfolio",
       "ubuntu"
@@ -393,7 +393,7 @@
         "jenkins-ci-cd",
         "jenkins-pipeline",
         "linux",
-        "ngnix",
+        "nginx",
         "php",
         "portfolio",
         "ubuntu"
