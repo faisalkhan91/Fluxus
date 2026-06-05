@@ -22,7 +22,7 @@
 
 .glitch {
   font-family: var(--font-display);
-  font-size: clamp(5rem, 15vw, 9rem);
+  font-size: var(--fs-fluid-display);
   font-weight: 700;
   color: var(--text-muted);
   line-height: 1;
@@ -124,14 +124,14 @@
   flex: 1;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
 .terminal-body {
   padding: var(--space-4) var(--space-5);
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-base);
   line-height: 1.8;
 }
 
@@ -220,7 +220,7 @@
 
 .suggestion-cmd {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--text-accent);
   white-space: nowrap;
   overflow: hidden;
@@ -229,7 +229,7 @@
 
 .suggestion-label {
   font-family: var(--font-body);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -250,7 +250,7 @@
   }
 
   .terminal-body {
-    font-size: 0.75rem;
+    font-size: var(--fs-sm);
     padding: var(--space-3) var(--space-4);
   }
 }

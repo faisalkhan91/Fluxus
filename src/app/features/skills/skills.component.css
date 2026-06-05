@@ -58,7 +58,7 @@
 
 .skills-intro {
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   line-height: 1.55;
   color: var(--text-secondary);
   margin: 0;
@@ -135,7 +135,7 @@
 */
 .feature-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   letter-spacing: 0.05em;
   margin: 0;
@@ -278,7 +278,7 @@
   border-radius: var(--radius-md);
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.04em;
   cursor: pointer;
   box-sizing: border-box;

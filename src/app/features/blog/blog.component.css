@@ -41,7 +41,7 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   text-decoration: none;
   background: var(--glass-bg);
@@ -82,7 +82,7 @@
   padding: var(--space-4) 0;
   border-top: 1px solid var(--glass-border);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -97,7 +97,7 @@
   background: var(--glass-bg);
   color: var(--text-secondary);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   text-align: center;
 }
 

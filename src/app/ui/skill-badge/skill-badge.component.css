@@ -92,7 +92,7 @@
 
 .badge-name {
   font-family: var(--font-tech);
-  font-size: 0.8125rem;
+  font-size: var(--fs-base);
   font-weight: 500;
   color: var(--text-primary);
   text-align: center;
@@ -160,7 +160,7 @@
 
 .badge-caption {
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: var(--fs-2xs);
   line-height: 1;
   color: var(--text-tertiary, var(--text-secondary));
   padding: 3px var(--space-2);

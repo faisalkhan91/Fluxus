@@ -182,7 +182,7 @@
 */
 .hero-greeting {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   color: var(--text-secondary);
   margin-bottom: var(--space-3);
   display: flex;
@@ -219,7 +219,7 @@
 
 .hero-name {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-size: var(--fs-fluid-hero);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -267,7 +267,7 @@
 
 .hero-title {
   font-family: var(--font-tech);
-  font-size: 1.25rem;
+  font-size: var(--fs-3xl);
   color: var(--text-secondary);
   margin-bottom: var(--space-6);
   font-weight: 500;
@@ -305,7 +305,7 @@
 }
 
 .hero-summary {
-  font-size: 1.05rem;
+  font-size: var(--fs-xl);
   color: var(--text-secondary);
   line-height: 1.7;
   margin-bottom: var(--space-8);
@@ -518,7 +518,7 @@
 */
 .latest-posts-label {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   font-weight: 400;
   line-height: 1.4;
   color: var(--text-muted);
@@ -624,7 +624,7 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   color: var(--text-muted);
   margin-bottom: var(--space-2);
 }
@@ -635,7 +635,7 @@
 
 .latest-post-title {
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: var(--space-2);
@@ -652,7 +652,7 @@
 }
 
 .latest-post-excerpt {
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   line-height: 1.5;
   display: -webkit-box;
@@ -671,7 +671,7 @@
   display: inline-block;
   margin-top: var(--space-4);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-accent);
   text-decoration: none;
   letter-spacing: 0.02em;

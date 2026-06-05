@@ -4,7 +4,7 @@
     the detail page wants roomier pills. Both surfaces set these
     once on a parent selector rather than forking this stylesheet.
   */
-  --gh-pill-font-size: 0.65rem;
+  --gh-pill-font-size: var(--fs-2xs);
   --gh-languages-bar-height: 4px;
   display: contents;
 }

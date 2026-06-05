@@ -91,7 +91,7 @@
 }
 
 .post-link--featured .post-title {
-  font-size: 1.5rem;
+  font-size: var(--fs-4xl);
 }
 
 .post-card {
@@ -143,7 +143,7 @@
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.02em;
   color: var(--text-muted);
   text-align: center;
@@ -181,7 +181,7 @@
 
   .post-card-sigil {
     /* Bumped from 0.62rem so the IDE sigil reads cleanly at banner width. */
-    font-size: 0.85rem;
+    font-size: var(--fs-md);
   }
 }
 
@@ -198,14 +198,14 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
 .post-title {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: var(--fs-3xl);
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: var(--space-3);
@@ -227,7 +227,7 @@
 }
 
 .post-excerpt {
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: var(--space-4);

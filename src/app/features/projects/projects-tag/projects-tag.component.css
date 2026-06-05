@@ -72,13 +72,13 @@
 
 .project-title {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: var(--fs-2xl);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .project-desc {
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   line-height: 1.6;
   display: -webkit-box;
@@ -99,7 +99,7 @@
   border: none;
   padding: 0;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-accent);
   cursor: pointer;
   transition: color var(--transition-fast);

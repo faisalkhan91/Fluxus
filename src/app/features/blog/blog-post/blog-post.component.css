@@ -83,7 +83,7 @@
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
-    font-size: 0.78rem;
+    font-size: var(--fs-sm);
     line-height: 1.4;
   }
 
@@ -100,7 +100,7 @@
 .post-toc-title {
   margin: 0 0 var(--space-2);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-muted);
@@ -135,7 +135,7 @@
 .post-toc-h3 a {
   padding-left: var(--space-4);
   color: var(--text-muted);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
 }
 
 /*
@@ -153,7 +153,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   background: var(--glass-bg);
-  font-size: 0.875rem;
+  font-size: var(--fs-md);
 }
 
 @media (min-width: 1280px) {
@@ -177,7 +177,7 @@
   padding: var(--space-3) var(--space-4);
   cursor: pointer;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-muted);
@@ -236,7 +236,7 @@
 
 .post-toc-mobile-count {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   letter-spacing: 0.04em;
   text-transform: none;
@@ -279,7 +279,7 @@
 .post-toc-mobile-h3 a {
   padding-left: var(--space-6);
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -361,7 +361,7 @@
   align-items: center;
   gap: var(--space-2);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   color: var(--text-secondary);
   text-decoration: none;
   padding: var(--space-2) var(--space-3);
@@ -392,7 +392,7 @@
   padding: 0;
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
@@ -448,7 +448,7 @@
   align-items: baseline;
   gap: var(--space-2);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -475,7 +475,7 @@
 .post-title {
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  font-size: var(--fs-fluid-article);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -496,7 +496,7 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
@@ -539,7 +539,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -585,7 +585,7 @@
 
 .share-text {
   font-weight: 600;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
 }
 
 /* Author card sits below the share row. Replaces the old single-line
@@ -626,7 +626,7 @@
 .post-author-eyebrow {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -635,7 +635,7 @@
 .post-author-name {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: var(--fs-xl);
   font-weight: 600;
   line-height: 1.2;
   color: var(--text-primary);
@@ -655,7 +655,7 @@
 .post-author-title {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   letter-spacing: 0.01em;
 }
@@ -672,7 +672,7 @@
   padding: 2px var(--space-2);
   margin-left: calc(-1 * var(--space-2));
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--text-accent);
   text-decoration: none;
   letter-spacing: 0.02em;
@@ -723,7 +723,7 @@
   border-radius: var(--radius-md);
   background: var(--glass-bg);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-sm);
   white-space: pre-wrap;
   color: var(--text-muted);
   aspect-ratio: 16 / 9;
@@ -799,7 +799,7 @@
   justify-content: space-between;
   gap: var(--space-3);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   color: var(--text-secondary);
 }
 
@@ -808,11 +808,11 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
 }
 
 .post-series-position {
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -835,7 +835,7 @@
      `baseline` to `center` so the bumped padding centres the text. */
   min-height: 24px;
   padding: var(--space-2) 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   text-decoration: none;
   transition: color var(--transition-fast);
@@ -853,7 +853,7 @@
 
 .post-series-index {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   flex-shrink: 0;
   min-width: 1.5em;
@@ -893,7 +893,7 @@
 .post-related-title {
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
-  font-size: 0.95rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: 0.01em;
@@ -926,7 +926,7 @@
 
 .post-related-headline {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   font-weight: 500;
   color: var(--text-primary);
 }
@@ -936,7 +936,7 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -989,14 +989,14 @@
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
 .footer-nav-title {
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1.3;

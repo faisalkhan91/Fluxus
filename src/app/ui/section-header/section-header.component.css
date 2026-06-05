@@ -20,7 +20,7 @@
 */
 .title {
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  font-size: var(--fs-fluid-section);
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -38,19 +38,19 @@
   phones a 36 px headline that would crowd the small viewport.
 */
 .title--page {
-  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  font-size: var(--fs-fluid-section-lg);
   letter-spacing: -0.025em;
 }
 
 .subtitle {
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   color: var(--text-secondary);
   font-weight: 400;
 }
 
 .decoration {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   letter-spacing: 0.05em;
 }

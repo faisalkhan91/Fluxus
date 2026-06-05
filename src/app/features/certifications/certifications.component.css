@@ -34,7 +34,7 @@
 }
 
 .cert-name {
-  font-size: 0.75rem;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.4;
@@ -42,7 +42,7 @@
 
 .cert-issuer {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   color: var(--text-muted);
   margin-top: var(--space-1);
   display: block;
@@ -63,7 +63,7 @@
   border: none;
   color: var(--text-primary);
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: var(--fs-lg);
   font-weight: 500;
   cursor: pointer;
   padding: 0;
@@ -76,7 +76,7 @@
 
 .course-count {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
 }
 
@@ -98,7 +98,7 @@
 }
 
 .course-items li {
-  font-size: 0.8rem;
+  font-size: var(--fs-base);
   color: var(--text-secondary);
   line-height: 1.5;
   position: relative;
@@ -110,7 +110,7 @@
   position: absolute;
   left: calc(-1 * var(--space-4));
   color: var(--text-accent);
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
 }
 
 .awards-list {
@@ -132,7 +132,7 @@
 }
 
 .award-item p {
-  font-size: 0.85rem;
+  font-size: var(--fs-md);
   color: var(--text-secondary);
   line-height: 1.6;
 }
@@ -175,6 +175,6 @@
   }
 
   .cert-name {
-    font-size: 0.8rem;
+    font-size: var(--fs-base);
   }
 }

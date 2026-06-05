@@ -105,13 +105,13 @@ interface Row {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
-        font-size: 0.875rem;
+        font-size: var(--fs-md);
         color: var(--text-secondary);
       }
 
       thead th {
         font-family: var(--font-mono);
-        font-size: 0.7rem;
+        font-size: var(--fs-xs);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -214,7 +214,7 @@ interface Row {
 
       .col-category {
         font-family: var(--font-mono);
-        font-size: 0.75rem;
+        font-size: var(--fs-sm);
         color: var(--text-muted);
       }
 
@@ -228,7 +228,7 @@ interface Row {
       .tier-pill {
         display: inline-block;
         font-family: var(--font-mono);
-        font-size: 0.625rem;
+        font-size: var(--fs-2xs);
         line-height: 1;
         padding: 3px var(--space-2);
         border-radius: var(--radius-pill);
