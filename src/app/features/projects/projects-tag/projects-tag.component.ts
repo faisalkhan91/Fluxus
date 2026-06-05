@@ -31,7 +31,7 @@ import { projectTagUrl } from '@shared/utils/url.utils';
 @Component({
   selector: 'app-projects-tag',
   templateUrl: './projects-tag.component.html',
-  styleUrl: './projects-tag.component.css',
+  styleUrls: ['../../../shared/styles/tag-archive.css', './projects-tag.component.css'],
   imports: [
     GlassCardComponent,
     IconComponent,

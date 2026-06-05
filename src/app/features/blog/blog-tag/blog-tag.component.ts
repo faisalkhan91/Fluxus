@@ -14,7 +14,7 @@ import { blogTagUrl } from '@shared/utils/url.utils';
 @Component({
   selector: 'app-blog-tag',
   templateUrl: './blog-tag.component.html',
-  styleUrl: './blog-tag.component.css',
+  styleUrls: ['../../../shared/styles/tag-archive.css', './blog-tag.component.css'],
   imports: [IconComponent, SectionHeaderComponent, RouterLink, PostCardComponent],
 })
 export class BlogTagComponent {
