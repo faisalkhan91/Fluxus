@@ -114,6 +114,22 @@
   background: var(--surface-overlay);
 }
 
+/*
+  Even vertical rhythm for the grid view's swap region: the core-stack strip
+  and each category `.skill-section` otherwise stack as plain blocks with no
+  separation, so a category heading hugs the previous grid while sitting
+  `--space-8` from its own tiles (inconsistent + cramped). A flex column with
+  a `--space-12` gap (> the heading's --space-8 bottom margin) separates the
+  sections evenly and keeps each heading grouped with its tiles below.
+  `:has(.skill-section)` scopes this to the grid branch — the list view shares
+  the `.skills-results` class but has no `.skill-section`.
+*/
+.skills-results:has(.skill-section) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
 /* ------------------------------ Feature strip ------------------------------ */
 
 .feature-section {
