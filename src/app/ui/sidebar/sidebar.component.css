@@ -141,14 +141,14 @@
 
 .name {
   font-family: var(--font-display);
-  font-size: var(--fs-xl);
+  font-size: var(--fs-100);
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
 }
 
 .role {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-75);
   color: var(--text-secondary);
   font-family: var(--font-tech);
   white-space: nowrap;
@@ -198,7 +198,7 @@
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: var(--fs-md);
+  font-size: var(--fs-875);
   font-weight: 500;
   transition:
     background-color var(--transition-fast),
@@ -323,7 +323,7 @@
 
 .nav-ext {
   font-family: var(--font-mono);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-70);
   color: var(--text-muted);
 }
 
@@ -338,7 +338,7 @@
 
 .divider-label {
   font-family: var(--font-mono);
-  font-size: var(--fs-2xs);
+  font-size: var(--fs-65);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -388,7 +388,7 @@
   color: var(--text-secondary);
   border: none;
   font-family: var(--font-body);
-  font-size: var(--fs-base);
+  font-size: var(--fs-80);
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -451,7 +451,7 @@
   border: none;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
-  font-size: var(--fs-base);
+  font-size: var(--fs-80);
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -489,7 +489,7 @@
   color: var(--text-muted);
   border-radius: var(--radius-md);
   font-family: var(--font-body);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-75);
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;

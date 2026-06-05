@@ -166,7 +166,7 @@ import { RouterLink } from '@angular/router';
 
       .feature-name {
         font-family: var(--font-display);
-        font-size: var(--fs-2xl);
+        font-size: var(--fs-1125);
         font-weight: 600;
         color: var(--text-primary);
         letter-spacing: -0.01em;
@@ -176,14 +176,14 @@ import { RouterLink } from '@angular/router';
 
       .feature-since {
         font-family: var(--font-mono);
-        font-size: var(--fs-xs);
+        font-size: var(--fs-70);
         color: var(--text-muted);
         letter-spacing: 0.04em;
       }
 
       .feature-tagline {
         font-family: var(--font-body);
-        font-size: var(--fs-md);
+        font-size: var(--fs-85);
         line-height: 1.45;
         color: var(--text-secondary);
         margin: 0;
@@ -235,7 +235,7 @@ import { RouterLink } from '@angular/router';
 
       .feature-link {
         font-family: var(--font-mono);
-        font-size: var(--fs-sm);
+        font-size: var(--fs-75);
         color: var(--text-secondary);
         text-decoration: none;
         position: relative;
@@ -245,7 +245,7 @@ import { RouterLink } from '@angular/router';
 
       .feature-count {
         font-family: var(--font-mono);
-        font-size: var(--fs-sm);
+        font-size: var(--fs-75);
         color: var(--text-muted);
       }
 
