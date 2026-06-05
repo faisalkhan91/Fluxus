@@ -18,6 +18,13 @@
 
 .cert-card {
   text-align: center;
+  /* Grid stretches cards to equal height per row, but top-aligned content
+     left short-title cards with a big empty base and the issuer line landing
+     at a different height on each card. Lay the card out as a column so the
+     badge stays at the top and the issuer (margin-top: auto below) pins to the
+     bottom — badges align across the row, issuers align across the row. */
+  display: flex;
+  flex-direction: column;
 }
 
 .cert-badge {
@@ -44,7 +51,11 @@
   font-family: var(--font-mono);
   font-size: var(--fs-65);
   color: var(--text-muted);
-  margin-top: var(--space-1);
+  /* Pin to the card bottom so issuers align across the row regardless of how
+     many lines the title above wraps to. (Mobile resets this — its cards are
+     a centered single-column scroll rail, not an equal-height grid row.) */
+  margin-top: auto;
+  padding-top: var(--space-1);
   display: block;
 }
 
@@ -176,5 +187,12 @@
 
   .cert-name {
     font-size: var(--fs-80);
+  }
+
+  /* The mobile card centres its content (justify-content: center above), so
+     keep the issuer next to the title rather than pinning it to the bottom. */
+  .cert-issuer {
+    margin-top: var(--space-1);
+    padding-top: 0;
   }
 }
