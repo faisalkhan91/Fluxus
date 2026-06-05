@@ -147,6 +147,11 @@
 @media (hover: none) {
   .badge-captions {
     opacity: 1;
+    /* The narrow 3-col mobile tile can't fit two pills on one line. On touch
+       they're always shown (no hover reveal), so let them wrap inside the
+       tile instead of spilling past its edge — there's no hover here, so this
+       can't reintroduce the on-hover row-growth that `nowrap` guards against. */
+    flex-wrap: wrap;
   }
 }
 
