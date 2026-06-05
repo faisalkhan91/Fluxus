@@ -8,12 +8,15 @@
 # the matrix here makes any change to support semantics show up as an
 # explicit edit to this file rather than a silent CSS-output diff.
 #
-# Current target: "modern evergreen" — every release channel's last two
-# majors, plus Firefox ESR, with IE / dead browsers explicitly excluded.
-
-> 0.5%
-last 2 versions
+# Target: "modern evergreen" — the last two majors of each evergreen engine
+# plus Firefox ESR. Queried per-engine (rather than the broad `> 0.5%` /
+# `last 2 versions`, which pull in QQ/UC/KaiOS/Opera-Mobile/old-Chrome) so the
+# set stays inside Angular's official support matrix — no build-time
+# "unsupported browser" warnings.
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Edge versions
+last 2 Safari versions
+last 2 iOS versions
 Firefox ESR
 not dead
-not IE 11
-not op_mini all
