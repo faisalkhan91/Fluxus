@@ -119,13 +119,15 @@ describe('HeroComponent', () => {
     expect(el.textContent).toContain('Test User');
   });
 
-  it('should navigate to /about on primary CTA', () => {
-    component.navigateTo('/about');
-    expect(router.navigate).toHaveBeenCalledWith(['/about']);
+  it('navigates to /experience when the primary CTA ("Explore My Work") is clicked', () => {
+    const buttons = el.querySelectorAll<HTMLButtonElement>('.hero-actions ui-glow-button button');
+    buttons[0].click();
+    expect(router.navigate).toHaveBeenCalledWith(['/experience']);
   });
 
-  it('should navigate to /contact on secondary CTA', () => {
-    component.navigateTo('/contact');
+  it('navigates to /contact when the secondary CTA ("Get in Touch") is clicked', () => {
+    const buttons = el.querySelectorAll<HTMLButtonElement>('.hero-actions ui-glow-button button');
+    buttons[1].click();
     expect(router.navigate).toHaveBeenCalledWith(['/contact']);
   });
 
