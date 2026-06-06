@@ -300,8 +300,9 @@ describe('CommandCatalogService', () => {
       expect(lastOf('skill:')).toBeLessThan(firstOf('project:'));
     });
 
-    it('exposes the full catalog length = routes + posts + themes + skills + projects', () => {
-      const expected = 2 + POSTS().length + THEME_REGISTRY.length + 2 + PROJECTS.length;
+    it('exposes the full catalog length = routes + posts + themes + skills + projects + actions', () => {
+      // Trailing +2: the always-present "Open terminal" + "Keyboard shortcuts" actions.
+      const expected = 2 + POSTS().length + THEME_REGISTRY.length + 2 + PROJECTS.length + 2;
       expect(items().length).toBe(expected);
     });
   });

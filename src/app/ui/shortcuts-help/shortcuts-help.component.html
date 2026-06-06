@@ -1,0 +1,44 @@
+<dialog
+  #dialog
+  class="shortcuts"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Keyboard shortcuts"
+  (close)="open.set(false)"
+>
+  <div class="sc-frame">
+    <div class="sc-header">
+      <ui-icon name="keyboard" [size]="16" />
+      <h2 class="sc-title">Keyboard shortcuts</h2>
+      <button
+        #closeButton
+        type="button"
+        class="sc-close"
+        (click)="close()"
+        aria-label="Close keyboard shortcuts"
+      >
+        <ui-icon name="x" [size]="16" />
+      </button>
+    </div>
+
+    <div class="sc-body">
+      @for (group of groups(); track group.group) {
+        <section class="sc-group">
+          <h3 class="sc-group-title">{{ group.group }}</h3>
+          <dl class="sc-list">
+            @for (row of group.items; track row.label) {
+              <div class="sc-row">
+                <dt class="sc-row-label">{{ row.label }}</dt>
+                <dd class="sc-row-keys">
+                  @for (key of row.keys; track $index) {
+                    <kbd class="sc-kbd">{{ key }}</kbd>
+                  }
+                </dd>
+              </div>
+            }
+          </dl>
+        </section>
+      }
+    </div>
+  </div>
+</dialog>

@@ -5,6 +5,7 @@ import { ThemeService } from '@core/services/theme.service';
 import { SkillsDataService } from '@core/services/skills-data.service';
 import { SkillUsageService } from '@core/services/skill-usage.service';
 import { ProjectsDataService } from '@core/services/projects-data.service';
+import { HotkeyService } from '@core/services/hotkey.service';
 import { slugify } from '@shared/utils/string.utils';
 
 /**
@@ -92,6 +93,7 @@ export class CommandCatalogService {
   private skills = inject(SkillsDataService);
   private skillUsage = inject(SkillUsageService);
   private projectsData = inject(ProjectsDataService);
+  private hotkeys = inject(HotkeyService);
 
   /**
    * Catalog: every nav route + every blog post + every theme action +
@@ -202,6 +204,30 @@ export class CommandCatalogService {
         keywords: [...project.tags, project.description].join(' ').toLowerCase(),
       });
     }
+
+    // Always-present app actions. These open the other overlays through the
+    // shared HotkeyService (the same handlers their Ctrl+` / ? hotkeys fire),
+    // so Cmd+K stays the one discoverable entry point for everything.
+    out.push({
+      id: 'action:terminal',
+      domId: toDomId('action:terminal'),
+      label: 'Open terminal',
+      hint: 'Action · Ctrl+`',
+      icon: 'terminal',
+      kind: 'action',
+      run: () => this.hotkeys.trigger('terminal'),
+      keywords: 'terminal console shell cli command',
+    });
+    out.push({
+      id: 'action:shortcuts',
+      domId: toDomId('action:shortcuts'),
+      label: 'Keyboard shortcuts',
+      hint: 'Action · ?',
+      icon: 'keyboard',
+      kind: 'action',
+      run: () => this.hotkeys.trigger('shortcuts'),
+      keywords: 'keyboard shortcuts hotkeys keys help',
+    });
 
     return out;
   });
