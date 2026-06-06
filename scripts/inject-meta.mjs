@@ -49,8 +49,15 @@ function resolveCover(post) {
     if (post.cover.startsWith('http')) return post.cover;
     return `${SITE_URL}${post.cover.startsWith('/') ? '' : '/'}${post.cover}`;
   }
-  // Otherwise rely on the auto-generated card from scripts/build-og-cards.mjs.
-  return `${SITE_URL}/og/${post.slug}.png`;
+  // Otherwise fall back to the auto-generated card from build-og-cards.mjs —
+  // but that script only emits a card for PUBLISHED posts (its own isPublished
+  // gate). For drafts/future-dated posts the PNG doesn't exist yet, so point
+  // social unfurlers (which fetch og:image even on noindex pages) at the
+  // site-wide default instead of a guaranteed 404. The per-post card is picked
+  // up automatically on the first rebuild after the post goes live. Kept in
+  // lockstep with scripts/build-og-cards.mjs.
+  if (isPublished(post)) return `${SITE_URL}/og/${post.slug}.png`;
+  return DEFAULT_OG_IMAGE;
 }
 
 const blogManifest = await loadPosts();

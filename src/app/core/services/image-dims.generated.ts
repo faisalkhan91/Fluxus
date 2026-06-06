@@ -123,4 +123,8 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 512,
     h: 512,
   },
+  'assets/images/profile/profile_picture.webp': {
+    w: 512,
+    h: 512,
+  },
 };

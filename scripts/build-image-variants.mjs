@@ -23,7 +23,9 @@ import { walk } from './lib/fs.mjs';
 import { writeFormatted } from './lib/emit.mjs';
 
 const SRC_ROOT = fileURLToPath(new URL('../src', import.meta.url));
-const DIRS = ['assets/images/portfolio', 'assets/images/blog'].map((d) => join(SRC_ROOT, d));
+const DIRS = ['assets/images/portfolio', 'assets/images/blog', 'assets/images/profile'].map((d) =>
+  join(SRC_ROOT, d),
+);
 const OUT = fileURLToPath(
   new URL('../src/app/core/image/image-variants.generated.ts', import.meta.url),
 );
@@ -49,9 +51,13 @@ for (const dir of DIRS) {
   for (const file of walk(dir)) {
     if (!file.toLowerCase().endsWith('.webp') || isVariant(file)) continue;
     const meta = await sharp(file).metadata();
-    // Skip animated WebP (e.g. StormEvents) — resizing per-frame is costly and
-    // these render small anyway; the loader falls back to the original.
-    if ((meta.pages ?? 1) > 1) continue;
+    // Animated WebP (e.g. StormEvents) is resized frame-aware via the
+    // `{ animated: true }` read + `webp({ animated })` write so every frame
+    // shrinks together — otherwise the full-size original was the only thing
+    // the loader could serve, leaving an 853px file in a thumbnail slot
+    // (Lighthouse `uses-responsive-images`). `meta.width` is the per-frame
+    // width, so the width-filter below still works for both kinds.
+    const animated = (meta.pages ?? 1) > 1;
     const intrinsic = meta.width ?? 0;
     const widths = WIDTHS.filter((w) => w < intrinsic);
     if (widths.length === 0) continue;
@@ -63,9 +69,9 @@ for (const dir of DIRS) {
         skipped++;
         continue;
       }
-      await sharp(file)
+      await sharp(file, { animated })
         .resize({ width: w, withoutEnlargement: true })
-        .webp({ quality: QUALITY, effort: 6 })
+        .webp({ quality: QUALITY, effort: 6, animated })
         .toFile(dest);
       made++;
     }

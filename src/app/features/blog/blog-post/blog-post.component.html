@@ -114,7 +114,7 @@
           @for (entry of info.posts; track entry.slug; let i = $index) {
             <li>
               @if (entry.slug === slug()) {
-                <span class="post-series-link post-series-link--current" aria-current="true">
+                <span class="post-series-link post-series-link--current" aria-current="page">
                   <span class="post-series-index">{{ i + 1 }}.</span>
                   {{ entry.title }}
                 </span>
@@ -318,12 +318,18 @@
           type="button"
           class="share-link"
           (click)="copyShareLink()"
-          [attr.aria-live]="'polite'"
           [attr.aria-label]="linkCopied() ? 'Link copied to clipboard' : 'Copy link to this post'"
         >
           <ui-icon [name]="linkCopied() ? 'sparkles' : 'send'" [size]="14" />
           <span>{{ linkCopied() ? 'Copied!' : 'Copy link' }}</span>
         </button>
+        <!-- A button isn't a live region; announce the copy success from a
+             dedicated status node (always present so the change is announced). -->
+        <span class="visually-hidden" role="status" aria-live="polite">
+          @if (linkCopied()) {
+            Link copied to clipboard
+          }
+        </span>
       </div>
 
       @let author = profile.personalInfo();
