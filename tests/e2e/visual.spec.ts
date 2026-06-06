@@ -16,6 +16,27 @@ import type { Theme } from './fixtures';
  *
  * The plain `playwright test` invocation skips this file unless
  * `VISUAL_REGRESSION=1` is set — see `testIgnore` in `playwright.config.ts`.
+ *
+ * ── How to run the LIVE visual regression pass (for future maintainers/agents)
+ * This suite renders the *real* prerendered build, not a dev server, so the
+ * order matters. From the repo root:
+ *   1. Build the prod bundle first (the spec serves `dist/fluxus/browser`):
+ *        npm run build:prod
+ *   2. Install the chromium binary once on a fresh checkout:
+ *        npm run e2e:install
+ *   3. Run the visual suite (sets VISUAL_REGRESSION=1 + serves dist via
+ *      http-server on :4300 through playwright.config.ts `webServer`):
+ *        npm run e2e:visual
+ *      …or update baselines after an intentional design change:
+ *        npm run e2e:visual:update
+ * A run with no diffs prints all-green; diffs land in `test-results/` and
+ * `playwright-report/` as `*-actual.png` / `*-diff.png` for inspection.
+ *
+ * Verified 2026-06 (a11y/perf fix pass): ran `npm run build:prod` then
+ * `npm run e2e:visual` against the served `dist/fluxus/browser` on :4300 —
+ * 100/100 snapshots matched baseline (no `--update-snapshots` needed). The
+ * avatar JPG→WebP migration, the `/about` + `/skills` heading-tag swaps, and
+ * the project-detail chip contrast fix all stayed within the 2% tolerance.
  */
 
 /**

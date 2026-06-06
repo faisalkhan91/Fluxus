@@ -47,7 +47,7 @@ test.describe('/skills connective tissue', () => {
     const cardCount = await cards.count();
     expect(cardCount).toBeGreaterThan(0);
     for (let i = 0; i < cardCount; i++) {
-      const tagTexts = await cards.nth(i).locator('.tag').allTextContents();
+      const tagTexts = await cards.nth(i).locator('.ui-tag').allTextContents();
       const lower = tagTexts.map((t) => t.toLowerCase());
       expect(lower).toContain('python');
     }

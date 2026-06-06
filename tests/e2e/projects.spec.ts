@@ -21,7 +21,9 @@ test.describe('/projects connective tissue', () => {
     const firstCard = page.locator('.project-card').first();
     await expect(firstCard).toBeVisible();
 
-    const firstTag = firstCard.locator('a.tag').first();
+    // Tag chips render via the `ui-tag` component (host class `.ui-tag`,
+    // selector `a[uiTag]`) since the pill refactor — not a bare `.tag`.
+    const firstTag = firstCard.locator('a.ui-tag').first();
     const tagText = (await firstTag.textContent())?.trim().toLowerCase();
     const href = await firstTag.getAttribute('href');
     expect(href).toBeTruthy();

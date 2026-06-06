@@ -33,9 +33,25 @@ const THEMES: Theme[] = [
  */
 const DISABLED_RULES: string[] = [];
 
+/**
+ * The shared PRERENDERED_ROUTES list (8 top-level routes + 1 blog post) drives
+ * the visual + CSP suites, so it deliberately omits the deeper route *shapes*.
+ * a11y coverage must not stop there: a project-detail page and the two tag
+ * archives are distinct DOM/token surfaces (e.g. the `.detail-chip-skill`
+ * accent-as-text chips only exist on `/projects/:slug`). Scan them here too so
+ * a per-palette contrast or structural regression on those shapes can't slip
+ * through the gate. Kept local to a11y so visual baselines aren't forced.
+ */
+const A11Y_ROUTES = [
+  ...PRERENDERED_ROUTES,
+  '/projects/image-generator',
+  '/projects/tag/ai',
+  '/blog/tag/angular',
+] as const;
+
 for (const theme of THEMES) {
   test.describe(`a11y — ${theme} theme`, () => {
-    for (const route of PRERENDERED_ROUTES) {
+    for (const route of A11Y_ROUTES) {
       test(`route ${route} has no serious/critical axe violations`, async ({ page }) => {
         await seedTheme(page, theme);
         await page.goto(route);
@@ -43,6 +59,21 @@ for (const theme of THEMES) {
         // Wait for hydration to finish. We bail at 5s so a hung route still
         // produces a useful failure rather than a Playwright timeout.
         await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {});
+
+        // Let web fonts load and the page commit at least two paints before axe
+        // samples colour-contrast. Under a fully-parallel run the CPU is
+        // contended, and axe could otherwise read card text mid-paint — before
+        // the backdrop-filter glass has composited — and flag a transient
+        // contrast value that never ships (observed as flaky nord failures).
+        // fonts.ready + a double rAF gives axe a settled, deterministic canvas.
+        await page
+          .evaluate(async () => {
+            if (document.fonts?.ready) await document.fonts.ready;
+            await new Promise((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))),
+            );
+          })
+          .catch(() => {});
 
         const results = await new AxeBuilder({ page })
           .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
