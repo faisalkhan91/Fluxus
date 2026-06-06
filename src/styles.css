@@ -408,6 +408,10 @@
   --accent-glow: rgba(203, 75, 22, 0.22);
   --accent-subtle: rgba(203, 75, 22, 0.08);
   --text-on-accent: #ffffff;
+  /* Override the shared light-theme red --text-accent: this theme's accent is
+     orange, so accent-as-text (links, tags, social-link hover) must follow the
+     orange hue. accent-hover (#a33a0e) is the darker, AA-safe shade for text. */
+  --text-accent: var(--accent-hover);
 
   --text-primary: rgba(0, 43, 54, 0.92);
   --text-secondary: rgba(7, 54, 66, 0.75);
@@ -741,6 +745,10 @@
   --accent-glow: rgba(9, 105, 218, 0.22);
   --accent-subtle: rgba(9, 105, 218, 0.08);
   --text-on-accent: #ffffff;
+  /* Override the shared light-theme red --text-accent: this theme's accent is
+     blue, so accent-as-text (links, tags, social-link hover) must follow the
+     blue hue. accent-hover (#0550ae) is the darker, AA-safe shade for text. */
+  --text-accent: var(--accent-hover);
 
   --text-primary: rgba(31, 35, 40, 0.92);
   --text-secondary: rgba(31, 35, 40, 0.7);
