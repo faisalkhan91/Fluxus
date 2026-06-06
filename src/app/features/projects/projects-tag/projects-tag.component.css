@@ -27,13 +27,7 @@
 
 .projects-grid {
   display: grid;
-  /* `auto-fit` (not `auto-fill`) collapses the empty trailing tracks so a
-     tag with 1–2 matches doesn't leave phantom columns and a lopsided gap.
-     Capping the track at 420px stops a lone card from stretching the full
-     row width. Cards stay left-aligned (the grid default) so a single
-     result sits under the left-aligned heading rather than floating
-     mid-row. */
-  grid-template-columns: repeat(auto-fit, minmax(320px, 420px));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--space-6);
 }
 
