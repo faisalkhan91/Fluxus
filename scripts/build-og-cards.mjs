@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import sharp from 'sharp';
 import { SITE_NAME } from './lib/config.mjs';
 import { DIST_BROWSER, requireDistBrowser } from './lib/fs.mjs';
-import { loadPosts } from './lib/posts.mjs';
+import { loadPosts, isPublished } from './lib/posts.mjs';
 import { escapeXmlAttr } from './lib/html.mjs';
 
 const OUT_DIR = join(DIST_BROWSER, 'og');
@@ -93,7 +93,12 @@ function renderSvg(post) {
 }
 
 // Per-post `cover` field wins; auto-generation only fills missing covers.
-const targets = posts.filter((post) => !post.cover);
+// Drafts and future-dated posts are skipped: their /blog/<slug> page is
+// prerendered (noindex) for author review, but a public, crawlable
+// /og/<slug>.png would otherwise leak an unpublished post's title before it
+// goes live. The card is generated on the first rebuild after it publishes —
+// matching the sitemap/feed `isPublished` gate.
+const targets = posts.filter((post) => !post.cover && isPublished(post));
 
 // Rasterize in parallel — sharp's encoder releases the JS thread while
 // librsvg + libpng do the CPU work, so a `Promise.all` lets the OS

@@ -126,7 +126,12 @@ describe('MobileNavPillComponent', () => {
 
     const identity = el.querySelector('.menu-identity') as HTMLElement;
     expect(identity).not.toBeNull();
-    expect(identity.getAttribute('aria-label')).toBe('Go to Welcome page');
+    // No aria-label override: it would replace the visible "Faisal Khan" /
+    // role text as the accessible name, tripping WCAG 2.5.3 (Label in Name).
+    // The link is named by its visible content + avatar alt; `title` carries
+    // the "Welcome" affordance hint without overriding the name.
+    expect(identity.getAttribute('aria-label')).toBeNull();
+    expect(identity.getAttribute('title')).toBe('Welcome');
 
     const avatar = identity.querySelector('img.menu-identity-avatar') as HTMLImageElement;
     expect(avatar?.alt).toBe('Faisal Khan');

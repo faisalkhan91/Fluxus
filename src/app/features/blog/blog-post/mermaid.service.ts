@@ -193,11 +193,14 @@ export class MermaidService {
         theme: this.theme.scheme() === 'light' ? 'default' : 'dark',
         securityLevel: 'strict',
       });
+      // One timestamp per render pass; the id counter guarantees per-diagram
+      // uniqueness within it (no need to re-read the clock each iteration).
+      const renderTs = Date.now();
       let id = 0;
       for (const node of placeholders) {
         const source = node.textContent ?? '';
         try {
-          const { svg } = await mermaid.render(`mermaid-${Date.now()}-${id++}`, source);
+          const { svg } = await mermaid.render(`mermaid-${renderTs}-${id++}`, source);
           const wrapper = document.createElement('figure');
           wrapper.className = 'mermaid';
           wrapper.innerHTML = svg;

@@ -43,7 +43,7 @@ import { RouterLink } from '@angular/router';
           />
         }
         <div class="feature-title-block">
-          <h3 class="feature-name">{{ name() }}</h3>
+          <h2 class="feature-name">{{ name() }}</h2>
           @if (since(); as s) {
             <span class="feature-since">since {{ s }}</span>
           }

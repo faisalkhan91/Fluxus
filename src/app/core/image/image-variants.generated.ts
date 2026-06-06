@@ -23,5 +23,7 @@ export const IMAGE_VARIANTS: Record<string, readonly number[]> = {
   'assets/images/portfolio/ImageGeneratorAI.webp': [256, 384, 640, 960],
   'assets/images/portfolio/InsecureFileExtraction.webp': [256, 384, 640],
   'assets/images/portfolio/JenkinsCICD.webp': [256, 384, 640],
+  'assets/images/portfolio/StormEvents.webp': [256, 384, 640],
   'assets/images/portfolio/TextAnalyzerAI.webp': [256, 384, 640, 960],
+  'assets/images/profile/profile_picture.webp': [256, 384],
 };

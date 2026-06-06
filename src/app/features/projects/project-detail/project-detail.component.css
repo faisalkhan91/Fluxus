@@ -116,7 +116,11 @@
   border: 1px solid var(--glass-border);
   font-family: var(--font-mono);
   font-size: var(--fs-85);
-  color: var(--text-secondary);
+  /* --text-primary, not --text-secondary: at this 13px mono size over the
+     elevated --surface-overlay glass, secondary dropped below WCAG AA 4.5:1
+     on the darker palettes (tokyo-night, nord). Primary clears it on every
+     theme; the border + mono treatment still read it as a secondary action. */
+  color: var(--text-primary);
   text-decoration: none;
   background: var(--surface-overlay);
   transition:
@@ -186,12 +190,15 @@
 .detail-chip-skill {
   color: var(--text-accent);
   border-color: var(--text-accent);
-  opacity: 0.85;
+  /* No opacity dimming: --text-accent is tuned to clear WCAG AA as text on
+     every theme, but blending it under opacity:0.85 dropped the effective
+     contrast to ~4.44:1 on the lightest palettes (just under the 4.5 floor).
+     The distinct accent colour + border already set these apart from the
+     plain archive chips above, so the dim isn't needed. */
 }
 
 .detail-chip-skill:hover,
 .detail-chip-skill:focus-visible {
-  opacity: 1;
   background: var(--accent);
   color: var(--surface-overlay);
 }
