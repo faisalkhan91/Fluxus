@@ -4,8 +4,8 @@ import {
   inject,
   signal,
   computed,
+  effect,
   viewChild,
-  afterNextRender,
   PLATFORM_ID,
   DestroyRef,
 } from '@angular/core';
@@ -14,7 +14,11 @@ import { Router } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { assertNever } from '@shared/utils/exhaustive.utils';
 import { scrollIntoViewIfPresent } from '@shared/utils/dom.utils';
+import { HotkeyService } from '@core/services/hotkey.service';
 import { CommandCatalogService, type CommandItem } from './command-catalog.service';
+
+/** Mutual-exclusion id for the shared {@link HotkeyService.activeOverlay}. */
+const OVERLAY_ID = 'palette';
 
 @Component({
   selector: 'ui-command-palette',
@@ -25,6 +29,7 @@ import { CommandCatalogService, type CommandItem } from './command-catalog.servi
 export class CommandPaletteComponent {
   private router = inject(Router);
   private commandCatalog = inject(CommandCatalogService);
+  private hotkeys = inject(HotkeyService);
   private destroyRef = inject(DestroyRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
@@ -71,19 +76,42 @@ export class CommandPaletteComponent {
   });
 
   constructor() {
-    afterNextRender(() => {
-      if (!this.isBrowser) return;
-      const onKey = (event: KeyboardEvent) => {
-        // Cmd+K (mac) / Ctrl+K (everywhere else).
-        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-          event.preventDefault();
-          this.toggle();
-        } else if (event.key === 'Escape' && this.open()) {
-          this.close();
-        }
-      };
-      window.addEventListener('keydown', onKey);
-      this.destroyRef.onDestroy(() => window.removeEventListener('keydown', onKey));
+    // Global shortcuts now route through the shared HotkeyService (single
+    // window listener + one registry that also feeds the keyboard-shortcuts
+    // overlay). Cmd/Ctrl+K toggles from anywhere (incl. while typing); Esc is
+    // a hidden, open-gated close so focus is restored the same way regardless
+    // of how the dialog dismisses.
+    this.destroyRef.onDestroy(
+      this.hotkeys.register({
+        id: OVERLAY_ID,
+        label: 'Open command palette',
+        group: 'General',
+        keys: ['⌘', 'K'],
+        combo: { key: 'k', mod: true },
+        allowInInput: true,
+        handler: () => this.toggle(),
+      }),
+    );
+    this.destroyRef.onDestroy(
+      this.hotkeys.register({
+        id: 'palette:close',
+        label: 'Close',
+        group: 'General',
+        keys: ['Esc'],
+        combo: { key: 'Escape' },
+        allowInInput: true,
+        when: () => this.open(),
+        handler: () => this.close(),
+        hidden: true,
+      }),
+    );
+
+    // Mutual exclusion: if another overlay (terminal, shortcuts) becomes
+    // active, close ourselves so two modal dialogs never stack.
+    effect(() => {
+      if (this.hotkeys.activeOverlay() !== OVERLAY_ID && this.open()) {
+        this.close();
+      }
     });
   }
 
@@ -94,6 +122,7 @@ export class CommandPaletteComponent {
 
   protected openPalette(): void {
     this.captureFocus();
+    this.hotkeys.activeOverlay.set(OVERLAY_ID);
     this.open.set(true);
     this.query.set('');
     this.highlighted.set(0);
@@ -109,6 +138,7 @@ export class CommandPaletteComponent {
    */
   openWith(initialQuery: string): void {
     this.captureFocus();
+    this.hotkeys.activeOverlay.set(OVERLAY_ID);
     this.open.set(true);
     this.query.set(initialQuery);
     this.highlighted.set(0);
@@ -128,6 +158,7 @@ export class CommandPaletteComponent {
   protected close(): void {
     this.dialog()?.nativeElement.close?.();
     this.open.set(false);
+    if (this.hotkeys.activeOverlay() === OVERLAY_ID) this.hotkeys.activeOverlay.set(null);
     this.restoreFocus();
   }
 

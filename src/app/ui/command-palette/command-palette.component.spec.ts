@@ -178,6 +178,9 @@ const mockSkillUsage: Pick<SkillUsageService, 'usageFor' | 'usageBySlug'> = {
  */
 const PALETTE_SKILL_COUNT = 2;
 
+/** Two always-present catalog action rows: "Open terminal" + "Keyboard shortcuts". */
+const PALETTE_ACTION_COUNT = 2;
+
 describe('CommandPaletteComponent', () => {
   let fixture: ComponentFixture<CommandPaletteComponent>;
   let component: CommandPaletteComponent;
@@ -281,7 +284,8 @@ describe('CommandPaletteComponent', () => {
           POSTS().length +
           THEME_REGISTRY.length +
           PALETTE_SKILL_COUNT +
-          PROJECTS.length,
+          PROJECTS.length +
+          PALETTE_ACTION_COUNT,
       );
     });
 
@@ -337,7 +341,8 @@ describe('CommandPaletteComponent', () => {
         POSTS().length +
         THEME_REGISTRY.length +
         PALETTE_SKILL_COUNT +
-        PROJECTS.length;
+        PROJECTS.length +
+        PALETTE_ACTION_COUNT;
       for (let i = 0; i < total + 2; i++) {
         inner().onKey(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
       }

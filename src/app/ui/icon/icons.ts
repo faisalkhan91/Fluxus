@@ -65,6 +65,21 @@ export const ICONS: Record<string, IconShape[]> = {
     { tag: 'polyline', points: '15 3 21 3 21 9' },
     { tag: 'line', x1: '10', y1: '14', x2: '21', y2: '3' },
   ],
+  terminal: [
+    { tag: 'polyline', points: '4 17 10 11 4 5' },
+    { tag: 'line', x1: '12', y1: '19', x2: '20', y2: '19' },
+  ],
+  keyboard: [
+    { tag: 'rect', width: '20', height: '16', x: '2', y: '4', rx: '2' },
+    { tag: 'path', d: 'M6 8h.01' },
+    { tag: 'path', d: 'M10 8h.01' },
+    { tag: 'path', d: 'M14 8h.01' },
+    { tag: 'path', d: 'M18 8h.01' },
+    { tag: 'path', d: 'M8 12h.01' },
+    { tag: 'path', d: 'M12 12h.01' },
+    { tag: 'path', d: 'M16 12h.01' },
+    { tag: 'path', d: 'M7 16h10' },
+  ],
   github: [
     {
       tag: 'path',

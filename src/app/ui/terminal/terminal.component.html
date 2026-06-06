@@ -1,0 +1,59 @@
+<!--
+  Native <dialog> + showModal() gives us the focus trap, backdrop, and Esc
+  handling for free (same pattern as the command palette). aria-modal is set
+  explicitly for pre-16 Safari. The scrollback is a polite live region so a
+  screen reader hears command output as it's printed.
+-->
+<dialog
+  #dialog
+  class="terminal"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Terminal"
+  (close)="open.set(false)"
+>
+  <div class="term-frame">
+    <div class="term-header">
+      <ui-icon name="terminal" [size]="14" />
+      <span class="term-title">fluxus — terminal</span>
+      <kbd class="term-kbd">Esc</kbd>
+    </div>
+
+    <div
+      #scrollback
+      class="term-scrollback"
+      role="log"
+      aria-live="polite"
+      aria-label="Terminal output"
+    >
+      @for (line of lines(); track $index) {
+        <p
+          class="term-line"
+          [class.term-line--command]="line.kind === 'command'"
+          [class.term-line--error]="line.kind === 'error'"
+          [class.term-line--success]="line.kind === 'success'"
+        >
+          {{ line.text }}
+        </p>
+      }
+    </div>
+
+    <div class="term-input-row">
+      <span class="term-prompt" aria-hidden="true">$</span>
+      <input
+        #input
+        type="text"
+        class="term-input"
+        aria-label="Terminal input"
+        placeholder="type a command — help, ls, open about, theme nord"
+        [value]="draft()"
+        (input)="onInput(input.value)"
+        (keydown)="onKey($event)"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+    </div>
+  </div>
+</dialog>

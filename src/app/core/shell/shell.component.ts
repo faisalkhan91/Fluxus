@@ -9,6 +9,8 @@ import { MobileNavPillComponent } from '@ui/mobile-nav-pill/mobile-nav-pill.comp
 import { IconComponent } from '@ui/icon/icon.component';
 import { ToastRegionComponent } from '@ui/toast-region/toast-region.component';
 import { CommandPaletteComponent } from '@ui/command-palette/command-palette.component';
+import { TerminalComponent } from '@ui/terminal/terminal.component';
+import { ShortcutsHelpComponent } from '@ui/shortcuts-help/shortcuts-help.component';
 import { MediaQueryService } from '../services/media-query.service';
 import { TabService } from '../services/tab.service';
 import { NavigationService } from '../services/navigation.service';
@@ -26,6 +28,8 @@ import { ThemeService } from '../services/theme.service';
     IconComponent,
     ToastRegionComponent,
     CommandPaletteComponent,
+    TerminalComponent,
+    ShortcutsHelpComponent,
   ],
 })
 export class ShellComponent {

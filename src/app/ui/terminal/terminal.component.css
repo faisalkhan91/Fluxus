@@ -1,0 +1,171 @@
+/*
+  Open / close animation mirrors the command palette: @starting-style +
+  transition-behavior: allow-discrete so the native <dialog> can fade/slide
+  in and out. The global prefers-reduced-motion rule in styles.css zeroes
+  these durations automatically.
+*/
+.terminal {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  width: min(720px, 100vw - 2 * var(--space-4));
+  max-height: 70vh;
+  color: var(--text-primary);
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base),
+    overlay var(--transition-base) allow-discrete,
+    display var(--transition-base) allow-discrete;
+}
+
+.terminal:not([open]) {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@starting-style {
+  .terminal[open] {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.terminal::backdrop {
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  transition:
+    background var(--transition-base),
+    backdrop-filter var(--transition-base),
+    -webkit-backdrop-filter var(--transition-base),
+    overlay var(--transition-base) allow-discrete,
+    display var(--transition-base) allow-discrete;
+}
+
+.terminal[open]::backdrop {
+  background: var(--modal-overlay);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@starting-style {
+  .terminal[open]::backdrop {
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+  }
+}
+
+.term-frame {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  background: var(--surface-base);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass);
+  overflow: hidden;
+  font-family: var(--font-mono);
+}
+
+.term-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  background: var(--surface-raised);
+}
+
+.term-title {
+  flex: 1;
+  font-size: var(--fs-75);
+  letter-spacing: 0.04em;
+}
+
+.term-kbd {
+  font-family: var(--font-mono);
+  font-size: var(--fs-65);
+  padding: 2px 6px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  color: var(--text-muted);
+}
+
+.term-scrollback {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-85);
+  line-height: 1.6;
+}
+
+.term-line {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-secondary);
+}
+
+.term-line--command {
+  color: var(--text-primary);
+}
+
+.term-line--success {
+  color: var(--text-accent);
+}
+
+.term-line--error {
+  /* --text-accent is the AA-safe accent-as-text token on every theme. */
+  color: var(--text-accent);
+  font-style: italic;
+}
+
+.term-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--glass-border);
+  background: var(--surface-raised);
+}
+
+.term-prompt {
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+.term-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--fs-85);
+  padding: 0;
+  border-radius: var(--radius-sm);
+}
+
+.term-input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.term-input::placeholder {
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal,
+  .terminal::backdrop {
+    transition: none;
+  }
+}
