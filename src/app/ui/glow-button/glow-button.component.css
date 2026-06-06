@@ -27,7 +27,12 @@
 .btn--primary {
   background: var(--accent);
   color: var(--text-on-accent);
-  border-color: var(--text-accent);
+  /* Border matches the fill, not --text-accent. --text-accent is tuned for
+     accent-coloured TEXT and can be a different hue from --accent in themes
+     whose brand accent isn't crimson (e.g. github-light fills blue but its
+     --text-accent is brand red) — using it here drew a red ring around a blue
+     button. Bordering with --accent keeps the solid CTA cohesive on every theme. */
+  border-color: var(--accent);
 }
 
 .btn--primary:hover:not(:disabled) {
