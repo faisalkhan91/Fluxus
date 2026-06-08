@@ -1,15 +1,51 @@
 [
   {
-    "slug": "six-things-i-learned-observability-pipeline-2026-05",
-    "title": "Six layers that lied",
-    "date": "2026-05-19",
-    "excerpt": "Six bugs from a recent observability-pipeline migration, every one of them a layer that didn't say what it actually meant. The platform accepted the write but didn't store it. The 403 didn't mention scope. The compile error blamed the wrong line. The retry was invisible to the function. The fixes are all small assertions at the boundary.",
-    "tags": ["Observability", "SRE", "Architecture", "Datadog", "Coralogix", "Lambda"],
-    "readingTime": "8 min",
-    "cover": "assets/images/blog/observability-pipeline/cover.webp",
-    "wordCount": 1711,
+    "slug": "verifiable-llm-migration-2026-08",
+    "title": "An LLM is a fine translator the moment you can grade it",
+    "date": "2026-08-11",
+    "excerpt": "A machine-translated query compiled, ran, and returned plausible rows — and was off from the source system by 99%. The dangerous bugs in language-to-language migration are structurally correct and semantically wrong, and \"it compiles\" cannot catch any of them. The only thing that makes an LLM safe for a port is an automated oracle: keep the old system running and diff.",
+    "tags": ["AI", "LLM", "Migration", "Data Quality", "Tooling"],
+    "readingTime": "6 min",
+    "wordCount": 1259
+  },
+  {
+    "slug": "idempotency-is-the-producers-job-2026-07",
+    "title": "Idempotency is the producer's job",
+    "date": "2026-07-28",
+    "excerpt": "A p99 latency metric read about 8% high for three weeks — never bad enough to page, just wrong enough to send us chasing a regression that wasn't there. The cause was async-invoke retries double-counting histogram samples into a sink that appends instead of dedupes. This is a walk through why at-least-once delivery is the floor everywhere, why some sinks silently double and others quietly drop, and why the producer is the only party that can actually make delivery exactly-once.",
+    "tags": ["Distributed Systems", "Reliability", "Architecture", "AWS"],
+    "readingTime": "6 min",
+    "wordCount": 1285
+  },
+  {
+    "slug": "distributed-lock-object-store-2026-07",
+    "title": "A distributed lock out of your object store",
+    "date": "2026-07-14",
+    "excerpt": "A conditional PUT against S3, GCS, or Azure Blob gives you a cheap at-most-once claim without standing up Redis or ZooKeeper — the first writer wins and every racer gets a 412. But it is a lease, not a fencing lock, and the whole guarantee rents itself from a single bucket setting that can be toggled off without an error. Here is where it holds, where it quietly degrades, and how to instrument the difference.",
+    "tags": ["AWS", "S3", "Distributed Systems", "Architecture", "Concurrency"],
+    "readingTime": "6 min",
+    "wordCount": 1260
+  },
+  {
+    "slug": "success-is-not-completeness-2026-06",
+    "title": "Success is not completeness",
+    "date": "2026-06-30",
+    "excerpt": "A penalty-bearing failure-rate metric read a stable 50% for hours while the truth was a fraction of a percent — no error, no warning, no failed request. The cause was a soft default row limit that the API silently applied and reported as COMPLETED. A 200 is a statement about the call, not about whether you saw all the data.",
+    "tags": ["APIs", "Observability", "Data Quality", "Reliability"],
+    "readingTime": "7 min",
+    "wordCount": 1431
+  },
+  {
+    "slug": "self-healing-needs-a-human-in-the-loop-2026-05",
+    "title": "Self-healing isn't a default",
+    "date": "2026-06-16",
+    "excerpt": "Self-healing infrastructure is the default cloud-vendor pitch. It's also the wrong default for two of the three failure classes you'll actually see: deterministic failures generate retry storms, and systemic failures amplify the outage. Auto-heal transient failures with bounded attempts; escalate the rest. The classification gate is small enough that the implementation more or less writes itself.",
+    "tags": ["Observability", "SRE", "Architecture", "Self-Healing", "Operations"],
+    "readingTime": "6 min",
+    "cover": "assets/images/blog/self-healing-guardrails/cover.webp",
+    "wordCount": 1293,
     "series": "Reporting Pipeline Notes",
-    "seriesOrder": 1
+    "seriesOrder": 3
   },
   {
     "slug": "why-we-didnt-use-kafka-2026-05",
@@ -24,16 +60,16 @@
     "seriesOrder": 2
   },
   {
-    "slug": "self-healing-needs-a-human-in-the-loop-2026-05",
-    "title": "Self-healing isn't a default",
-    "date": "2026-06-16",
-    "excerpt": "Self-healing infrastructure is the default cloud-vendor pitch. It's also the wrong default for two of the three failure classes you'll actually see: deterministic failures generate retry storms, and systemic failures amplify the outage. Auto-heal transient failures with bounded attempts; escalate the rest. The classification gate is small enough that the implementation more or less writes itself.",
-    "tags": ["Observability", "SRE", "Architecture", "Self-Healing", "Operations"],
-    "readingTime": "6 min",
-    "cover": "assets/images/blog/self-healing-guardrails/cover.webp",
-    "wordCount": 1293,
+    "slug": "six-things-i-learned-observability-pipeline-2026-05",
+    "title": "Six layers that lied",
+    "date": "2026-05-19",
+    "excerpt": "Six bugs from a recent observability-pipeline migration, every one of them a layer that didn't say what it actually meant. The platform accepted the write but didn't store it. The 403 didn't mention scope. The compile error blamed the wrong line. The retry was invisible to the function. The fixes are all small assertions at the boundary.",
+    "tags": ["Observability", "SRE", "Architecture", "Datadog", "Coralogix", "Lambda"],
+    "readingTime": "8 min",
+    "cover": "assets/images/blog/observability-pipeline/cover.webp",
+    "wordCount": 1711,
     "series": "Reporting Pipeline Notes",
-    "seriesOrder": 3
+    "seriesOrder": 1
   },
   {
     "slug": "shipping-fresh-css-after-deploy-2026-04",
