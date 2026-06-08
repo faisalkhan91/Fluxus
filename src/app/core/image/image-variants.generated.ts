@@ -19,6 +19,7 @@ export const IMAGE_VARIANTS: Record<string, readonly number[]> = {
   'assets/images/blog/self-healing-guardrails/cover.webp': [256, 384, 640, 960, 1280],
   'assets/images/portfolio/BacktrackingSearch.webp': [256, 384],
   'assets/images/portfolio/BookStore.webp': [256, 384, 640, 960, 1280],
+  'assets/images/portfolio/BulletinView.webp': [256, 384, 640, 960, 1280],
   'assets/images/portfolio/DictionaryApp.webp': [256, 384, 640],
   'assets/images/portfolio/ImageGeneratorAI.webp': [256, 384, 640, 960],
   'assets/images/portfolio/InsecureFileExtraction.webp': [256, 384, 640],
