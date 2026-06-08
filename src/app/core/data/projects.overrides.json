@@ -69,6 +69,14 @@
       "image": "assets/images/portfolio/JenkinsCICD.webp",
       "tags": ["Jenkins", "Ansible", "Docker", "CI/CD", "Shell"],
       "order": 99
+    },
+    {
+      "repo": "faisalkhan91/BulletinView",
+      "title": "BulletinView",
+      "description": "A Flask + SQLite bulletin board for posting and arranging schedules and notices on a draggable grid/freeform canvas. A compact, server-rendered CRUD app deployed on Vercel.",
+      "image": "assets/images/portfolio/BulletinView.webp",
+      "tags": ["Python", "Flask", "SQLite"],
+      "order": 8
     }
   ],
   "manual": []

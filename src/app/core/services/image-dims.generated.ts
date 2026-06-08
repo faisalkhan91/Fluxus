@@ -91,6 +91,10 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 1519,
     h: 1324,
   },
+  'assets/images/portfolio/BulletinView.webp': {
+    w: 2326,
+    h: 1398,
+  },
   'assets/images/portfolio/DictionaryApp.webp': {
     w: 720,
     h: 622,

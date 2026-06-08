@@ -368,6 +368,59 @@ export const PROJECTS: readonly Project[] = [
     },
   },
   {
+    title: 'BulletinView',
+    slug: 'bulletinview',
+    description:
+      'A Flask + SQLite bulletin board for posting and arranging schedules and notices on a draggable grid/freeform canvas. A compact, server-rendered CRUD app deployed on Vercel.',
+    image: 'assets/images/portfolio/BulletinView.webp',
+    link: 'https://github.com/faisalkhan91/BulletinView',
+    tags: ['Python', 'Flask', 'SQLite', 'bulletin-board', 'portfolio'],
+    featured: false,
+    github: {
+      stars: 0,
+      forks: 0,
+      primaryLanguage: 'Python',
+      languageColor: '#3572A5',
+      pushedAt: '2026-06-08T01:30:52Z',
+      license: 'MIT',
+      topics: ['bulletin-board', 'flask', 'portfolio', 'python', 'sqlite'],
+      archived: false,
+      openIssues: 0,
+      homepage: 'https://bulletin-view.vercel.app',
+      languagesBytes: [
+        {
+          name: 'Python',
+          color: '#3572A5',
+          bytes: 11171472,
+        },
+        {
+          name: 'HTML',
+          color: '#e34c26',
+          bytes: 15044,
+        },
+        {
+          name: 'JavaScript',
+          color: '#f1e05a',
+          bytes: 10521,
+        },
+        {
+          name: 'C',
+          color: '#555555',
+          bytes: 7083,
+        },
+        {
+          name: 'CSS',
+          color: '#563d7c',
+          bytes: 6078,
+        },
+      ],
+      latestRelease: null,
+      readmeExcerpt: null,
+      commitsPerWeek: null,
+      fetchedAt: '2026-06-08T02:49:00.000Z',
+    },
+  },
+  {
     title: 'Jenkins CI/CD Pipeline',
     slug: 'jenkins-cicd-pipeline',
     description:
