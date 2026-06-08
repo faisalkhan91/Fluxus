@@ -32,7 +32,13 @@ export class ReadingProgressService {
       typeof CSS !== 'undefined' &&
       typeof CSS.supports === 'function' &&
       CSS.supports('animation-timeline: scroll()');
-    if (cssScrollDriven) return () => {};
+    if (cssScrollDriven) {
+      // CSS scroll-timeline drives the bar entirely in the compositor — no
+      // JS listeners were attached, so the teardown is a no-op.
+      return () => {
+        /* no teardown needed */
+      };
+    }
 
     const scroller = (document.scrollingElement as HTMLElement | null) ?? document.documentElement;
     let rafHandle = 0;

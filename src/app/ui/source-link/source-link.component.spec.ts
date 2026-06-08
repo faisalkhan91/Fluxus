@@ -12,12 +12,14 @@ import { SourceLinkComponent } from './source-link.component';
  */
 @Component({
   imports: [SourceLinkComponent],
-  template: `<a uiSourceLink [href]="href()" [iconSize]="iconSize()" [attr.aria-label]="label()">x</a>`,
+  template: `<a uiSourceLink [href]="href()" [iconSize]="iconSize()" [attr.aria-label]="label()"
+    >x</a
+  >`,
 })
 class HostComponent {
-  href = signal('https://github.com/acme/widget');
-  iconSize = signal(14);
-  label = signal('View widget on GitHub');
+  readonly href = signal('https://github.com/acme/widget');
+  readonly iconSize = signal(14);
+  readonly label = signal('View widget on GitHub');
 }
 
 describe('SourceLinkComponent (uiSourceLink)', () => {

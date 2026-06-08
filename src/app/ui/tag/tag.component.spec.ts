@@ -18,9 +18,9 @@ import { TagComponent, type TagSize, type TagVariant } from './tag.component';
   `,
 })
 class HostComponent {
-  variant = signal<TagVariant>('accent');
-  size = signal<TagSize>('md');
-  interactive = signal(false);
+  readonly variant = signal<TagVariant>('accent');
+  readonly size = signal<TagSize>('md');
+  readonly interactive = signal(false);
 }
 
 describe('TagComponent (uiTag)', () => {
