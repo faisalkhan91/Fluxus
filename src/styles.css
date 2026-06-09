@@ -364,11 +364,13 @@
   --text-on-accent: #000000;
 
   --text-primary: rgba(192, 202, 245, 0.95);
-  --text-secondary: rgba(169, 177, 214, 0.82);
-  /* Kept clearly below --text-secondary (0.82) so the muted↔body fade reads,
-     lifted just enough off main's 0.6 to clear 4.5:1 — the rest of the AA
-     headroom comes from darkening the surfaces this text sits on (base,
-     overlay, accent-subtle) rather than dulling the text further. */
+  /* Secondary lifted to 0.92 to open a clear fade above muted (was 0.82 →
+     only a 1.12x muted↔body gap; now ~1.34x). */
+  --text-secondary: rgba(169, 177, 214, 0.92);
+  /* Kept clearly below --text-secondary so the muted↔body fade reads, lifted
+     just enough off main's 0.6 to clear 4.5:1 — the rest of the AA headroom
+     comes from darkening the surfaces this text sits on (base, overlay,
+     accent-subtle) rather than dulling the text further. */
   --text-muted: rgba(169, 177, 214, 0.76);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.08);
@@ -393,10 +395,10 @@
 
 /* === Solarized Light === */
 [data-theme='solarized-light'] {
-  --surface-void: #eee8d5;
+  --surface-void: #f3eee2;
   --surface-base: #fdf6e3;
   --surface-raised: #ffffff;
-  --surface-overlay: #eee8d5;
+  --surface-overlay: #f3eee2;
 
   --glass-bg: rgba(101, 123, 131, 0.05);
   --glass-bg-hover: rgba(101, 123, 131, 0.1);
@@ -414,11 +416,13 @@
   --text-accent: var(--accent-hover);
 
   --text-primary: rgba(0, 43, 54, 0.92);
-  --text-secondary: rgba(7, 54, 66, 0.75);
-  /* Darkened base01 #586e75 → #455a60 so muted labels clear WCAG AA on the
-     warm low-chroma glass surfaces (#e0ddcd etc.); #586e75 only reached
-     ~3.9:1 there even fully opaque. */
-  --text-muted: rgba(74, 94, 100, 0.98);
+  /* Secondary darkened (0.75 → 0.85) to open the fade below muted — at 0.75 it
+     composited almost to muted's luminance (1.04x, no fade). */
+  --text-secondary: rgba(7, 54, 66, 0.85);
+  /* A faded mid-teal-gray kept clearly LIGHTER than the near-black body so the
+     fade reads (~1.36x muted↔body); dark enough to clear 4.5:1 because the warm
+     --surface-void/--surface-overlay are lightened to #f3eee2 below. */
+  --text-muted: rgba(77, 97, 104, 0.98);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.7);
   --nav-pill-bg: rgba(253, 246, 227, 0.78);
@@ -751,7 +755,7 @@
   --text-accent: var(--accent-hover);
 
   --text-primary: rgba(31, 35, 40, 0.92);
-  --text-secondary: rgba(31, 35, 40, 0.7);
+  --text-secondary: rgba(31, 35, 40, 0.8);
   --text-muted: rgba(31, 35, 40, 0.65);
 
   --glass-bg-elevated: rgba(246, 248, 250, 0.85);
