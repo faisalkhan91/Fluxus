@@ -341,13 +341,13 @@
    :root so layout never shifts between themes. */
 [data-theme='tokyo-night'] {
   --surface-void: #1a1b26;
-  --surface-base: #24283b;
+  --surface-base: #1c1f2b;
   --surface-raised: #292e42;
   /* Darkened from #414868 (Tokyo Night's bright selection blue). That value
      was too light to carry muted-grade text at WCAG AA — project tags and
      gh-pills sit on this surface and clipped ~3.5:1 there. #313656 keeps the
      overlay clearly above --surface-raised while letting muted text pass. */
-  --surface-overlay: #313656;
+  --surface-overlay: #1e2231;
 
   --glass-bg: rgba(192, 202, 245, 0.04);
   --glass-bg-hover: rgba(192, 202, 245, 0.07);
@@ -360,16 +360,16 @@
   --accent: #7aa2f7;
   --accent-hover: #9bb8ff;
   --accent-glow: rgba(122, 162, 247, 0.32);
-  --accent-subtle: rgba(122, 162, 247, 0.1);
+  --accent-subtle: rgba(122, 162, 247, 0.06);
   --text-on-accent: #000000;
 
   --text-primary: rgba(192, 202, 245, 0.95);
   --text-secondary: rgba(169, 177, 214, 0.82);
-  /* AA floor: lowest opacity where muted labels still clear 4.5:1 on the
-     elevated glass (section decoration, nav-ext, project tags / gh-pills on
-     --surface-overlay). Main's 0.6 failed there; 0.9 was an overshoot, so this
-     restores most of main's faded look while staying AA. */
-  --text-muted: rgba(169, 177, 214, 0.6);
+  /* Kept clearly below --text-secondary (0.82) so the muted↔body fade reads,
+     lifted just enough off main's 0.6 to clear 4.5:1 — the rest of the AA
+     headroom comes from darkening the surfaces this text sits on (base,
+     overlay, accent-subtle) rather than dulling the text further. */
+  --text-muted: rgba(169, 177, 214, 0.76);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.08);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
@@ -418,7 +418,7 @@
   /* Darkened base01 #586e75 → #455a60 so muted labels clear WCAG AA on the
      warm low-chroma glass surfaces (#e0ddcd etc.); #586e75 only reached
      ~3.9:1 there even fully opaque. */
-  --text-muted: rgba(88, 110, 117, 0.95);
+  --text-muted: rgba(74, 94, 100, 0.98);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.7);
   --nav-pill-bg: rgba(253, 246, 227, 0.78);
@@ -455,7 +455,7 @@
      (nord0 → nord3) are the same tonal family on purpose; using
      three of them (base / raised / overlay) gives the app a clean
      elevation story without leaving the palette. */
-  --surface-overlay: #4c566a;
+  --surface-overlay: #353b48;
 
   /* Crisper card edges — Nord's identity is geometric precision, not
      glass diffusion. Bumped 0.08/0.16 → 0.13/0.25 so tiles and panels
@@ -468,7 +468,7 @@
   --accent: #88c0d0;
   --accent-hover: #8fbcbb;
   --accent-glow: rgba(136, 192, 208, 0.3);
-  --accent-subtle: rgba(136, 192, 208, 0.1);
+  --accent-subtle: rgba(136, 192, 208, 0.07);
   --text-on-accent: #000000;
 
   /* Pulled text-primary from 0.95 → 0.98 opacity of Snow Storm nord6
@@ -482,7 +482,7 @@
      on --surface-overlay #4c566a is the binding case). Main's 0.55 hit only
      2.8:1; Nord is low-contrast by design so the floor sits high, but this is
      below the earlier 0.88 overshoot. */
-  --text-muted: rgba(216, 222, 233, 0.55);
+  --text-muted: rgba(216, 222, 233, 0.68);
 
   --glass-bg-elevated: rgba(216, 222, 233, 0.08);
   --nav-pill-bg: rgba(46, 52, 64, 0.85);
@@ -565,7 +565,7 @@
   --surface-void: #191724;
   --surface-base: #1f1d2e;
   --surface-raised: #26233a;
-  --surface-overlay: #403d52;
+  --surface-overlay: #322f40;
 
   --glass-bg: rgba(224, 222, 244, 0.04);
   --glass-bg-hover: rgba(224, 222, 244, 0.07);
@@ -582,7 +582,7 @@
   --text-secondary: rgba(224, 222, 244, 0.78);
   /* AA floor: muted labels on the elevated overlay (#403d52, the gh-pill)
      must clear 4.5:1. Main's 0.6 fell just short. */
-  --text-muted: rgba(224, 222, 244, 0.6);
+  --text-muted: rgba(224, 222, 244, 0.66);
 
   --glass-bg-elevated: rgba(224, 222, 244, 0.08);
   --nav-pill-bg: rgba(31, 29, 46, 0.85);
@@ -661,7 +661,7 @@
   --surface-void: #181a22;
   --surface-base: #1e2028;
   --surface-raised: #2a2d3a;
-  --surface-overlay: #3f4355;
+  --surface-overlay: #2f3242;
 
   /* Glass borders lifted 0.08 → 0.11 so the peach accent reads off
      a lightly defined card rim rather than a hairline. */
@@ -687,7 +687,7 @@
   --text-secondary: rgba(224, 224, 224, 0.78);
   /* AA floor: muted labels on the elevated overlay (#3f4355, the gh-pill)
      must clear 4.5:1. Main's 0.55 fell short. */
-  --text-muted: rgba(224, 224, 224, 0.55);
+  --text-muted: rgba(224, 224, 224, 0.66);
 
   --glass-bg-elevated: rgba(224, 224, 224, 0.08);
   --nav-pill-bg: rgba(30, 32, 40, 0.85);
