@@ -282,8 +282,16 @@
 }
 
 .hero-title-caret {
+  /*
+    A drawn box, not the ▍ block glyph — the glyph's font metrics made it sit
+    below the title baseline. As a box it centres cleanly via the parent
+    `.hero-title { align-items: center }` flex row. Sized to read as a terminal
+    block caret next to the title text.
+  */
   display: inline-block;
-  color: var(--text-accent);
+  width: 0.5em;
+  height: 1.1em;
+  background: var(--text-accent);
   /*
     Stack two animations: a delayed fade-in lands the caret after the
     title text, then the shared `cursor-blink` keyframe takes over for
@@ -294,8 +302,6 @@
   animation:
     hero-caret-on var(--duration-fast) ease-out 1100ms forwards,
     cursor-blink 1s step-end infinite 1500ms;
-  font-size: 1.1em;
-  line-height: 1;
 }
 
 @keyframes hero-caret-on {
