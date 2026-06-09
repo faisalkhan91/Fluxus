@@ -56,7 +56,7 @@
      extensions, divider text). */
   --text-primary: rgba(255, 255, 255, 0.9);
   --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.52);
 
   /* === Typography === */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -349,8 +349,8 @@
      overlay clearly above --surface-raised while letting muted text pass. */
   --surface-overlay: #1e2231;
 
-  --glass-bg: rgba(192, 202, 245, 0.04);
-  --glass-bg-hover: rgba(192, 202, 245, 0.07);
+  --glass-bg: rgba(192, 202, 245, 0.025);
+  --glass-bg-hover: rgba(192, 202, 245, 0.045);
   /* Glass borders lifted from 0.08 / 0.16 so cards have visible edges
      against the deep-navy surfaces — the original values let tiles
      dissolve into `--surface-base` at rest. */
@@ -360,20 +360,19 @@
   --accent: #7aa2f7;
   --accent-hover: #9bb8ff;
   --accent-glow: rgba(122, 162, 247, 0.32);
-  --accent-subtle: rgba(122, 162, 247, 0.06);
+  --accent-subtle: rgba(122, 162, 247, 0.03);
   --text-on-accent: #000000;
 
-  --text-primary: rgba(192, 202, 245, 0.95);
-  /* Secondary lifted to 0.92 to open a clear fade above muted (was 0.82 →
-     only a 1.12x muted↔body gap; now ~1.34x). */
-  --text-secondary: rgba(169, 177, 214, 0.92);
-  /* Kept clearly below --text-secondary so the muted↔body fade reads, lifted
-     just enough off main's 0.6 to clear 4.5:1 — the rest of the AA headroom
-     comes from darkening the surfaces this text sits on (base, overlay,
-     accent-subtle) rather than dulling the text further. */
-  --text-muted: rgba(169, 177, 214, 0.76);
+  /* Body stack pushed apart for a dramatic muted↔body fade (~1.52x): primary
+     0.98, secondary 0.95. */
+  --text-primary: rgba(192, 202, 245, 0.98);
+  --text-secondary: rgba(169, 177, 214, 0.95);
+  /* Faded muted, kept clearly below secondary; clears 4.5:1 because the
+     surfaces it sits on (overlay, base, accent-subtle, glass tints) are kept
+     dark rather than by dulling the text. */
+  --text-muted: rgba(169, 177, 214, 0.72);
 
-  --glass-bg-elevated: rgba(192, 202, 245, 0.08);
+  --glass-bg-elevated: rgba(192, 202, 245, 0.025);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
 
   --accent-secondary: #bb9af7;
@@ -395,12 +394,12 @@
 
 /* === Solarized Light === */
 [data-theme='solarized-light'] {
-  --surface-void: #f3eee2;
+  --surface-void: #f8f5ee;
   --surface-base: #fdf6e3;
   --surface-raised: #ffffff;
-  --surface-overlay: #f3eee2;
+  --surface-overlay: #f6f3ea;
 
-  --glass-bg: rgba(101, 123, 131, 0.05);
+  --glass-bg: rgba(101, 123, 131, 0.035);
   --glass-bg-hover: rgba(101, 123, 131, 0.1);
   --glass-border: rgba(7, 54, 66, 0.1);
   --glass-border-hover: rgba(7, 54, 66, 0.18);
@@ -416,13 +415,14 @@
   --text-accent: var(--accent-hover);
 
   --text-primary: rgba(0, 43, 54, 0.92);
-  /* Secondary darkened (0.75 → 0.85) to open the fade below muted — at 0.75 it
-     composited almost to muted's luminance (1.04x, no fade). */
-  --text-secondary: rgba(7, 54, 66, 0.85);
+  /* Secondary darkened (0.75 → 0.88) to open a dramatic fade below muted while
+     staying clearly under primary (sec↔prim ~1.3x). */
+  --text-secondary: rgba(7, 54, 66, 0.88);
   /* A faded mid-teal-gray kept clearly LIGHTER than the near-black body so the
-     fade reads (~1.36x muted↔body); dark enough to clear 4.5:1 because the warm
-     --surface-void/--surface-overlay are lightened to #f3eee2 below. */
-  --text-muted: rgba(77, 97, 104, 0.98);
+     fade reads (~1.67x muted↔body); dark enough to clear 4.5:1 because the warm
+     --surface-void/--surface-overlay are lightened (#f8f5ee) and the glass tint
+     dropped below. */
+  --text-muted: rgba(84, 105, 112, 0.98);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.7);
   --nav-pill-bg: rgba(253, 246, 227, 0.78);
@@ -481,7 +481,7 @@
      three points firm up headings and code without crossing into
      "bright white" territory that Nord explicitly avoids. */
   --text-primary: rgba(236, 239, 244, 0.98);
-  --text-secondary: rgba(216, 222, 233, 0.82);
+  --text-secondary: rgba(216, 222, 233, 0.91);
   /* AA floor on the elevated surfaces muted labels composite over (the gh-pill
      on --surface-overlay #4c566a is the binding case). Main's 0.55 hit only
      2.8:1; Nord is low-contrast by design so the floor sits high, but this is
@@ -535,8 +535,8 @@
   --accent-subtle: rgba(255, 153, 64, 0.1);
   --text-on-accent: #000000;
 
-  --text-primary: rgba(191, 189, 182, 0.95);
-  --text-secondary: rgba(191, 189, 182, 0.78);
+  --text-primary: rgba(191, 189, 182, 0.98);
+  --text-secondary: rgba(191, 189, 182, 0.87);
   --text-muted: rgba(191, 189, 182, 0.68);
 
   --glass-bg-elevated: rgba(191, 189, 182, 0.08);
@@ -569,7 +569,7 @@
   --surface-void: #191724;
   --surface-base: #1f1d2e;
   --surface-raised: #26233a;
-  --surface-overlay: #322f40;
+  --surface-overlay: #2c2939;
 
   --glass-bg: rgba(224, 222, 244, 0.04);
   --glass-bg-hover: rgba(224, 222, 244, 0.07);
@@ -586,7 +586,7 @@
   --text-secondary: rgba(224, 222, 244, 0.78);
   /* AA floor: muted labels on the elevated overlay (#403d52, the gh-pill)
      must clear 4.5:1. Main's 0.6 fell just short. */
-  --text-muted: rgba(224, 222, 244, 0.66);
+  --text-muted: rgba(224, 222, 244, 0.57);
 
   --glass-bg-elevated: rgba(224, 222, 244, 0.08);
   --nav-pill-bg: rgba(31, 29, 46, 0.85);
@@ -665,7 +665,7 @@
   --surface-void: #181a22;
   --surface-base: #1e2028;
   --surface-raised: #2a2d3a;
-  --surface-overlay: #2f3242;
+  --surface-overlay: #292c3a;
 
   /* Glass borders lifted 0.08 → 0.11 so the peach accent reads off
      a lightly defined card rim rather than a hairline. */
@@ -682,7 +682,7 @@
   --accent: #fcb08b;
   --accent-hover: #ffc0a0;
   --accent-glow: rgba(252, 176, 139, 0.32);
-  --accent-subtle: rgba(252, 176, 139, 0.1);
+  --accent-subtle: rgba(252, 176, 139, 0.05);
   --text-on-accent: #000000;
 
   /* Text-primary lifted from 0.95 → 0.98 for sharper reading against
@@ -691,7 +691,7 @@
   --text-secondary: rgba(224, 224, 224, 0.78);
   /* AA floor: muted labels on the elevated overlay (#3f4355, the gh-pill)
      must clear 4.5:1. Main's 0.55 fell short. */
-  --text-muted: rgba(224, 224, 224, 0.66);
+  --text-muted: rgba(224, 224, 224, 0.57);
 
   --glass-bg-elevated: rgba(224, 224, 224, 0.08);
   --nav-pill-bg: rgba(30, 32, 40, 0.85);
