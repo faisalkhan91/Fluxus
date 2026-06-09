@@ -263,8 +263,7 @@
 */
 [data-theme='crimson-dark'] {
   --link-color: #ff5757;
-  /* #dc2626 (accent-hover) is only 3.4:1 on the raised/overlay surfaces;
-     #ff5757 clears 4.5:1 on all three dark surfaces (5.3:1 on overlay). */
+  /* Restored to main: #ff5757 is crimson-dark's accent-as-text red. */
   --text-accent: #ff5757;
 }
 
@@ -366,10 +365,11 @@
 
   --text-primary: rgba(192, 202, 245, 0.95);
   --text-secondary: rgba(169, 177, 214, 0.82);
-  /* 0.90 (was 0.6) so muted labels clear WCAG AA on the lighter elevated
-     glass they composite over — section decoration, nav-ext, form labels,
-     and the project tags / gh-pills on the (now-darkened) --surface-overlay. */
-  --text-muted: rgba(169, 177, 214, 0.9);
+  /* AA floor: lowest opacity where muted labels still clear 4.5:1 on the
+     elevated glass (section decoration, nav-ext, project tags / gh-pills on
+     --surface-overlay). Main's 0.6 failed there; 0.9 was an overshoot, so this
+     restores most of main's faded look while staying AA. */
+  --text-muted: rgba(169, 177, 214, 0.6);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.08);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
@@ -418,7 +418,7 @@
   /* Darkened base01 #586e75 → #455a60 so muted labels clear WCAG AA on the
      warm low-chroma glass surfaces (#e0ddcd etc.); #586e75 only reached
      ~3.9:1 there even fully opaque. */
-  --text-muted: rgba(69, 90, 96, 0.95);
+  --text-muted: rgba(88, 110, 117, 0.95);
 
   --glass-bg-elevated: rgba(255, 255, 255, 0.7);
   --nav-pill-bg: rgba(253, 246, 227, 0.78);
@@ -478,11 +478,11 @@
      "bright white" territory that Nord explicitly avoids. */
   --text-primary: rgba(236, 239, 244, 0.98);
   --text-secondary: rgba(216, 222, 233, 0.82);
-  /* 0.88 (was 0.55): clears WCAG AA on the lighter elevated surfaces muted
-     labels composite over (the gh-pill on --surface-overlay #4c566a was the
-     binding case at 2.8:1). Nord's palette is low-contrast by design, so the
-     muted→secondary gap narrows, but AA wins. */
-  --text-muted: rgba(216, 222, 233, 0.88);
+  /* AA floor on the elevated surfaces muted labels composite over (the gh-pill
+     on --surface-overlay #4c566a is the binding case). Main's 0.55 hit only
+     2.8:1; Nord is low-contrast by design so the floor sits high, but this is
+     below the earlier 0.88 overshoot. */
+  --text-muted: rgba(216, 222, 233, 0.55);
 
   --glass-bg-elevated: rgba(216, 222, 233, 0.08);
   --nav-pill-bg: rgba(46, 52, 64, 0.85);
@@ -580,9 +580,9 @@
 
   --text-primary: rgba(224, 222, 244, 0.95);
   --text-secondary: rgba(224, 222, 244, 0.78);
-  /* 0.70 (was 0.6) so muted labels on the elevated overlay (#403d52, the
-     gh-pill) clear WCAG AA. */
-  --text-muted: rgba(224, 222, 244, 0.7);
+  /* AA floor: muted labels on the elevated overlay (#403d52, the gh-pill)
+     must clear 4.5:1. Main's 0.6 fell just short. */
+  --text-muted: rgba(224, 222, 244, 0.6);
 
   --glass-bg-elevated: rgba(224, 222, 244, 0.08);
   --nav-pill-bg: rgba(31, 29, 46, 0.85);
@@ -685,9 +685,9 @@
      the darker new surface-base. */
   --text-primary: rgba(224, 224, 224, 0.98);
   --text-secondary: rgba(224, 224, 224, 0.78);
-  /* 0.72 (was 0.55) so muted labels on the elevated overlay (#3f4355, the
-     gh-pill) clear WCAG AA. */
-  --text-muted: rgba(224, 224, 224, 0.72);
+  /* AA floor: muted labels on the elevated overlay (#3f4355, the gh-pill)
+     must clear 4.5:1. Main's 0.55 fell short. */
+  --text-muted: rgba(224, 224, 224, 0.55);
 
   --glass-bg-elevated: rgba(224, 224, 224, 0.08);
   --nav-pill-bg: rgba(30, 32, 40, 0.85);
