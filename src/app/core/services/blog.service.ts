@@ -1,4 +1,12 @@
-import { Service, DestroyRef, PLATFORM_ID, computed, inject, signal } from '@angular/core';
+import {
+  Service,
+  DestroyRef,
+  PLATFORM_ID,
+  computed,
+  inject,
+  isDevMode,
+  signal,
+} from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import type { BlogPost } from '@shared/models/blog-post.model';
@@ -67,9 +75,21 @@ export class BlogService {
    * publish / tag-aggregation logic and blank the whole blog. Every public
    * surface reads through this rather than the raw resource value.
    */
-  private readonly validatedPosts = computed<BlogPost[]>(() =>
-    (this.postsResource.value() ?? []).filter(isValidPost),
-  );
+  private readonly validatedPosts = computed<BlogPost[]>(() => {
+    const raw = this.postsResource.value() ?? [];
+    const valid = raw.filter(isValidPost);
+    // Dropping a malformed entry is intentional (it can't be allowed to throw
+    // downstream and blank the whole blog), but doing so silently hides a
+    // broken posts.json from the author. Surface the count in dev only.
+    if (isDevMode() && valid.length !== raw.length) {
+      console.warn(
+        `[BlogService] dropped ${raw.length - valid.length} malformed post entr${
+          raw.length - valid.length === 1 ? 'y' : 'ies'
+        } from the manifest (missing/invalid slug, title, date or tags).`,
+      );
+    }
+    return valid;
+  });
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) return;

@@ -10,6 +10,9 @@ import dockerfile from 'highlight.js/lib/languages/dockerfile';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
+import python from 'highlight.js/lib/languages/python';
+import sql from 'highlight.js/lib/languages/sql';
+import http from 'highlight.js/lib/languages/http';
 import { lookupImageDims } from '@shared/utils/image-dims.utils';
 import { IMAGE_VARIANTS } from '../image/image-variants.generated';
 import { slugify } from '@shared/utils/string.utils';
@@ -25,6 +28,15 @@ hljs.registerLanguage('css', css);
 hljs.registerLanguage('html', xml);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('markdown', markdown);
+// Languages actually used in src/assets/blog/posts (verified by scanning code
+// fences): python/sql/http were previously unregistered, so those blocks lost
+// highlighting and fell through to escaped plain text. `ts` resolves via the
+// typescript module's built-in alias; `text` is intentionally left unregistered
+// so it renders as un-highlighted plain text. Keep this set aligned with the
+// fence languages in the posts.
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('http', http);
 
 function escapeHtml(value: string): string {
   return value
