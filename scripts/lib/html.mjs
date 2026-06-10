@@ -23,3 +23,16 @@ export function escapeXmlAttr(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+/**
+ * Serialise a value as JSON safe to embed inside an HTML `<script>` element
+ * (e.g. JSON-LD blocks). Escapes every `<` to its `<` unicode form so a
+ * `</script>`, `<!--`, or `<script` sequence appearing inside any string value
+ * (post titles, excerpts, project descriptions sourced from manifests) cannot
+ * break out of the script element and inject markup at prerender time. The
+ * output remains valid JSON-LD — `<` only ever occurs inside string values and
+ * `<` is an equivalent escape.
+ */
+export function jsonLdSafe(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
