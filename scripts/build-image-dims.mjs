@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { walk } from './lib/fs.mjs';
 import { writeFormatted } from './lib/emit.mjs';
+import { loadPosts, isPublished } from './lib/posts.mjs';
 
 const ROOT = fileURLToPath(new URL('../src/assets/images', import.meta.url));
 const OUT = fileURLToPath(
@@ -69,3 +70,21 @@ const rawBody =
 // usable if prettier isn't installed; CI will surface the drift in that case.
 await writeFormatted(OUT, rawBody);
 console.log(`Wrote ${OUT} with ${processed} image dim entries.`);
+
+// Warn (don't fail) if any published post's cover is missing from the dims map.
+// The runtime coverDims lookup (blog-post.component.ts) falls back to a 1600x900
+// (16:9) placeholder when a cover isn't found — which silently mismatches the
+// real aspect ratio and can shift the LCP image as it loads (CLS). Surfacing it
+// here turns that silent layout bug into a visible build warning.
+const posts = await loadPosts();
+const missingCovers = posts
+  .filter((post) => isPublished(post) && post.cover && !post.cover.startsWith('http'))
+  .filter((post) => !dims[post.cover.replace(/^\//, '')])
+  .map((post) => `${post.slug} -> ${post.cover}`);
+if (missingCovers.length > 0) {
+  console.warn(
+    `  WARNING: ${missingCovers.length} published post cover(s) absent from the dims map ` +
+      `(runtime falls back to a 16:9 placeholder -> possible CLS):`,
+  );
+  for (const entry of missingCovers) console.warn(`    - ${entry}`);
+}
