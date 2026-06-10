@@ -1,4 +1,4 @@
-import { Service, inject } from '@angular/core';
+import { Service, inject, isDevMode } from '@angular/core';
 import { ThemeService } from '@core/services/theme.service';
 
 /**
@@ -224,14 +224,19 @@ export class MermaidService {
           */
           await this.fadeOut(node);
           node.replaceWith(wrapper);
-        } catch {
+        } catch (err) {
           // Per-diagram failure: leave the source visible so the reader
-          // can still see the diagram intent.
+          // can still see the diagram intent. Surface it in dev so a broken
+          // diagram doesn't fail completely silently during authoring.
+          if (isDevMode())
+            console.warn('[mermaid] diagram render failed; leaving source visible:', err);
           node.removeAttribute('data-mermaid-source');
         }
       }
-    } catch {
+    } catch (err) {
       // Lib-load failure (offline, network error). Placeholders stay.
+      if (isDevMode())
+        console.warn('[mermaid] library failed to load; placeholders left in place:', err);
     }
   }
 
