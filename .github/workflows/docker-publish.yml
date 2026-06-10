@@ -53,9 +53,15 @@ jobs:
       contents: read
       packages: write
       # Required for SARIF upload to the GitHub Security tab below.
-      # `id-token: write` is intentionally omitted: provenance/sbom from
-      # docker/build-push-action are derived from build context, not OIDC.
       security-events: write
+      # OIDC token + attestation write for the actions/attest-build-provenance
+      # step: it mints a short-lived OIDC token to keyless-sign a GitHub
+      # build-provenance attestation and push it to the registry. This is
+      # ADDITIONAL to the OCI provenance/sbom docker/build-push-action derives
+      # from build context — it gives a Sigstore-backed, registry-discoverable
+      # attestation verifiable with `gh attestation verify oci://<image>`.
+      id-token: write
+      attestations: write
 
     outputs:
       image: ${{ steps.image-ref.outputs.ref }}
@@ -179,7 +185,20 @@ jobs:
           set -euo pipefail
           IMAGE_NAME_LOWER="$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
           echo "ref=${REGISTRY}/${IMAGE_NAME_LOWER}:${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "name=${REGISTRY}/${IMAGE_NAME_LOWER}"             >> "$GITHUB_OUTPUT"
           echo "version=${IMAGE_TAG}"                              >> "$GITHUB_OUTPUT"
+
+      # GitHub-signed build-provenance attestation, pushed to the registry next
+      # to the image so consumers can verify it with
+      # `gh attestation verify oci://<image> -R <owner>/<repo>`. Complements the
+      # OCI provenance/sbom from build-push-action with a Sigstore-backed,
+      # OIDC-issued attestation. Pinned to a commit SHA per repo convention.
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
+        with:
+          subject-name: ${{ steps.image-ref.outputs.name }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
 
       # Single-pass Trivy: writes SARIF AND gates on HIGH/CRITICAL in one
       # invocation. `limit-severities-for-sarif: true` is what makes the
