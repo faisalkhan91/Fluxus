@@ -363,14 +363,17 @@
   --accent-subtle: rgba(122, 162, 247, 0.03);
   --text-on-accent: #000000;
 
-  /* Body stack pushed apart for a dramatic muted↔body fade (~1.52x): primary
-     0.98, secondary 0.95. */
+  /* Body stack: primary 0.98, secondary 0.95 — kept well above muted so the
+     fade still reads. */
   --text-primary: rgba(192, 202, 245, 0.98);
   --text-secondary: rgba(169, 177, 214, 0.95);
-  /* Faded muted, kept clearly below secondary; clears 4.5:1 because the
-     surfaces it sits on (overlay, base, accent-subtle, glass tints) are kept
-     dark rather than by dulling the text. */
-  --text-muted: rgba(169, 177, 214, 0.72);
+  /* Muted at 0.8 — clearly below secondary (~1.3x fade) yet high enough to
+     clear 4.5:1 on the LIGHTEST surface it lands on: the raised cards /
+     palette+terminal panels / mobile nav-pill. Tokyo's raised surface is too
+     light to darken without flattening card elevation, so on this theme muted
+     carries the AA margin rather than the surface (unlike nord/horizon, which
+     darken --surface-raised and keep a fainter muted). */
+  --text-muted: rgba(169, 177, 214, 0.8);
 
   --glass-bg-elevated: rgba(192, 202, 245, 0.025);
   --nav-pill-bg: rgba(36, 40, 59, 0.85);
@@ -452,13 +455,12 @@
   --text-accent: #b4d2d1;
   --surface-void: #242933;
   --surface-base: #2e3440;
-  --surface-raised: #3b4252;
-  /* Overlay pulled from nord2 (#434c5e) to nord3 (#4c566a) so modals
-     and nav-pill surfaces sit one step further up the Polar Night
-     ramp than the raised cards below. Nord's four polar-night levels
-     (nord0 → nord3) are the same tonal family on purpose; using
-     three of them (base / raised / overlay) gives the app a clean
-     elevation story without leaving the palette. */
+  /* Raised pulled down to match overlay (#353b48): the faded muted label
+     colour only clears WCAG AA (4.5:1) on a Polar-Night surface this dark, so
+     cards (raised) and chips/modals (overlay) share the same elevated tone
+     rather than raised sitting a step lighter. base (#2e3440) still reads as
+     the recessed page behind them. */
+  --surface-raised: #353b48;
   --surface-overlay: #353b48;
 
   /* Crisper card edges — Nord's identity is geometric precision, not
@@ -664,8 +666,8 @@
      pill, and modal scrim each sit on their own plane. */
   --surface-void: #181a22;
   --surface-base: #1e2028;
-  --surface-raised: #2a2d3a;
-  --surface-overlay: #292c3a;
+  --surface-raised: #242731;
+  --surface-overlay: #262936;
 
   /* Glass borders lifted 0.08 → 0.11 so the peach accent reads off
      a lightly defined card rim rather than a hairline. */
