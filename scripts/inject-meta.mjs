@@ -33,6 +33,7 @@
  * to retarget the script suite.
  */
 import { readFile, writeFile } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
 import { join, relative, sep, posix } from 'node:path';
 import { loadProjectTagSlugs, loadProjectEntries, slugify } from './lib/projects.mjs';
 import { SITE_URL, SITE_NAME, TWITTER_HANDLE } from './lib/config.mjs';
@@ -381,9 +382,44 @@ let tagsProcessed = 0;
 let projectTagsProcessed = 0;
 let projectDetailsProcessed = 0;
 
+// Preload the LCP-critical fonts so the browser fetches them in parallel with
+// the render-blocking stylesheet instead of discovering them only after CSS
+// parse + @font-face resolution. Hashed filenames are resolved from the emitted
+// media/ dir (this runs after `ng build`), so the href is never stale or
+// guessed; a face that isn't found is simply skipped. Fonts are always fetched
+// in CORS mode, so `crossorigin` is required even though they're same-origin —
+// without it the browser double-fetches.
+const MEDIA_DIR = join(DIST, 'media');
+function findFontHref(pattern) {
+  try {
+    const file = readdirSync(MEDIA_DIR).find((name) => pattern.test(name));
+    return file ? `/media/${file}` : null;
+  } catch {
+    return null;
+  }
+}
+const FONT_PRELOAD_TAGS = [
+  // Poppins 600 — the display face for the hero / sidebar name (LCP text on most routes).
+  findFontHref(/^poppins-latin-600-normal-[A-Z0-9]+\.woff2$/i),
+  // Inter 400 — body copy.
+  findFontHref(/^inter-latin-400-normal-[A-Z0-9]+\.woff2$/i),
+]
+  .filter(Boolean)
+  .map((href) => `<link rel="preload" as="font" type="font/woff2" href="${href}" crossorigin>`);
+
+function setFontPreloads(html) {
+  let out = html;
+  for (const tag of FONT_PRELOAD_TAGS) {
+    if (out.includes(tag)) continue;
+    out = insertBeforeHeadClose(out, tag, 'font preload');
+  }
+  return out;
+}
+
 for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index.html' })) {
   let html = await readFile(htmlPath, 'utf-8');
   const route = deriveRoute(htmlPath);
+  html = setFontPreloads(html);
   const url = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`;
 
   // og:locale is invariant across every prerendered route — the site is
@@ -430,6 +466,7 @@ for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', metaDescription);
     html = setMetaProperty(html, 'twitter:image', imageUrl);
+    html = setMetaProperty(html, 'og:image:alt', `${projectTitle} — project screenshot`);
     html = setMetaProperty(html, 'twitter:image:alt', `${projectTitle} — project screenshot`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
@@ -467,6 +504,7 @@ for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', description);
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'og:image:alt', `${SITE_NAME} — portfolio social card`);
     html = setMetaProperty(html, 'twitter:image:alt', `${SITE_NAME} — portfolio social card`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
@@ -496,6 +534,7 @@ for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', description);
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'og:image:alt', `${SITE_NAME} — portfolio social card`);
     html = setMetaProperty(html, 'twitter:image:alt', `${SITE_NAME} — portfolio social card`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
@@ -539,6 +578,7 @@ for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index
     html = setMetaProperty(html, 'twitter:title', title);
     html = setMetaProperty(html, 'twitter:description', post.excerpt);
     html = setMetaProperty(html, 'twitter:image', cover);
+    html = setMetaProperty(html, 'og:image:alt', `${post.title} — blog post cover`);
     html = setMetaProperty(html, 'twitter:image:alt', `${post.title} — blog post cover`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
@@ -561,6 +601,7 @@ for await (const htmlPath of walkAsync(DIST, { filter: (name) => name === 'index
     html = setMetaProperty(html, 'og:site_name', SITE_NAME);
     html = setMetaProperty(html, 'twitter:card', 'summary_large_image');
     html = setMetaProperty(html, 'twitter:image', DEFAULT_OG_IMAGE);
+    html = setMetaProperty(html, 'og:image:alt', `${SITE_NAME} — portfolio social card`);
     html = setMetaProperty(html, 'twitter:image:alt', `${SITE_NAME} — portfolio social card`);
     if (TWITTER_HANDLE) {
       html = setMetaProperty(html, 'twitter:site', TWITTER_HANDLE);
