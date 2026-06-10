@@ -38,7 +38,7 @@ import { loadProjectTagSlugs, loadProjectEntries, slugify } from './lib/projects
 import { SITE_URL, SITE_NAME, TWITTER_HANDLE } from './lib/config.mjs';
 import { DIST_BROWSER, walkAsync } from './lib/fs.mjs';
 import { loadPosts, isPublished, todayYmd } from './lib/posts.mjs';
-import { escapeXmlText, escapeXmlAttr } from './lib/html.mjs';
+import { escapeXmlText, escapeXmlAttr, jsonLdSafe } from './lib/html.mjs';
 
 const DIST = DIST_BROWSER;
 const DEFAULT_OG_IMAGE = `${SITE_URL}/assets/images/og-image.png`;
@@ -123,22 +123,42 @@ function deriveRoute(htmlPath) {
   return dir === '' ? '/' : `/${dir}`;
 }
 
+/**
+ * Insert a tag immediately before `</head>`. If the prerendered HTML has no
+ * `</head>` (malformed SSG output), a bare `html.replace('</head>', …)` is a
+ * silent no-op — the tag vanishes and the page ships with missing metadata
+ * while the build still "succeeds". Fail loudly instead so a broken prerender
+ * aborts the build with a precise breadcrumb rather than degrading SEO/social
+ * silently.
+ */
+function insertBeforeHeadClose(html, tag, label) {
+  if (!html.includes('</head>')) {
+    throw new Error(`inject-meta: cannot insert ${label} — no </head> in prerendered HTML`);
+  }
+  return html.replace('</head>', `    ${tag}\n  </head>`);
+}
+
 function setMetaProperty(html, property, content) {
   const safe = escapeXmlAttr(content);
   const attr = property.startsWith('og:') ? 'property' : 'name';
   const re = new RegExp(`<meta\\s+${attr}=\"${property}\"[^>]*>`, 'i');
   const tag = `<meta ${attr}="${property}" content="${safe}">`;
-  return re.test(html) ? html.replace(re, tag) : html.replace('</head>', `    ${tag}\n  </head>`);
+  return re.test(html)
+    ? html.replace(re, tag)
+    : insertBeforeHeadClose(html, tag, `meta ${property}`);
 }
 
 function setLinkCanonical(html, url) {
   const tag = `<link rel="canonical" href="${escapeXmlAttr(url)}">`;
   return /<link\s+rel="canonical"[^>]*>/i.test(html)
     ? html.replace(/<link\s+rel="canonical"[^>]*>/i, tag)
-    : html.replace('</head>', `    ${tag}\n  </head>`);
+    : insertBeforeHeadClose(html, tag, 'canonical link');
 }
 
 function setTitle(html, title) {
+  if (!/<title>[^<]*<\/title>/i.test(html)) {
+    throw new Error('inject-meta: no <title> to replace in prerendered HTML');
+  }
   return html.replace(/<title>[^<]*<\/title>/i, `<title>${escapeXmlText(title)}</title>`);
 }
 
@@ -146,7 +166,7 @@ function setMetaDescription(html, description) {
   const tag = `<meta name="description" content="${escapeXmlAttr(description)}">`;
   return /<meta\s+name="description"[^>]*>/i.test(html)
     ? html.replace(/<meta\s+name="description"[^>]*>/i, tag)
-    : html.replace('</head>', `    ${tag}\n  </head>`);
+    : insertBeforeHeadClose(html, tag, 'meta description');
 }
 
 /**
@@ -161,7 +181,7 @@ function setMetaRobots(html, content) {
   const tag = `<meta name="robots" content="${escapeXmlAttr(content)}">`;
   return /<meta\s+name="robots"[^>]*>/i.test(html)
     ? html.replace(/<meta\s+name="robots"[^>]*>/i, tag)
-    : html.replace('</head>', `    ${tag}\n  </head>`);
+    : insertBeforeHeadClose(html, tag, 'meta robots');
 }
 
 /**
@@ -223,8 +243,8 @@ function setBlogJsonLd(html, post, url) {
     ...(typeof post.wordCount === 'number' ? { wordCount: post.wordCount } : {}),
   };
   const block =
-    `    <script type="application/ld+json" data-blog-jsonld="${escapeXmlAttr(post.slug)}">${JSON.stringify(blogPosting)}</script>\n` +
-    `    <script type="application/ld+json" data-breadcrumb-jsonld="${escapeXmlAttr(post.slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-blog-jsonld="${escapeXmlAttr(post.slug)}">${jsonLdSafe(blogPosting)}</script>\n` +
+    `    <script type="application/ld+json" data-breadcrumb-jsonld="${escapeXmlAttr(post.slug)}">${jsonLdSafe(breadcrumb)}</script>\n`;
   // Remove any prior injected blocks from a previous run (idempotency).
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-(?:blog|breadcrumb)-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
@@ -271,8 +291,8 @@ function setProjectJsonLd(html, slug, projectTitle, description, imageUrl, url) 
     inLanguage: 'en',
   };
   const block =
-    `    <script type="application/ld+json" data-project-detail-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(article)}</script>\n` +
-    `    <script type="application/ld+json" data-project-detail-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-project-detail-jsonld="${escapeXmlAttr(slug)}">${jsonLdSafe(article)}</script>\n` +
+    `    <script type="application/ld+json" data-project-detail-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${jsonLdSafe(breadcrumb)}</script>\n`;
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-project-detail(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
@@ -307,8 +327,8 @@ function setProjectTagJsonLd(html, slug, label, url) {
     isPartOf: { '@id': `${SITE_URL}/#website` },
   };
   const block =
-    `    <script type="application/ld+json" data-project-tag-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
-    `    <script type="application/ld+json" data-project-tag-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-project-tag-jsonld="${escapeXmlAttr(slug)}">${jsonLdSafe(collection)}</script>\n` +
+    `    <script type="application/ld+json" data-project-tag-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${jsonLdSafe(breadcrumb)}</script>\n`;
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-project-tag(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
@@ -346,8 +366,8 @@ function setTagJsonLd(html, slug, label, posts, url) {
     })),
   };
   const block =
-    `    <script type="application/ld+json" data-tag-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(collection)}</script>\n` +
-    `    <script type="application/ld+json" data-tag-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${JSON.stringify(breadcrumb)}</script>\n`;
+    `    <script type="application/ld+json" data-tag-jsonld="${escapeXmlAttr(slug)}">${jsonLdSafe(collection)}</script>\n` +
+    `    <script type="application/ld+json" data-tag-breadcrumb-jsonld="${escapeXmlAttr(slug)}">${jsonLdSafe(breadcrumb)}</script>\n`;
   const stripped = html.replace(
     /\s*<script\s+type="application\/ld\+json"\s+data-tag(?:-breadcrumb)?-jsonld="[^"]*">[\s\S]*?<\/script>/gi,
     '',
