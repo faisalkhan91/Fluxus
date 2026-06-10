@@ -23,6 +23,7 @@ import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { DIST_BROWSER, requireDistBrowser, walk } from './lib/fs.mjs';
 import { SCRIPT_TAG, isInlineExecutable, sha256Token, MAX_NGINX_LINE } from './lib/csp.mjs';
+import { nonCspAddHeaderLines } from './lib/headers.mjs';
 
 const HEADERS_FILE = join(process.cwd(), 'dist/fluxus/security-headers.conf');
 
@@ -51,6 +52,28 @@ if (csp.length > MAX_NGINX_LINE) {
     `✗ csp-audit: Content-Security-Policy is ${csp.length} chars, exceeding the ${MAX_NGINX_LINE}-char NGINX limit. ` +
       `NGINX would drop the header and serve no CSP. Trim the script-src allowlist.`,
   );
+  process.exit(1);
+}
+
+// Drift guard: the committed dev/local-serve fallback (security-headers.conf)
+// must carry the exact same NON-CSP headers as the generated production file.
+// They used to diverge silently (a 3-directive Permissions-Policy in dev vs 13
+// in prod). scripts/lib/headers.mjs is the single source for both; this catches
+// any future edit that touches one file but not the other.
+const SOURCE_HEADERS_FILE = join(process.cwd(), 'security-headers.conf');
+const sourceHeaders = statSync(SOURCE_HEADERS_FILE, { throwIfNoEntry: false })?.isFile()
+  ? readFileSync(SOURCE_HEADERS_FILE, 'utf-8')
+  : '';
+const generatedNonCsp = nonCspAddHeaderLines(headersText);
+const sourceNonCsp = nonCspAddHeaderLines(sourceHeaders);
+if (sourceNonCsp.join('\n') !== generatedNonCsp.join('\n')) {
+  console.error(
+    `✗ csp-audit: non-CSP security headers drifted between the generated ` +
+      `dist/fluxus/security-headers.conf and the committed security-headers.conf.\n` +
+      `  Both must mirror scripts/lib/headers.mjs (STATIC_SECURITY_HEADERS).`,
+  );
+  console.error('  generated:\n' + generatedNonCsp.map((l) => '    ' + l).join('\n'));
+  console.error('  source:   \n' + sourceNonCsp.map((l) => '    ' + l).join('\n'));
   process.exit(1);
 }
 
