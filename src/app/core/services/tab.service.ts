@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { EditorTab } from '@ui/editor-tab-bar/editor-tab-bar.component';
+import type { RouteTabData } from '@shared/models/route-data.model';
 import { routes } from '../../app.routes';
 
 type TabData = Pick<EditorTab, 'label' | 'ext' | 'color'>;
@@ -79,9 +80,9 @@ export class TabService {
     while (route.firstChild) {
       route = route.firstChild;
     }
-    const data = route.snapshot.data?.['tab'];
+    const data = route.snapshot.data?.['tab'] as RouteTabData | undefined;
     if (!data) return null;
-    return { label: data['label'], ext: data['ext'], color: data['color'] };
+    return { label: data.label, ext: data.ext, color: data.color };
   }
 
   private openTab(routePath: string, tabData: TabData, fullUrl: string): void {

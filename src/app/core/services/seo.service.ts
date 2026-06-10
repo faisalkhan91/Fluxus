@@ -5,6 +5,7 @@ import { DOCUMENT } from '@angular/common';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { yearsOfExperience } from '@shared/utils/career.utils';
+import type { RouteSeoData } from '@shared/models/route-data.model';
 import { environment } from '@env/environment';
 
 const DEFAULT_DESCRIPTION = `Senior Software Engineer with ${yearsOfExperience()}+ years of experience in Full-Stack Development, Cloud Architecture, AI, and DevOps.`;
@@ -40,13 +41,13 @@ export class SeoService {
         // crawler treated `/about` as hidden.
         this.setRobots(null);
 
-        const seo = route.snapshot.data?.['seo'];
-        if (seo?.['dynamicMeta']) return;
+        const seo = route.snapshot.data?.['seo'] as RouteSeoData | undefined;
+        if (seo?.dynamicMeta) return;
 
-        const pageTitle = seo?.['title']
-          ? `${seo['title']} - ${environment.siteName}`
+        const pageTitle = seo?.title
+          ? `${seo.title} - ${environment.siteName}`
           : environment.siteName;
-        const description = seo?.['description'] ?? DEFAULT_DESCRIPTION;
+        const description = seo?.description ?? DEFAULT_DESCRIPTION;
         // Canonical URL contract: root keeps its trailing slash, every
         // other route is normalised without one. This matches what
         // `scripts/inject-meta.mjs` bakes into the prerendered HTML at
