@@ -211,10 +211,22 @@ function generate() {
     size: 'LETTER',
     margins: { top: 40, bottom: 36, left: MARGIN, right: MARGIN },
     bufferPages: true,
+    // Accessibility baseline (toward PDF/UA): `tagged` turns on the structure
+    // tree, `lang` sets the document language, and `displayTitle` makes readers
+    // show the document Title instead of the filename. NOTE: full PDF/UA
+    // conformance also needs marked-content structure elements (doc.struct(...))
+    // around each text run — a larger change tracked separately; this gets the
+    // document-level wins (language, title, tagged flag, metadata) that screen
+    // readers and `pdfinfo`/validators check first.
+    pdfVersion: '1.5',
+    tagged: true,
+    displayTitle: true,
+    lang: 'en',
     info: {
       Title: 'Faisal Khan - Resume',
       Author: 'Faisal Khan',
       Subject: 'Senior Software Engineer',
+      Keywords: 'resume, senior software engineer, full-stack, cloud, devops',
     },
   });
 
