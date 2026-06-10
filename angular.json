@@ -27,7 +27,8 @@
               "src/robots.txt",
               "src/sitemap.xml",
               "src/site.webmanifest",
-              "src/version.json"
+              "src/version.json",
+              { "glob": "security.txt", "input": "src/.well-known", "output": "/.well-known" }
             ],
             "styles": ["src/styles.css"],
             "scripts": [],
