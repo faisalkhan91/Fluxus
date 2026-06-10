@@ -13,6 +13,7 @@ import { SeoService } from '@core/services/seo.service';
 import type { Project } from '@shared/models/project.model';
 import type { BlogPost } from '@shared/models/blog-post.model';
 import { slugify } from '@shared/utils/string.utils';
+import { formatPostDate } from '@shared/utils/blog.utils';
 import { environment } from '@env/environment';
 import { projectUrl } from '@shared/utils/url.utils';
 
@@ -140,6 +141,11 @@ export class ProjectDetailComponent {
     if (!series) return 0;
     return series.reduce((a, b) => a + b, 0);
   });
+
+  /** Locale-formatted related-post date for display; the raw ISO stays in `datetime`. */
+  protected formatDate(iso: string): string {
+    return formatPostDate(iso);
+  }
 
   constructor() {
     effect(() => {
