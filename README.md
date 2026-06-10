@@ -1,11 +1,11 @@
 # Fluxus
 
-![Angular](https://img.shields.io/badge/Angular-21-dd0031?logo=angular)
+![Angular](https://img.shields.io/badge/Angular-22-dd0031?logo=angular)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![Docker](https://img.shields.io/badge/Docker-nginx--unprivileged-2496ED?logo=docker)
 ![Deploy](https://img.shields.io/badge/Deploy-Kubernetes-326CE5?logo=kubernetes)
 
-A personal portfolio site built with Angular 21, styled as a code-editor workspace. The entire application is statically generated (SSG) and served from a hardened NGINX container on Kubernetes.
+A personal portfolio site built with Angular 22, styled as a code-editor workspace. The entire application is statically generated (SSG) and served from a hardened NGINX container on Kubernetes.
 
 **Live:** [faisalkhan.dpdns.org](https://faisalkhan.dpdns.org)
 
@@ -17,7 +17,7 @@ A personal portfolio site built with Angular 21, styled as a code-editor workspa
 
 | Layer      | Technology                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------ |
-| Framework  | Angular 21.2.7 (standalone components, signals, zoneless, `OnPush`)                              |
+| Framework  | Angular 22 (standalone components, signals, zoneless, `OnPush`)                                  |
 | Rendering  | SSG via `@angular/ssr` — the entire route tree is prerendered at build time                      |
 | Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                   |
 | Blog       | Markdown files rendered via `marked` + `highlight.js`                                            |
@@ -63,7 +63,7 @@ Open `http://localhost:4300/` in your browser.
 
 - Node.js 24 (LTS) — `package.json` declares `engines.node: ">=24 <25"`
 - npm
-- Angular CLI 21+ (`npm install -g @angular/cli@latest`)
+- Angular CLI 22+ (`npm install -g @angular/cli@latest`)
 - Docker (for containerized builds)
 
 ---
