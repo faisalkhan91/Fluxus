@@ -22,7 +22,7 @@
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { DIST_BROWSER, requireDistBrowser, walk } from './lib/fs.mjs';
-import { SCRIPT_TAG, isInlineExecutable, sha256Token } from './lib/csp.mjs';
+import { SCRIPT_TAG, isInlineExecutable, sha256Token, MAX_NGINX_LINE } from './lib/csp.mjs';
 
 const HEADERS_FILE = join(process.cwd(), 'dist/fluxus/security-headers.conf');
 
@@ -41,6 +41,18 @@ if (!cspMatch) {
   process.exit(1);
 }
 const csp = cspMatch[1];
+
+// Defense-in-depth: re-assert the NGINX line-length ceiling here too. build-csp.mjs
+// already fails on overflow, but the header file can be hand-edited or post-processed
+// between generation and deploy. An over-long CSP makes NGINX drop the header and
+// serve no policy at all, so catch it before it ships.
+if (csp.length > MAX_NGINX_LINE) {
+  console.error(
+    `✗ csp-audit: Content-Security-Policy is ${csp.length} chars, exceeding the ${MAX_NGINX_LINE}-char NGINX limit. ` +
+      `NGINX would drop the header and serve no CSP. Trim the script-src allowlist.`,
+  );
+  process.exit(1);
+}
 
 function directiveTokens(directive) {
   // CSP directives are `;`-separated; each starts with the directive name

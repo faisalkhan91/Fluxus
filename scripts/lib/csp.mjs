@@ -8,6 +8,18 @@
  */
 import { createHash } from 'node:crypto';
 
+/**
+ * Maximum length (chars) we allow for the assembled CSP value that goes into
+ * the `add_header Content-Security-Policy "..."` directive. NGINX rejects an
+ * over-long `add_header` parameter, and — critically — fails *open*: the
+ * directive is dropped and the response ships with **no CSP at all**. We keep
+ * a conservative 4 KB ceiling and treat any overflow as a hard build failure
+ * (see build-csp.mjs) rather than a warning, with audit-csp.mjs re-checking it
+ * as defense-in-depth. Defined once here so the generator and the auditor can
+ * never disagree on the limit.
+ */
+export const MAX_NGINX_LINE = 4000;
+
 /** Matches an inline or external `<script ...>...</script>`; capture 1 = attrs, 2 = body. */
 export const SCRIPT_TAG = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
 
