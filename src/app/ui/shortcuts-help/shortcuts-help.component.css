@@ -126,7 +126,11 @@
   font-size: var(--fs-65);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
+  /* --text-muted is tuned for AA over --surface-base; this label sits on the
+     lighter --surface-raised panel, where muted small text drops to ~3.8-4.0:1
+     (fails WCAG AA). --text-secondary clears 4.5:1 on the raised surface across
+     every theme. */
+  color: var(--text-secondary);
 }
 
 .sc-list {
