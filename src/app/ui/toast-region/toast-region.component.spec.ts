@@ -16,10 +16,13 @@ describe('ToastRegionComponent', () => {
     host = fixture.nativeElement as HTMLElement;
   });
 
-  it('exposes the toast region landmark with an accessible label', () => {
+  it('exposes the toast region landmark as a persistent polite live region', () => {
     fixture.detectChanges();
     expect(host.getAttribute('role')).toBe('region');
     expect(host.getAttribute('aria-label')).toBe('Notifications');
+    // The live region lives on the always-present host (not on the
+    // dynamically-inserted toast node) so SRs reliably announce new toasts.
+    expect(host.getAttribute('aria-live')).toBe('polite');
   });
 
   it('renders nothing when the toast list is empty', () => {
@@ -39,14 +42,17 @@ describe('ToastRegionComponent', () => {
     expect(rendered[1].querySelector('.toast-detail')).toBeNull();
   });
 
-  it('renders info toasts as polite status, error toasts as assertive alerts', () => {
+  it('announces info toasts via the host region (no own live role) and error toasts as assertive alerts', () => {
     toasts.push({ title: 'Section link copied' });
     toasts.push({ severity: 'error', title: 'Chunk failed' });
     fixture.detectChanges();
 
     const [info, error] = host.querySelectorAll('.toast');
-    expect(info.getAttribute('role')).toBe('status');
-    expect(info.getAttribute('aria-live')).toBe('polite');
+    // Info toasts carry no own live role — the persistent host polite region
+    // owns the announcement; a nested polite region would double-announce.
+    expect(info.getAttribute('role')).toBeNull();
+    expect(info.getAttribute('aria-live')).toBeNull();
+    // Error toasts opt up to assertive on the node itself.
     expect(error.getAttribute('role')).toBe('alert');
     expect(error.getAttribute('aria-live')).toBeNull();
   });
