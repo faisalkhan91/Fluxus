@@ -1,16 +1,17 @@
 @for (toast of toasts.toasts(); track toast.id; let i = $index) {
   <!--
-    Severity-aware role: `'error'` toasts get `role="alert"` (assertive,
-    interrupts the SR queue) and the rest get `role="status"` (polite,
-    queued behind the current utterance). The default in
-    `ErrorToastService` is `'info'`, so a confirmation toast like
-    "Section link copied" no longer talks over whatever the user is
-    reading. WAI-ARIA Authoring Practices: live-region severity guidance.
+    Announcement is owned by the persistent host live region (role="region"
+    aria-live="polite"), which exists before any toast mounts so SRs reliably
+    announce inserted toasts. Non-error toasts therefore carry NO own live
+    role (a redundant nested polite region would risk double-announcement).
+    `'error'` toasts opt up to assertive via role="alert" on the node, which
+    interrupts the queue and is announced reliably on insertion. Default
+    severity is `'info'`, so a confirmation like "Section link copied" is
+    polite and won't talk over the user.
   -->
   <div
     class="toast"
-    [attr.role]="toast.severity === 'error' ? 'alert' : 'status'"
-    [attr.aria-live]="toast.severity === 'error' ? null : 'polite'"
+    [attr.role]="toast.severity === 'error' ? 'alert' : null"
     [style.--toast-index]="i"
     animate.leave="toast-out"
   >
