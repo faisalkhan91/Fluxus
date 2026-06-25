@@ -9,7 +9,13 @@
         loading/decoding/fetchpriority hints for this LCP surface.
       -->
       <figure class="post-card-cover">
-        <img [ngSrc]="cover()" [alt]="p.title" fill priority sizes="(max-width: 768px) 92vw, 25vw" />
+        <img
+          [ngSrc]="cover()"
+          [alt]="p.title"
+          fill
+          priority
+          sizes="(max-width: 768px) 92vw, 25vw"
+        />
       </figure>
     } @else if (p.cover) {
       <!--

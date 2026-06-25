@@ -4,3 +4,6 @@ node_modules
 coverage
 package-lock.json
 CHANGELOG.md
+.beads
+test-results
+playwright-report
