@@ -38,6 +38,9 @@
     "node": ">=24.15.0 <25",
     "npm": ">=10"
   },
+  "//dependencyNotes": {
+    "@types/node": "Pinned to the Node 24 LTS line to match engines.node (>=24.15.0 <25). We only support the active Node LTS; @types/node 26 tracks the Current (non-LTS) release (LTS ~Oct 2026), so do not bump it ahead of the runtime we ship on."
+  },
   "dependencies": {
     "@angular/common": "^22.0.0",
     "@angular/compiler": "^22.0.0",
@@ -77,10 +80,10 @@
     "http-server": "^14.1.1",
     "jsdom": "^29.0.1",
     "octokit": "^5.0.5",
-    "pdfkit": "^0.18.0",
+    "pdfkit": "^0.19.1",
     "png-to-ico": "^3.0.1",
     "prettier": "^3.8.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.2",
     "type-fest": "^5.6.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.59.4",
