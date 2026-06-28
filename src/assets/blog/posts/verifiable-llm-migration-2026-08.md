@@ -1,62 +1,77 @@
 # An LLM is a fine translator the moment you can grade it
 
-The query came back clean. It parsed, it ran against production data without an error, and it returned a few thousand rows that looked exactly like what I expected — a daily pass-rate number sitting in a believable range. I almost signed off on it. Then I ran the original against the same window out of habit and the two numbers disagreed by something like 99%. The translation hadn't failed. It had succeeded at being wrong.
+The query came back clean. It parsed, it ran against production data without an error, and it returned a few thousand rows that looked like exactly what I expected: a daily pass-rate number sitting in a believable range. I almost signed off on it. Then, out of habit, I ran the original query against the same window. The two numbers disagreed by something like 99 percent. The translation hadn't failed in any way the tools could see. It had succeeded at being wrong.
 
-I had handed an LLM a query in one analytics language and asked for the equivalent in another, and it gave me back something that compiled, executed, and lied. The half-day I spent untangling why is the subject of this post, because the lesson generalizes well beyond one pair of query languages.
+I had handed an LLM a query in one analytics language and asked for the equivalent in another. What came back compiled, executed, and lied. I spent the next half day untangling why, and that is the subject of this post, because the lesson reaches well past one pair of query languages.
 
 ## The translation that compiled and lied
 
-When you ask a model to port code from one language to another, the feedback you get for free is syntactic. The target parser accepts it or rejects it. If it parses, you run it; if it runs, you get rows. Every signal in that loop is about _form_. None of it is about whether the output means the same thing as the input.
+When you ask a model to port code from one language to another, the feedback you get for free is syntactic. The target parser accepts the output or rejects it. If it parses, you run it. If it runs, you get rows. Every signal in that loop reports on *form*. None of it tells you whether the output means the same thing as the input.
 
-For a translation task this is exactly backwards. A syntactically valid query in the target language is the floor, not the ceiling. The interesting failures are the ones that clear every form check and still compute a different answer — and those are precisely the ones the compiler is structurally incapable of seeing. The wider claim: in any migration, the bugs that survive to production are the ones your existing tooling was never designed to detect. Form-checking tools cannot find meaning bugs.
+For a translation task, that is backwards. A syntactically valid query in the target language is the floor, not the ceiling. The failures that matter clear every form check and still compute a different answer, and a compiler is structurally blind to them. It generalizes, too: in any migration, the bugs that reach production tend to be the ones your existing tooling was never built to catch, and form-checkers cannot catch meaning.
 
-## Why "compiles" is the weakest possible signal
+The research literature backs this up at population scale. A 2024 study of LLM code translation, [*Lost in Translation*](https://arxiv.org/abs/2308.03109), found correct translations only 2.1 to 47.3 percent of the time across the models it tested, and catalogued fifteen distinct categories of translation bug, plenty of which parse and run. Plausible-but-wrong is not the edge case here. It is a large slice of the distribution.
 
-"It compiles" tells you the model produced grammar. That is the one thing modern LLMs are genuinely excellent at and the one thing that carries almost no information about correctness. A confident, fluent, well-formed wrong answer is the default failure mode of these systems, not an edge case.
+## Why "compiles" is a weak signal
 
-"It runs and returns rows" is barely stronger. A query that drops half its input still returns rows. A query that misclassifies every record still returns a count. Plausibility is not correctness, and on aggregate data plausibility is cheap — almost any structurally-valid query over real data lands somewhere in a believable range.
+"It compiles" tells you the model produced grammar. Producing grammar is the thing modern LLMs are genuinely good at, and it carries almost no information about correctness. The characteristic failure of these systems is a confident, fluent, well-formed answer that happens to be wrong, dressed well enough to pass a glance.
 
-So the question to ask of any LLM-produced port is not "does it work?" but "what oracle do I have that can tell me it's wrong?" If the only oracle you own is the compiler, you have no oracle. The wider claim: the trustworthiness of an LLM on a task is bounded by the strength of the check you can run on its output, not by the apparent quality of the output.
+"It runs and returns rows" is barely stronger. A query that drops half its input still returns rows. A query that misclassifies every record still returns a count. On aggregate data, plausibility is cheap, because almost any structurally valid query over real data lands somewhere in a believable range.
 
-## The two faces of semantically-wrong
+So the right question to ask of an LLM-produced port is not "does it work?" but "what [oracle](https://en.wikipedia.org/wiki/Test_oracle) do I have that can tell me it's wrong?" If the only oracle you own is the compiler, you have no oracle. The idea predates the current model era: the canonical [Codex evaluation](https://arxiv.org/abs/2107.03374) grades generated code by *functional* correctness, running it against tests, rather than by matching it to a reference. The trust you can place in a model on a given task is bounded by the strength of the check you can run on its output, not by how good that output looks.
 
-The divergence I hit came in two flavors, and both are worth recognizing on sight because they recur across every translation I've done since.
+## Two faces of semantically wrong
 
-The first is a **function-semantics mismatch**. The source language's "first matching value" function returned `null` when the first event in a group simply lacked the field. The target language's nearest equivalent skipped nulls and returned the first _present_ value instead. On a dense field nobody would ever notice. On a sparse field — one populated in a small fraction of events — the two functions select completely different rows, and a downstream pass/fail threshold flips. That is how a query lands 99% off. Two functions with the same English description, `first()` versus `any_value()`-style, do not have the same semantics on missing data.
+My divergence came in two flavors. Both are worth recognizing on sight, because they have recurred in every translation I've done since.
 
-The second is a **hardcoded environment assumption**. The model pinned a single source literal — one namespace, one index, one tenant — into the `where` clause, because the example it pattern-matched on had one. The real data spanned two. The query silently dropped roughly half the rows and returned a number that still looked like a perfectly valid pass rate.
+The first is a **function-semantics mismatch**. The source language's "first matching value" function returned `null` when the first event in a group simply lacked the field. The target language's nearest equivalent skipped nulls and returned the first *present* value instead. On a dense field, nobody would ever notice. On a sparse field, one populated in a small fraction of events, the two functions select different rows, and a downstream pass/fail threshold flips. That is how a query lands 99 percent off.
 
-```text
+This is not exotic. SQL has the same trap baked into its standard library: [PostgreSQL's aggregate functions](https://www.postgresql.org/docs/current/functions-aggregate.html) document that most built-in aggregates are strict and drop null inputs, while a few explicitly keep them. Two functions with the same English description, a `first()` against an `any_value()`-style aggregate, do not agree on missing data.
+
+The second is a **hardcoded environment assumption**. The model pinned a single source literal into the `where` clause, one namespace, because the example it pattern-matched on had exactly one. The real data spanned two. The query silently dropped about half the rows and returned a number that still read as a perfectly valid pass rate.
+
+```sql
 -- model emitted (looks fine, drops ~half the data):
 filter source == "namespace-a"
 
--- reality the source system actually queried:
+-- what the source system actually queried:
 filter source in ("namespace-a", "namespace-b")
 ```
 
-Both bugs share a property: the output is a number, the number is in range, and nothing in the toolchain objects. The wider claim: an LLM's most expensive mistakes are the ones that produce a confidently plausible value, because plausibility is what disarms your review.
+Both bugs share a shape: the output is a number, the number is in range, and nothing in the toolchain objects. The expensive mistakes are the plausible ones, since plausibility is exactly what disarms a review.
 
 ## The oracle: diff against the source, then auto-tune
 
-The fix is not a better prompt. It is refusing to evaluate the translation in isolation. As long as the system you're migrating _from_ is still running, you already own a ground-truth generator — so use it. Run both queries over the same window and compare. Not "does the new one look right" but "is the per-dimension delta against the old one near zero."
+The fix is not a better prompt. It is refusing to evaluate the translation in isolation. As long as the system you're migrating *from* is still running, you already own a ground-truth generator, so use it. This is [differential testing](https://en.wikipedia.org/wiki/Differential_testing) in its plainest form: feed the same input to two implementations and flag any discrepancy. Run both queries over the same window and ask not "does the new one look right" but "is the per-dimension delta against the old one near zero."
 
-```text
-generate (LLM) -> run BOTH over same window
-              -> diff row counts + per-dimension breakdown
-              -> feed the diff back into the prompt
-              -> regenerate
-repeat until delta ~ 0
+```mermaid
+flowchart TB
+    A["Source query (legacy language)"] --> B["LLM generates target query"]
+    B --> C{"Static pre-flight:<br/>banned token?"}
+    C -->|"yes: rewrite without it"| B
+    C -->|"no"| D["Run BOTH queries,<br/>same time window"]
+    D --> E["Diff: total rows plus<br/>per-dimension breakdown"]
+    E --> F{"Per-bucket<br/>delta near 0?"}
+    F -->|"yes"| G["Accept translation"]
+    F -->|"no"| H{"Target returns 0<br/>on bare terms?"}
+    H -->|"yes"| I["Data gap: log and skip"]
+    H -->|"no: feed delta back,<br/>e.g. undercounts namespace-b"| B
+
+    classDef accept fill:#1b5e20,stroke:#2e7d32,color:#fff
+    classDef gap fill:#5d4037,stroke:#795548,color:#fff
+    class G accept
+    class I gap
 ```
 
-Comparing a single scalar isn't enough; two wrong queries can collide on the same total. Break the result down by every grouping dimension you have and require each bucket to reconcile. When a bucket is off, that delta is the most useful thing you can hand back to the model: "your output undercounts `namespace-b` by 100%" points straight at the pinned literal far faster than I would have found it reading the query.
+One scalar is not enough to compare, because two wrong queries can collide on the same total. Break the result down by every grouping dimension you have and require each bucket to reconcile. When a bucket is off, that delta is the most useful thing you can hand back to the model. "Your output undercounts `namespace-b` by 100 percent" points straight at the pinned literal, far faster than I would have found it by rereading the query.
 
-This is the whole discipline in one line: the LLM proposes, an automated ground-truth comparison disposes. The model is allowed to be creative because the diff is not. The wider claim: an LLM is safe on a translation exactly when you have a cheap, automatic oracle to grade it against — and a migration off a still-running system hands you that oracle for free. Don't decommission the old thing until the diff is flat.
+The discipline reduces to one sentence: the LLM proposes, an automatic ground-truth comparison disposes. The model gets to be creative because the diff is not. A model is safe on a translation when you have a cheap, automatic oracle to grade it against, and a migration off a still-running system hands you that oracle for free. The precondition is real, though. It only works because the old system is still up, so don't decommission it until the diff is flat.
 
 ## Pre-flight checks, and telling a defect from a gap
 
 Two refinements made the loop cheap enough to run hundreds of times.
 
-First, a static pre-flight. Some failures are guaranteed before you ever execute — the target language lacks a keyword the source leans on (no `in`, a different join model, a missing function). Scanning the generated text for a small list of known-unsupported tokens _before_ spending an API round trip turns a slow runtime error into an instant local reject and regenerate.
+First, a static pre-flight. Some failures are guaranteed before you execute anything. The target language lacks a keyword the source leans on: no `in`, a different join model, a missing function. Scanning the generated text for a short list of known-unsupported tokens *before* spending an API round trip turns a slow runtime error into an instant local reject and regenerate.
 
 ```python
 BANNED = {" in ", "transaction", "earliest("}  # no target equivalent
@@ -64,8 +79,14 @@ if any(tok in generated for tok in BANNED):
     regenerate("uses unsupported construct; rewrite without it")
 ```
 
-Second — and this one saved me from chasing ghosts — distinguish a _generation defect_ from a _data-availability gap_. If the converted query is structurally sound and the target store returns 0 on the bare terms, that is very often not a bad translation. It means the data the source system had isn't present in the target yet. Pinning the difference matters: a defect goes back into the tuning loop; a gap gets logged and skipped, because no amount of regeneration will conjure rows that aren't there. The wider claim: a feedback loop is only as good as its ability to attribute a failure to the right layer — burning iterations re-translating around missing data is how you convince yourself the model is worse than it is.
+Second, and this one saved me from chasing ghosts, separate a *generation defect* from a *data-availability gap*. If the converted query is structurally sound and the target store returns zero on the bare terms, that is often not a bad translation at all. It means the data the source system had has not landed in the target yet. The distinction is load-bearing: a defect goes back into the tuning loop, a gap gets logged and skipped, because no amount of regeneration will conjure rows that aren't there. Burn iterations re-translating around missing data and you will talk yourself into believing the model is worse than it is.
 
 ---
 
-I came out of this trusting LLMs for translation _more_, not less — but only inside the harness. The model is a strong, fast, tireless translator, and it is wrong often enough that I will never again grade it by reading its output and nodding. The thing that changed wasn't the prompt; it was building the diff. An LLM is a fine translator the moment you can grade it. Porting one query language to another is a data problem, not a syntax problem, and "it compiles" is the weakest signal you will ever be offered.
+I came out of this trusting LLMs for translation *more*, not less, but only inside the harness. The model is a strong, fast, tireless translator, and it is wrong often enough that I will never again grade it by reading its output and nodding along. What changed wasn't the prompt. It was building the diff. An LLM becomes a fine translator the moment you can grade it. Porting one query language to another is a data problem wearing a syntax costume, and "it compiles" is the weakest signal you will ever be offered.
+
+## Further reading
+
+- [*Lost in Translation: A Study of Bugs Introduced by LLMs while Translating Code* (ICSE 2024)](https://arxiv.org/abs/2308.03109)
+- [*Evaluating Large Language Models Trained on Code* (Codex / HumanEval)](https://arxiv.org/abs/2107.03374)
+- [Differential testing](https://en.wikipedia.org/wiki/Differential_testing) and the [test oracle problem](https://en.wikipedia.org/wiki/Test_oracle)

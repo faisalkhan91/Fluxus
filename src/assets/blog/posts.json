@@ -6,6 +6,7 @@
     "excerpt": "A machine-translated query compiled, ran, and returned plausible rows — and was off from the source system by 99%. The dangerous bugs in language-to-language migration are structurally correct and semantically wrong, and \"it compiles\" cannot catch any of them. The only thing that makes an LLM safe for a port is an automated oracle: keep the old system running and diff.",
     "tags": ["AI", "LLM", "Migration", "Data Quality", "Tooling"],
     "readingTime": "6 min",
+    "cover": "assets/images/blog/verifiable-llm-migration/cover.webp",
     "wordCount": 1259
   },
   {
@@ -15,6 +16,7 @@
     "excerpt": "A p99 latency metric read about 8% high for three weeks — never bad enough to page, just wrong enough to send us chasing a regression that wasn't there. The cause was async-invoke retries double-counting histogram samples into a sink that appends instead of dedupes. This is a walk through why at-least-once delivery is the floor everywhere, why some sinks silently double and others quietly drop, and why the producer is the only party that can actually make delivery exactly-once.",
     "tags": ["Distributed Systems", "Reliability", "Architecture", "AWS"],
     "readingTime": "6 min",
+    "cover": "assets/images/blog/idempotency-producer/cover.webp",
     "wordCount": 1285
   },
   {
@@ -24,6 +26,7 @@
     "excerpt": "A conditional PUT against S3, GCS, or Azure Blob gives you a cheap at-most-once claim without standing up Redis or ZooKeeper — the first writer wins and every racer gets a 412. But it is a lease, not a fencing lock, and the whole guarantee rents itself from a single bucket setting that can be toggled off without an error. Here is where it holds, where it quietly degrades, and how to instrument the difference.",
     "tags": ["AWS", "S3", "Distributed Systems", "Architecture", "Concurrency"],
     "readingTime": "6 min",
+    "cover": "assets/images/blog/object-store-lock/cover.webp",
     "wordCount": 1260
   },
   {
@@ -33,6 +36,7 @@
     "excerpt": "A penalty-bearing failure-rate metric read a stable 50% for hours while the truth was a fraction of a percent — no error, no warning, no failed request. The cause was a soft default row limit that the API silently applied and reported as COMPLETED. A 200 is a statement about the call, not about whether you saw all the data.",
     "tags": ["APIs", "Observability", "Data Quality", "Reliability"],
     "readingTime": "7 min",
+    "cover": "assets/images/blog/success-not-completeness/cover.webp",
     "wordCount": 1431
   },
   {
