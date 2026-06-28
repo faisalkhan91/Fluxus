@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   prune:
-    name: Prune content-* image tags
+    name: Prune content-*/scheduled-* image tags
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -33,27 +33,46 @@ jobs:
           set -euo pipefail
           api="https://api.github.com"
           # Pull a single page of up to 100 versions, newest first. We only
-          # ever care about the trailing tail of content-* tags here.
+          # ever care about the trailing tail of the rolling content-* /
+          # scheduled-* tags here.
           versions=$(curl -sf -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             "${api}/users/${OWNER}/packages/container/${PACKAGE}/versions?per_page=100")
 
-          # Versions tagged content-*, sorted oldest-first, drop the newest KEEP.
-          to_delete=$(echo "$versions" | jq -r --argjson keep "${KEEP}" '
-            [ .[] | select(any(.metadata.container.tags[]?; startswith("content-"))) ]
-            | sort_by(.created_at)
-            | .[0:(length - $keep)]
-            | .[].id
-          ')
+          # Prune the oldest tags in each ROLLING lineage beyond the newest
+          # KEEP. `release` (bare-semver) tags are intentionally never pruned;
+          # `latest` always rides on a manifest that also carries a
+          # content-/scheduled-/semver tag, so it is covered transitively.
+          #
+          # IMPORTANT: we deliberately do NOT delete untagged versions. A
+          # multi-arch push (linux/amd64,linux/arm64) plus `sbom`, `provenance`
+          # and the pushed build-provenance attestation (see docker-publish.yml)
+          # stores the per-arch child manifests, the SBOM/provenance blobs and
+          # the Sigstore attestation as SEPARATE, EMPTY-TAG versions in this
+          # same list — only the top-level OCI image index carries the tag. The
+          # GHCR versions API does not report those children as "referenced",
+          # so blanket-deleting untagged versions tears the arch manifests out
+          # from under the LIVE image (manifest-unknown on pull, broken
+          # `gh attestation verify`). Orphaned untagged blobs are left to GHCR
+          # rather than risk the running image. KEEP=10 also keeps a healthy
+          # margin above whatever tag fluxus.yaml currently pins.
+          prune_prefix() {
+            echo "$versions" | jq -r --arg pfx "$1" --argjson keep "${KEEP}" '
+              [ .[] | select(any(.metadata.container.tags[]?; startswith($pfx))) ]
+              | sort_by(.created_at)
+              | .[0:(length - $keep)]
+              | .[].id
+            '
+          }
 
-          # Untagged dangling layers (created by overwriting `latest`, etc).
-          # Safe to drop — referenced manifests keep their own layers alive.
-          dangling=$(echo "$versions" | jq -r '
-            [ .[] | select((.metadata.container.tags // []) | length == 0) ]
-            | .[].id
-          ')
+          to_delete="$(prune_prefix "content-"; prune_prefix "scheduled-")"
 
-          for id in ${to_delete} ${dangling}; do
+          if [ -z "${to_delete//[[:space:]]/}" ]; then
+            echo "Nothing to prune (<= ${KEEP} tags in each rolling lineage)."
+            exit 0
+          fi
+
+          for id in ${to_delete}; do
             if [ "${DRY_RUN}" = "true" ]; then
               echo "[dry-run] would delete version ${id}"
             else

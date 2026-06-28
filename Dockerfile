@@ -10,7 +10,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
-# build:prod = ng build --configuration production && node scripts/inject-blog-meta.mjs
+# build:prod runs the full SSG pipeline (image dims/variants, version stamp,
+# ng build --configuration production, inject-meta, sitemap/feed/OG cards, CSP
+# + audits) — see the "build:prod" script in package.json for the exact chain.
 RUN npm run build:prod
 
 # Stage 2: Serve with non-root NGINX (UID 101, listens on 8080)

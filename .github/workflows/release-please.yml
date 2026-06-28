@@ -29,6 +29,13 @@ jobs:
       # to the bot) and fall back to the existing PAT if the App isn't set
       # up yet. The App needs `contents: write` and `pull_requests: write`
       # on this repository.
+      #
+      # LOAD-BEARING: the release tag MUST be authored by this App token (or
+      # the RELEASE_TOKEN PAT), never the default GITHUB_TOKEN. GitHub does not
+      # emit `push`/`tag` workflow events for refs created by GITHUB_TOKEN, so a
+      # tag pushed by it would NOT trigger docker-publish.yml — the release
+      # would ship no image and open no GitOps PR, with no failure surfaced.
+      # If the App is removed / the PAT expires, fix that before cutting a tag.
       - name: Mint GitHub App token
         id: app-token
         if: ${{ vars.RELEASE_BOT_APP_ID != '' }}

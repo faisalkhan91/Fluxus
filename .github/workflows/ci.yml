@@ -139,13 +139,13 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
 
-      - name: Install Playwright browsers
-        if: steps.pw-cache.outputs.cache-hit != 'true'
+      # Always run install (not gated on cache-hit): with the cache restored
+      # the ~150MB browser download is skipped, but `install` still verifies
+      # the binary is present — self-healing a partial/stale cache where the
+      # @playwright/test version is unchanged but the browser revision moved or
+      # the cache was incompletely populated. `--with-deps` adds the OS libs.
+      - name: Install Playwright browsers + system deps
         run: npx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps (cache hit)
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
 
       # The default suite skips visual.spec.ts (the snapshots are macOS-only
       # baselines and would always diff on Linux). Visual regression is
