@@ -1,6 +1,6 @@
 # Building Cloud-Native CI/CD Pipelines
 
-Modern software teams ship fast—sometimes dozens of times per day. But speed without reliability is chaos. In this post I'll walk through how I design **cloud-native CI/CD pipelines** that are fast, reproducible, and resilient.
+Modern software teams ship fast, sometimes dozens of times per day. But speed without reliability is chaos. In this post I'll walk through how I design **cloud-native CI/CD pipelines** that are fast, reproducible, and resilient.
 
 ## Why "Cloud-Native" Matters
 
@@ -8,9 +8,9 @@ Traditional CI/CD (Jenkins on a VM, anyone?) works, but it doesn't _scale_. Clou
 
 Key principles:
 
-- **Immutable artifacts** — Build once, deploy the same image everywhere.
-- **Ephemeral runners** — No snowflake build servers.
-- **Declarative config** — Pipeline-as-code, versioned alongside your app.
+- **Immutable artifacts** - Build once, deploy the same image everywhere.
+- **Ephemeral runners** - No snowflake build servers.
+- **Declarative config** - Pipeline-as-code, versioned alongside your app.
 
 ## The Stack
 
@@ -108,14 +108,14 @@ The `readinessProbe` prevents traffic from routing to a pod that isn't ready yet
 
 ## Lessons Learned
 
-1. **Cache aggressively** — `npm ci` with a cache layer saves minutes per build.
-2. **Fail fast** — Run linting and unit tests before expensive Docker builds.
-3. **Pin versions** — Use exact tags for base images (`node:20.11-alpine`, not `node:latest`).
-4. **Secrets management** — Never bake secrets into images. Use Kubernetes Secrets or Azure Key Vault.
+1. **Cache aggressively** - `npm ci` with a cache layer saves minutes per build.
+2. **Fail fast** - Run linting and unit tests before expensive Docker builds.
+3. **Pin versions** - Use exact tags for base images (`node:20.11-alpine`, not `node:latest`).
+4. **Secrets management** - Never bake secrets into images. Use Kubernetes Secrets or Azure Key Vault.
 
 ## What's Next
 
-In a future post I'll cover **GitOps with Flux** — where the cluster itself watches your Git repo and reconciles state automatically. Stay tuned.
+In a future post I'll cover **GitOps with Flux** - where the cluster itself watches your Git repo and reconciles state automatically. Stay tuned.
 
 ---
 
