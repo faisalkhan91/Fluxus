@@ -21,9 +21,9 @@ A personal portfolio site built with Angular 22, styled as a code-editor workspa
 | Rendering  | SSG via `@angular/ssr` — the entire route tree is prerendered at build time                      |
 | Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                   |
 | Blog       | Markdown files rendered via `marked` + `highlight.js`                                            |
-| Container  | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.27-alpine` runtime |
+| Container  | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.30-alpine` runtime |
 | Web Server | NGINX with gzip, granular cache policies, and full security headers                              |
-| Language   | TypeScript 5.9 (strict mode, no `any`)                                                           |
+| Language   | TypeScript 6.0 (strict mode, no `any`)                                                           |
 
 ## Features
 
@@ -43,7 +43,7 @@ A personal portfolio site built with Angular 22, styled as a code-editor workspa
 - **Modern CSS** — OKLCH accent palette, container queries on the content shell, scroll-driven reading-progress animation (zero-JS where supported)
 - **Print stylesheet** — Resume / blog post print-friendly view (chrome hidden, black-on-white, prose expanded)
 - **Security Headers** — CSP (script-src hashed at build time, no `'unsafe-inline'` for scripts), HSTS preload, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
-- **Comprehensive Test Suite** — 600+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
+- **Comprehensive Test Suite** — 900+ Vitest specs (with `posts.json` and nav-routes contract tests), Playwright a11y + behaviour suite, opt-in visual regression, Lighthouse CI in GitHub Actions
 - **Automated CI/CD** — single-check CI gate, CodeQL SAST, Release Please semver, multi-arch Docker publish, GitOps PR to Homelab, Trivy gate plus weekly drift re-scan, scheduled smoke probe, weekly GHCR retention
 
 ---
@@ -61,7 +61,7 @@ Open `http://localhost:4300/` in your browser.
 
 ### Prerequisites
 
-- Node.js 24 (LTS) — `package.json` declares `engines.node: ">=24 <25"`
+- Node.js 24 (LTS) — `package.json` declares `engines.node: ">=24.15.0 <25"`
 - npm
 - Angular CLI 22+ (`npm install -g @angular/cli@latest`)
 - Docker (for containerized builds)
@@ -80,16 +80,19 @@ This runs the full build pipeline in order:
 
 1. `node scripts/sync-reading-times.mjs` — recomputes `readingTime` on every `posts.json` entry from the matching markdown body so manifest and prose never disagree.
 2. `node scripts/build-image-dims.mjs` — sweeps `src/assets/images/` with `sharp` and writes intrinsic width/height for every image into `src/app/core/services/image-dims.generated.ts`. The MarkdownService renderer reads this map so blog `<img>` tags ship with `width` / `height` / `loading="lazy"` / `decoding="async"` (no CLS).
-3. `node scripts/build-version-stamp.mjs` — writes the build's commit SHA + timestamp into `app-version.generated.ts` so the sidebar footer can surface it.
-4. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included. Prerenders every known `/projects/:slug`, `/projects/tag/:tag`, `/blog/:slug`, and `/blog/tag/:tag`.
-5. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts get JSON-LD `BlogPosting` + `BreadcrumbList`; project-tag archives get `CollectionPage` + `BreadcrumbList`; project detail pages get per-project `<head>` tags.
-6. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list + the generated project list (no manual sitemap maintenance).
-7. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
-8. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
-9. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
-10. `node scripts/audit-csp.mjs` — walks the prerendered tree and fails the build if any inline script / event handler lacks a matching CSP hash.
+3. `node scripts/build-image-variants.mjs` — generates responsive WebP width-variants for the raster images (project screenshots + blog covers/figures) and writes `src/app/core/image/image-variants.generated.ts`, which the runtime `IMAGE_LOADER` consumes so `NgOptimizedImage` emits a real width-descriptor `srcset`.
+4. `node scripts/build-version-stamp.mjs` — writes the build's commit SHA + timestamp into `app-version.generated.ts` so the sidebar footer can surface it.
+5. `ng build --configuration production` — Angular SSG build with the service worker (`ngsw-config.json`) included. Prerenders every known `/projects/:slug`, `/projects/tag/:tag`, `/blog/:slug`, and `/blog/tag/:tag`.
+6. `node scripts/inject-meta.mjs` — rewrites per-route `<title>`, description, canonical, and Open Graph / Twitter tags. Blog posts get JSON-LD `BlogPosting` + `BreadcrumbList`; project-tag archives get `CollectionPage` + `BreadcrumbList`; project detail pages get per-project `<head>` tags.
+7. `node scripts/build-sitemap.mjs` — regenerates `dist/fluxus/browser/sitemap.xml` from `posts.json` + the static route list + the generated project list (no manual sitemap maintenance).
+8. `node scripts/build-feed.mjs` — emits `dist/fluxus/browser/feed.xml` (Atom 1.0).
+9. `node scripts/build-og-cards.mjs` — renders a 1200×630 PNG OG card per blog post that lacks an explicit `cover` field.
+10. `node scripts/build-csp.mjs` — hashes every inline `<script>` in the prerendered HTML and writes `dist/fluxus/security-headers.conf`. The Docker image consumes that file so the production CSP can stay strict (no `'unsafe-inline'` for scripts).
+11. `node scripts/audit-csp.mjs` — walks the prerendered tree and fails the build if any inline script / event handler lacks a matching CSP hash.
+12. `node scripts/audit-prerender.mjs` — structural audit of the prerendered tree; fails on SSR regressions (empty `<h1>`s, missing/mismatched canonical + OG/Twitter meta, `<svg>` without `aria-hidden`, missing pre-paint theme script, invalid tab buttons) and sweeps every page for dead internal links / broken image assets.
+13. `node scripts/audit-structured-data.mjs` — structured-data + social-metadata regression check against the real `dist` output: JSON-LD parses and carries `@context`/`@type`, every `og:image` page also has `og:image:alt`, and `feed.xml` is well-formed Atom (RFC 4287).
 
-Build output goes to `dist/fluxus/browser/` — one directory per prerendered route (`index.html` inside each), plus `feed.xml`, `sitemap.xml`, `og/<slug>.png`, and the SW manifests. A representative recent run emitted **99** prerendered routes: 8 top-level + 5 blog posts + 13 blog-tag archives + 65 project-tag archives + 8 project detail pages. The counts move with the repo's topic tags and blog manifest; the pipeline enumerates them automatically.
+Build output goes to `dist/fluxus/browser/` — one directory per prerendered route (`index.html` inside each), plus `feed.xml`, `sitemap.xml`, `og/<slug>.png`, and the SW manifests. A representative recent run emitted **117** prerendered routes: 8 top-level + 13 blog posts + 23 blog-tag archives + 64 project-tag archives + 9 project detail pages. The counts move with the repo's topic tags and blog manifest; the pipeline enumerates them automatically.
 
 **Project metadata is fetched out of band.** `projects.generated.{ts,json}` + `scripts/cache/projects-github.json` are committed artefacts consumed directly by the build. The actual GitHub fetch (`scripts/fetch-projects-github.mjs`, via Octokit GraphQL — one request for every repo in scope) runs on a scheduled `refresh-projects.yml` workflow (daily cron + `workflow_dispatch`) and opens a PR with any updated files. That keeps every PR build deterministic, network-free, and immune to GitHub API flake. Locally, `npm run fetch:projects` runs the same script — set `GITHUB_TOKEN` in your env for a fresh fetch; unset falls back to the committed cache.
 
@@ -134,7 +137,7 @@ A handful of project-specific contracts that aren't obvious from the file tree:
 
 ### `site.config.json`
 
-Single source of truth for site identity. Three fields drive seven build scripts (`inject-meta`, `build-sitemap`, `build-feed`, `build-og-cards`, `build-csp`, `audit-csp`, `fetch-projects-github`):
+Single source of truth for site identity. Three fields drive five build scripts (`inject-meta`, `build-sitemap`, `build-feed`, `build-og-cards`, `audit-prerender`):
 
 - `siteUrl` — production origin, used for canonicals, OG URLs, sitemap entries, atom feed self-links.
 - `siteName` — page title suffix, OG site name, JSON-LD publisher.
@@ -166,16 +169,16 @@ After all three, run `npm run build:prod` so `audit-csp.mjs` regenerates the scr
 
 ## Quality gates
 
-Six layered checks guard the build. The CI workflow runs lint, typecheck, audit, unit tests, build, Playwright, and Lighthouse on every PR; the prerender audit runs locally before a release tag.
+Six layered checks guard the build. The CI workflow runs lint, typecheck, audit, unit tests, build, Playwright, and Lighthouse on every PR; the CSP, prerender, and structured-data audits run inside `build:prod`, so they execute in CI on every PR as well as locally.
 
-| Gate                         | Command                                                | What it catches                                                                                    |
-| ---------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Unit tests                   | `npm test -- --watch=false`                            | 600+ Vitest specs (components, services, blog content + nav-routes contract tests)                 |
-| Static analysis              | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`       | ESLint, Angular template rules, strict TypeScript                                                  |
-| Prerender audit (post-build) | `npm run audit:prerender` (after `npm run build:prod`) | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script |
-| Live a11y / behaviour        | `npm run e2e` (after `npm run build:prod`)             | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`             |
-| Visual regression (opt-in)   | `npm run e2e:visual` (after `npm run build:prod`)      | Per-route × theme × viewport screenshot baselines under `tests/e2e/visual.spec.ts-snapshots/`      |
-| Lighthouse CI                | `lighthouserc.json` runs in GitHub Actions on every PR | Performance / a11y / best-practices / SEO category thresholds + LCP / CLS / TBT budgets            |
+| Gate                            | Command                                                                                | What it catches                                                                                    |
+| ------------------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Unit tests                      | `npm test -- --watch=false`                                                            | 900+ Vitest specs (components, services, blog content + nav-routes contract tests)                 |
+| Static analysis                 | `npm run lint` &nbsp;·&nbsp; `npm run typecheck`                                       | ESLint, Angular template rules, strict TypeScript                                                  |
+| Prerender audit (in build:prod) | runs automatically in `npm run build:prod` (also `npm run audit:prerender` standalone) | SSR regressions: empty `<h1>`s, missing OG/canonical/twitter meta, broken tab buttons, FOUC script |
+| Live a11y / behaviour           | `npm run e2e` (after `npm run build:prod`)                                             | axe (WCAG AA), focus trap, theme pre-paint, View Transitions, `prefers-reduced-motion`             |
+| Visual regression (opt-in)      | `npm run e2e:visual` (after `npm run build:prod`)                                      | Per-route × theme × viewport screenshot baselines under `tests/e2e/visual.spec.ts-snapshots/`      |
+| Lighthouse CI                   | `lighthouserc.json` runs in GitHub Actions on every PR                                 | Performance / a11y / best-practices / SEO category thresholds + LCP / CLS / TBT budgets            |
 
 The `e2e` pass uses [Playwright](https://playwright.dev/) + [`@axe-core/playwright`](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright). On a fresh checkout, install the chromium browser binary once:
 
@@ -209,15 +212,15 @@ That builds with source maps and opens [`source-map-explorer`](https://github.co
 
 ## CI/CD
 
-| Workflow           | Trigger                                                  | What it does                                                                                                                                                             |
-| ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **CI**             | PR + push to `main`                                      | Lint, typecheck, audit, unit tests + coverage, production build, Playwright, Lighthouse, plus a `CI success` fan-in check                                                |
-| **CodeQL**         | PR + push to `main`, weekly schedule                     | SAST on app code (`javascript-typescript`) and workflow YAML (`actions`)                                                                                                 |
-| **Release Please** | Push to `main`                                           | Opens / updates a release PR; only `feat:` / `fix:` / breaking changes bump the version                                                                                  |
-| **Publish image**  | Tag `v*` OR push to `main` touching `src/assets/blog/**` | Multi-arch Docker build, single-pass Trivy gate, GitOps PR to Homelab. Tag pushes ship versioned releases; blog pushes ship `content-<sha>` images without a SemVer bump |
-| **Trivy re-scan**  | Weekly schedule                                          | Scans the published `latest` image without `.trivyignore` to surface CVE drift                                                                                           |
-| **Smoke**          | Manual + daily schedule                                  | Polls `/healthz` on the deployed site                                                                                                                                    |
-| **GHCR retention** | Weekly schedule + manual                                 | Prunes old `content-<sha>` images (keeps the 10 most recent) and untagged orphan layers; release tags (`vX.Y.Z`, `X.Y`, `latest`) are kept forever                       |
+| Workflow           | Trigger                                                                        | What it does                                                                                                                                                                                                                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CI**             | PR + push to `main`                                                            | Lint, typecheck, audit, unit tests + coverage, production build, Playwright, Lighthouse, plus a `CI success` fan-in check                                                                                                                                                                                             |
+| **CodeQL**         | PR + push to `main`, weekly schedule                                           | SAST on app code (`javascript-typescript`) and workflow YAML (`actions`)                                                                                                                                                                                                                                              |
+| **Release Please** | Push to `main`                                                                 | Opens / updates a release PR; only `feat:` / `fix:` / breaking changes bump the version                                                                                                                                                                                                                               |
+| **Publish image**  | Tag `v*`, push to `main` touching `src/assets/blog/**`, or `workflow_dispatch` | Multi-arch Docker build, single-pass Trivy gate, GitOps PR to Homelab (rolling per-lineage branches). Three shapes: tag pushes ship versioned releases; blog pushes ship `content-<sha>` images without a SemVer bump; scheduled publishes (dispatched by `scheduled-publish.yml`) ship `scheduled-<yyyymmdd>` images |
+| **Trivy re-scan**  | Weekly schedule                                                                | Scans the published `latest` image without `.trivyignore` to surface CVE drift                                                                                                                                                                                                                                        |
+| **Smoke**          | Manual + daily schedule                                                        | Polls `/healthz` on the deployed site, then probes the live production CSP (Playwright/Chromium)                                                                                                                                                                                                                      |
+| **GHCR retention** | Weekly schedule + manual                                                       | Prunes old `content-<sha>` and `scheduled-<yyyymmdd>` images (keeps the 10 most recent in each rolling lineage); untagged versions are deliberately left intact (they back the live multi-arch manifests / SBOM / provenance / attestation); release tags (`vX.Y.Z`, `X.Y`, `latest`) are kept forever                |
 
 ### Release conventions
 
@@ -231,6 +234,7 @@ Image tags in GHCR:
 
 - `vX.Y.Z`, `X.Y`, `latest` — produced by release publishes (kept forever)
 - `content-<short-sha>` — produced by blog content publishes (auto-pruned by the GHCR retention workflow)
+- `scheduled-<yyyymmdd>` — produced by scheduled blog publishes (auto-pruned by the GHCR retention workflow)
 
 **Dependabot** is configured for weekly updates across npm, Docker, and GitHub Actions dependencies, with grouping for Angular and ESLint packages.
 
@@ -304,7 +308,7 @@ Posts are Markdown files in `src/assets/blog/posts/`. Metadata lives in `src/ass
   "date": "2026-04-01",
   "excerpt": "A short description.",
   "tags": ["angular", "typescript"],
-  "readingTime": "5 min read"
+  "readingTime": "5 min"
 }
 ```
 
@@ -326,7 +330,7 @@ The script is idempotent — re-running skips already-optimized files. Remember 
 
 `/projects` is GitHub-driven. To add a project:
 
-**1. Tag the repo on github.com.** Open the repo page, click the ⚙ on the "About" sidebar, and add `portfolio` to the Topics field. That's the one mandatory step — a user-scoped topic search (`user:<you> topic:portfolio fork:false archived:false`) runs at build time via `scripts/fetch-projects-github.mjs`.
+**1. Tag the repo on github.com.** Open the repo page, click the ⚙ on the "About" sidebar, and add `portfolio` to the Topics field. That's the one mandatory step — a user-scoped topic search (`user:<you> topic:portfolio fork:false archived:false`) is run out of band by `scripts/fetch-projects-github.mjs` on the scheduled `refresh-projects.yml` workflow.
 
 **2. (Optional) Override editorial fields locally.** `src/app/core/data/projects.overrides.json` is the curation layer — each `repos[]` entry is keyed by `owner/name` and can override any of:
 
@@ -350,7 +354,7 @@ Drop the screenshot under `src/assets/images/portfolio/`. Overrides are union'd 
 - `src/app/core/data/projects.generated.json` — a JSON twin for `.mjs` scripts (sitemap, inject-meta).
 - `scripts/cache/projects-github.json` — normalised raw GitHub payload; commit this so offline / rate-limited builds keep working.
 
-CI runs the fetch automatically inside `build:prod` with `secrets.GITHUB_TOKEN` wired in (5000 req/hr). Locally the script works unauthenticated (60 req/hr) and falls back to the committed cache if the network is unreachable.
+The fetch runs out of band in `refresh-projects.yml` (daily cron at 06:00 UTC + `workflow_dispatch`) with `secrets.GITHUB_TOKEN` wired in (5000 req/hr), committing the regenerated data via a PR; `build:prod` itself is network-free and consumes the committed `projects.generated.{ts,json}` + cache. Locally the script works unauthenticated (60 req/hr) and falls back to the committed cache if the network is unreachable.
 
 **4. Non-GitHub entries.** `projects.overrides.json`'s `manual[]` array accepts fully hand-authored entries (company work, talks, gists). Same rendering path as topic-sourced repos; no `github` block means no meta pills.
 

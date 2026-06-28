@@ -7,7 +7,7 @@ a change lands green on the first try.
 ## Setup
 
 ```bash
-nvm use            # Node 24 (see .nvmrc / engines.node ">=24.15 <25")
+nvm use            # Node 24 (see .nvmrc / engines.node ">=24.15.0 <25")
 npm ci
 npm start          # ng serve on http://localhost:4200
 ```
@@ -46,9 +46,10 @@ npm run e2e:visual:update                        # only after an *intended* visu
 
 ## Commits
 
-Conventional Commits (`feat:`, `fix:`, `test:`, `build:`, `ci:`, `docs:`, `refactor:`, `chore:`).
-Releases + the changelog are automated by release-please, so the commit type drives the version
-bump — keep the subject accurate.
+Conventional Commits. The types surfaced in the changelog are `feat:`, `fix:`, `perf:`,
+`refactor:`, `docs:`, and `chore:` (see `release-please-config.json`); `test:` / `build:` / `ci:`
+are also accepted but are not surfaced in the changelog. Releases + the changelog are automated by
+release-please, so the commit type drives the version bump — keep the subject accurate.
 
 ## Content (blog / projects)
 
