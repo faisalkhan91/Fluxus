@@ -3,6 +3,12 @@ name: Publish image
 on:
   push:
     # Tag pushes always run a release-shaped publish (full semver tag set).
+    # NOTE: this trigger only fires when the `v*` tag is created by a token
+    # that is NOT the default GITHUB_TOKEN — GitHub suppresses workflow events
+    # for refs pushed by GITHUB_TOKEN to avoid loops. release-please.yml mints
+    # the tag with a GitHub App token (or RELEASE_TOKEN PAT) precisely so this
+    # release publish fires; if that App/PAT is removed or expires, a tagged
+    # release will ship NO image and open NO GitOps PR, silently.
     tags:
       - 'v*'
     # Pushes to main run a content-shaped publish ONLY when prerendered
@@ -30,6 +36,15 @@ on:
 
 # Don't cancel an in-progress publish: it's already minting an image and
 # opening a Homelab GitOps PR. A second push should queue, not abort.
+#
+# The group is per-ref, so content/scheduled (refs/heads/main) serialize with
+# each other, while a release (refs/tags/v*) can run in parallel — that is
+# fine because each shape now targets a STABLE GitOps branch (see the ctx step:
+# gitops/fluxus-content, gitops/fluxus-scheduled, gitops/fluxus-<version>), so
+# repeated publishes update one rolling PR per lineage instead of piling up a
+# new gitops/fluxus-content-<sha> branch every commit. RESIDUAL: a release PR
+# and a content PR can still be open at once; since fluxus.yaml is last-merge-
+# wins, merge the newest intended image last (or close the stale PR).
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
@@ -108,13 +123,17 @@ jobs:
             DATE="$(date -u +%Y%m%d)"
             echo "kind=scheduled"                                            >> "$GITHUB_OUTPUT"
             echo "image-tag=scheduled-${DATE}"                               >> "$GITHUB_OUTPUT"
-            echo "gitops-branch=gitops/fluxus-scheduled-${DATE}"             >> "$GITHUB_OUTPUT"
+            # Stable (rolling) branch: a single scheduled PR updates in place
+            # rather than accumulating one branch per publish day.
+            echo "gitops-branch=gitops/fluxus-scheduled"                     >> "$GITHUB_OUTPUT"
             echo "gitops-title=content(fluxus): scheduled publish ${DATE}"   >> "$GITHUB_OUTPUT"
           else
             SHORT="${GITHUB_SHA:0:7}"
             echo "kind=content"                                              >> "$GITHUB_OUTPUT"
             echo "image-tag=content-${SHORT}"                                >> "$GITHUB_OUTPUT"
-            echo "gitops-branch=gitops/fluxus-content-${SHORT}"              >> "$GITHUB_OUTPUT"
+            # Stable (rolling) branch: a single content PR updates in place
+            # rather than accumulating gitops/fluxus-content-<sha> per commit.
+            echo "gitops-branch=gitops/fluxus-content"                       >> "$GITHUB_OUTPUT"
             echo "gitops-title=content(fluxus): blog update ${SHORT}"        >> "$GITHUB_OUTPUT"
           fi
 
