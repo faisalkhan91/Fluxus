@@ -87,11 +87,11 @@ git log origin/main..HEAD --oneline | wc -l   # count them (sanity check for lat
 Strip the leading category segment (`feature/`, `feat/`, `fix/`, `chore/`,
 `audit/`, `refactor/`, etc.) and keep the descriptive slug, then append `.patch`.
 
-| Branch                          | Patch file                      |
-| ------------------------------- | ------------------------------- |
-| `chore/angular-22-upgrade`      | `angular-22-upgrade.patch`      |
-| `feature/experience-narrative`  | `experience-narrative.patch`    |
-| `fix/service-worker-updates`    | `service-worker-updates.patch`  |
+| Branch                         | Patch file                     |
+| ------------------------------ | ------------------------------ |
+| `chore/angular-22-upgrade`     | `angular-22-upgrade.patch`     |
+| `feature/experience-narrative` | `experience-narrative.patch`   |
+| `fix/service-worker-updates`   | `service-worker-updates.patch` |
 
 The file is written to the **repository root**.
 

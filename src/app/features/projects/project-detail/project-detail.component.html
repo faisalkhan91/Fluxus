@@ -111,7 +111,9 @@
           @for (post of relatedPosts(); track post.slug) {
             <li>
               <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
-              <time class="detail-related-date" [attr.datetime]="post.date">{{ formatDate(post.date) }}</time>
+              <time class="detail-related-date" [attr.datetime]="post.date">{{
+                formatDate(post.date)
+              }}</time>
             </li>
           }
         </ul>
