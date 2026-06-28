@@ -5,9 +5,9 @@
     "date": "2026-08-11",
     "excerpt": "A machine-translated query compiled, ran, and returned plausible rows - and was off from the source system by 99%. The dangerous bugs in language-to-language migration are structurally correct and semantically wrong, and \"it compiles\" cannot catch any of them. The only thing that makes an LLM safe for a port is an automated oracle: keep the old system running and diff.",
     "tags": ["AI", "LLM", "Migration", "Data Quality", "Tooling"],
-    "readingTime": "6 min",
+    "readingTime": "7 min",
     "cover": "assets/images/blog/verifiable-llm-migration/cover.webp",
-    "wordCount": 1259
+    "wordCount": 1645
   },
   {
     "slug": "idempotency-is-the-producers-job-2026-07",
@@ -15,9 +15,9 @@
     "date": "2026-07-28",
     "excerpt": "A p99 latency metric read about 8% high for three weeks - never bad enough to page, just wrong enough to send us chasing a regression that wasn't there. The cause was async-invoke retries double-counting histogram samples into a sink that appends instead of dedupes. This is a walk through why at-least-once delivery is the floor everywhere, why some sinks silently double and others quietly drop, and why the producer is the only party that can actually make delivery exactly-once.",
     "tags": ["Distributed Systems", "Reliability", "Architecture", "AWS"],
-    "readingTime": "6 min",
+    "readingTime": "9 min",
     "cover": "assets/images/blog/idempotency-producer/cover.webp",
-    "wordCount": 1285
+    "wordCount": 1978
   },
   {
     "slug": "distributed-lock-object-store-2026-07",
@@ -25,9 +25,9 @@
     "date": "2026-07-14",
     "excerpt": "A conditional PUT against S3, GCS, or Azure Blob gives you a cheap at-most-once claim without standing up Redis or ZooKeeper - the first writer wins and every racer gets a 412. But it is a lease, not a fencing lock, and the whole guarantee rents itself from a single bucket setting that can be toggled off without an error. Here is where it holds, where it quietly degrades, and how to instrument the difference.",
     "tags": ["AWS", "S3", "Distributed Systems", "Architecture", "Concurrency"],
-    "readingTime": "6 min",
+    "readingTime": "9 min",
     "cover": "assets/images/blog/object-store-lock/cover.webp",
-    "wordCount": 1260
+    "wordCount": 1915
   },
   {
     "slug": "success-is-not-completeness-2026-06",
@@ -35,9 +35,9 @@
     "date": "2026-06-30",
     "excerpt": "A penalty-bearing failure-rate metric read a stable 50% for hours while the truth was a fraction of a percent - no error, no warning, no failed request. The cause was a soft default row limit that the API silently applied and reported as COMPLETED. A 200 is a statement about the call, not about whether you saw all the data.",
     "tags": ["APIs", "Observability", "Data Quality", "Reliability"],
-    "readingTime": "7 min",
+    "readingTime": "8 min",
     "cover": "assets/images/blog/success-not-completeness/cover.webp",
-    "wordCount": 1431
+    "wordCount": 1839
   },
   {
     "slug": "self-healing-needs-a-human-in-the-loop-2026-05",
@@ -45,9 +45,9 @@
     "date": "2026-06-16",
     "excerpt": "Self-healing infrastructure is the default cloud-vendor pitch. It's also the wrong default for two of the three failure classes you'll actually see: deterministic failures generate retry storms, and systemic failures amplify the outage. Auto-heal transient failures with bounded attempts; escalate the rest. The classification gate is small enough that the implementation more or less writes itself.",
     "tags": ["Observability", "SRE", "Architecture", "Self-Healing", "Operations"],
-    "readingTime": "6 min",
+    "readingTime": "10 min",
     "cover": "assets/images/blog/self-healing-guardrails/cover.webp",
-    "wordCount": 1293,
+    "wordCount": 2108,
     "series": "Reporting Pipeline Notes",
     "seriesOrder": 3
   },
@@ -57,9 +57,9 @@
     "date": "2026-06-02",
     "excerpt": "Queues solve message durability. We needed outcome durability. Same five boxes either way; the difference is who runs them. A 1:1 mapping between the Kafka stack and the design we actually shipped, and why we picked the substrate AWS already runs for us.",
     "tags": ["Observability", "SRE", "Architecture", "Kafka", "S3", "AWS"],
-    "readingTime": "5 min",
+    "readingTime": "9 min",
     "cover": "assets/images/blog/outcome-durability/cover.webp",
-    "wordCount": 1070,
+    "wordCount": 1909,
     "series": "Reporting Pipeline Notes",
     "seriesOrder": 2
   },
@@ -69,9 +69,9 @@
     "date": "2026-05-19",
     "excerpt": "Six bugs from a recent observability-pipeline migration, every one of them a layer that didn't say what it actually meant. The platform accepted the write but didn't store it. The 403 didn't mention scope. The compile error blamed the wrong line. The retry was invisible to the function. The fixes are all small assertions at the boundary.",
     "tags": ["Observability", "SRE", "Architecture", "Datadog", "Coralogix", "Lambda"],
-    "readingTime": "8 min",
+    "readingTime": "11 min",
     "cover": "assets/images/blog/observability-pipeline/cover.webp",
-    "wordCount": 1711,
+    "wordCount": 2469,
     "series": "Reporting Pipeline Notes",
     "seriesOrder": 1
   },
@@ -81,9 +81,9 @@
     "date": "2026-04-30",
     "excerpt": "Chasing a broken-layout bug across an Angular 21 SSG + service-worker stack and the four lessons that fell out: why content-hashed assets aren't enough, the SwUpdate plus build-stamp belt-and-braces guard, sidebar collapse geometry, and why heading permalinks are a desktop-only affordance.",
     "tags": ["Angular", "SSG", "Service Worker", "CSS", "UX"],
-    "readingTime": "8 min",
+    "readingTime": "7 min",
     "cover": "assets/images/blog/fresh-css-deploy/cover.webp",
-    "wordCount": 1661
+    "wordCount": 1645
   },
   {
     "slug": "motion-you-can-feel-2026-04",
@@ -93,7 +93,7 @@
     "tags": ["Angular", "TypeScript", "UX", "Architecture"],
     "readingTime": "7 min",
     "cover": "assets/images/blog/motion-audit/cover.webp",
-    "wordCount": 1506
+    "wordCount": 1491
   },
   {
     "slug": "homelab-storage-foundation",
@@ -105,7 +105,7 @@
     "cover": "assets/images/blog/homelab-storage/hardware-stack.webp",
     "series": "Homelab Architecture",
     "seriesOrder": 1,
-    "wordCount": 2806
+    "wordCount": 2773
   },
   {
     "slug": "angular-signals-state-management",
@@ -114,7 +114,7 @@
     "excerpt": "Practical patterns for replacing BehaviorSubjects with Signals: service state, computed derivations, SSR safety, and when to still reach for RxJS.",
     "tags": ["Angular", "TypeScript", "Architecture"],
     "readingTime": "3 min",
-    "wordCount": 609
+    "wordCount": 590
   },
   {
     "slug": "building-cloud-native-pipelines",
@@ -122,8 +122,8 @@
     "date": "2026-03-20",
     "excerpt": "A hands-on walkthrough of designing resilient, container-native CI/CD pipelines using GitHub Actions, Docker, and Kubernetes, from build triggers to zero-downtime deployments.",
     "tags": ["DevOps", "Cloud", "CI/CD"],
-    "readingTime": "2 min",
-    "wordCount": 333
+    "readingTime": "1 min",
+    "wordCount": 326
   },
   {
     "slug": "blog-post-template",
@@ -133,6 +133,6 @@
     "tags": ["Template"],
     "readingTime": "1 min",
     "draft": true,
-    "wordCount": 205
+    "wordCount": 204
   }
 ]
