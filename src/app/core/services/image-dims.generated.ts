@@ -63,7 +63,15 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     w: 1600,
     h: 1066,
   },
+  'assets/images/blog/idempotency-producer/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
   'assets/images/blog/motion-audit/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
+  'assets/images/blog/object-store-lock/cover.webp': {
     w: 1600,
     h: 900,
   },
@@ -76,6 +84,14 @@ export const IMAGE_DIMS: Record<string, ImageDim> = {
     h: 900,
   },
   'assets/images/blog/self-healing-guardrails/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
+  'assets/images/blog/success-not-completeness/cover.webp': {
+    w: 1600,
+    h: 900,
+  },
+  'assets/images/blog/verifiable-llm-migration/cover.webp': {
     w: 1600,
     h: 900,
   },
