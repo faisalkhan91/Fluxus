@@ -5,6 +5,121 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.0](https://github.com/faisalkhan91/Fluxus/compare/v4.1.0...v4.2.0) (2026-06-28)
+
+
+### Features
+
+* add terminal mode and keyboard-shortcuts overlay ([9fc8933](https://github.com/faisalkhan91/Fluxus/commit/9fc8933559cbf29e978dd7a0a120a96d177ffb4c))
+* **blog:** add four new posts ([88ed244](https://github.com/faisalkhan91/Fluxus/commit/88ed244174af58ab622706d418611c569c1ba800))
+* **contact:** disclose cookieless analytics + no-storage handling ([0c22e70](https://github.com/faisalkhan91/Fluxus/commit/0c22e70803b0064c9e0f54292043ddd2b9af1acd))
+* **projects:** add BulletinView ([28ea0cd](https://github.com/faisalkhan91/Fluxus/commit/28ea0cda78432acf4b74966ec524416b9fbb623a))
+* **resume:** add UNH + intern roles; fix header divider spacing ([1426baa](https://github.com/faisalkhan91/Fluxus/commit/1426baae0326147dbd79de093839c8ea053036a0))
+* **themes:** push the muted↔body fade to a dramatic ~1.5x across all themes ([c89d6f3](https://github.com/faisalkhan91/Fluxus/commit/c89d6f39278ff72c5f23f76312fff4925416cfc3))
+* **themes:** recover WCAG AA via surface darkening, preserving the faded text hierarchy ([9fc3110](https://github.com/faisalkhan91/Fluxus/commit/9fc31101a3d3e8bdad7470e8cc6fde0cdc7859b0))
+
+
+### Bug Fixes
+
+* **a11y:** announce toasts via a persistent host live region ([f97b416](https://github.com/faisalkhan91/Fluxus/commit/f97b4169cdaa03f04af79f12c1b6a46f90af4df9))
+* **a11y:** clear WCAG AA contrast across all themes; enforce axe per-theme ([066e106](https://github.com/faisalkhan91/Fluxus/commit/066e1069a29317e285a4c003cf0178f48df64cd0))
+* **a11y:** enforce WCAG AA color-contrast; fix accent-text + light syntax colors ([c7eccbf](https://github.com/faisalkhan91/Fluxus/commit/c7eccbf1637b878db6e323dec5faeb8da7fdc40e))
+* **a11y:** format project-detail related dates + hide post TOC when printing ([26ebf11](https://github.com/faisalkhan91/Fluxus/commit/26ebf119e8bf717fe2ead1cfb21acc424d21f03c))
+* **a11y:** give ui-source-link a 24px tap target (WCAG 2.2 SC 2.5.8) ([ec85060](https://github.com/faisalkhan91/Fluxus/commit/ec85060e0e2ba4835e947bfc4fb73fc1c3d5844a))
+* **a11y:** meet WCAG AA contrast on the shortcuts overlay group titles ([e172a90](https://github.com/faisalkhan91/Fluxus/commit/e172a90df7265148796c68e256c1586c80e82ddb))
+* **blog:** align current-page item in post breadcrumb ([247d298](https://github.com/faisalkhan91/Fluxus/commit/247d2986050b91c4974fbfd6ed3af8304d72130e))
+* **blog:** register python/sql/http highlighting + surface silent failures in dev ([05a0ac1](https://github.com/faisalkhan91/Fluxus/commit/05a0ac1fc88a86379d7f4f80b79882e04a6e5440))
+* **blog:** validate slug shape before building the post-fetch URL ([8906933](https://github.com/faisalkhan91/Fluxus/commit/8906933cb3e712fc86499f09de90f7d730bd0334))
+* **certifications:** align card content for a uniform grid ([75d8e9a](https://github.com/faisalkhan91/Fluxus/commit/75d8e9a30bb112a6412edfc42d0515a9811d36f6))
+* **ci:** harden GHCR retention, roll GitOps PRs, document release-trigger coupling ([1d92431](https://github.com/faisalkhan91/Fluxus/commit/1d92431071a2fd1d57b87f8ea37f0fc18d24b1d3))
+* **core:** make app initializers non-fatal during bootstrap ([2ece722](https://github.com/faisalkhan91/Fluxus/commit/2ece7220bd65f829650235fe08f1e6968dc0ac1d))
+* **csp:** fail the build when the generated CSP exceeds NGINX's header limit ([d7efec7](https://github.com/faisalkhan91/Fluxus/commit/d7efec7f0acd697b7f10337a94f4d16c016a1c33))
+* **data:** guard posts.json + project entries against malformed data ([83e3450](https://github.com/faisalkhan91/Fluxus/commit/83e3450902bb4719c05f7f56c26123eed54fc478))
+* **hero:** point "Explore My Work" CTA to /experience (was /about) ([477bbd3](https://github.com/faisalkhan91/Fluxus/commit/477bbd32b24bf18db7577a52a6adbad039214936))
+* **markdown:** close entity-encoded href XSS bypass + de-dup heading ids ([ab71b3b](https://github.com/faisalkhan91/Fluxus/commit/ab71b3b3690f046ba8111c952e419f0fc9278559))
+* **markdown:** escape raw HTML tokens + scheme-check image hrefs ([4375497](https://github.com/faisalkhan91/Fluxus/commit/43754974eea1b721656a73b0ea4919739fcb9e41))
+* **mermaid:** re-render stale-palette figures left by a mid-render theme toggle ([938d1f0](https://github.com/faisalkhan91/Fluxus/commit/938d1f0281813ba91cdc3ce9df352cc08e72526f))
+* **projects:** correct nginx topic typo + tighten sparse tag-archive grid ([6c2d18d](https://github.com/faisalkhan91/Fluxus/commit/6c2d18d731975cf0a3e655237392541cd39d703c))
+* resolve a11y, SEO, and image-perf findings from runtime audit ([c7486e3](https://github.com/faisalkhan91/Fluxus/commit/c7486e394637a56dd1ab9804aba114e2c3cce983))
+* **resume:** correct URL/cert, harden two-column layout, tidy generator ([d82588d](https://github.com/faisalkhan91/Fluxus/commit/d82588d8d290ae04f87a669aa91f80377865f6f3))
+* **resume:** emit an accessible (tagged) PDF ([0525dff](https://github.com/faisalkhan91/Fluxus/commit/0525dff4bdac2784e84b865568d0d1304b9a1260))
+* **scripts:** GitHub fetch recovers partial data + validates allowlist refs ([03aa306](https://github.com/faisalkhan91/Fluxus/commit/03aa306ccaa72c971515c299ba2c32a765fd8f16))
+* **seo:** make inject-meta fail loudly instead of silently dropping metadata ([f226692](https://github.com/faisalkhan91/Fluxus/commit/f226692c0a3aa9dd535a8ace54484cdcd975cd38))
+* **skills:** consistent spacing between category sections ([1f33853](https://github.com/faisalkhan91/Fluxus/commit/1f33853fd648014e42a1be6e6a5b773d144820ee))
+* **skills:** stop caption pills spilling out of mobile tiles ([94fb1fc](https://github.com/faisalkhan91/Fluxus/commit/94fb1fc53d488701de5f3ab0c6aacbc0369a36c1))
+* **tag-archive:** left-align cards instead of centering ([8980ad2](https://github.com/faisalkhan91/Fluxus/commit/8980ad2799b9749f3af1f11a0040fd0fc1355136))
+* **theme:** make text-selection highlight visible on dark themes ([ab7078d](https://github.com/faisalkhan91/Fluxus/commit/ab7078df0e64509d6f8129f3ffac4f5b66be79a3))
+* **themes:** strengthen the muted↔body fade gap on solarized-light, tokyo-night, github-light ([89c0263](https://github.com/faisalkhan91/Fluxus/commit/89c02632c91bfafb5b65fa0c8cfa7e9171fc4fe6))
+* **themes:** use each theme's own accent hue for accent text and the primary button border ([426df69](https://github.com/faisalkhan91/Fluxus/commit/426df69d7ec947f6aaf46e0972063bc385de68fc))
+
+
+### Miscellaneous
+
+* **assets:** regenerate resume.pdf ([98d2e26](https://github.com/faisalkhan91/Fluxus/commit/98d2e2610a883c59058ef7d39f6ee8329490db6b))
+* **blog:** resync readingTime/wordCount in posts.json ([24a9c53](https://github.com/faisalkhan91/Fluxus/commit/24a9c532bbab8f44929174862c0c48adaa8c7657))
+* **deps:** refresh lockfile to latest in-range versions ([e3b8335](https://github.com/faisalkhan91/Fluxus/commit/e3b8335f54057111b386d63594b47cdf08e93480))
+* **deps:** refresh package-lock to in-range patch updates ([32b542f](https://github.com/faisalkhan91/Fluxus/commit/32b542f31084303f649a43e6cb67695f28ebf613))
+* **deps:** update Angular 22.0.4, sharp 0.35, pdfkit 0.19; hold @types/node on LTS ([6dcb12c](https://github.com/faisalkhan91/Fluxus/commit/6dcb12ceeeefb6a12111b7ee6081b940a26feb36))
+* **format:** ignore test/build artifacts in prettier + reflow post-card img ([cb8ad96](https://github.com/faisalkhan91/Fluxus/commit/cb8ad963088ce5c15c0457abb9110f9e5fda347e))
+* **prettier:** Ran prettier for linting fix ([4f7f0ae](https://github.com/faisalkhan91/Fluxus/commit/4f7f0ae5268da6e290fb493a6ebcc28082823dda))
+* **projects:** retire ngnix topic fixup now that the repo topic is fixed ([5d8a4b4](https://github.com/faisalkhan91/Fluxus/commit/5d8a4b45c4e9e5b4c9ea93163fa25cbf5aa4309b))
+* refresh build stamp to point at efbae7ab ([568387e](https://github.com/faisalkhan91/Fluxus/commit/568387e9d7338d7446bc5f8d9317fd0a528b2816))
+* remove dead dependencies, orphan assets, and stale config ([3db5c00](https://github.com/faisalkhan91/Fluxus/commit/3db5c00d59140746ab9f0c0a723b29f8e20363ae))
+* **security:** tighten CSP directives, Permissions-Policy, CI permissions ([80d0f94](https://github.com/faisalkhan91/Fluxus/commit/80d0f940d9c6a7c1c5ac90560165617958f819e8))
+
+
+### Refactoring
+
+* **blog:** batch 5 — extract blog-post DOM services ([80e1912](https://github.com/faisalkhan91/Fluxus/commit/80e1912f6c2970f88a48408e4ad597318ea79e2e))
+* **blog:** extract app-post-card shared by index + tag archive ([1e9af8e](https://github.com/faisalkhan91/Fluxus/commit/1e9af8e1a53bae22178fa756dd29e57734677abc))
+* **config:** batch 7 — single-source site identity & route metadata ([49f2f22](https://github.com/faisalkhan91/Fluxus/commit/49f2f22fc8aa50bff0850e8a04e5584393f368a3))
+* **core:** type per-route data (tab/seo) instead of any bracket access ([93bb104](https://github.com/faisalkhan91/Fluxus/commit/93bb1041a0d51a22bd67b3c8d72748f5899ff494))
+* **css:** batch 2 — remove redundant focus rings, hoist .loading-cursor ([f779fbb](https://github.com/faisalkhan91/Fluxus/commit/f779fbb5b0521ef7af4fbe248a1d0f920bbbfec7))
+* **css:** exact-value font-size tokens (restore original sizes) ([26fdfbd](https://github.com/faisalkhan91/Fluxus/commit/26fdfbd954c6dbc4290ff016b0d3f03220f9b5a5))
+* **css:** extract shared tag-archive chrome stylesheet ([992b178](https://github.com/faisalkhan91/Fluxus/commit/992b1783b749ddff354c6420f7f92015262c6700))
+* **css:** tokenize font-sizes into a shared scale ([40dd756](https://github.com/faisalkhan91/Fluxus/commit/40dd7560a63e19a223404f3fbd6994a0d7f083e9))
+* **css:** use --focus-ring token for component focus outlines ([fef4a4f](https://github.com/faisalkhan91/Fluxus/commit/fef4a4f80cef9a065eedf5752f9a92080dd8366d))
+* extract applyViewTransition() shared helper ([026c728](https://github.com/faisalkhan91/Fluxus/commit/026c728be6be1b467c0bf9b0c4a4fe5dfc0722ee))
+* **idioms:** batch 1 — type-only & trivial idiom fixes ([6d451fe](https://github.com/faisalkhan91/Fluxus/commit/6d451fee606532e36c87ee289de7756a8f127ed2))
+* **instructions:** update best practices and remove change detection directive ([f6bef00](https://github.com/faisalkhan91/Fluxus/commit/f6bef00b58570aecf1cce3478b800fea1fd81f3c))
+* **lint:** Phase 1 — lock in best-practices.md conformance + static hygiene ([fad940f](https://github.com/faisalkhan91/Fluxus/commit/fad940f33f24b23c2d4716d94e270543b0764d5c))
+* minor code-quality polish ([1905acb](https://github.com/faisalkhan91/Fluxus/commit/1905acba87912e3951a75532532fa7b063ba51f8))
+* **nav:** source sidebar + mobile-nav identity from ProfileDataService ([30befb1](https://github.com/faisalkhan91/Fluxus/commit/30befb12c247dba909392a6547e1f3c94197bb41))
+* **projects:** batch 5 — project-detail delegates to SkillUsageService ([65d07f4](https://github.com/faisalkhan91/Fluxus/commit/65d07f4534a587c2bcbb51c8c56b931e49e0ea37))
+* **projects:** extract ui-source-link from the 4 card "Source" links ([652c734](https://github.com/faisalkhan91/Fluxus/commit/652c734cbe3b1a58ce778dc05d9fc9c46812c372))
+* **scripts:** batch 3 — extract scripts/lib shared layer ([9cb197b](https://github.com/faisalkhan91/Fluxus/commit/9cb197b625d4d530652565e400458929eea70681))
+* **security:** single-source the non-CSP headers; guard dev/prod drift ([fe0fd95](https://github.com/faisalkhan91/Fluxus/commit/fe0fd95b31e85a58474208c3fc9a4feb45cacac3))
+* **shared:** batch 4 (part 1) — extract pure shared utils ([f3500fa](https://github.com/faisalkhan91/Fluxus/commit/f3500fa7381f0041c28037a1e620cc5d86f3cf54))
+* **shared:** batch 4 (part 2) — tag/expand/roving/query-param helpers ([daec04b](https://github.com/faisalkhan91/Fluxus/commit/daec04becfe3b4cc02a7203b727abcf836684c23))
+* **sidebar:** move route-change subscription to constructor ([0e6daeb](https://github.com/faisalkhan91/Fluxus/commit/0e6daeb962297c41715f1b8a7830aeb923a3fda6))
+* **ssr:** reuse shared slugify in prerender params ([7555cdb](https://github.com/faisalkhan91/Fluxus/commit/7555cdbbcbf60f32dffd9f3a78702ab0511c97a2))
+* **templates:** adopt [@let](https://github.com/let) for repeated control/property lookups ([1612c6f](https://github.com/faisalkhan91/Fluxus/commit/1612c6feaf1c0d7e5d1a99e6024305fb963cbf49))
+* **ui:** extract ui-tag pill component + --glass-lift token ([5ab616d](https://github.com/faisalkhan91/Fluxus/commit/5ab616d7fb6327a23a4d8209bb018bdc17cc6faa))
+* **ui:** share readActiveOffset() across the 3 sliding indicators ([79f127e](https://github.com/faisalkhan91/Fluxus/commit/79f127e317680b8d3640caa932089a862a0f7e34))
+* **v22:** phase 2 — reconcile breaking changes ([126a3a0](https://github.com/faisalkhan91/Fluxus/commit/126a3a0e895a7bf6d95fe7ac4b04c00c4cfdd520))
+* **v22:** phase 3 — drop redundant OnPush (now the default) ([bf6539d](https://github.com/faisalkhan91/Fluxus/commit/bf6539d88812784561a46a3c3515188e5f3396ce))
+* **v22:** phase 4 — adopt the @Service() decorator ([88719dc](https://github.com/faisalkhan91/Fluxus/commit/88719dc3687d86ecbc6d9e71d5edd5a1e211ddfc))
+
+
+### Performance
+
+* **blog:** prerender related-posts + prev/next nav via [@defer](https://github.com/defer) hydrate trigger ([6f6dca1](https://github.com/faisalkhan91/Fluxus/commit/6f6dca1e15fece566340829af99e72ef85d68fc4))
+* **blog:** reuse prerendered markdown parse via TransferState (skip re-parse) ([ab2b097](https://github.com/faisalkhan91/Fluxus/commit/ab2b097760462f806403139b0ce438fac8bbaa1a))
+* **fonts:** drop unused Poppins 400/500 weights; relax component-style budget ([041865e](https://github.com/faisalkhan91/Fluxus/commit/041865ecf79a3583f59558221b8cf3fa5890d3ae))
+* **images:** convert portfolio + certification rasters to WebP ([2cb5454](https://github.com/faisalkhan91/Fluxus/commit/2cb54540de8170a71bbc6adc9150bd2873f532fa))
+* **images:** responsive srcset via IMAGE_LOADER + build-time WebP variants ([2c9da06](https://github.com/faisalkhan91/Fluxus/commit/2c9da06a8a932df4a1879f76cd7d2b31b0e2f245))
+* **seo:** preload LCP fonts + emit og:image:alt on every social card ([d4302b9](https://github.com/faisalkhan91/Fluxus/commit/d4302b9976a6f66ce593cb9c8760dd450b6bc96f))
+
+
+### Documentation
+
+* **blog:** readability + accessibility pass on technical posts ([2c5dd61](https://github.com/faisalkhan91/Fluxus/commit/2c5dd61bef1385f06bbe7bc4b5d2f31ebc6566f8))
+* **blog:** refresh reliability posts and covers ([d4a90fb](https://github.com/faisalkhan91/Fluxus/commit/d4a90fb0af873ea5e8e8ac9d90f991ea3e8db0eb))
+* correct Angular 21 -&gt; 22 version references ([fcc9f21](https://github.com/faisalkhan91/Fluxus/commit/fcc9f212163fb56a6cb08bc963ec6ba83c71af4f))
+* correct README/CONTRIBUTING drift against current code + CI ([b07c010](https://github.com/faisalkhan91/Fluxus/commit/b07c010dc067ce9b1bb9e42545e53c371d80f498))
+* **patch-guide:** document repeatable branch-patch workflow ([6f2630f](https://github.com/faisalkhan91/Fluxus/commit/6f2630fcc0cd8fe25d7d9ef56a2707274e5c625c))
+* **security:** add CONTRIBUTING + SECURITY policy and RFC 9116 security.txt ([1762446](https://github.com/faisalkhan91/Fluxus/commit/17624468d611fc0c3f2941b2c69498c96480f7ee))
+
 ## [4.1.0](https://github.com/faisalkhan91/Fluxus/compare/v4.0.0...v4.1.0) (2026-05-19)
 
 
