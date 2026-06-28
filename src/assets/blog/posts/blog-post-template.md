@@ -4,7 +4,7 @@
 
 ## Section Heading
 
-Write your introduction here. Keep it concise — two or three sentences that set context for the reader.
+Write your introduction here. Keep it concise - two or three sentences that set context for the reader.
 
 ### Subsection
 

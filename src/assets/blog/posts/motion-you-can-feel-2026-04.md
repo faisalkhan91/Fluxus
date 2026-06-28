@@ -1,6 +1,6 @@
 # Motion you can feel: notes from a 25-finding audit
 
-Every animation is a promise. A 250-millisecond ease-out tells a user "this is responding to you" — but if the same cursor twitches under two competing duration tokens, blinks at three different cadences, and stalls the main thread on a `width` transition, the promise turns into static. Motion that doesn't feel **considered** quietly drains every other quality of the interface.
+Every animation is a promise. A 250-millisecond ease-out tells a user "this is responding to you" - but if the same cursor twitches under two competing duration tokens, blinks at three different cadences, and stalls the main thread on a `width` transition, the promise turns into static. Motion that doesn't feel **considered** quietly drains every other quality of the interface.
 
 I spent a week auditing every animation, transition, and micro-interaction across this Angular 21 portfolio with that lens, and the gap between what I thought I shipped and what I actually shipped was bigger than I expected. The artefacts were the usual suspects: a hardcoded `0.3s ease-out` in one component because I forgot we had a token; an inert `--transition-medium` referenced from three places that had never been declared; a sidebar collapse that animated `width` and re-laid out the whole subtree on every frame.
 
@@ -26,12 +26,12 @@ flowchart LR
 
 | Severity | Count | Examples                                                                                                           |
 | -------- | ----- | ------------------------------------------------------------------------------------------------------------------ |
-| **P0**   | 0     | —                                                                                                                  |
+| **P0**   | 0     | -                                                                                                                  |
 | **P1**   | 7     | Token duplication, undefined `--transition-medium`, sidebar `width` animation, missing reduced-motion contract     |
 | **P2**   | 9     | Inconsistent `:active` states, route-fade choreography, command palette discrete transitions, toast exit animation |
 | **P3**   | 9     | Cursor blink unification, sliding tab indicator, cohesion details, doc comments                                    |
 
-Catching that nothing was P0 was its own win — the system wasn't broken, it was **incoherent**. That's a friendlier problem to solve than a regression.
+Catching that nothing was P0 was its own win - the system wasn't broken, it was **incoherent**. That's a friendlier problem to solve than a regression.
 
 ## A six-token motion ladder
 
@@ -57,9 +57,9 @@ The single highest-leverage change was the foundation: collapse three loosely-de
 }
 ```
 
-The durations match Material 3's `short3` / `medium1` / `medium4` tokens, so the cadence reads as familiar even before you name it. The three easing curves come straight from M3's standard / emphasized-decelerate / emphasized-accelerate spec — symmetric for in-place state changes, slow-out for entering elements, fast-out for leaving ones. The composed shorthands let call sites stay one token wide (`transition: opacity var(--transition-enter-base);`) while the system retunes from a single source.
+The durations match Material 3's `short3` / `medium1` / `medium4` tokens, so the cadence reads as familiar even before you name it. The three easing curves come straight from M3's standard / emphasized-decelerate / emphasized-accelerate spec - symmetric for in-place state changes, slow-out for entering elements, fast-out for leaving ones. The composed shorthands let call sites stay one token wide (`transition: opacity var(--transition-enter-base);`) while the system retunes from a single source.
 
-`--transition-fast` / `base` / `slow` keep their historical names so existing call sites don't have to churn. `--duration-tab` is a deliberate editor-style override — the active-tab indicator and the cross-route main-content fade both run at 120 ms so navigation feels closer to a code editor than a marketing site (no float-in, no `translateY` drift).
+`--transition-fast` / `base` / `slow` keep their historical names so existing call sites don't have to churn. `--duration-tab` is a deliberate editor-style override - the active-tab indicator and the cross-route main-content fade both run at 120 ms so navigation feels closer to a code editor than a marketing site (no float-in, no `translateY` drift).
 
 ## `transform: scaleX` over `width`: the GPU lesson
 
@@ -102,13 +102,13 @@ The sidebar collapse used to animate `width` from 260 px to 60 px, dragging the 
 }
 ```
 
-The `--sidebar-scale` ratio carries the math so children can derive their inverse without re-computing it. `contain: layout style` walls the subtree off so any residual reflow stays inside the sidebar. The same pattern shipped to the skill-progress bar — `[style.--badge-fill-scale]` driving a `transform: scaleX` instead of animating the `width` of the fill element.
+The `--sidebar-scale` ratio carries the math so children can derive their inverse without re-computing it. `contain: layout style` walls the subtree off so any residual reflow stays inside the sidebar. The same pattern shipped to the skill-progress bar - `[style.--badge-fill-scale]` driving a `transform: scaleX` instead of animating the `width` of the fill element.
 
 The lesson generalises: **prefer transforms for any animation a user sees more than once a session.** The pulse on the hero glow orbs runs every eight seconds for as long as the page is open; the sidebar opens and closes constantly. Both deserve the compositor.
 
 ## View Transitions for routes and theme
 
-Angular 21 ships a first-party integration with the View Transitions API via `withViewTransitions()`, and once it's enabled every route swap can be choreographed with a single CSS rule pair. The same primitive — `document.startViewTransition()` — wraps the theme toggle so light/dark swaps cross-fade the entire viewport instead of snapping.
+Angular 21 ships a first-party integration with the View Transitions API via `withViewTransitions()`, and once it's enabled every route swap can be choreographed with a single CSS rule pair. The same primitive - `document.startViewTransition()` - wraps the theme toggle so light/dark swaps cross-fade the entire viewport instead of snapping.
 
 ```mermaid
 sequenceDiagram
@@ -147,7 +147,7 @@ toggle(): void {
 }
 ```
 
-Once the snapshot pair exists, you style it like any other animation — but the timing matters. The default browser fade lands around 250 ms, which feels marketing-leisurely on a tabbed-navigation site. The route fade was retuned to opacity-only at the new `--duration-tab` (120 ms) so navigation between editor-style tabs feels tight:
+Once the snapshot pair exists, you style it like any other animation - but the timing matters. The default browser fade lands around 250 ms, which feels marketing-leisurely on a tabbed-navigation site. The route fade was retuned to opacity-only at the new `--duration-tab` (120 ms) so navigation between editor-style tabs feels tight:
 
 ```css
 ::view-transition-old(main-content) {
@@ -158,11 +158,11 @@ Once the snapshot pair exists, you style it like any other animation — but the
 }
 ```
 
-The sidebar and tab bar each carry their own `view-transition-name` so they morph in place via the browser's auto-handling — no JS, no measurement, just a CSS contract.
+The sidebar and tab bar each carry their own `view-transition-name` so they morph in place via the browser's auto-handling - no JS, no measurement, just a CSS contract.
 
 ## Reduced-motion is a contract
 
-Every motion choice above is filtered through one rule: motion-sensitive users shouldn't have to opt out one component at a time. WCAG 2.3.3 (Animation from Interactions) only requires a path to disable, but the right primitive is a global one — a single rule that collapses every animation and transition to a near-zero duration:
+Every motion choice above is filtered through one rule: motion-sensitive users shouldn't have to opt out one component at a time. WCAG 2.3.3 (Animation from Interactions) only requires a path to disable, but the right primitive is a global one - a single rule that collapses every animation and transition to a near-zero duration:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -177,7 +177,7 @@ Every motion choice above is filtered through one rule: motion-sensitive users s
 }
 ```
 
-That covers 95 % of cases, but a handful of animations land on intermediate shapes — the hero typewriter starts at `width: 0`, the name reveal starts at `clip-path: inset(0 100% 0 0)`, the title caret starts at `opacity: 0`. Collapsing those animations to zero duration would briefly flash the wrong state. The fix is a per-component override that forces the **final** state explicitly:
+That covers 95 % of cases, but a handful of animations land on intermediate shapes - the hero typewriter starts at `width: 0`, the name reveal starts at `clip-path: inset(0 100% 0 0)`, the title caret starts at `opacity: 0`. Collapsing those animations to zero duration would briefly flash the wrong state. The fix is a per-component override that forces the **final** state explicitly:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
@@ -222,7 +222,7 @@ gantt
   Social fade up        :a7, 1500, 350ms
 ```
 
-The greeting (`>_ Hello, I'm`) types in via a `steps(10)` animation on `width`. The hero name reveals left-to-right via a `clip-path: inset(0 100% 0 0)` wipe — a deliberate choice over a per-letter cascade, because wrapping each glyph in an `inline-block` span would re-sample the parent's diagonal `linear-gradient(135deg, …)` per letter and break the smooth gradient sweep. `clip-path` preserves the gradient because it's a single mask on a single element. The terminal caret after the title stacks two animations: a delayed fade-in lands the caret after the title text, then the shared `cursor-blink` keyframe takes over for the steady-state blink.
+The greeting (`>_ Hello, I'm`) types in via a `steps(10)` animation on `width`. The hero name reveals left-to-right via a `clip-path: inset(0 100% 0 0)` wipe - a deliberate choice over a per-letter cascade, because wrapping each glyph in an `inline-block` span would re-sample the parent's diagonal `linear-gradient(135deg, …)` per letter and break the smooth gradient sweep. `clip-path` preserves the gradient because it's a single mask on a single element. The terminal caret after the title stacks two animations: a delayed fade-in lands the caret after the title text, then the shared `cursor-blink` keyframe takes over for the steady-state blink.
 
 The ambient layer is pointer-driven. A single rAF-batched listener writes two CSS custom properties on the host element; CSS reads them for both an orb parallax and a follow-the-cursor accent spotlight:
 
@@ -257,9 +257,9 @@ Three guards keep the effect honest: it only attaches in `afterNextRender` on th
 
 ## Lessons
 
-- Animate `transform`, `opacity`, `clip-path` — almost never `width`, `height`, `top`, `left`. The compositor wants two properties; layout wants seven. Write to the right one.
+- Animate `transform`, `opacity`, `clip-path` - almost never `width`, `height`, `top`, `left`. The compositor wants two properties; layout wants seven. Write to the right one.
 - One token system feeds everything. Three durations and three easings is enough for an entire site, provided the easings are deliberately chosen and the durations climb on a recognisable ladder.
-- `prefers-reduced-motion` isn't a feature — it's a contract you write a test for. A global rule plus a handful of explicit final-state overrides plus one Playwright assertion gets you there.
+- `prefers-reduced-motion` isn't a feature - it's a contract you write a test for. A global rule plus a handful of explicit final-state overrides plus one Playwright assertion gets you there.
 - Modern CSS replaces most JS animation libs. View Transitions, `@starting-style`, `transition-behavior: allow-discrete`, scroll-driven animations, and `clip-path` cover almost every interaction this app needs without a single `animate()` call.
 - Audit your own work. The findings I expected (the hardcoded duration, the missing token) were already documented in my own head; the ones that taught me the most were the ones I'd rationalised away.
 
