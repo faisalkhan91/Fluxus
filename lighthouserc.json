@@ -4,13 +4,13 @@
       "staticDistDir": "dist/fluxus/browser",
       "url": [
         "http://localhost/",
-        "http://localhost/about",
-        "http://localhost/skills",
-        "http://localhost/projects",
-        "http://localhost/projects/image-generator",
-        "http://localhost/contact",
-        "http://localhost/blog",
-        "http://localhost/blog/angular-signals-state-management"
+        "http://localhost/about/",
+        "http://localhost/skills/",
+        "http://localhost/projects/",
+        "http://localhost/projects/image-generator/",
+        "http://localhost/contact/",
+        "http://localhost/blog/",
+        "http://localhost/blog/angular-signals-state-management/"
       ],
       "numberOfRuns": 3,
       "settings": {
