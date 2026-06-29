@@ -186,6 +186,10 @@ jobs:
         with:
           configPath: ./lighthouserc.json
           uploadArtifacts: true
+          # Distinct name per pass: upload-artifact@v4 rejects a second upload
+          # under the same name (409 Conflict), and the mobile pass below also
+          # uploads. Default would be `lighthouse-results` for both.
+          artifactName: lighthouse-desktop
 
       # Second pass under the mobile profile (slow-4G + 4x CPU) for the
       # heaviest routes only. Thresholds are deliberately relaxed (warn,
@@ -195,6 +199,7 @@ jobs:
         with:
           configPath: ./lighthouserc.mobile.json
           uploadArtifacts: true
+          artifactName: lighthouse-mobile
 
   # Single fan-in check for branch protection. Requiring `CI / CI success`
   # instead of every individual job means adding/removing a parallel CI job
