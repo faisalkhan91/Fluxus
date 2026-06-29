@@ -5,7 +5,13 @@
 # (e.g. amd64) even when the final image is requested for arm64 — the
 # output is static HTML/JS/CSS so it's arch-independent and we'd otherwise
 # be running `npm` under QEMU emulation, which adds many minutes per build.
-FROM --platform=$BUILDPLATFORM node:24-alpine@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b AS build
+#
+# Pin an explicit minor (>= 24.15.0): Angular CLI 22 requires Node
+# >=24.15.0 (also enforced by engines.node in package.json). The previous
+# `node:24-alpine` digest had drifted to 24.14.1, which is BELOW that floor,
+# so `ng build` aborted with exit 3 inside the container. Keep this at a
+# pinned 24.1x-alpine >= 24.15.0; Dependabot bumps the digest.
+FROM --platform=$BUILDPLATFORM node:24.17-alpine@sha256:156b55f92e98ccd5ef49578a8cea0df4679826564bad1c9d4ef04462b9f0ded6 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
