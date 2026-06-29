@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.2.1](https://github.com/faisalkhan91/Fluxus/compare/v4.2.0...v4.2.1) (2026-06-29)
+
+
+### Bug Fixes
+
+* **a11y:** deepen solarized-light accent to clear WCAG AA on the primary CTA ([7d3d2df](https://github.com/faisalkhan91/Fluxus/commit/7d3d2df7ffd5503ceec10b0a5a6e27e76df0e76c))
+* **ci:** give each Lighthouse pass a distinct artifact name ([e846cf8](https://github.com/faisalkhan91/Fluxus/commit/e846cf831b963ad49900820d9cbc9a3e9b28d0b6))
+* **docker:** pin builder to node:24.17-alpine (&gt;= Angular CLI's 24.15.0 floor) ([ef108c2](https://github.com/faisalkhan91/Fluxus/commit/ef108c2b331eaaa051b01fce92174225e258a085))
+
+
+### Performance
+
+* **lighthouse:** test canonical trailing-slash URLs to drop a lab redirect ([d0d4cdb](https://github.com/faisalkhan91/Fluxus/commit/d0d4cdbf76bd3dee9e8bc921ce71908b6e6b516a))
+
 ## [4.2.0](https://github.com/faisalkhan91/Fluxus/compare/v4.1.0...v4.2.0) (2026-06-28)
 
 
