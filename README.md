@@ -15,15 +15,15 @@ A personal portfolio site built with Angular 22, styled as a code-editor workspa
 
 ## Tech Stack
 
-| Layer      | Technology                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------------ |
-| Framework  | Angular 22 (standalone components, signals, zoneless, `OnPush`)                                  |
-| Rendering  | SSG via `@angular/ssr` — the entire route tree is prerendered at build time                      |
-| Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                   |
-| Blog       | Markdown files rendered via `marked` + `highlight.js`                                            |
-| Container  | Multi-stage Docker — `node:24-alpine` builder, `nginxinc/nginx-unprivileged:1.30-alpine` runtime |
-| Web Server | NGINX with gzip, granular cache policies, and full security headers                              |
-| Language   | TypeScript 6.0 (strict mode, no `any`)                                                           |
+| Layer      | Technology                                                                                          |
+| ---------- | --------------------------------------------------------------------------------------------------- |
+| Framework  | Angular 22 (standalone components, signals, zoneless, `OnPush`)                                     |
+| Rendering  | SSG via `@angular/ssr` — the entire route tree is prerendered at build time                         |
+| Styling    | Scoped component CSS + global design tokens (`src/styles.css`)                                      |
+| Blog       | Markdown files rendered via `marked` + `highlight.js`                                               |
+| Container  | Multi-stage Docker — `node:24.17-alpine` builder, `nginxinc/nginx-unprivileged:1.30-alpine` runtime |
+| Web Server | NGINX with gzip, granular cache policies, and full security headers                                 |
+| Language   | TypeScript 6.0 (strict mode, no `any`)                                                              |
 
 ## Features
 
