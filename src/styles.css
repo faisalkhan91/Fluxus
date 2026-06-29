@@ -407,10 +407,15 @@
   --glass-border: rgba(7, 54, 66, 0.1);
   --glass-border-hover: rgba(7, 54, 66, 0.18);
 
-  --accent: #cb4b16;
+  /* #cb4b16 (Solarized orange) sits at luminance ~0.18 — the mid-tone dead
+     zone where neither white nor black text clears 4.5:1 (white = 4.61, right
+     on the WCAG AA line), so the white-on-accent `.btn--primary` CTA failed
+     axe in CI. Deepened to #b5430f (white = 5.56:1) for margin; still the
+     Solarized-orange hue, still lighter than the #a33a0e hover. */
+  --accent: #b5430f;
   --accent-hover: #a33a0e;
-  --accent-glow: rgba(203, 75, 22, 0.22);
-  --accent-subtle: rgba(203, 75, 22, 0.08);
+  --accent-glow: rgba(181, 67, 15, 0.22);
+  --accent-subtle: rgba(181, 67, 15, 0.08);
   --text-on-accent: #ffffff;
   /* Override the shared light-theme red --text-accent: this theme's accent is
      orange, so accent-as-text (links, tags, social-link hover) must follow the
