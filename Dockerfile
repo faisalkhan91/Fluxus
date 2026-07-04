@@ -11,7 +11,7 @@
 # `node:24-alpine` digest had drifted to 24.14.1, which is BELOW that floor,
 # so `ng build` aborted with exit 3 inside the container. Keep this at a
 # pinned 24.1x-alpine >= 24.15.0; Dependabot bumps the digest.
-FROM --platform=$BUILDPLATFORM node:24.17-alpine@sha256:156b55f92e98ccd5ef49578a8cea0df4679826564bad1c9d4ef04462b9f0ded6 AS build
+FROM --platform=$BUILDPLATFORM node:24.18-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS build
 WORKDIR /app
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
@@ -22,7 +22,7 @@ COPY . .
 RUN npm run build:prod
 
 # Stage 2: Serve with non-root NGINX (UID 101, listens on 8080)
-FROM nginxinc/nginx-unprivileged:1.30-alpine@sha256:0a1e718ff1e1a22fc519d0c2e5b6872681f01e37c8a2817ec43ce6e716103929
+FROM nginxinc/nginx-unprivileged:1.31-alpine@sha256:a8d5564c3354241473c1e152d5dd3281ab4224edb61b23c291e0bfd9854687a1
 LABEL org.opencontainers.image.title="Fluxus" \
       org.opencontainers.image.description="Angular 22 SSG portfolio — static site served by NGINX" \
       org.opencontainers.image.source="https://github.com/faisalkhan91/Fluxus" \
